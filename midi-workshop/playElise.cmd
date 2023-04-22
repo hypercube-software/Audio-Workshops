@@ -1,0 +1,1 @@
+java -XX:+UseZGC -jar target\midi-workshop-0.0.1-SNAPSHOT.jar elise -o "FromDAW" -t 65

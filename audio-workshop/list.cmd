@@ -1,0 +1,1 @@
+java -XX:+UseZGC -jar target\audio-workshop-0.0.1-SNAPSHOT.jar list

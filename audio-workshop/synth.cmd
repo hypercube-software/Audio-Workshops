@@ -1,0 +1,1 @@
+java -XX:+UseZGC -jar target\audio-workshop-0.0.1-SNAPSHOT.jar synth -i "nanoKEY2 1 KEYBOARD" -o  "Haut-parleurs (Realtek High Definition Audio)"
