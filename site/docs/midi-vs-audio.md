@@ -2,7 +2,7 @@
 
 It is very important to distinguish those two guys.
 
-- **MIDI** is a way to send notes and gesture between devices but not sound. It's just little messages made by a **bunch of bytes**.
+- **MIDI** is a way to send notes and gesture between devices but not sound. It's just little messages made of a **bunch of bytes**.
 - **Audio** is just sound, there is no concept of notes or gesture here. It's a **stream of bytes** which must be very fast
 
 💡 Since MIDI is a protocol, you can download the specification from the official site [MIDI Association](https://www.midi.org/).

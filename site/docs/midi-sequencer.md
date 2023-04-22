@@ -12,7 +12,7 @@ The midi specification contains a special event used to synchronize multiple dev
 
 Unfortunately the way MIDI clocks are designed is not very accurate:
 
-- If you send an **0xF8** in the middle of many note messages, there is zero chances that your timing is gonna be OK.
+- If you send an **0xF8** in the middle of many note messages, there are zero chances that your timing is gonna be OK.
 - The right way to do it is to use a separate MIDI cable dedicated to the clock event
 - This clock event should never stop, especially when pause/continue events are used because every time you stop and start the clock you need few seconds to stabilize the tempo.
 
@@ -27,7 +27,7 @@ This is the speed of the MIDI clock. PPQ is a crucial concept if you plan to wri
 
 ## Beats vs Pulse
 
-Don't be confuse between **Beats** and **Pulses**: A beat depends on the time signature.
+Don't be confused between **Beats** and **Pulses**: A beat depends on the time signature.
 
 - The time signature must be read as `<bar duration> = <nb beat> * <whole note duration> / <diviser>`
 - 4/4 mean 1 bar = 4 beats of 1/4 of a whole = 4 quarter notes
@@ -43,7 +43,7 @@ The MIDI clock use 24 PPQ. That does not mean the sequencer should do the same.
 
 # MIDIClockType
 
-I defined an `enum` to implement two types of clocks:
+We define an `enum` to implement two types of clocks:
 
 ```java
 public enum MidiClockType {
@@ -154,7 +154,7 @@ In music every timings are relative to the tempo. There is no such a thing like 
 - A quarter is 1/4 of a whole and its duration is calculated from the tempo in **BPM**.
 - If you express a duration in bars, it's even more complicated because you have to take into account the **Time Signature**.
 
-So, `RelativeTimeUnit` is nothing more than a class implementation of  fractions arithmetic.
+So, `RelativeTimeUnit` is nothing more than a class implementing fractions arithmetic.
 
 - `RelativeTimeUnit.mult()`
 - `RelativeTimeUnit.div()`
@@ -202,4 +202,3 @@ private int toTick(RelativeTimeUnit duration) {
 	return tickPerWhole * duration.numerator() / duration.denominator();
 }
 ```
-

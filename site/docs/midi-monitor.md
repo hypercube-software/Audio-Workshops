@@ -4,7 +4,7 @@ Our very first code to receive and send MIDI messages
 
 # Java MIDI API
 
-The Java MIDI API is in the package `avax.sound.midi` and it is provided by the JDK. There is no need to use an external library.
+The Java MIDI API is in the package `javax.sound.midi` and it is provided by the JDK. There is no need to use an external library.
 
 ## Wrap it !
 
@@ -21,7 +21,7 @@ If you send something from A to B, you have two ways to name things:
 - If B is the **device**, you consider the device as a **receiver**.
 - If the output of A is the **device**, you consider the device as a **transmitter**, like a port.
 
-Unfortunately the Java MIDI API used the second way. So a **Device** is like an port of your application. It does not reflect the destination (A MIDI synth or a MIDI keyboard).
+Unfortunately the Java MIDI API used the second way. So a **Device** is like a port of your application. It does not reflect the destination (A MIDI synth or a MIDI keyboard).
 
 - A **receiver** is used to **output** MIDI.
 - A **transmitter** is used to **input** MIDI.
@@ -56,7 +56,7 @@ All transmitters become a `MidiInDevice` and all receivers become a `MidiOutDevi
 
 ![pasted+image+0](./assets/pasted+image+0.png)
 
-- A `MidiOutDeviceis` used to output MIDI.
+- A `MidiOutDevice` is used to output MIDI.
 - A `MidiInDevice` is used to input MIDI.
 
 This is much better in this way !
@@ -114,7 +114,7 @@ activeSensing = new ShortMessage(ShortMessage.ACTIVE_SENSING);
 - We will play with the first one later
 - Active sensing is like a "ping", to say we are alive
 
-You can send a 3 bytes messages like Not One with the following:
+You can send a 3 bytes messages like "Note On" with the following:
 
 ```java
 new ShortMessage(ShortMessage.NOTE_ON, 1, 60, 127)
@@ -174,7 +174,7 @@ This is a great free VSTi that will be loaded by Element. Download it from the W
 
 # MidiMonitor
 
-This class demonstrate how to use our API Wrapper to monitor incoming message in a MIDI IN Device.
+This class demonstrate how to use our API Wrapper to monitor incoming messages in a MIDI IN Device.
 
 ## list
 
@@ -311,7 +311,7 @@ A program change MIDI event is used to change the sound of a specific MIDI Chann
 - [GS](https://en.wikipedia.org/wiki/General_MIDI#GS_extensions) a superset of GM by Roland
 - [XG](https://en.wikipedia.org/wiki/General_MIDI#XG_extensions) a superset of GM by Yamaha
 
-With the raise of Virtual Instruments, all of this is now relatively pointless since each VSTi contains thousands of unique sounds.
+With the rise of Virtual Instruments, all of this is now relatively pointless since each VSTi contains thousands of unique sounds.
 
 ## Controllers
 
@@ -334,11 +334,11 @@ The pitch bend has more resolution with its own event **Pitch Bend Change**. The
 
 ## Panic
 
-It is possible to loose a Note Off in some circumstances. In this case, the sound generator will play the note ... for ever ! This is why there is various messages to stop everything: 
+It is possible to lose a Note Off in some circumstances. In this case, the sound generator will play the note ... forever ! This is why there are various messages to stop everything: 
 
-- **All Notes Off**  for channel 0: `0xB07B00`
-- **All Sound Off**  for channel 0: `0xB07800`
-- **Reset All Controllers**  for channel 0: `0xB07900`
+- **All Notes Off** for channel 0: `0xB07B00`
+- **All Sound Off** for channel 0: `0xB07800`
+- **Reset All Controllers** for channel 0: `0xB07900`
 
 ## Java API
 
