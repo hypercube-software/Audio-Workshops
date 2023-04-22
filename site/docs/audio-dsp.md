@@ -135,20 +135,20 @@ Here some examples:
 - For 16 bit unsigned samples, we are in the range `[0x0000,0xFFFF] `
 - For 24 bit unsigned samples, we are in the range `[0x000000,0xFFFFFF] `
 
-The process of converting a voltage to a digital number is called [quantization](https://en.wikipedia.org/wiki/Quantization_(signal_processing)) and it has inherently an error associated with it: this is the **quantization error**. The less bits you have, the bigger it is.
+The process of converting a voltage to a digital number is called [quantization](https://en.wikipedia.org/wiki/Quantization_(signal_processing)) and it has inherently an error associated with it: this is the **quantization error**. The fewer bits you have, the bigger it is.
 
 💡 Quantization error mean "I don't have enough bits to represent those little tiny variations in voltage amplitude". It produces **noise**.
 
-It is important to understand that any sampled signal bring some noise in low amplitudes. This zone is ugly and you don't want to ear it. 
+It is important to understand that any sampled signal bring some noise in low amplitudes. This zone is ugly, and you don't want to ear it. 
 
 - The more bits you have, the lower is the noise floor
 - If you listen **Classical music**, quantizing at 24 bits is a good idea because the music contains many sections at low volume.
-- If you listen **Dubstep music**, it is so compressed that you don't need a lot of bits to play it: the volume is alway high.
+- If you listen **Dubstep music**, it is so compressed that you don't need a lot of bits to play it: the volume is always high.
 
 So quantization brings the concept of [dynamic range](https://en.wikipedia.org/wiki/Dynamic_range) in music: 
 
-- It correspond to the ratio between the highest sample and the lowest sample. The unit is  in dB
-- The dynamic range of human hearing is roughly 140 dB. This is very good and it certainly requires more than 8 bits !
+- It corresponds to the ratio between the highest sample and the lowest sample. The unit is in dB
+- The dynamic range of human hearing is roughly 140 dB. This is very good, and it certainly requires more than 8 bits !
 
 💡 For more information, take a look on [this video](https://www.youtube.com/watch?v=1KBLguIXL30&list=PLbqhA-NKGP6B6V_AiS-jbvSzdd7nbwwCw&index=5).
 

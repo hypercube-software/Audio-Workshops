@@ -158,7 +158,7 @@ Take look on `AudioOutputDevice::play`
     }
 ```
 
-We decide to generate a wave form in 16 bits, 1 channel, 44100 HZ, Big Indian, Signed:
+We decide to generate a wave form in 16 bits, 1 channel, 44100 Hz, Big Indian, Signed:
 
 ```java
 final AudioFormat af = new AudioFormat(SAMPLE_RATE, 16, 1, true, true);
@@ -253,4 +253,3 @@ MIDI: 0xe02c40 Note: 0 8.175799 Hz Velocity: 0 Status: e0
 MIDI: 0xe05d41 Note: 0 8.175799 Hz Velocity: 0 Status: e0
 Terminating...    
 ```
-

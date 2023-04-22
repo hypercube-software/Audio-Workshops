@@ -5,6 +5,14 @@ How to build a simple synthesizer in Java.
 | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Documentation%20build/badge.svg) | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Maven%20build/badge.svg) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 
+⚠️ **This project is not complete yet**: 
+
+- Filters are not implemented yet 
+- ADSR envelopes are still in early stages.
+- The documentation does not cover all the code yet.
+
+Anyway, the VCOs are working and they respond to MIDI. The java synth is working.
+
 # Audience
 
 Those workshops are made for Java developers knowing zero about MIDI and Audio.

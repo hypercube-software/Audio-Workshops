@@ -7,3 +7,4 @@
     - [Concepts](audio-dsp.md)
     - [Java Synth](audio-sine.md)
 - [Resources](resource.md)
+- [Github Repo](https://github.com/hypercube-software/Audio-Workshops)
