@@ -16,13 +16,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  midi-workshop:
+  workshop:
     runs-on: ubuntu-latest
 
     defaults:
       run:
         shell: bash
-        working-directory: ./midi-workshop
+        working-directory: ./
 
     steps:
       - uses: actions/checkout@v3
@@ -35,21 +35,4 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-  audio-workshop:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./audio-workshop
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: maven
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+  
