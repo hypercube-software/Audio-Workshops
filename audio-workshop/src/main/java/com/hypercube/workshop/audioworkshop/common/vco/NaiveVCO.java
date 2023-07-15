@@ -20,7 +20,7 @@ public class NaiveVCO extends VCO {
 
     @Override
     public byte[] generateSignal(double freq) {
-        // Rule N°1: NEVER ever use sample position with decimal part
+        // Rule N°1: NEVER ever use sample position width decimal part
         // The FIX: double periodDurationInSamples = Math.floor(sampleRate /freq);
         // The following will generate incorrect value, which can be ear in high notes
         double periodDurationInSamples = sampleRate / freq;

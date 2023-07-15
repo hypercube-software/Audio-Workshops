@@ -13,14 +13,14 @@ public class AudioOutputDevice extends AbstractAudioDevice {
         super(mixerInfo);
     }
 
+    private static final Object stopEvent = new Object();
+
     public void play(AudioFormat af, byte[] data, int durationMs) throws LineUnavailableException, InterruptedException {
         final var clip = AudioSystem.getClip(mixerInfo);
         clip.open(af, data, 0, data.length);
         clip.setLoopPoints(0, -1);
 
-        Object waiter = new Object();
-
-        addAudioListener(clip, waiter);
+        addAudioListener(clip);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         Thread.sleep(durationMs);
         clip.stop();
@@ -30,35 +30,40 @@ public class AudioOutputDevice extends AbstractAudioDevice {
 
     public void play(File file, int loopCount) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
         AudioInputStream sound = AudioSystem.getAudioInputStream(file);
-        log.info("Channels   : " + sound.getFormat().getChannels());
-        log.info("Encoding   : " + sound.getFormat().getEncoding().toString());
-        log.info("SampleRate : " + sound.getFormat().getSampleRate());
-        log.info("BitDepth   : " + sound.getFormat().getSampleSizeInBits());
+        log.info("Channels   : " + sound.getFormat()
+                .getChannels());
+        log.info("Encoding   : " + sound.getFormat()
+                .getEncoding()
+                .toString());
+        log.info("SampleRate : " + sound.getFormat()
+                .getSampleRate());
+        log.info("BitDepth   : " + sound.getFormat()
+                .getSampleSizeInBits());
         final var clip = AudioSystem.getClip(mixerInfo);
         clip.open(sound);
         clip.setLoopPoints(0, -1);
 
-        Object waiter = new Object();
-        addAudioListener(clip, waiter);
+
+        addAudioListener(clip);
 
         clip.loop(loopCount);
 
-        waitStopEvent(waiter);
+        waitStopEvent();
         clip.drain();
         clip.close();
     }
 
-    private static void waitStopEvent(Object waiter) throws InterruptedException {
-        synchronized (waiter) {
-            waiter.wait();
+    private static void waitStopEvent() throws InterruptedException {
+        synchronized (stopEvent) {
+            stopEvent.wait();
         }
     }
 
-    private static void addAudioListener(Clip clip, Object waiter) {
+    private static void addAudioListener(Clip clip) {
         clip.addLineListener(lineEvent -> {
             if (lineEvent.getType() == LineEvent.Type.STOP) {
-                synchronized (waiter) {
-                    waiter.notifyAll();
+                synchronized (stopEvent) {
+                    stopEvent.notifyAll();
                 }
             }
         });

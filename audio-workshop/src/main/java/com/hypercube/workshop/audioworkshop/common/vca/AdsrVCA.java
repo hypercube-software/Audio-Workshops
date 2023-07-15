@@ -2,6 +2,7 @@ package com.hypercube.workshop.audioworkshop.common.vca;
 
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("FieldCanBeLocal")
 @Slf4j
 public class AdsrVCA extends VCA {
     private enum State {
@@ -16,18 +17,18 @@ public class AdsrVCA extends VCA {
     private final double release;
     private double positionMs;
 
-    private double incrementMs;
+    private final double incrementMs;
 
     private Envelope currentEnvelope;
     private State state;
 
-    private Envelope silentEnv = new SustainEnvelope(0);
+    private final Envelope silentEnv = new SustainEnvelope(0);
     private Envelope attackEnv;
 
     private Envelope sustainEnv;
     private Envelope releaseEnv;
 
-    private Object guardian = new Object();
+    private final Object guardian = new Object();
 
     public AdsrVCA(double sampleRate, double attack, double decay, double release) {
         super(sampleRate);

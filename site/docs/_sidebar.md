@@ -5,6 +5,7 @@
     - [MIDI Sequencer](midi-sequencer.md)
 - Audio Workshops
     - [Concepts](audio-dsp.md)
+    - [Audio Formats](audio-formats.md)
     - [Java Synth](audio-sine.md)
 - [Resources](resource.md)
 - [Github Repo](https://github.com/hypercube-software/Audio-Workshops)

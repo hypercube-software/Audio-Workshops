@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AudioDeviceManager {
-    List<AudioInputDevice> inputs = new ArrayList<>();
-    List<AudioOutputDevice> outputs = new ArrayList<>();
-    public void collectDevices(){
+    private final List<AudioInputDevice> inputs = new ArrayList<>();
+    private final List<AudioOutputDevice> outputs = new ArrayList<>();
+
+    public void collectDevices() {
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-        for (Mixer.Info mixerInfo : mixers){
+        for (Mixer.Info mixerInfo : mixers) {
             Mixer m = AudioSystem.getMixer(mixerInfo);
 
             Line.Info[] lines = m.getTargetLineInfo();
-            if (lines.length>0)
+            if (lines.length > 0)
                 inputs.add(new AudioInputDevice(mixerInfo));
             else
                 outputs.add(new AudioOutputDevice(mixerInfo));

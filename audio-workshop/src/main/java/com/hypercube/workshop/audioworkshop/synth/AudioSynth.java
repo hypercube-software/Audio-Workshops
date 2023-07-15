@@ -5,7 +5,6 @@ import com.hypercube.workshop.audioworkshop.common.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
 import com.hypercube.workshop.audioworkshop.common.vco.CorrectVCO;
-import com.hypercube.workshop.audioworkshop.common.vco.NaiveVCO;
 import com.hypercube.workshop.audioworkshop.common.vco.VCO;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
@@ -21,7 +20,7 @@ import java.nio.ByteOrder;
 @Slf4j
 @Component
 public class AudioSynth {
-    final int SAMPLE_RATE = 44100;
+    static final int SAMPLE_RATE = 44100;
     private volatile int midiNode;
     private volatile boolean stop;
 
@@ -60,16 +59,16 @@ public class AudioSynth {
     private void onMidiEvent(MidiInDevice midiInDevice, CustomMidiEvent evt, VCA vca) {
         MidiMessage msg = evt.getMessage();
         if (msg.getStatus() == ShortMessage.NOTE_ON) {
-            midiNode = (int) msg.getMessage()[1];
-            int midiVelocity = (int) msg.getMessage()[2];
+            midiNode = msg.getMessage()[1];
+            int midiVelocity = msg.getMessage()[2];
             midiVelocity = Math.min(midiVelocity, 110);
-            log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, NaiveVCO.midiNoteToFrequency(midiNode), midiVelocity, msg.getStatus()));
+            log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), midiVelocity, msg.getStatus()));
             vca.onNoteOn(midiVelocity / 127.f);
         } else if (msg.getStatus() == ShortMessage.NOTE_OFF) {
-            int receivedMidiNodeOff = (int) msg.getMessage()[1];
+            int receivedMidiNodeOff = msg.getMessage()[1];
             if (midiNode == receivedMidiNodeOff) {
                 vca.onNoteOff();
-                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, NaiveVCO.midiNoteToFrequency(midiNode), 0, msg.getStatus()));
+                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), 0, msg.getStatus()));
             }
         } else if (msg.getStatus() == ShortMessage.PITCH_BEND) {
             stop = true;

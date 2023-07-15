@@ -12,7 +12,7 @@ import java.nio.ByteOrder;
  * The anglePos stay inside the period to avoid big values of IEEE754
  */
 public class CorrectVCO extends VCO {
-    double lastFreq = 0;
+    final double lastFreq = 0;
     private ByteBuffer output;
     private int samples;
     private double angleIncrementInRadians;
@@ -41,8 +41,8 @@ public class CorrectVCO extends VCO {
             // write the sample into the buffer
             output.putShort(sample);
 
-            // Rule N°2: Avoid big numbers with IEEE754
-            // FIX: we stay inside the period with this modulo
+            // Rule N°2: Avoid big numbers width IEEE754
+            // FIX: we stay inside the period width this modulo
             anglePos += angleIncrementInRadians;
             if (anglePos >= SIN_PERIOD_2PI) {
                 anglePos -= SIN_PERIOD_2PI;

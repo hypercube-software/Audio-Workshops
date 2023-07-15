@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class AudioSine {
-    final int SAMPLE_RATE = 44100;
+    static final int SAMPLE_RATE = 44100;
 
 
     void playSine(AudioOutputDevice audioOutputDevice) {
@@ -57,23 +57,27 @@ public class AudioSine {
 
     void vco(AudioOutputDevice audioOutputDevice) {
         try {
-            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            Thread.currentThread()
+                    .setPriority(Thread.MAX_PRIORITY);
             try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, 100)) {
                 line.start();
 
-                // use our broken VCO, then try with CorrectVCO
+                // use our broken VCO, then try width CorrectVCO
                 VCA vca = new SimpleVCA(SAMPLE_RATE, 10);
                 VCO vco = new NaiveVCO(100, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
 
                 // You should ear something wrong especially for the last note
-                List.of(52, 54, 56, 57, 74).stream().map(VCO::midiNoteToFrequency).forEach(freq -> {
-                    log.info("Play frequency " + freq + " Hz");
-                    long start = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - start < 4000) {
-                        byte[] data = vco.generateSignal(freq);
-                        line.sendBuffer(data);
-                    }
-                });
+                List.of(52, 54, 56, 57, 74)
+                        .stream()
+                        .map(VCO::midiNoteToFrequency)
+                        .forEach(freq -> {
+                            log.info("Play frequency " + freq + " Hz");
+                            long start = System.currentTimeMillis();
+                            while (System.currentTimeMillis() - start < 4000) {
+                                byte[] data = vco.generateSignal(freq);
+                                line.sendBuffer(data);
+                            }
+                        });
             }
             log.info("Done");
         } catch (LineUnavailableException e) {

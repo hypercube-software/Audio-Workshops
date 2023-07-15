@@ -32,3 +32,8 @@ build/
 .vscode/
 *.pcm
 *.pkf
+
+### Downloaded audio test files ###
+/sounds/surround/
+/sounds/stereo/
+/sounds/appleloop/

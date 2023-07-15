@@ -6,6 +6,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import java.nio.ByteOrder;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class AudioOutputLine implements AutoCloseable {
     private final SourceDataLine line;
 
