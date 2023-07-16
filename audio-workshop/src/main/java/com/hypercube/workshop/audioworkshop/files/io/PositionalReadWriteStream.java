@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -176,5 +177,36 @@ public class PositionalReadWriteStream implements Closeable {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.putInt(i);
         stream.write(data);
+    }
+
+    //
+
+    /**
+     * Read a 80 bit IEEE-754 number, and convert it to double
+     *
+     * @return
+     * @throws IOException
+     * @see <a href ="https://stackoverflow.com/a/35670539">This Stackoverflow response</a>
+     */
+    public double getLongDoubleBE() throws IOException {
+        // This code is enough to read a sample rate, but does not cover all cases
+        // It doesn't round properly, doesn't check for overflow, doesn't handle unnormalized values and probably fails to handle special values like NaN.
+        long high = getShortBE();
+        long low = getLongBE();
+        long e = (((high & 0x7FFFL) - 16383) + 1023) & 0x7FFL;
+        long ld = ((high & 0x8000L) << 48)
+                | (e << 52)
+                | ((low >>> 11) & 0xF_FFFF_FFFF_FFFFL);
+        return Double.longBitsToDouble(ld);
+    }
+
+    public String getPascalString() throws IOException {
+        int count = read();
+        byte[] data = new byte[count];
+        read(data);
+        if (count % 2 != 0) {
+            read(); // padding (not included in count)
+        }
+        return new String(data, StandardCharsets.ISO_8859_1);
     }
 }

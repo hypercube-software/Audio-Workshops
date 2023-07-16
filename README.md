@@ -1,6 +1,7 @@
 # Audio/MIDI Workshops
 
-How to build a simple synthesizer in Java.
+- How to parse various audio file formats.
+- How to build a simple synthesizer in Java.
 
 | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Documentation%20build/badge.svg) | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Maven%20build/badge.svg) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |

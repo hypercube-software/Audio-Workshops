@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.files;
 
-import com.hypercube.workshop.audioworkshop.files.wav.RiffFileInfo;
-import com.hypercube.workshop.audioworkshop.files.wav.RiffReader;
+import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
+import com.hypercube.workshop.audioworkshop.files.riff.RiffReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;

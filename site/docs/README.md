@@ -1,9 +1,28 @@
-# Java workshop for Audio/MIDI
+# 
+
+![image-20230716083353500](assets/image-20230716083353500.png)
+
 # Audience
 
-This workshop is made for Java developers knowing zero about MIDI and Audio.
+This workshop is made for **Java** developers knowing zero about MIDI and Audio.
 
-We are targeting Windows OS but things should works on OSX in the same way.
+We are targeting Windows OS but things should work on OSX in the same way.
+
+We cover many subjects:
+- An overview of MIDI and Audio landscape
+- How to parse various audio file formats
+- How to receive and send MIDI data
+- How to play a sound
+- How to put everything together and make a simple synth
+
+# Why Java
+
+- C++ entry level is too high and full of deadly traps.
+- Python or Typescript are nice but too slow
+- You can achieve cool things in JDK 17+ without too much effort
+- Using the new garbage collector called [ZGC](https://www.baeldung.com/jvm-zgc-garbage-collector), you can expect to have stable real-time applications.
+- There have been many improvements in the JVM landscape, especially with [GraalVM](https://www.baeldung.com/graal-java-jit-compiler). You can now convert your Java application into a native one to compete with C++.
+- You can build very nice Desktop applications with [JavaFX](https://openjfx.io/). Nevertheless this workshop will cover only CLI applications to keep it simple.
 
 # Free Tools
 

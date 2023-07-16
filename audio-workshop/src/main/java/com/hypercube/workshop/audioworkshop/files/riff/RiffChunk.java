@@ -1,4 +1,4 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.files.exceptions.AudioParserException;
 import lombok.Getter;

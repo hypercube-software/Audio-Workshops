@@ -1,9 +1,11 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
 import com.hypercube.workshop.audioworkshop.files.exceptions.AudioParserException;
 import com.hypercube.workshop.audioworkshop.files.exceptions.SampleCountException;
+import com.hypercube.workshop.audioworkshop.files.id3.ID3Parser;
 import com.hypercube.workshop.audioworkshop.files.io.PositionalReadWriteStream;
+import com.hypercube.workshop.audioworkshop.files.meta.MetadataField;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.XMLInputFactory;
@@ -50,6 +52,10 @@ public class RiffReader {
     private int misalignedChunksCount = 0;
 
     private PositionalReadWriteStream stream = null;
+
+    private boolean isAIFF;
+
+    private boolean isAFIC;
 
     /**
      * @param srcAudio     the WAV file to parse
@@ -123,23 +129,25 @@ public class RiffReader {
             stream = new PositionalReadWriteStream(srcAudio);
 
             String riff = readChunkID();
-            if (!"RIFF".equals(riff)) {
+            if (!"RIFF".equals(riff) && !"FORM".equals(riff)) {
                 throw new AudioParserException("not a RIFF file");
             }
-            long size = stream.getUIntLE();
+            long size = "FORM".equals(riff) ? stream.getUIntBE() : stream.getUIntLE();
             long expectedTotalSize = size + 8;
             if (srcAudio.length() != expectedTotalSize) {
                 long delta = srcAudio.length() - expectedTotalSize;
-                log.warn(String.format("WAV file size 0x%X does not match RIFF size 0x%X delta: %d bytes %s",
+                log.warn(String.format("RIFF file size 0x%X does not match RIFF size 0x%X delta: %d bytes %s",
                         srcAudio.length(),
                         expectedTotalSize,
                         delta,
                         srcAudio.getAbsolutePath()));
             }
             String type = readChunkID();
-            if (!"WAVE".equals(type)) {
-                throw new AudioParserException("not a WAVE file " + srcAudio.getAbsolutePath());
+            if (!"WAVE".equals(type) && !"AIFF".equals(type) && !"AIFC".equals(type)) {
+                throw new AudioParserException("not a WAVE/AIFF file " + srcAudio.getAbsolutePath());
             }
+            isAFIC = "AIFC".equals(type);
+            isAIFF = "AIFF".equals(type) || isAFIC;
 
             for (; ; ) {
                 RiffChunk c = readChunk();
@@ -147,7 +155,7 @@ public class RiffReader {
                 info.addChunk(c);
             }
             if (misalignedChunksCount > 0) {
-                log.trace("Illegal WAV: %d misaligned chunks in %s".formatted(misalignedChunksCount, srcAudio.getAbsolutePath()));
+                log.trace("Illegal RIFF: %d misaligned chunks in %s".formatted(misalignedChunksCount, srcAudio.getAbsolutePath()));
             }
             info.getFileInfo()
                     .computeDuration();
@@ -252,7 +260,7 @@ public class RiffReader {
     private RiffChunk readChunk() throws IOException {
         String chunkId = readChunkID();
         if (chunkId == null) return null;
-        final int contentSize = stream.getIntLE();
+        final int contentSize = isAIFF ? stream.getIntBE() : stream.getIntLE();
         final int contentStart = stream.positionUInt();
         int end = contentStart + contentSize;
         log.trace(String.format("CHUNK %s : %d/0x%X bytes at 0x%X end 0x%X", chunkId, contentSize, contentSize, contentStart - 8, end));
@@ -267,7 +275,13 @@ public class RiffReader {
             case "umid" -> readUMID(riffChunk);
             case "iXML" -> readIXML(riffChunk);
             case "_PMX" -> readPMX(riffChunk);
-            case "ID3 " -> readID3(riffChunk);
+            case "ID3 ", "id3 " -> readID3(riffChunk);
+            case "COMM" -> readCOMM(riffChunk); // AIFF
+            case "SSND" -> readSSND(riffChunk); // AIFF
+            case "ANNO" -> readTEXT(riffChunk, MetadataField.DESCRIPTION); // AIFF
+            case "(c) " -> readTEXT(riffChunk, MetadataField.COPYRIGHT); // AIFF
+            case "AUTH" -> readTEXT(riffChunk, MetadataField.AUTHOR); // AIFF
+            case "NAME" -> readTEXT(riffChunk, MetadataField.NAME); // AIFF
             default -> {
                 //do nothing
             }
@@ -288,6 +302,79 @@ public class RiffReader {
         // get ready to read the next one
         moveAfterChunk(riffChunk);
         return riffChunk;
+    }
+
+    private void readTEXT(RiffChunk c, MetadataField metadataField) throws IOException {
+        byte[] data = new byte[c.getContentSize()];
+        stream.read(data);
+        if (data.length > 4 && data[0] == 'A' && data[1] == 'F' && data[2] == 's' && data[3] == 'p') {
+            // Looks like binary plist format, this is not clear to me
+            // https://en.wikipedia.org/wiki/Property_list
+            // We have a list of "key: value" strings separated by 0x00
+            String[] txt = new String(data, 4, data.length - 4, StandardCharsets.ISO_8859_1).split("%c".formatted((0)));
+            for (String kv : txt) {
+                String[] v = kv.split(":");
+                String key = v[0].trim();
+                String value = v[1].trim();
+                if (key.equals("user")) {
+                    info.getMetadata()
+                            .put(MetadataField.AUTHOR, value);
+                } else if (key.equals("program")) {
+                    info.getMetadata()
+                            .put(MetadataField.SOFTWARE, value);
+                } else if (key.equals("date")) {
+                    info.getMetadata()
+                            .put(MetadataField.CREATED, value);
+                }
+            }
+        } else {
+            String txt = new String(data, StandardCharsets.ISO_8859_1);
+            info.getMetadata()
+                    .put(metadataField, txt);
+        }
+    }
+
+    private void readSSND(RiffChunk c) throws IOException {
+        int offset = stream.getIntBE();
+        int blockSize = stream.getIntBE();
+        info.getFileInfo()
+                .setNbAudioBytes(c.getContentSize() - offset);
+    }
+
+    private void readCOMM(RiffChunk riffChunk) throws IOException {
+        int numChannels = stream.getShortBE();
+        int numSampleFrames = stream.getIntBE();
+        int sampleSize = stream.getShortBE();
+        double sampleRate = stream.getLongDoubleBE();
+        if (isAFIC) {
+            String compressionType = readChunkID();
+            String compressionName = stream.getPascalString();
+            // convert the AIFF codec id to WAVE codec id
+            switch (compressionType) {
+                case "NONE", "sowt" -> info.getFileInfo()
+                        .setCodec(WaveCodecs.PCM);
+                case "fl32", "FL32", "fl64" -> info.getFileInfo()
+                        .setCodec(WaveCodecs.IEEE754_FLOAT);
+                case "alaw", "ALAW" -> info.getFileInfo()
+                        .setCodec(WaveCodecs.ITU_G711_ALAW);
+                case "ulaw", "ULAW" -> info.getFileInfo()
+                        .setCodec(WaveCodecs.ITU_G711_ULAW);
+                default -> info.getFileInfo()
+                        .setCodec(WaveCodecs.UNKNOWN);
+            }
+        } else {
+            info.getFileInfo()
+                    .setCodec(WaveCodecs.PCM);
+        }
+        info.getFileInfo()
+                .setBitPerSample(sampleSize);
+        info.getFileInfo()
+                .setSampleRate((int) sampleRate);
+        info.getFileInfo()
+                .setNbChannels(numChannels);
+        info.getFileInfo()
+                .setBytePerSample((sampleSize / 8) * numChannels);
+
     }
 
     private void moveAfterChunk(RiffChunk c) throws IOException {
@@ -340,6 +427,11 @@ public class RiffReader {
      * @throws SampleCountException if the count is wrong
      */
     private void checkSampleCount() throws SampleCountException {
+        if (!info.getCodecString()
+                .contains("PCM")) {
+            return; // the data size depend on the compression, so we can't check anything
+        }
+
         long dataChunkSize = (info.getFileInfo()
                 .getNbAudioBytes()) & 0xFFFFFFFFL;
         long partialSample = dataChunkSize % info.getFileInfo()
@@ -380,11 +472,14 @@ public class RiffReader {
 
     // https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.2.html#id3v2-overview
     private void readID3(RiffChunk c) throws IOException {
-        String id = readFixedASCIIStringAndClean(3, true);
-        int versionMajor = stream.getByte();
-        int versionMinor = stream.getByte();
-        int flag = stream.getByte();
-        log.trace(String.format("ID3 v%d.%d", versionMajor, versionMinor));
+        byte[] data = new byte[c.getContentSize()];
+        stream.read(data);
+        ID3Parser id3 = new ID3Parser(data);
+        var id3Info = id3.parse();
+        if (info != null) {
+            info.getMetadata()
+                    .merge(id3Info.getMetadata());
+        }
     }
 
     // https://www.adobe.com/products/xmp.html

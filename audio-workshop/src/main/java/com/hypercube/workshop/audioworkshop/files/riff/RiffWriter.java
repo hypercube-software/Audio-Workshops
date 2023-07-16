@@ -1,4 +1,4 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.files.io.SeekableBinaryOutputStream;
 import lombok.extern.slf4j.Slf4j;

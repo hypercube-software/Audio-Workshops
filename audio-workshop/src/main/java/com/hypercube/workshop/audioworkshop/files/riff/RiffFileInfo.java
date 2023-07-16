@@ -1,5 +1,6 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.riff;
 
+import com.hypercube.workshop.audioworkshop.files.meta.AudioMetadata;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -14,12 +15,12 @@ public class RiffFileInfo {
 
     private final List<RiffChunk> chunks = new ArrayList<>();
     private final RiffAudioInfo fileInfo = new RiffAudioInfo();
-    private final RiffMetadata metadata = new RiffMetadata();
+    private final AudioMetadata metadata = new AudioMetadata();
 
     public void setFilename(String filename) {
         this.filename = filename;
     }
-    
+
     public void setProlog(byte[] prolog) {
         this.prolog = prolog;
     }
@@ -49,8 +50,20 @@ public class RiffFileInfo {
     }
 
     public String getCodecString() {
-        return getFileInfo().getCodec() + (getFileInfo().getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE ? " " + getFileInfo().getSubCodec()
-                .toString() : "");
+        String subCodecString = "";
+        if (getFileInfo().getSubCodec() != null) {
+            if (getFileInfo().getSubCodec()
+                    .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_BE)) {
+                subCodecString = "PCM_BE";
+            } else if (getFileInfo().getSubCodec()
+                    .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE)) {
+                subCodecString = "PCM_LE";
+            } else {
+                subCodecString = getFileInfo().getSubCodec()
+                        .toString();
+            }
+        }
+        return getFileInfo().getCodec() + (getFileInfo().getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE ? " " + subCodecString : "");
     }
 
     public void addChunk(RiffChunk chunk) {
@@ -62,7 +75,12 @@ public class RiffFileInfo {
     }
 
     public RiffChunk getDataChunk() {
-        return getChunk("data");
+        RiffChunk data = getChunk("data"); // WAV files
+        if (data == null) {
+            return getChunk("SSND"); // AIFF files
+        } else {
+            return data;
+        }
     }
 
     public List<RiffChunk> getListChunks() {

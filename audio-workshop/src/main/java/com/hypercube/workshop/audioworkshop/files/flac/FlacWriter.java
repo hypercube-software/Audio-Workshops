@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.files.flac;
 
 import com.hypercube.workshop.audioworkshop.files.io.SeekableBinaryOutputStream;
-import com.hypercube.workshop.audioworkshop.files.wav.RiffFileInfo;
+import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;

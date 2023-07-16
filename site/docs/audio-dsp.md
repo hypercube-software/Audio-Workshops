@@ -190,6 +190,8 @@ But it is not as easy at it seems after all:
 - Each audio format use a specific endianness, none of them write it in their header.
 - You also need to know if the samples are **signed** or not (they are most of the time).
 
+💡 The repository contains source code to parse various audio file formats. Take a look in `audio-workshop/src/main/java/com/hypercube/workshop/audioworkshop/files` and its dedicated page [here](audio-formats.md).
+
 ## *.pcm
 
 This is not really a file format since there is no header. It contains only the samples so if you load that in a software, it will ask you which sample rate, bit depth and endianness must be used.
@@ -212,6 +214,20 @@ The standard on OSX. Same thing than WAV.
 - The Java API can do it for you, but it is fun to write your own reader/writer
 - The endianness is **Big Endian**
 - Samples are always **Signed**.
+
+## Lossless formats
+
+A lossless format compress the audio data without altering the original quality. It's like you zip a WAV file in a very efficient way dedicated to audio data. The decompressed file is exactly like the original one.
+
+Among them: FLAC, WavPack, APE
+
+## Lossy formats
+
+There is also tons of lossy formats. It means the compression does not retain the full quality of the original file. 
+
+Among them: AAC, MP3, MP4A, OGG, MPC
+
+⚠️ It is possible to put lossy audio data inside a WAV/AIFF file specifiying the right codec. In this workshop we only use uncompressed PCM codec.
 
 ## Channels
 

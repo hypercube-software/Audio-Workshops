@@ -1,4 +1,4 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.riff;
 
 import lombok.Getter;
 import lombok.Setter;

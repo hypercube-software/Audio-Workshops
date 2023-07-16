@@ -1,4 +1,4 @@
-package com.hypercube.workshop.audioworkshop.files.wav;
+package com.hypercube.workshop.audioworkshop.files.meta;
 
 public enum MetadataField {
     DESCRIPTION,
@@ -12,5 +12,9 @@ public enum MetadataField {
     COPYRIGHT,
     SOFTWARE,
     CREATED,
-    KEY
+    KEY,
+    NAME,
+    ALBUM,
+    YEAR,
+    AUTHOR
 }
