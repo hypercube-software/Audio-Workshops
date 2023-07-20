@@ -1,5 +1,7 @@
 package com.hypercube.workshop.audioworkshop.files.io;
 
+import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -7,13 +9,15 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
+import java.util.regex.Matcher;
 
 /**
  * Class used to load or write various audio file formats
  * <p>
- * - We provide the ability to read and write "Unsigned int" because it is often usefull
+ * - We provide the ability to read and write "Unsigned int" because it is often useful
  * despite the fact Java does not support this kind of type.
- * - We also support indianness using ByteBuffer
+ * - We also support endianness using ByteBuffer
  */
 public class PositionalReadWriteStream implements Closeable {
 
@@ -35,6 +39,51 @@ public class PositionalReadWriteStream implements Closeable {
         }
         stream = new RandomAccessFile(file, "rw");
         channel = stream.getChannel();
+    }
+
+    public UUID getUUID() throws IOException {
+        // https://devblogs.microsoft.com/oldnewthing/20220928-00/?p=107221
+        int time_low = getIntLE();
+        int time_mid = getShortLE();
+        int time_hi_and_version = getShortLE();
+        int clock_seq_hi_and_reserved = getByte();
+        int cloc_seq_low = getByte();
+        byte node[] = new byte[6];
+        stream.readFully(node);
+        String UUIDStr = String.format("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+                time_low, time_mid, time_hi_and_version, clock_seq_hi_and_reserved, cloc_seq_low
+                , node[0], node[1], node[2], node[3], node[4], node[5]);
+        return UUID.fromString(UUIDStr);
+    }
+
+    public void putUUID(UUID uuid) throws IOException {
+        // https://devblogs.microsoft.com/oldnewthing/20220928-00/?p=107221
+        Matcher m = CachedRegExp.get("([^- ]{8})-([^- ]{4})-([^- ]{4})-([^- ]{2})([^- ]{2})-([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})", uuid.toString());
+        if (m.find()) {
+            int time_low = Integer.parseInt(m.group(1), 16);
+            int time_mid = Integer.parseInt(m.group(2), 16);
+            int time_hi_and_version = Integer.parseInt(m.group(3), 16);
+            int clock_seq_hi_and_reserved = Integer.parseInt(m.group(4), 16);
+            int clock_seq_low = Integer.parseInt(m.group(5), 16);
+            int node0 = Integer.parseInt(m.group(6), 16);
+            int node1 = Integer.parseInt(m.group(7), 16);
+            int node2 = Integer.parseInt(m.group(8), 16);
+            int node3 = Integer.parseInt(m.group(9), 16);
+            int node4 = Integer.parseInt(m.group(10), 16);
+            int node5 = Integer.parseInt(m.group(11), 16);
+
+            putIntLE(time_low);
+            putShortLE((short) time_mid);
+            putShortLE((short) time_hi_and_version);
+            putByte(clock_seq_hi_and_reserved);
+            putByte(clock_seq_low);
+            putByte(node0);
+            putByte(node1);
+            putByte(node2);
+            putByte(node3);
+            putByte(node4);
+            putByte(node5);
+        }
     }
 
     public int getIntBE() throws IOException {
@@ -179,6 +228,25 @@ public class PositionalReadWriteStream implements Closeable {
         stream.write(data);
     }
 
+    public void putByte(int v) throws IOException {
+        stream.write(v);
+    }
+
+    public void putShortLE(short i) throws IOException {
+        byte[] data = new byte[2];
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.putShort(i);
+        stream.write(data);
+    }
+
+    public void putShortBE(short i) throws IOException {
+        byte[] data = new byte[2];
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        bb.order(ByteOrder.BIG_ENDIAN);
+        bb.putShort(i);
+        stream.write(data);
+    }
     //
 
     /**

@@ -60,13 +60,13 @@ class RiffReaderTest {
     }
 
     List<FormatAssert> surroundAsserts = List.of(
-            new FormatAssert("SBR_LFETest5_1-441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:45", List.of()),
-            new FormatAssert("ChID-BLITS-EBU-Narration441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:46", List.of()),
-            new FormatAssert("7.1auditionOutLeader v2.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,data,afsp,LIST,_PMX", 8, 16, 48000, "00:00:31", List.of()),
-            new FormatAssert("Nums_7dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,data", 8, 24, 48000, "00:00:09", List.of()),
-            new FormatAssert("Nums_5dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,data", 6, 24, 48000, "00:00:09", List.of()),
-            new FormatAssert("6_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,cue,data", 6, 16, 44100, "00:00:05", List.of()),
-            new FormatAssert("8_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE, "fmt,cue,data", 8, 24, 48000, "00:00:08", List.of()));
+            new FormatAssert("SBR_LFETest5_1-441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:45", List.of()),
+            new FormatAssert("ChID-BLITS-EBU-Narration441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:46", List.of()),
+            new FormatAssert("7.1auditionOutLeader v2.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,afsp,LIST,_PMX", 8, 16, 48000, "00:00:31", List.of()),
+            new FormatAssert("Nums_7dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 8, 24, 48000, "00:00:09", List.of()),
+            new FormatAssert("Nums_5dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 6, 24, 48000, "00:00:09", List.of()),
+            new FormatAssert("6_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 6, 16, 44100, "00:00:05", List.of()),
+            new FormatAssert("8_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 8, 24, 48000, "00:00:08", List.of()));
     List<FormatAssert> stereoAsserts = List.of(
             new FormatAssert("../forest.wav", "PCM", null, "fmt,data,LIST,id3", 1, 8, 48000, "00:00:09",
                     List.of(new MetadataAssert(MetadataField.CREATED, "2023"),

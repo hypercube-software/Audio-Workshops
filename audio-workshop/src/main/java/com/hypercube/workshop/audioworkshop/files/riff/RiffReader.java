@@ -14,7 +14,10 @@ import java.io.*;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.zip.GZIPOutputStream;
 
@@ -818,11 +821,8 @@ public class RiffReader {
             int channelMask = stream.getIntLE();
             info.getFileInfo()
                     .setChannelsMask(channelMask);
-            // UUID are always in BIG ENDIAN
-            long u1 = stream.getLongBE();
-            long u2 = stream.getLongBE();
             info.getFileInfo()
-                    .setSubCodec(new UUID(u1, u2));
+                    .setSubCodec(stream.getUUID());
         }
         info.getFileInfo()
                 .setBitPerSample(wBitsPerSample);

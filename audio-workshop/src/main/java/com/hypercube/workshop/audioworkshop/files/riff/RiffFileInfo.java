@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class RiffFileInfo {
@@ -31,13 +32,10 @@ public class RiffFileInfo {
     }
 
     public boolean isPCM() {
+        UUID subCodec = getFileInfo().getSubCodec();
         return getFileInfo().getCodec() == WaveCodecs.PCM ||
                 (getFileInfo().getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE
-                        && (getFileInfo().getSubCodec()
-                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_BE)
-                        || getFileInfo().getSubCodec()
-                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE)
-                )
+                        && WaveGUIDCodecs.PCM_CODECS.contains(subCodec)
                 );
     }
 
@@ -45,23 +43,15 @@ public class RiffFileInfo {
         return getFileInfo().getCodec() == WaveCodecs.IEEE754_FLOAT ||
                 (getFileInfo().getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE
                         && getFileInfo().getSubCodec()
-                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_IEEE754_FLOAT)
+                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_IEEE754_LE_FLOAT)
                 );
     }
 
     public String getCodecString() {
         String subCodecString = "";
         if (getFileInfo().getSubCodec() != null) {
-            if (getFileInfo().getSubCodec()
-                    .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_BE)) {
-                subCodecString = "PCM_BE";
-            } else if (getFileInfo().getSubCodec()
-                    .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_PCM_LE)) {
-                subCodecString = "PCM_LE";
-            } else {
-                subCodecString = getFileInfo().getSubCodec()
-                        .toString();
-            }
+            subCodecString = getFileInfo().getSubCodec()
+                    .toString();
         }
         return getFileInfo().getCodec() + (getFileInfo().getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE ? " " + subCodecString : "");
     }
