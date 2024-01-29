@@ -1,11 +1,14 @@
 package com.hypercube.workshop.audioworkshop.files.flac.meta;
 
 import com.hypercube.workshop.audioworkshop.files.flac.FlacBlockType;
+import lombok.Getter;
 
 public class FlacMetadata {
-    final protected byte[] block;
-    final protected boolean isLatest;
-    final protected FlacBlockType type;
+    @Getter
+    protected final byte[] block;
+    protected final boolean isLatest;
+    @Getter
+    protected final FlacBlockType type;
 
     public FlacMetadata(FlacBlockType type, byte[] block, boolean isLatest) {
         super();
@@ -14,15 +17,8 @@ public class FlacMetadata {
         this.isLatest = isLatest;
     }
 
-    public byte[] getBlock() {
-        return block;
-    }
-
     public boolean isLatest() {
         return isLatest;
     }
 
-    public FlacBlockType getType() {
-        return type;
-    }
 }

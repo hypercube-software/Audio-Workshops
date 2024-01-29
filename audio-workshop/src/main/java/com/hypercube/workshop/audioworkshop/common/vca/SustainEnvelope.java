@@ -16,6 +16,7 @@ public class SustainEnvelope implements Envelope {
 
     @Override
     public void reset() {
+        // Nothing to do
     }
 
     @Override

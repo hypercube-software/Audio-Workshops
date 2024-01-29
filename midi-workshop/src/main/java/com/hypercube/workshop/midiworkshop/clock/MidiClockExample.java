@@ -6,18 +6,15 @@ import com.hypercube.workshop.midiworkshop.common.seq.TimeSignature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Slf4j
 @Component
 public class MidiClockExample {
 
-    private MidiClock clock;
-
-    private MidiOutDevice midiOut;
-
-
     void startClock(MidiClockType clockType, MidiOutDevice out, int tempo) {
-        MidiClock clock = clockType == MidiClockType.SEQ ? new SequencerBasedMidiClock(out) : new TimerBasedMidiClock(out);
-        try {
+
+        try (MidiClock clock = clockType == MidiClockType.SEQ ? new SequencerBasedMidiClock(out) : new TimerBasedMidiClock(out)) {
 
             TimeSignature ts = new TimeSignature(3, 4);
             MidiPosition pos = new MidiPosition(ts);
@@ -32,11 +29,11 @@ public class MidiClockExample {
                 }
                 currentTickPosition++;
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
             if (e.getCause() instanceof InterruptedException)
                 return;
             log.error("Unexpected error", e);
         }
-        clock.stop();
+
     }
 }

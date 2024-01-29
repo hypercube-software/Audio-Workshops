@@ -4,19 +4,22 @@ our very first code to generate sound
 
 # Java Audio API
 
-The Java Audio API is in the package `avax.sound` and it is provided by the JDK. There is no need to use an external library.
+The Java Audio API is in the package `avax.sound` and it is provided by the JDK. There is no need to use an external
+library.
 
 ## Wrap it !
 
 In the same spirit of the Midi workshop, we are going to wrap the API around our own classes.
 
-The Java Audio API use the class `Mixer.Info` to represent an Audio device. This is not really clear to understand so we wrap it in two classes: `AudioInputDevice` and `AudioOutputDevice`. Both classes inherit from `AbstractAudioDevice` which is just a placeholder for `Mixer.Info`
+The Java Audio API use the class `Mixer.Info` to represent an Audio device. This is not really clear to understand so we
+wrap it in two classes: `AudioInputDevice` and `AudioOutputDevice`. Both classes inherit from `AbstractAudioDevice`
+which is just a placeholder for `Mixer.Info`
 
 ## Clip
 
 The Java Audio API provides a simple way to play something through an audio device using the the class `Clip`.
 
-- First you ask to the API to give you an empty Clip for a specific  `Mixer.Info` 
+- First you ask to the API to give you an empty Clip for a specific  `Mixer.Info`
 - Then you feed the clip with whatever you want: An Audio file, or raw audio buffers with PCM samples
 - Finally you ask to the Clip to play or loop
 - You have to wait an event `LineEvent.Type.STOP`  to know when to stop
@@ -25,23 +28,28 @@ That's all !
 
 ## AudioOutputLine
 
-There is a more "low level" way to play a sound which is perfect when you want to create a synth. The idea is that you send multiple audio buffers to `AudioOutputLine` in real time and let Java Audio API send this at the proper speed to the sound card. You don't have to deal with synchronization. You just have to go fast to generate your buffers.
+There is a more "low level" way to play a sound which is perfect when you want to create a synth. The idea is that you
+send multiple audio buffers to `AudioOutputLine` in real time and let Java Audio API send this at the proper speed to
+the sound card. You don't have to deal with synchronization. You just have to go fast to generate your buffers.
 
 # Requirements
 
 ## VB-Cable
 
-This is a free virtual audio cable by VB-Audio. Download it from [here](https://vb-audio.com/Cable/). In this way we can send what we generate to any audio application like Element.
+This is a free virtual audio cable by VB-Audio. Download it from [here](https://vb-audio.com/Cable/). In this way we can
+send what we generate to any audio application like Element.
 
 ⚠️ You need to run `VBCABLE_Setup_x64.exe` as Administrator.
 
 ## ASIO4All
 
-This is a low latency audio driver capable of aggregating multiple audio devices in one. It will be used by Element. Download it from [here](https://www.asio4all.org/).
+This is a low latency audio driver capable of aggregating multiple audio devices in one. It will be used by Element.
+Download it from [here](https://www.asio4all.org/).
 
 ## Element
 
-This is a simple VST host that we will use to modify our generated sounds. Download it from the Kushview site [here](https://kushview.net/element/).
+This is a simple VST host that we will use to modify our generated sounds. Download it from the Kushview
+site [here](https://kushview.net/element/).
 
 ## MFreeFXBundle
 
@@ -72,11 +80,11 @@ OUTPUT Device "Speakers (High Definition Audio Device)"
 OUTPUT Device "CABLE Input (VB-Audio Virtual Cable)"
 ```
 
- As you can see, VB-Audio devices are bidirectional, it's because they are virtual cables.
+As you can see, VB-Audio devices are bidirectional, it's because they are virtual cables.
 
 ## file
 
-This Spring shell command play a simple WAV file. 
+This Spring shell command play a simple WAV file.
 
 ```bash
 >java -jar target\audio-workshop-0.0.1-SNAPSHOT.jar file -o "Primary Sound Driver" -f "sounds/forest.wav" -l 2
@@ -89,7 +97,8 @@ BitDepth   : 8
 Take a look on the method `AudioOutputDevice::play`
 
 - We use `AudioInputStream` to load the file
-- This class extract all the important informations: **sample rate**, **bit depth**, **channel count** and the **codec** (`PCM_UNSIGNED`).
+- This class extract all the important informations: **sample rate**, **bit depth**, **channel count** and the **codec
+  ** (`PCM_UNSIGNED`).
 - Then we play the file `loopCount` times.
 
 ```java
@@ -210,7 +219,8 @@ The `gain` is just a value in the range [0,1] multiplied to the sample value gen
 
 ## vco
 
-This Spring shell command play various notes with our VCO using another technique. We are using a `AudioOutputLine` instead of `Clip`. We are really really close to make a synth. The MIDI is not there for now.
+This Spring shell command play various notes with our VCO using another technique. We are using a `AudioOutputLine`
+instead of `Clip`. We are really really close to make a synth. The MIDI is not there for now.
 
 ```java
 >java -jar target\audio-workshop-0.0.1-SNAPSHOT.jar vco ine -o "Primary Sound Driver"
@@ -223,7 +233,8 @@ Done
 
 ## Discontinuity
 
-If you listen carefully, there is a repeating "click" in our naive VCO, it is related to a **discontinuity** in the signal. This is related to a lack of precision in our calculations.
+If you listen carefully, there is a repeating "click" in our naive VCO, it is related to a **discontinuity** in the
+signal. This is related to a lack of precision in our calculations.
 
 ![image-20230326182346126](assets/image-20230326182346126.png)
 

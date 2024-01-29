@@ -21,17 +21,26 @@ public class MidiMonitor {
     }
 
     private void onMidiEvent(CustomMidiEvent evt) {
-        if (evt.getMessage().getStatus() == ShortMessage.NOTE_ON) {
-            MidiNote note = MidiNote.fromValue(evt.getMessage().getMessage()[1]);
-            int velocity = evt.getMessage().getMessage()[2];
+        if (evt.getMessage()
+                .getStatus() == ShortMessage.NOTE_ON) {
+            MidiNote note = MidiNote.fromValue(evt.getMessage()
+                    .getMessage()[1]);
+            int velocity = evt.getMessage()
+                    .getMessage()[2];
             log.info("MIDI: " + evt.getHexValues() + " Note ON:" + note.name() + " Velocity: " + velocity);
-        } else if (evt.getMessage().getStatus() == ShortMessage.NOTE_OFF) {
-            MidiNote note = MidiNote.fromValue(evt.getMessage().getMessage()[1]);
-            int velocity = evt.getMessage().getMessage()[2];
+        } else if (evt.getMessage()
+                .getStatus() == ShortMessage.NOTE_OFF) {
+            MidiNote note = MidiNote.fromValue(evt.getMessage()
+                    .getMessage()[1]);
+            int velocity = evt.getMessage()
+                    .getMessage()[2];
             log.info("MIDI: " + evt.getHexValues() + " Note OFF:" + note.name() + " Velocity: " + velocity);
-        } else if (evt.getMessage().getStatus() == ShortMessage.CONTROL_CHANGE) {
-            MidiControl ctrl = MidiControl.fromId(evt.getMessage().getMessage()[1]);
-            int value = evt.getMessage().getMessage()[2];
+        } else if (evt.getMessage()
+                .getStatus() == ShortMessage.CONTROL_CHANGE) {
+            MidiControl ctrl = MidiControl.fromId(evt.getMessage()
+                    .getMessage()[1]);
+            int value = evt.getMessage()
+                    .getMessage()[2];
             log.info("MIDI: " + evt.getHexValues() + " Control Change:" + ctrl.name() + " Value: " + value);
         } else {
             log.info("MIDI: " + evt.getHexValues());

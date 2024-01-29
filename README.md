@@ -4,11 +4,11 @@
 - How to build a simple synthesizer in Java.
 
 | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Documentation%20build/badge.svg) | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Maven%20build/badge.svg) |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
+|-----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
 
-⚠️ **This project is not complete yet**: 
+⚠️ **This project is not complete yet**:
 
-- Filters are not implemented yet 
+- Filters are not implemented yet
 - ADSR envelopes are still in early stages.
 - The documentation does not cover all the code yet.
 

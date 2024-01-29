@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.utils;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -41,7 +42,7 @@ public class AudioTestFileDownloader {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
 
     }

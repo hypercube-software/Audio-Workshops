@@ -13,5 +13,5 @@ public interface MidiClock extends Closeable {
 
     int getResolutionPPQ();
 
-    public static int MIDI_CLOCK_RESOLUTION_PPQ = 24;
+    int MIDI_CLOCK_RESOLUTION_PPQ = 24;
 }

@@ -3,16 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-		<groupId>com.hypercube.workshop</groupId>
-		<artifactId>audio-workshop-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+        <groupId>com.hypercube.workshop</groupId>
+        <artifactId>audio-workshop-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <groupId>com.hypercube.workshop</groupId>
     <artifactId>midi-workshop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>midi-workshop</name>
-    <description>Demo project to learn MIDI in Java</description>    
+    <description>Demo project to learn MIDI in Java</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -33,7 +33,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>   
+    </dependencies>
 
     <build>
         <plugins>
@@ -62,11 +62,19 @@
                         <configuration>
                             <classifier>client</classifier>
                             <includes>
-                                <include>**/common/*</include>
+                                <include>**/common/**</include>
                             </includes>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

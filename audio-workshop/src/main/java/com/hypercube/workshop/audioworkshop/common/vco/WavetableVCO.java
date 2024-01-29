@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.vco;
 
+import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +10,7 @@ import java.nio.ByteOrder;
 @SuppressWarnings("FieldCanBeLocal")
 @Slf4j
 public class WavetableVCO extends VCO {
-    private final int WAVETABLE_LENGTH = 64;
+    private static final int WAVETABLE_LENGTH = 64;
 
     private final double[] wavetable;
 
@@ -25,8 +26,8 @@ public class WavetableVCO extends VCO {
         index = 0;
         wavetable = new double[WAVETABLE_LENGTH];
         switch (wavetableType) {
-            default:
-                generateSine(wavetable);
+            case SINE -> generateSine(wavetable);
+            default -> throw new AudioError("wave table type currently not Implemented:" + wavetableType);
         }
     }
 

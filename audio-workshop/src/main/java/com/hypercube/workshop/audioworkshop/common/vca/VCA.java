@@ -30,7 +30,7 @@ public abstract class VCA {
      * @param amplitude in the range [0,1]
      * @return decibel in the range [0,20]
      */
-    public static double AmplitudeTodB(double amplitude) {
+    public static double amplitudeTodB(double amplitude) {
         return 20.d * Math.log10(amplitude);
     }
 }

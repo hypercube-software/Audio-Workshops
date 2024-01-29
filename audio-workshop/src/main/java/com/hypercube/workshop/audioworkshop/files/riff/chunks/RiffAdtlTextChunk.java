@@ -1,4 +1,4 @@
-package com.hypercube.workshop.audioworkshop.files.riff;
+package com.hypercube.workshop.audioworkshop.files.riff.chunks;
 
 import lombok.Getter;
 
@@ -11,8 +11,8 @@ public class RiffAdtlTextChunk extends RiffAdtlLabelChunk {
     private final int dialect;
     private final int codePage;
 
-    public RiffAdtlTextChunk(String id, int contentStart, int contentSize, int cuePointId, String value, int sampleLength, String purposeId, int countryId, int language, int dialect, int codePage) {
-        super(id, contentStart, contentSize, cuePointId, value);
+    public RiffAdtlTextChunk(RiffChunk parent, String id, int contentStart, int contentSize, int cuePointId, String value, int sampleLength, String purposeId, int countryId, int language, int dialect, int codePage) {
+        super(parent, id, contentStart, contentSize, cuePointId, value);
         this.sampleLength = sampleLength;
         this.purposeId = purposeId;
         this.countryId = countryId;

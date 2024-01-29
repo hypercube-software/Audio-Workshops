@@ -6,13 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
+
 /**
  * The ID3 spec is known to be awful, so hang-on!
- *
+ * <p>
  * References:
- * https://gigamonkeys.com/book/practical-an-id3-parser.html
+ * <a href="https://gigamonkeys.com/book/practical-an-id3-parser.html">practical-an-id3-parser.html</a>
  */
+@Slf4j
+@SuppressWarnings({"java:S1481", "java:S1854"})
 public class ID3Parser {
 
     public static final String TALB_ALBUM = "TALB";
@@ -103,12 +105,12 @@ public class ID3Parser {
             int frameSize = getSyncSafeInteger();
             int flag1 = getByte();
             int flag2 = getByte();
-            byte[] data = new byte[frameSize];
-            b.get(data);
-            String strContent = readTextFrame(frameID, data);
+            byte[] frameData = new byte[frameSize];
+            b.get(frameData);
+            String strContent = readTextFrame(frameID, frameData);
             log.trace("{} of size {} bytes {}", frameID, frameSize, strContent);
             info.getFrames()
-                    .put(frameID, new ID3Frame(frameID, flag1, flag2, data, strContent));
+                    .put(frameID, new ID3Frame(frameID, flag1, flag2, frameData, strContent));
         }
         extractMetadata(info);
         return info;

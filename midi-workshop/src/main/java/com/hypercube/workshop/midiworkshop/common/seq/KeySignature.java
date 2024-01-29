@@ -10,11 +10,11 @@ import java.util.List;
  * @see <a href="https://en.wikipedia.org/wiki/Key_signature"></a>
  */
 public record KeySignature(int alterations, boolean major) {
-    private static List<String> majorSharpScales = List.of("C", "G", "D", "A", "E", "B", "F#", "C#");
-    private static List<String> majorFlatScales = List.of("C", "F", "Bb", "Eb", "Ab", "Db", "Gb", "Cb");
+    private static final List<String> majorSharpScales = List.of("C", "G", "D", "A", "E", "B", "F#", "C#");
+    private static final List<String> majorFlatScales = List.of("C", "F", "Bb", "Eb", "Ab", "Db", "Gb", "Cb");
 
-    private static List<String> minorSharpScales = List.of("A", "E", "B", "F#", "C#", "G#", "D#", "A#");
-    private static List<String> minorFlatScales = List.of("A", "D", "G", "C", "F", "Bb", "Eb", "Ab");
+    private static final List<String> minorSharpScales = List.of("A", "E", "B", "F#", "C#", "G#", "D#", "A#");
+    private static final List<String> minorFlatScales = List.of("A", "D", "G", "C", "F", "Bb", "Eb", "Ab");
 
     @Override
     public String toString() {

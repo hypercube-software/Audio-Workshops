@@ -1,11 +1,14 @@
 package com.hypercube.workshop.audioworkshop.common;
 
+import lombok.Getter;
+
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class AudioDeviceManager {
     private final List<AudioInputDevice> inputs = new ArrayList<>();
     private final List<AudioOutputDevice> outputs = new ArrayList<>();
@@ -23,11 +26,4 @@ public class AudioDeviceManager {
         }
     }
 
-    public List<AudioInputDevice> getInputs() {
-        return inputs;
-    }
-
-    public List<AudioOutputDevice> getOutputs() {
-        return outputs;
-    }
 }

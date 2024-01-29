@@ -1,4 +1,4 @@
-# 
+#  
 
 ![image-20230716083353500](assets/image-20230716083353500.png)
 
@@ -9,6 +9,7 @@ This workshop is made for **Java** developers knowing zero about MIDI and Audio.
 We are targeting Windows OS but things should work on OSX in the same way.
 
 We cover many subjects:
+
 - An overview of MIDI and Audio landscape
 - How to parse various audio file formats
 - How to receive and send MIDI data
@@ -20,13 +21,17 @@ We cover many subjects:
 - C++ entry level is too high and full of deadly traps.
 - Python or Typescript are nice but too slow
 - You can achieve cool things in JDK 17+ without too much effort
-- Using the new garbage collector called [ZGC](https://www.baeldung.com/jvm-zgc-garbage-collector), you can expect to have stable real-time applications.
-- There have been many improvements in the JVM landscape, especially with [GraalVM](https://www.baeldung.com/graal-java-jit-compiler). You can now convert your Java application into a native one to compete with C++.
-- You can build very nice Desktop applications with [JavaFX](https://openjfx.io/). Nevertheless this workshop will cover only CLI applications to keep it simple.
+- Using the new garbage collector called [ZGC](https://www.baeldung.com/jvm-zgc-garbage-collector), you can expect to
+  have stable real-time applications.
+- There have been many improvements in the JVM landscape, especially
+  with [GraalVM](https://www.baeldung.com/graal-java-jit-compiler). You can now convert your Java application into a
+  native one to compete with C++.
+- You can build very nice Desktop applications with [JavaFX](https://openjfx.io/). Nevertheless this workshop will cover
+  only CLI applications to keep it simple.
 
 # Free Tools
 
-Depending on what you want to achieve, some tools will be required. 
+Depending on what you want to achieve, some tools will be required.
 
 ⚠️ Don't install all of this right now !
 
@@ -36,7 +41,8 @@ Depending on what you want to achieve, some tools will be required.
 - A Virtual MIDI Keyboard: [VMPK](https://vmpk.sourceforge.io/)
 - A VST Host: [Cantabile](https://www.cantabilesoftware.com/), [KushView Element](https://kushview.net/)
 - An ASIO Driver for the VST Host: [ASIO4All](https://www.asio4all.org/)
-- Some VST Instruments: [Odin 2](https://www.thewavewarden.com/odin2), [SurgeXT](https://surge-synthesizer.github.io/), [Vital](https://vital.audio/), [TripleCheese](https://u-he.com/products/triplecheese/), [Decent Sampler](https://www.decentsamples.com/product/decent-sampler-plugin/),[TAL-U-No-62](https://tal-software.com/products/tal-u-no-62)
+- Some VST
+  Instruments: [Odin 2](https://www.thewavewarden.com/odin2), [SurgeXT](https://surge-synthesizer.github.io/), [Vital](https://vital.audio/), [TripleCheese](https://u-he.com/products/triplecheese/), [Decent Sampler](https://www.decentsamples.com/product/decent-sampler-plugin/),[TAL-U-No-62](https://tal-software.com/products/tal-u-no-62)
 - A DAW: [Bandlab Cakewalk](https://www.bandlab.com/products/cakewalk)
 - An audio Editor: [Ocenaudio](https://www.ocenaudio.com/), [Audacity](https://www.audacityteam.org/)
 
@@ -62,4 +68,5 @@ You can also download sounds for free:
 
 # Banners
 
-Banners are generated with [Spring Boot Banner generator](https://devops.datenkollektiv.de/banner.txt/index.html) using the font `standard`.
+Banners are generated with [Spring Boot Banner generator](https://devops.datenkollektiv.de/banner.txt/index.html) using
+the font `standard`.

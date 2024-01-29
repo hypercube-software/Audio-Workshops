@@ -27,15 +27,21 @@ public class CustomMidiEvent extends MidiEvent {
     @Override
     public String toString() {
         var message = getMessage();
-        if (message instanceof ShortMessage) {
-            if (((ShortMessage) message).getCommand() == ShortMessage.NOTE_ON) {
-                MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
-                return String.format("%s Note ON: %s 0x%02X(%d)", getHexValues(), note.name(), note.value(), note.value());
-            } else if (((ShortMessage) message).getCommand() == ShortMessage.NOTE_OFF) {
-                MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
-                return String.format("%s Note OFF: %s 0x%02X(%d)", getHexValues(), note.name(), note.value(), note.value());
+        switch (message) {
+            case ShortMessage shortMessage: {
+                if (shortMessage.getCommand() == ShortMessage.NOTE_ON) {
+                    MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
+                    return "%s Note ON: %s 0x%02X(%d)".formatted(getHexValues(), note.name(), note.value(), note.value());
+                } else if (shortMessage.getCommand() == ShortMessage.NOTE_OFF) {
+                    MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
+                    return "%s Note OFF: %s 0x%02X(%d)".formatted(getHexValues(), note.name(), note.value(), note.value());
+                } else {
+                    return getHexValues();
+                }
             }
+            default:
+                return getHexValues();
         }
-        return getHexValues();
+
     }
 }

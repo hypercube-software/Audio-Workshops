@@ -12,7 +12,7 @@ import java.util.Map;
  * Encapsulate javax.sound.midi.Sequence
  */
 public class MidiSequence {
-    private final int DEFAULT_SEQUENCE_RESOLUTION_PPQ = 24 * 4;
+    private static final int DEFAULT_SEQUENCE_RESOLUTION_PPQ = 24 * 4;
     private final TimeSignature timeSignature;
     private final KeySignature keySignature;
     private final Sequence sequence;
@@ -53,8 +53,8 @@ public class MidiSequence {
 
 
     public void addClock(int track, int tickDuration) throws InvalidMidiDataException {
-        int _ticksPerClock = sequenceResolutionPPQ / 24;
-        for (int i = 0; i < tickDuration / _ticksPerClock; i++) {
+        final long _ticksPerClock = sequenceResolutionPPQ / 24;
+        for (long i = 0; i < tickDuration / _ticksPerClock; i++) {
             sequence.getTracks()[track].add(new CustomMidiEvent(new ShortMessage(ShortMessage.TIMING_CLOCK), i * _ticksPerClock));
         }
     }
@@ -83,7 +83,7 @@ public class MidiSequence {
         addNote(track, noteName, velocity, toTick(timestamp), duration);
     }
 
-    public void addNote(int track, String noteName, int velocity, int tickPosition, RelativeTimeUnit duration) throws InvalidMidiDataException {
+    public void addNote(int track, String noteName, int velocity, long tickPosition, RelativeTimeUnit duration) throws InvalidMidiDataException {
         MidiNote note = MidiNote.fromName(noteName);
         int channel = trackToChannel.get(track);
         sequence.getTracks()[track].add(new CustomMidiEvent(new ShortMessage(ShortMessage.NOTE_ON, channel, note.value(), velocity), tickPosition));

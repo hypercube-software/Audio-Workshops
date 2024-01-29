@@ -2,7 +2,10 @@ package com.hypercube.workshop.audioworkshop.files.io;
 
 import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -19,6 +22,7 @@ import java.util.regex.Matcher;
  * despite the fact Java does not support this kind of type.
  * - We also support endianness using ByteBuffer
  */
+@SuppressWarnings("java:S117")
 public class PositionalReadWriteStream implements Closeable {
 
     private final RandomAccessFile stream;
@@ -33,11 +37,17 @@ public class PositionalReadWriteStream implements Closeable {
         return (int) channel.position();
     }
 
-    public PositionalReadWriteStream(File file) throws FileNotFoundException {
-        if (file.exists()) {
-            file.setWritable(true);
+    public PositionalReadWriteStream(File file, boolean canWrite) throws IOException {
+        if (canWrite) {
+            if (file.exists()) {
+                if (!file.setWritable(true)) {
+                    throw new IOException("Unable to make the file writable:" + file.getAbsolutePath());
+                }
+            }
+            stream = new RandomAccessFile(file, "rw");
+        } else {
+            stream = new RandomAccessFile(file, "r");
         }
-        stream = new RandomAccessFile(file, "rw");
         channel = stream.getChannel();
     }
 
@@ -48,7 +58,7 @@ public class PositionalReadWriteStream implements Closeable {
         int time_hi_and_version = getShortLE();
         int clock_seq_hi_and_reserved = getByte();
         int cloc_seq_low = getByte();
-        byte node[] = new byte[6];
+        byte[] node = new byte[6];
         stream.readFully(node);
         String UUIDStr = String.format("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
                 time_low, time_mid, time_hi_and_version, clock_seq_hi_and_reserved, cloc_seq_low
@@ -181,9 +191,6 @@ public class PositionalReadWriteStream implements Closeable {
 
     /**
      * Convert the int offset in unsigned int then go there
-     *
-     * @param n
-     * @throws IOException
      */
     public void seekUInt(int n) throws IOException {
         long longPosition = n & 0xFFFFFFFFL;
@@ -251,10 +258,8 @@ public class PositionalReadWriteStream implements Closeable {
 
     /**
      * Read a 80 bit IEEE-754 number, and convert it to double
-     *
-     * @return
-     * @throws IOException
-     * @see <a href ="https://stackoverflow.com/a/35670539">This Stackoverflow response</a>
+     * <p>
+     * See <a href ="https://stackoverflow.com/a/35670539">This Stackoverflow response</a>
      */
     public double getLongDoubleBE() throws IOException {
         // This code is enough to read a sample rate, but does not cover all cases

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class RiffAudioInfo {
+    /**
+     * Originating filename
+     */
+    private String filename;
     /**
      * this does not include all the channels, here sample = single channel sample
      */
@@ -83,22 +88,45 @@ public class RiffAudioInfo {
      */
     private int meterNumerator;
 
+    /**
+     * Originating 'fmt ' Chunk
+     */
+    private RiffChunk fmtChunk;
+
+    /**
+     * Originating 'data' Chunk
+     */
+    private RiffChunk dataChunk;
+
+    /**
+     * True if the sample is used in a sampler region
+     */
+    private boolean used;
 
     public void computeDuration() {
         nbSamples = nbAudioBytes / bytePerSample;
         duration = nbSamples / (float) sampleRate;
 
-        var seconds = (long) duration;
+        long ms = (long) ((duration - Math.floor(duration)) * 1000);
+        long seconds = (long) duration;
         long hh = seconds / 3600;
         long mm = (seconds % 3600) / 60;
         long ss = seconds % 60;
-        durationString = String.format("%02d:%02d:%02d", hh, mm, ss);
+        durationString = String.format("%02d:%02d:%02d.%d", hh, mm, ss, ms);
     }
-
 
     public boolean missingChannelsAssignement() {
         return nbChannels > 2 &&
                 (codec != WaveCodecs.WAVE_FORMAT_EXTENSIBLE
                         || channelsMask == 0);
+    }
+
+    public String getCodecString() {
+        String subCodecString = "";
+        if (getSubCodec() != null) {
+            subCodecString = getSubCodec()
+                    .toString();
+        }
+        return getCodec() + (getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE ? " " + subCodecString : "");
     }
 }

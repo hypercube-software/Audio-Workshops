@@ -3,6 +3,8 @@ package com.hypercube.workshop.midiworkshop.common.seq;
 import com.hypercube.workshop.midiworkshop.common.MidiMetaMessages;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.clock.*;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
@@ -18,18 +20,24 @@ import java.nio.charset.StandardCharsets;
  * <p>If clock device is NULL, the sequencer won't send clock
  */
 @Slf4j
+@SuppressWarnings("java:S1481")
 public class MidiSequencer implements Closeable {
+    @Setter
     private int tempo;
     private final MidiOutDevice out;
     private MidiClock clock;
 
-    private static final int MIDI_CLOCK_PPQ = 24;
-    private static final int SEQUENCER_PPQ = MIDI_CLOCK_PPQ;
-    private Sequencer sequencer;
-
+    private final Sequencer sequencer;
+    /**
+     * This is the "current" time signature, it can be replaced by meta events
+     */
     private TimeSignature timeSignature = new TimeSignature(4, 4);
+    /**
+     * This is the "current" key signature, it can be replaced by meta events
+     */
+    @SuppressWarnings("java:S1450")
     private KeySignature keySignature = new KeySignature(0, true);
-    private Thread shutdownHook;
+    private final Thread shutdownHook;
 
     /**
      * @param tempo       init tempo
@@ -51,13 +59,14 @@ public class MidiSequencer implements Closeable {
             sequencer = MidiSystem.getSequencer(false);
 
             out.bindToSequencer(sequencer);
-            sequencer.addMetaEventListener(this::OnMetaEvent);
+            sequencer.addMetaEventListener(this::onMetaEvent);
             sequencer.open();
             shutdownHook = new Thread(this::onJVMShutdown);
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
+            Runtime.getRuntime()
+                    .addShutdownHook(shutdownHook);
 
         } catch (MidiUnavailableException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
     }
 
@@ -67,7 +76,7 @@ public class MidiSequencer implements Closeable {
             try {
                 close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new MidiError(e);
             }
         }
     }
@@ -91,10 +100,10 @@ public class MidiSequencer implements Closeable {
     /**
      * Meta events comes from the MIDI file specification
      *
-     * @param metaMessage
      * @see <a href="http://midi.teragonaudio.com/tech/midifile.htm"></a>
      */
-    private void OnMetaEvent(MetaMessage metaMessage) {
+    @SuppressWarnings("java:S1854")
+    private void onMetaEvent(MetaMessage metaMessage) {
         byte[] data = metaMessage.getMessage();
         if (metaMessage.getType() == MidiMetaMessages.META_END_OF_TRACK_TYPE) {
             log.info("Midi Meta message: end of track");
@@ -132,14 +141,10 @@ public class MidiSequencer implements Closeable {
             log.info(String.format("Midi Meta message: SONG TEMPO %.2f", songTempo));
             updateTempo((int) songTempo);
         } else if (metaMessage.getType() == MidiMetaMessages.META_PROPRIETARY) {
-
+            // Do nothing
         } else {
             log.info(String.format("Midi Meta message: %2X)", metaMessage.getType()));
         }
-    }
-
-    public void setTempo(int tempo) {
-        this.tempo = tempo;
     }
 
     private void updateTempo(int tempo) {
@@ -161,7 +166,9 @@ public class MidiSequencer implements Closeable {
                 try {
                     Thread.sleep(250);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    log.warn("Interrupted", e);
+                    Thread.currentThread()
+                            .interrupt();
                 }
             }
         }
@@ -169,7 +176,8 @@ public class MidiSequencer implements Closeable {
 
     @Override
     public void close() throws IOException {
-        Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        Runtime.getRuntime()
+                .removeShutdownHook(shutdownHook);
         out.sendAllOff();
         out.close();
         if (sequencer != null) {
@@ -184,7 +192,7 @@ public class MidiSequencer implements Closeable {
         sequencer.setSequence(in);
     }
 
-    public void setSequence(MidiSequence sequence, boolean infiniteLoop) throws InvalidMidiDataException, IOException {
+    public void setSequence(MidiSequence sequence, boolean infiniteLoop) throws InvalidMidiDataException {
         sequence.assignToSequencer(sequencer);
         if (infiniteLoop) {
             sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
@@ -205,7 +213,9 @@ public class MidiSequencer implements Closeable {
             try {
                 Thread.sleep(4000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                log.warn("Inerruped", e);
+                Thread.currentThread()
+                        .interrupt();
             }
             clock.waitNextMidiTick();
         }

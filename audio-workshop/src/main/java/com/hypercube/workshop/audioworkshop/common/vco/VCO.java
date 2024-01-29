@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.vco;
 
+import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
 import lombok.AllArgsConstructor;
 
@@ -19,9 +20,7 @@ public abstract class VCO {
     protected final VCA vca;
 
     /**
-     * @param keyNumber
-     * @return
-     * @see <a href="https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies"></a>
+     * See <a href="https://www.inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies">MIDI_note_numbers_and_center_frequencies</a>
      */
     public static double midiNoteToFrequency(int keyNumber) {
         return 440 * Math.pow(2, (keyNumber - 69) / 12f);
@@ -33,7 +32,7 @@ public abstract class VCO {
         try {
             Files.write(Path.of(filename), data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new AudioError(e);
         }
     }
 

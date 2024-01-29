@@ -1,21 +1,21 @@
 package com.hypercube.workshop.midiworkshop.common.clock;
 
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiUnavailableException;
-import java.io.IOException;
 
 @Slf4j
 public class TimerBasedMidiClock implements MidiClock {
-    private final int MIDI_CLOCK_PPQ = 24;
+    private static final int MIDI_CLOCK_PPQ = 24;
 
 
     private final MidiOutDevice clock;
 
     private final Object signal = new Object();
 
-    private Thread thread;
+    private final Thread thread;
     private volatile long clockPeriod;
 
     private volatile boolean mute = false;
@@ -32,7 +32,7 @@ public class TimerBasedMidiClock implements MidiClock {
             thread = new Thread(this::threadLoop);
             thread.start();
         } catch (MidiUnavailableException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
     }
 
@@ -49,10 +49,12 @@ public class TimerBasedMidiClock implements MidiClock {
     private void threadLoop() {
         log.info("Clock started");
         try {
-            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            Thread.currentThread()
+                    .setPriority(Thread.MAX_PRIORITY);
             long tickStart = -1;
             while (!exit) {
                 while (tickStart != -1 && System.nanoTime() - tickStart < clockPeriod) {
+                    // active loop
                 }
                 tickStart = System.nanoTime();
                 if (!mute) {
@@ -63,12 +65,14 @@ public class TimerBasedMidiClock implements MidiClock {
                 }
             }
         } catch (Exception e) {
+            log.error("Unexpected error", e);
         }
         log.info("Clock terminated");
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
+        stop();
         clock.close();
         if (thread != null) {
             exit = true;
@@ -76,7 +80,9 @@ public class TimerBasedMidiClock implements MidiClock {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                log.warn("Interrupted", e);
+                Thread.currentThread()
+                        .interrupt();
             }
         }
     }
@@ -105,7 +111,9 @@ public class TimerBasedMidiClock implements MidiClock {
             try {
                 signal.wait();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                log.warn("Interrupted", e);
+                Thread.currentThread()
+                        .interrupt();
             }
         }
     }

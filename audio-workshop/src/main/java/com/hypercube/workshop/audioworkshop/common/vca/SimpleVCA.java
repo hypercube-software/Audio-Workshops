@@ -7,7 +7,7 @@ public class SimpleVCA extends VCA {
 
     public SimpleVCA(double sampleRate, double defaultGainInDb) {
         super(sampleRate);
-        defaultGain = dbToAmplitude(currentGain);
+        defaultGain = dbToAmplitude(defaultGainInDb);
         currentGain = defaultGain;
     }
 

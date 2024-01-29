@@ -2,6 +2,7 @@ package com.hypercube.workshop.audioworkshop.files.flac;
 
 import com.hypercube.workshop.audioworkshop.files.io.SeekableBinaryOutputStream;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -13,12 +14,9 @@ import java.util.Map;
 
 @Slf4j
 public class FlacWriter implements Closeable {
+    @Getter
     private final File file;
     private SeekableBinaryOutputStream out;
-
-    public File getFile() {
-        return file;
-    }
 
     public FlacWriter(File file) throws IOException {
         this.file = file;
@@ -42,9 +40,6 @@ public class FlacWriter implements Closeable {
 
     /**
      * Write a custom APPLICATION chunk containing the original WAV data surrounding the PCM data
-     *
-     * @param origMeta
-     * @throws IOException
      */
     public void writeORGD(RiffFileInfo origMeta) throws IOException {
         out.writeByte(FlacBlockType.APPLICATION.ordinal() | 0x80);
@@ -81,9 +76,9 @@ public class FlacWriter implements Closeable {
         out.writeInt24BE(0);
         writeVorbisString("media-transcoder");
         out.writeIntLE(map.size());
-        for (String key : map.keySet()) {
-            String value = map.get(key);
-            writeVorbisString(key + "=" + value);
+
+        for (var entry : map.entrySet()) {
+            writeVorbisString(entry.getKey() + "=" + entry.getValue());
         }
         // there is no framing_bit in FLAC
         long p2 = out.position();

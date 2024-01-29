@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.sequencer;
 
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.clock.MidiClockType;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.seq.KeySignature;
 import com.hypercube.workshop.midiworkshop.common.seq.MidiSequence;
 import com.hypercube.workshop.midiworkshop.common.seq.RelativeTimeUnit;
@@ -21,9 +22,11 @@ public class MidiSequencer {
 
     public void playResource(MidiOutDevice out, String path, int tempo) {
         try (com.hypercube.workshop.midiworkshop.common.seq.MidiSequencer sequencer = new com.hypercube.workshop.midiworkshop.common.seq.MidiSequencer(tempo, MidiClockType.NONE, null, out)) {
-            try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(path)) {
+            try (InputStream in = this.getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(path)) {
                 if (in == null) {
-                    throw new RuntimeException("Resource not found: " + path);
+                    throw new MidiError("Resource not found: " + path);
                 }
                 sequencer.setSequence(in);
 
@@ -36,10 +39,8 @@ public class MidiSequencer {
                 sequencer.stop();
 
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | InvalidMidiDataException e) {
+            throw new MidiError(e);
         }
     }
 
@@ -70,6 +71,7 @@ public class MidiSequencer {
         }
     }
 
+    @SuppressWarnings("java:S117")
     private void generateTrack1(MidiSequence seq) throws InvalidMidiDataException {
         final int trackId = 1;
         final RelativeTimeUnit _2Bar = _1_1.mult(2);
@@ -92,6 +94,7 @@ public class MidiSequencer {
         seq.addNote(trackId, "G3", _6Bar, _2Bar);
     }
 
+    @SuppressWarnings("java:S117")
     private void generateTrack2(MidiSequence seq) throws InvalidMidiDataException {
         final int trackId = 0;
         final RelativeTimeUnit _2Bar = _1_1.mult(2);
@@ -109,8 +112,10 @@ public class MidiSequencer {
         // Kick and Snare
         for (int i = 0; i < 8; i++) {
             seq.addNote(trackId, "C1", _1_1.mult(i), RelativeTimeUnit._1_8);
-            seq.addNote(trackId, "D1", _1_1.mult(i).plus(_1_2), RelativeTimeUnit._1_8);
-            seq.addNote(trackId, "C1", 90, _1_1.mult(i + 1).minus(_1_8), RelativeTimeUnit._1_8);
+            seq.addNote(trackId, "D1", _1_1.mult(i)
+                    .plus(_1_2), RelativeTimeUnit._1_8);
+            seq.addNote(trackId, "C1", 90, _1_1.mult(i + 1)
+                    .minus(_1_8), RelativeTimeUnit._1_8);
         }
 
         // HitHat

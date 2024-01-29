@@ -1,5 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+
 import javax.sound.midi.*;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -30,7 +32,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
             resumeMessage = new ShortMessage(ShortMessage.CONTINUE);
             pauseMessage = new ShortMessage(ShortMessage.STOP);
         } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
 
     }
@@ -40,11 +42,12 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void bindToSequencer(Sequencer sequencer) throws MidiUnavailableException {
-        sequencer.getTransmitter().setReceiver(new ControlChangeFilter(receiver, List.of(
-                MidiOutDevice.CTRL_ALL_CONTROLLERS_OFF,
-                MidiOutDevice.CTRL_ALL_NOTE_OFF,
-                MidiOutDevice.CTRL_ALL_SOUND_OFF
-        )));
+        sequencer.getTransmitter()
+                .setReceiver(new ControlChangeFilter(receiver, List.of(
+                        MidiOutDevice.CTRL_ALL_CONTROLLERS_OFF,
+                        MidiOutDevice.CTRL_ALL_NOTE_OFF,
+                        MidiOutDevice.CTRL_ALL_SOUND_OFF
+                )));
     }
 
     public void sendActiveSensing() {
@@ -68,14 +71,15 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void bind(Sequencer sequencer) throws MidiUnavailableException {
-        sequencer.getTransmitter().setReceiver(device.getReceiver());
+        sequencer.getTransmitter()
+                .setReceiver(device.getReceiver());
     }
 
     public void sendAllNoteOff(int channel) {
         try {
             receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_NOTE_OFF, 0), -1);
         } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
     }
 
@@ -83,7 +87,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
         try {
             receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_SOUND_OFF, 0), -1);
         } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
     }
 
@@ -91,7 +95,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
         try {
             receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_CONTROLLERS_OFF, 0), -1);
         } catch (InvalidMidiDataException e) {
-            throw new RuntimeException(e);
+            throw new MidiError(e);
         }
     }
 
@@ -99,10 +103,11 @@ public class MidiOutDevice extends AbstractMidiDevice {
      * This is already done by javax.sound.midi.MidiDevice::close()
      */
     public void sendAllOff() {
-        IntStream.range(0, 16).forEach(ch -> {
-            sendAllNoteOff(ch);
-            sendAllcontrollersOff(ch);
-            sendAllSoundsOff(ch);
-        });
+        IntStream.range(0, 16)
+                .forEach(ch -> {
+                    sendAllNoteOff(ch);
+                    sendAllcontrollersOff(ch);
+                    sendAllSoundsOff(ch);
+                });
     }
 }

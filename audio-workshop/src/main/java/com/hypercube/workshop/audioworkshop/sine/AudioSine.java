@@ -2,6 +2,7 @@ package com.hypercube.workshop.audioworkshop.sine;
 
 import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.vca.AdsrVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
@@ -20,7 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
-import java.util.List;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -41,8 +42,12 @@ public class AudioSine {
             log.info(String.format("Play note at %f Hz", freq));
             audioOutputDevice.play(af, data, 2000);
             log.info("Done");
-        } catch (LineUnavailableException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (LineUnavailableException e) {
+            throw new AudioError(e);
+        } catch (InterruptedException e) {
+            log.warn("Interrupted", e);
+            Thread.currentThread()
+                    .interrupt();
         }
     }
 
@@ -50,8 +55,12 @@ public class AudioSine {
         try {
             audioOutputDevice.play(file, loops);
             log.info("Done");
-        } catch (LineUnavailableException | InterruptedException | UnsupportedAudioFileException | IOException e) {
-            throw new RuntimeException(e);
+        } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+            throw new AudioError(e);
+        } catch (InterruptedException e) {
+            log.warn("Interrupted", e);
+            Thread.currentThread()
+                    .interrupt();
         }
     }
 
@@ -67,8 +76,7 @@ public class AudioSine {
                 VCO vco = new NaiveVCO(100, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
 
                 // You should ear something wrong especially for the last note
-                List.of(52, 54, 56, 57, 74)
-                        .stream()
+                Stream.of(52, 54, 56, 57, 74)
                         .map(VCO::midiNoteToFrequency)
                         .forEach(freq -> {
                             log.info("Play frequency " + freq + " Hz");
@@ -81,7 +89,7 @@ public class AudioSine {
             }
             log.info("Done");
         } catch (LineUnavailableException e) {
-            throw new RuntimeException(e);
+            throw new AudioError(e);
         }
     }
 
@@ -106,7 +114,7 @@ public class AudioSine {
                 out.write(data);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new AudioError(e);
         }
     }
 

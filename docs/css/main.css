@@ -1,0 +1,19 @@
+/* docsify tables */
+th {
+    border-style: solid;
+    border-width: 1px;
+}
+
+:root {
+    --table-body-border-width: 1px;
+    --table-cell-border-width: 1px;
+    --table-head-background: var(--mono-tint3);
+    --table-row-even-background: var(--mono-shade2);
+    --table-row-odd-background: var(--mono-shade2);
+    --cover-max-width: 50em;
+}
+
+/* make page content larger */
+:root {
+    --content-max-width: none;
+}

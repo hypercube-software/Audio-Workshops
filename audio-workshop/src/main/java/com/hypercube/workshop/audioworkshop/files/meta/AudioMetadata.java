@@ -14,12 +14,12 @@ public class AudioMetadata {
     public void put(MetadataField field, String value) {
         if (value == null)
             return;
-        if (values.containsKey(field)) {
+        if (values.containsKey(field.name())) {
             log.warn("Metadata field {} already set", field);
             return;
         }
         value = value.trim();
-        if (value.length() == 0)
+        if (value.isEmpty())
             return;
 
         // cleanup
@@ -39,7 +39,7 @@ public class AudioMetadata {
     }
 
     public boolean contains(MetadataField field) {
-        return values.containsKey(field.toString());
+        return values.containsKey(field.name());
     }
 
     public void merge(AudioMetadata metadata) {

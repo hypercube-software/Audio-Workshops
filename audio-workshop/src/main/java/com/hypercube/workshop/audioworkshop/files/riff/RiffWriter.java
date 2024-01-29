@@ -1,6 +1,8 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.files.io.SeekableBinaryOutputStream;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Slf4j
 public class RiffWriter implements Closeable {
+    @Getter
     private final File file;
 
     private SeekableBinaryOutputStream out;
@@ -43,10 +46,6 @@ public class RiffWriter implements Closeable {
         out.seek(pos);
     }
 
-    public File getFile() {
-        return file;
-    }
-
     @Override
     public void close() throws IOException {
         out.close();
@@ -70,7 +69,6 @@ public class RiffWriter implements Closeable {
      * Write a LIST CHUNK width multiple sub chunks INFO
      *
      * @param infos a list of key1,value1,key2,value2,key3,value3...
-     * @throws IOException
      */
     public void writeLISTInfo(List<String> infos) throws IOException {
         align();

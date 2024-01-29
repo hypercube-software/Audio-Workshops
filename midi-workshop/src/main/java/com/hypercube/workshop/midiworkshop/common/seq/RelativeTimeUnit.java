@@ -9,10 +9,10 @@ package com.hypercube.workshop.midiworkshop.common.seq;
  * @param denominator
  */
 public record RelativeTimeUnit(int numerator, int denominator) {
-    public static RelativeTimeUnit _1_1 = new RelativeTimeUnit(1, 1);
-    public static RelativeTimeUnit _1_2 = new RelativeTimeUnit(1, 2);
+    public static final RelativeTimeUnit _1_1 = new RelativeTimeUnit(1, 1);
+    public static final RelativeTimeUnit _1_2 = new RelativeTimeUnit(1, 2);
     public static RelativeTimeUnit _1_4 = new RelativeTimeUnit(1, 4);
-    public static RelativeTimeUnit _1_8 = new RelativeTimeUnit(1, 8);
+    public static final RelativeTimeUnit _1_8 = new RelativeTimeUnit(1, 8);
     public static RelativeTimeUnit _1_16 = new RelativeTimeUnit(1, 16);
     public static RelativeTimeUnit _1_64 = new RelativeTimeUnit(1, 64);
 

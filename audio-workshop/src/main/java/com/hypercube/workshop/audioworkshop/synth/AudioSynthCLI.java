@@ -20,12 +20,14 @@ public class AudioSynthCLI {
         var midiMgr = new MidiDeviceManager();
         audioMgr.collectDevices();
         midiMgr.collectDevices();
-        midiMgr.getInput(inputDevice).ifPresentOrElse(midi -> {
-            audioMgr.getOutputs().stream().filter(d -> d.getName().equals(outputDevice)).findFirst().ifPresentOrElse(audio -> audioSynth.synth(midi, audio),
-                    () -> log.error("Audio Device not found:" + outputDevice));
-        }, () -> {
-            log.error("Midi Device not found " + inputDevice);
-        });
+        midiMgr.getInput(inputDevice)
+                .ifPresentOrElse(midi -> audioMgr.getOutputs()
+                        .stream()
+                        .filter(d -> d.getName()
+                                .equals(outputDevice))
+                        .findFirst()
+                        .ifPresentOrElse(audio -> audioSynth.synth(midi, audio),
+                                () -> log.error("Audio Device not found:" + outputDevice)), () -> log.error("Midi Device not found " + inputDevice));
 
     }
 
@@ -33,12 +35,16 @@ public class AudioSynthCLI {
     public void list() {
         AudioDeviceManager m = new AudioDeviceManager();
         m.collectDevices();
-        m.getInputs().forEach(d -> log.info(String.format("AUDIO INPUT  Device \"%s\"", d.getName())));
-        m.getOutputs().forEach(d -> log.info(String.format("AUDIO OUTPUT Device \"%s\"", d.getName())));
+        m.getInputs()
+                .forEach(d -> log.info(String.format("AUDIO INPUT  Device \"%s\"", d.getName())));
+        m.getOutputs()
+                .forEach(d -> log.info(String.format("AUDIO OUTPUT Device \"%s\"", d.getName())));
 
         MidiDeviceManager midi = new MidiDeviceManager();
         midi.collectDevices();
-        midi.getInputs().forEach(d -> log.info(String.format("MIDI INPUT  Device \"%s\"", d.getName())));
-        midi.getOutputs().forEach(d -> log.info(String.format("MIDI OUTPUT Device \"%s\"", d.getName())));
+        midi.getInputs()
+                .forEach(d -> log.info(String.format("MIDI INPUT  Device \"%s\"", d.getName())));
+        midi.getOutputs()
+                .forEach(d -> log.info(String.format("MIDI OUTPUT Device \"%s\"", d.getName())));
     }
 }

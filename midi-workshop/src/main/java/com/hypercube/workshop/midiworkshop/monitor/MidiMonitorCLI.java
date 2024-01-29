@@ -19,10 +19,9 @@ public class MidiMonitorCLI {
     public void monitor(@ShellOption(value = "-i", defaultValue = "") String inputDevice) {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        if (inputDevice.length() > 0) {
-            m.getInput(inputDevice).ifPresentOrElse(impl::monitor, () -> {
-                log.error("Input Device not found " + inputDevice);
-            });
+        if (!inputDevice.isEmpty()) {
+            m.getInput(inputDevice)
+                    .ifPresentOrElse(impl::monitor, () -> log.error("Input Device not found " + inputDevice));
         } else {
             impl.monitor(new MultiMidiInDevice(m.getInputs()));
         }
@@ -33,31 +32,33 @@ public class MidiMonitorCLI {
     public void filter(@ShellOption(value = "-i", defaultValue = "") String inputDevice, @ShellOption(value = "-o") String outputDevice) {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        if (inputDevice.length() > 0) {
-            m.getInput(inputDevice).ifPresentOrElse(in ->
-            {
-                filter(in, outputDevice, m);
-            }, () -> {
-                log.error("Input Device not found " + inputDevice);
-            });
+        if (!inputDevice.isEmpty()) {
+            m.getInput(inputDevice)
+                    .ifPresentOrElse(in ->
+                            filter(in, outputDevice, m), () -> log.error("Input Device not found " + inputDevice));
         } else {
             // Beware of infinite loop backs ! we retire the outputDevice from the list of inputDevices
-            filter(new MultiMidiInDevice(m.getInputs().stream().filter(d -> !d.getName().equals(outputDevice)).toList()), outputDevice, m);
+            filter(new MultiMidiInDevice(m.getInputs()
+                    .stream()
+                    .filter(d -> !d.getName()
+                            .equals(outputDevice))
+                    .toList()), outputDevice, m);
         }
     }
 
     private void filter(MidiInDevice in, String outputDevice, MidiDeviceManager m) {
-        m.getOutput(outputDevice).ifPresentOrElse(out -> impl.filter(in, out), () -> {
-            log.error("Output Device not found " + outputDevice);
-        });
+        m.getOutput(outputDevice)
+                .ifPresentOrElse(out -> impl.filter(in, out), () -> log.error("Output Device not found " + outputDevice));
     }
 
     @ShellMethod(value = "List MIDI devices")
     public void list() {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getInputs().forEach(d -> log.info(String.format("INPUT  Device \"%s\"", d.getName())));
-        m.getOutputs().forEach(d -> log.info(String.format("OUTPUT Device \"%s\"", d.getName())));
+        m.getInputs()
+                .forEach(d -> log.info(String.format("INPUT  Device \"%s\"", d.getName())));
+        m.getOutputs()
+                .forEach(d -> log.info(String.format("OUTPUT Device \"%s\"", d.getName())));
     }
 
 }

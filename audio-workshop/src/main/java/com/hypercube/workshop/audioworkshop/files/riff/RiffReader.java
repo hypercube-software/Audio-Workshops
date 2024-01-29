@@ -2,10 +2,19 @@ package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
 import com.hypercube.workshop.audioworkshop.files.exceptions.AudioParserException;
+import com.hypercube.workshop.audioworkshop.files.exceptions.IncorrectRiffChunkParentSize;
 import com.hypercube.workshop.audioworkshop.files.exceptions.SampleCountException;
+import com.hypercube.workshop.audioworkshop.files.exceptions.UnexpectedNullChunk;
 import com.hypercube.workshop.audioworkshop.files.id3.ID3Parser;
 import com.hypercube.workshop.audioworkshop.files.io.PositionalReadWriteStream;
 import com.hypercube.workshop.audioworkshop.files.meta.MetadataField;
+import com.hypercube.workshop.audioworkshop.files.meta.Version;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.*;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.dsl2.RiffPoolTableChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.dsl2.RiffRegionHeaderChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.dsl2.RiffWaveLinkChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.gig.G3Dimension;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.gig.RiffG3DimensionChunk;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.XMLInputFactory;
@@ -14,41 +23,66 @@ import java.io.*;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
+import java.util.zip.CRC32;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * -
- * This parser load the entire WAV in memory because a memory mapped FileChannel does not work properly on windows.
+ * This class is able to parse various RIFF-based formats like WAV, AIFF, DSL2 or Gigastudio
+ * <br><br>
+ * This parser load the entire WAV/GIG in memory because a memory mapped FileChannel does not work properly on windows.
  * This bug in the JVM is UNFIXABLE, see <a href="https://bugs.openjdk.org/browse/JDK-4715154">this ticket</a>
- * <p>
+ * <br><br>
  * Parsing a RIFF is easy but you have to be very careful about word alignment of every Chunks.
- * - if a chunk ID is at position 3, there is a padding byte before the next one
- * - unfortunately a lot of editors generate non-padded RIFF which are out of spec
- * <p>
+ * <p>- if a chunk ID is at position 3, there is a padding byte before the next one
+ * <p>- unfortunately a lot of editors generate non-padded RIFF which are out of spec
+ * <br><br>
  * ACID chunks:
+ * <pre>
  * acid: header containing the number of beats
  * strc: stretch info
  * str2: stretch info 2
  * bmrk: beat markers
  * dtbt: detected beats
- * <p>
+ * </pre>
+ * DSL2 chunks:
+ * <pre>
+ * ins: instrument
+ * wvpl: wave pool
+ * rgn : region v1
+ * rgn2: region v2
+ * rgnh: region header
+ * wlnk: link to a sample in the pool
+ * </pre>
+ * Gigastudio chunks:
+ * <pre>
+ * 3lnk: link to a sample in the pool
+ * 3ewa: effect chunk
+ * rgn : region v1
+ * rgn2: region v2
+ * </pre>
  * Others:
+ * <pre>
  * JUNK: list of something
- * <p>
- * see also this study on the mess around metadata: <a href="https://www.arsc-audio.org/pdf/ARSC_TC_MD_Study.pdf">here</a>
+ * </pre>
+ * <br><br>
+ *
+ * @see this study on the mess around metadata: <a href="https://www.arsc-audio.org/pdf/ARSC_TC_MD_Study.pdf">here</a>
  */
 @SuppressWarnings({"java:S1172", "unused"})
 @Slf4j
 public class RiffReader {
+    public static final List<String> KNOWN_TYPES = List.of("WAVE", "AIFF", "AIFC", "DLS ");
     public static final int LOWEST_TEMPO = 40;
     public static final int HIGHEST_TEMPO = 300;
+    public static final String AIFF_TYPE_AIFC = "AIFC";
+    public static final String RIFF_TYPE_AIFF = "AIFF";
+    public static final String AIFF_TYPE_DLS = "DLS "; // include Gigastudio
     private final File srcAudio;
-    private final RiffFileInfo info = new RiffFileInfo();
+    private final RiffFileInfo fileInfo = new RiffFileInfo();
+
+    private final List<RiffAudioInfo> audioInfos = new ArrayList<>();
 
     private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     private final boolean canFixSource;
@@ -59,6 +93,8 @@ public class RiffReader {
     private boolean isAIFF;
 
     private boolean isAFIC;
+
+    private boolean isDLS2;
 
     /**
      * @param srcAudio     the WAV file to parse
@@ -80,7 +116,9 @@ public class RiffReader {
      */
     private boolean checkChunkID(byte[] data) throws IOException {
         int nbIllegalChars = 0;
-
+        if (data[0] == 0 && data[1] == 0 && data[2] == 0 && data[3] == 0) {
+            throw new UnexpectedNullChunk(srcAudio.getAbsolutePath(), stream.positionUInt() - 4);
+        }
         for (int ch : data) {
             if (!(ch == ' ' || ch == '_' || ch == '-' || (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))) {
                 nbIllegalChars++;
@@ -129,7 +167,7 @@ public class RiffReader {
         log.trace("Parse " + srcAudio.getAbsolutePath());
         try {
 
-            stream = new PositionalReadWriteStream(srcAudio);
+            stream = new PositionalReadWriteStream(srcAudio, canFixSource);
 
             String riff = readChunkID();
             if (!"RIFF".equals(riff) && !"FORM".equals(riff)) {
@@ -146,27 +184,40 @@ public class RiffReader {
                         srcAudio.getAbsolutePath()));
             }
             String type = readChunkID();
-            if (!"WAVE".equals(type) && !"AIFF".equals(type) && !"AIFC".equals(type)) {
+
+            if (!KNOWN_TYPES.contains(type)) {
                 throw new AudioParserException("not a WAVE/AIFF file " + srcAudio.getAbsolutePath());
             }
-            isAFIC = "AIFC".equals(type);
-            isAIFF = "AIFF".equals(type) || isAFIC;
+            isAFIC = AIFF_TYPE_AIFC.equals(type);
+            isAIFF = RIFF_TYPE_AIFF.equals(type) || isAFIC;
+            isDLS2 = AIFF_TYPE_DLS.equals(type);
 
-            for (; ; ) {
-                RiffChunk c = readChunk();
-                if (c == null) break;
-                info.addChunk(c);
+            try {
+                for (; ; ) {
+                    RiffChunk c = readChunk(null);
+                    if (c == null) break;
+                    fileInfo.addChunk(c);
+                }
+            } catch (UnexpectedNullChunk e) {
+                log.warn(e.toString());
             }
             if (misalignedChunksCount > 0) {
                 log.trace("Illegal RIFF: %d misaligned chunks in %s".formatted(misalignedChunksCount, srcAudio.getAbsolutePath()));
             }
-            info.getFileInfo()
-                    .computeDuration();
-            checkSampleCount();
-            storeMetadataTempo();
-            storeMetadataKey();
-            storeNonAudioData(srcAudio);
-            return info;
+            if (!isDLS2) {
+                fileInfo.getAudioInfo()
+                        .computeDuration();
+                checkSampleCount();
+                storeMetadataTempo();
+                storeMetadataKey();
+                storeNonAudioData(srcAudio);
+            } else {
+                audioInfos.forEach(RiffAudioInfo::computeDuration);
+                fileInfo.getFiles()
+                        .addAll(audioInfos);
+                fileInfo.collectInstruments();
+            }
+            return fileInfo;
         } catch (Exception e) {
             log.error("Unexpected error parsing " + srcAudio.getAbsolutePath(), e);
             return null;
@@ -182,29 +233,24 @@ public class RiffReader {
     }
 
     private void storeMetadataKey() {
-        if (info.getFileInfo()
+        if (fileInfo.getAudioInfo()
                 .getKey() != null) {
-            info.getMetadata()
-                    .put(MetadataField.KEY, info.getFileInfo()
+            fileInfo.getMetadata()
+                    .put(MetadataField.KEY, fileInfo.getAudioInfo()
                             .getKey());
         }
     }
 
     private void storeMetadataTempo() {
+        var currentFileInfo = this.fileInfo.getAudioInfo();
         DecimalFormat df = new DecimalFormat("#.#");
-        if (info.getFileInfo()
-                .getNbBeats() != 0 && info.getFileInfo()
-                .getTempo() == 0) {
-            float beatDuration = info.getFileInfo()
-                    .getDuration() / info.getFileInfo()
-                    .getNbBeats();
+        if (currentFileInfo.getNbBeats() != 0 && currentFileInfo.getTempo() == 0) {
+            float beatDuration = currentFileInfo.getDuration() / currentFileInfo.getNbBeats();
             float tempo = 60f / beatDuration;
-            info.getFileInfo()
-                    .setTempo(tempo);
-            info.getMetadata()
+            currentFileInfo.setTempo(tempo);
+            this.fileInfo.getMetadata()
                     .put(MetadataField.BPM, df.format(tempo));
-        } else if (info.getFileInfo()
-                .getTempo() == 0) {
+        } else if (currentFileInfo.getTempo() == 0) {
             String name = srcAudio.getName();
             Matcher m = CachedRegExp.get("[0-9]+", name);
             List<Float> numbers = new ArrayList<>();
@@ -216,9 +262,8 @@ public class RiffReader {
                     .filter(n -> n >= LOWEST_TEMPO && n <= HIGHEST_TEMPO)
                     .max(Float::compare)
                     .ifPresent(tempo -> {
-                        info.getFileInfo()
-                                .setTempo(tempo);
-                        info.getMetadata()
+                        currentFileInfo.setTempo(tempo);
+                        this.fileInfo.getMetadata()
                                 .put(MetadataField.BPM, df.format(tempo));
                     });
         }
@@ -226,12 +271,9 @@ public class RiffReader {
 
     /**
      * Allow the possibility to reconstruct the WAV file, saving everything around the PCM data
-     *
-     * @param srcAudio
-     * @throws IOException
      */
     private void storeNonAudioData(File srcAudio) throws IOException {
-        var data = info.getDataChunk();
+        var data = fileInfo.getDataChunk();
         // if file ends at byte 10 (so stream.capacity() = 11),
         // the data content starts at byte 3
         // the data content ends   at byte 5
@@ -255,56 +297,154 @@ public class RiffReader {
             epilog = stream.readNBytes(epilogSize);
         }
 
-        info.setFilename(srcAudio.getName());
-        info.setProlog(compress(prolog));
-        info.setEpilog(compress(epilog));
+        fileInfo.setFilename(srcAudio.getName());
+        fileInfo.setProlog(compress(prolog));
+        fileInfo.setEpilog(compress(epilog));
     }
 
-    private RiffChunk readChunk() throws IOException {
+    /**
+     * Read a chunk and jump at its end
+     */
+    private RiffChunk readChunk(RiffChunk parent) throws IOException {
         String chunkId = readChunkID();
         if (chunkId == null) return null;
         final int contentSize = isAIFF ? stream.getIntBE() : stream.getIntLE();
         final int contentStart = stream.positionUInt();
-        int end = contentStart + contentSize;
+        final int end = contentStart + contentSize;
         log.trace(String.format("CHUNK %s : %d/0x%X bytes at 0x%X end 0x%X", chunkId, contentSize, contentSize, contentStart - 8, end));
-        RiffChunk riffChunk = new RiffChunk(chunkId, contentStart, contentSize);
-        switch (chunkId) {
-            case "data" -> readDATA(riffChunk);
-            case "acid" -> readACID(riffChunk);
-            case "fmt " -> readFMT(riffChunk);
-            case "cue " -> readCUE(riffChunk);
-            case "LIST" -> readLIST(riffChunk);
-            case "bext" -> readBEXT(riffChunk);
-            case "umid" -> readUMID(riffChunk);
-            case "iXML" -> readIXML(riffChunk);
-            case "_PMX" -> readPMX(riffChunk);
-            case "ID3 ", "id3 " -> readID3(riffChunk);
-            case "COMM" -> readCOMM(riffChunk); // AIFF
-            case "SSND" -> readSSND(riffChunk); // AIFF
-            case "ANNO" -> readTEXT(riffChunk, MetadataField.DESCRIPTION); // AIFF
-            case "(c) " -> readTEXT(riffChunk, MetadataField.COPYRIGHT); // AIFF
-            case "AUTH" -> readTEXT(riffChunk, MetadataField.AUTHOR); // AIFF
-            case "NAME" -> readTEXT(riffChunk, MetadataField.NAME); // AIFF
-            default -> {
-                //do nothing
-            }
-        }
-        // SMED = Opaque Soundminer Metawrapper data
-        // LGWV = Logic Prox Wav
-        // ResU = Logic Pro X
-        // AFAn = Apple Binary plist serialized
-        // minf = ProTools chunk
-        // elm1 = ProTools chunk
-        // regn = ProTools chunk (maybe)
-        // umid = BWF version 1, Unique Material Identifier, see https://fr.wikipedia.org/wiki/Broadcast_Wave_Format
-        // CDif = Sound Forge 10 chunk (maybe)
-
-        // some data contains Apple serialized data in TypedStream format (NextStep)
-        // see https://gist.github.com/williballenthin/600a3898f43b7ad3f8aa4a5f4156941d
-
+        final RiffChunk riffChunk = readChunk(parent, chunkId, contentStart, contentSize);
         // get ready to read the next one
         moveAfterChunk(riffChunk);
         return riffChunk;
+    }
+
+    private RiffChunk readChunk(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        RiffChunk riffChunk;
+        switch (chunkId) {
+            case Chunks.LIST -> riffChunk = readLIST(parent, chunkId, contentStart, contentSize);
+            case Chunks.WLNK -> riffChunk = readWaveLink(parent, chunkId, contentStart, contentSize);
+            case Chunks.RGNH -> riffChunk = readRegionHeader(parent, chunkId, contentStart, contentSize);
+            case Chunks.PTBL -> riffChunk = readPoolTable(parent, chunkId, contentStart, contentSize);
+            case Chunks.G3_DIMENSIONS -> riffChunk = readGigDimensions(parent, chunkId, contentStart, contentSize);
+            default -> {
+                riffChunk = new RiffChunk(parent, chunkId, contentStart, contentSize);
+                switch (chunkId) {
+                    case Chunks.VERS -> readVERS(riffChunk);
+                    case Chunks.DATA -> readDATA(riffChunk);
+                    case Chunks.ACID -> readACID(riffChunk);
+                    case Chunks.FORMAT -> readFMT(riffChunk);
+                    case Chunks.CUE -> readCUE(riffChunk);
+                    case Chunks.BEXT -> readBEXT(riffChunk);
+                    case Chunks.UMID -> readUMID(riffChunk);
+                    case Chunks.IXML -> readIXML(riffChunk);
+                    case Chunks.XMP -> readXMP(riffChunk);
+                    case Chunks.ID3_UPPERCASE, Chunks.ID3_LOWERCASE -> readID3(riffChunk);
+                    case Chunks.AIFF_FORMAT -> readCOMM(riffChunk); // AIFF
+                    case Chunks.AIFF_SSND -> readSSND(riffChunk); // AIFF
+                    case Chunks.AIFF_DESCRIPTION -> readTEXT(riffChunk, MetadataField.DESCRIPTION); // AIFF
+                    case Chunks.COPYRIGHT -> readTEXT(riffChunk, MetadataField.COPYRIGHT); // AIFF
+                    case Chunks.AUTHOR -> readTEXT(riffChunk, MetadataField.AUTHOR); // AIFF
+                    case Chunks.NAME -> readTEXT(riffChunk, MetadataField.NAME); // AIFF
+                    default -> {
+                        //do nothing
+                    }
+                }
+                // SMED = Opaque Soundminer Metawrapper data
+                // LGWV = Logic Prox Wav
+                // ResU = Logic Pro X
+                // AFAn = Apple Binary plist serialized
+                // minf = ProTools chunk
+                // elm1 = ProTools chunk
+                // regn = ProTools chunk (maybe)
+                // umid = BWF version 1, Unique Material Identifier, see https://fr.wikipedia.org/wiki/Broadcast_Wave_Format
+                // CDif = Sound Forge 10 chunk (maybe)
+
+                // some data contains Apple serialized data in TypedStream format (NextStep)
+                // see https://gist.github.com/williballenthin/600a3898f43b7ad3f8aa4a5f4156941d
+            }
+        }
+        return riffChunk;
+    }
+
+    private void readVERS(RiffChunk riffChunk) throws IOException {
+        int release = stream.getByte();
+        int build = stream.getByte();
+        int major = stream.getByte();
+        int minor = stream.getByte();
+        fileInfo.setVersion(new Version(major, minor, release, build));
+    }
+
+    /**
+     * Inspired by <a href="https://www.linuxsampler.org/libgig/">liggig</a>
+     */
+    private RiffChunk readGigDimensions(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        int nbDimensions = stream.getIntLE();
+        List<G3Dimension> dimensions = new ArrayList<>();
+        if (fileInfo.getVersion()
+                .major() > 2) {
+            stream.seekLong(contentStart + 68L);
+        } else {
+            stream.seekLong(contentStart + 44L);
+        }
+        // read the wave pool indices table
+        int nb = (int) (contentSize - (stream.positionLong() - contentStart)) / 4;
+        // nb should be 32 for gigastudio 2 and 256 for gigastudio 3
+        for (int i = 0; i < nbDimensions; i++) {
+            int sampleIndex = stream.getIntLE();
+            dimensions.add(new G3Dimension(0, 0, 0, 0, 0, sampleIndex));
+        }
+        return new RiffG3DimensionChunk(parent, chunkId, contentStart, contentSize, dimensions);
+    }
+
+    private RiffChunk readRegionHeader(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        short keyRangeLow = stream.getShortLE();
+        short keyRangeHigh = stream.getShortLE();
+        short velocityRangeLow = stream.getShortLE();
+        short velocityRangeHigh = stream.getShortLE();
+        short fusOptions = stream.getShortLE();
+        short usKeyGroup = stream.getShortLE();
+        short usLayer = stream.positionLong() - contentStart == contentSize ? 0 : stream.getShortLE();
+        return new RiffRegionHeaderChunk(parent, chunkId, contentStart, contentSize,
+                new RiffRegionHeaderChunk.Range(keyRangeLow, keyRangeHigh),
+                new RiffRegionHeaderChunk.Range(velocityRangeLow, velocityRangeHigh),
+                fusOptions, usKeyGroup, usLayer);
+    }
+
+    private RiffPoolTableChunk readPoolTable(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        int cbSize = stream.getIntLE();
+        int nbCues = stream.getIntLE();
+        if (cbSize != 8) {
+            log.warn("Unexpected struct size for ptbl:" + cbSize);
+        }
+        boolean offset64bits = contentSize - cbSize == nbCues * 8;
+        log.info("Wave Pool Table contains {} entries", nbCues);
+        List<Long> offsets = extractOffsets(nbCues, offset64bits);
+        return new RiffPoolTableChunk(parent, chunkId, contentStart, contentSize, offsets);
+    }
+
+    private List<Long> extractOffsets(int nbCues, boolean offset64bits) throws IOException {
+        List<Long> offsets = new ArrayList<>();
+        for (int i = 0; i < nbCues; i++) {
+            // ulOffset is the offset in bytes starting from the "wvpl" chunk
+            // it points to a "wave" chunk
+            if (offset64bits) {
+                long hi = stream.getIntLE();
+                long lo = stream.getIntLE();
+                long offset = (hi << 32) + lo;
+                offsets.add(offset);
+            } else {
+                offsets.add((long) stream.getIntLE());
+            }
+        }
+        return offsets;
+    }
+
+    private RiffWaveLinkChunk readWaveLink(RiffChunk parent, String id, int contentStart, int contentSize) throws IOException {
+        short fusOptions = stream.getShortLE();
+        short usPhaseGroup = stream.getShortLE();
+        int ulChannel = stream.getIntLE();
+        int ulTableIndex = stream.getIntLE();
+        return new RiffWaveLinkChunk(parent, id, contentStart, contentSize, fusOptions, usPhaseGroup, ulChannel, ulTableIndex);
     }
 
     private void readTEXT(RiffChunk c, MetadataField metadataField) throws IOException {
@@ -319,28 +459,29 @@ public class RiffReader {
                 String[] v = kv.split(":");
                 String key = v[0].trim();
                 String value = v[1].trim();
-                if (key.equals("user")) {
-                    info.getMetadata()
+                switch (key) {
+                    case "user" -> fileInfo.getMetadata()
                             .put(MetadataField.AUTHOR, value);
-                } else if (key.equals("program")) {
-                    info.getMetadata()
+                    case "program" -> fileInfo.getMetadata()
                             .put(MetadataField.SOFTWARE, value);
-                } else if (key.equals("date")) {
-                    info.getMetadata()
+                    case "date" -> fileInfo.getMetadata()
                             .put(MetadataField.CREATED, value);
                 }
             }
         } else {
             String txt = new String(data, StandardCharsets.ISO_8859_1);
-            info.getMetadata()
+            fileInfo.getMetadata()
                     .put(metadataField, txt);
         }
     }
 
+    /**
+     * SSND chunk contains audio samples
+     */
     private void readSSND(RiffChunk c) throws IOException {
         int offset = stream.getIntBE();
         int blockSize = stream.getIntBE();
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setNbAudioBytes(c.getContentSize() - offset);
     }
 
@@ -354,28 +495,29 @@ public class RiffReader {
             String compressionName = stream.getPascalString();
             // convert the AIFF codec id to WAVE codec id
             switch (compressionType) {
-                case "NONE", "sowt" -> info.getFileInfo()
+                case "NONE", "sowt" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.PCM);
-                case "fl32", "FL32", "fl64" -> info.getFileInfo()
+                case "fl32", "FL32", "fl64" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.IEEE754_FLOAT);
-                case "alaw", "ALAW" -> info.getFileInfo()
+                case "alaw", "ALAW" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.ITU_G711_ALAW);
-                case "ulaw", "ULAW" -> info.getFileInfo()
+                case "ulaw", "ULAW" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.ITU_G711_ULAW);
-                default -> info.getFileInfo()
+                case null -> log.warn("compression type is null");
+                default -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.UNKNOWN);
             }
         } else {
-            info.getFileInfo()
+            fileInfo.getAudioInfo()
                     .setCodec(WaveCodecs.PCM);
         }
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setBitPerSample(sampleSize);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setSampleRate((int) sampleRate);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setNbChannels(numChannels);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setBytePerSample((sampleSize / 8) * numChannels);
 
     }
@@ -417,9 +559,13 @@ public class RiffReader {
         }
     }
 
+    /**
+     * this chunk contains audio samples
+     */
     private void readDATA(RiffChunk c) {
-        info.getFileInfo()
-                .setNbAudioBytes(c.getContentSize());
+        var currentFileInfo = getCurrentAudioInfo(c);
+        currentFileInfo.setDataChunk(c);
+        currentFileInfo.setNbAudioBytes(c.getContentSize());
     }
 
 
@@ -430,17 +576,18 @@ public class RiffReader {
      * @throws SampleCountException if the count is wrong
      */
     private void checkSampleCount() throws SampleCountException {
-        if (!info.getCodecString()
+        if (!fileInfo.getAudioInfo()
+                .getCodecString()
                 .contains("PCM")) {
             return; // the data size depend on the compression, so we can't check anything
         }
 
-        long dataChunkSize = (info.getFileInfo()
+        long dataChunkSize = (fileInfo.getAudioInfo()
                 .getNbAudioBytes()) & 0xFFFFFFFFL;
-        long partialSample = dataChunkSize % info.getFileInfo()
+        long partialSample = dataChunkSize % fileInfo.getAudioInfo()
                 .getBytePerSample();
         if (partialSample != 0) {
-            long expectedSize = dataChunkSize - partialSample + info.getFileInfo()
+            long expectedSize = dataChunkSize - partialSample + fileInfo.getAudioInfo()
                     .getBytePerSample();
             String errorMsg = String.format("DATA Chunk size mismatch (partial sample). Expected %d/0x%X, have %d/0x%X bytes", expectedSize, expectedSize, dataChunkSize, dataChunkSize);
             if (canFixSource) {
@@ -465,11 +612,11 @@ public class RiffReader {
      */
     private void fixDataChunkSize(int expectedSize) throws IOException {
         log.warn("Fixing chunk size...");
-        var data = info.getDataChunk();
+        var data = fileInfo.getDataChunk();
         stream.seekUInt(data.getContentStart() - 4);
         stream.putIntLE(expectedSize);
         stream.seekUInt(0);
-        info.getDataChunk()
+        fileInfo.getDataChunk()
                 .setContentSize(expectedSize);
     }
 
@@ -479,15 +626,15 @@ public class RiffReader {
         stream.read(data);
         ID3Parser id3 = new ID3Parser(data);
         var id3Info = id3.parse();
-        if (info != null) {
-            info.getMetadata()
+        if (fileInfo != null) {
+            fileInfo.getMetadata()
                     .merge(id3Info.getMetadata());
         }
     }
 
     // https://www.adobe.com/products/xmp.html
-    private void readPMX(RiffChunk c) {
-        log.trace("XML data from PMX Adobe ignored");
+    private void readXMP(RiffChunk c) {
+        log.trace("XML data from Adobe’s Extensible Metadata Platform (XMP) ignored");
     }
 
     // http://www.gallery.co.uk/ixml/
@@ -543,23 +690,23 @@ public class RiffReader {
                         String name = currentAttribute.get("NAME");
                         if (name != null) {
                             if ("MusicalBeats".equals(name)) {
-                                info.getFileInfo()
+                                fileInfo.getAudioInfo()
                                         .setNbBeats(Integer.parseInt(currentAttribute.get(IXML_VALUE)));
                             }
                             if ("MusicalSignature".equals(name)) {
-                                info.getFileInfo()
+                                fileInfo.getAudioInfo()
                                         .setMeterDenominator(Integer.parseInt(currentAttribute.get("DENOMINATOR")));
-                                info.getFileInfo()
+                                fileInfo.getAudioInfo()
                                         .setMeterNumerator(Integer.parseInt(currentAttribute.get("NUMERATOR")));
                             }
                             if ("MusicalTempo".equals(name)) {
-                                info.getFileInfo()
+                                fileInfo.getAudioInfo()
                                         .setTempo(Float.parseFloat(currentAttribute.get(IXML_VALUE)));
                             }
 
                             // Not official
                             if ("MusicalKey".equals(name)) {
-                                info.getFileInfo()
+                                fileInfo.getAudioInfo()
                                         .setKey(currentAttribute.get(IXML_VALUE));
                             }
                         }
@@ -608,6 +755,9 @@ public class RiffReader {
 		} BROADCAST_EXT
 	 */
 
+    /**
+     * Broadcast WAV metadata
+     */
     private void readBEXT(RiffChunk c) throws IOException {
         String description = cleanup(readFixedASCIIString(256));
         String originator = cleanup(readFixedASCIIString(32));
@@ -635,13 +785,13 @@ public class RiffReader {
         log.trace(String.format("Broadcast WAV originatorReference : %s", originatorReference));
         log.trace(String.format("Broadcast WAV originationDate     : %s", originationDate));
         log.trace(String.format("Broadcast WAV originationTime     : %s", originationTime));
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.CREATED, originationDate);
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.VENDOR, originator);
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.DESCRIPTION, description);
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.COPYRIGHT, originatorReference);
     }
 
@@ -686,14 +836,42 @@ public class RiffReader {
         return new String(data, 0, l, StandardCharsets.US_ASCII).trim();
     }
 
-    private void readLIST(RiffChunk c) throws IOException {
+    private RiffListChunk readLIST(RiffChunk parent, String id, int contentStart, int contentSize) throws IOException {
         String listType = readChunkID();
-        if ("INFO".equals(listType)) {
-            readInfoSubChunks(c);
+        assert (listType != null);
+        RiffListChunk list = new RiffListChunk(parent, id, listType, contentStart, contentSize);
+        log.trace("Read LIST " + listType);
+        if (listType.equals("wave")) {
+            audioInfos.add(new RiffAudioInfo());
+        }
+        var listOfList = List.of("wvpl", "wave", Chunks.LINS, Chunks.LRGN, "lart", Chunks.INS, Chunks.RGN, "lar2", "lar3", Chunks.RGN2);
+        var listOfListGigastudio = List.of("3gri", "3gnl", "3dnl", "3prg", "3ewl", "3dnm");
+        if (Chunks.INFO.equals(listType)) {
+            readInfoSubChunks(list);
         } else if ("adtl".equals(listType)) {
-            readAdtlSubChunks(c);
+            readAdtlSubChunks(list);
+        } else if (listOfList.contains(listType)) {
+            readLISTChildren(list);
+        } else if (listOfListGigastudio.contains(listType)) {
+            readLISTChildren(list);
         } else {
             log.warn("Unknown LIST type: " + listType);
+        }
+        return list;
+    }
+
+    private void readLISTChildren(RiffListChunk list) throws IOException {
+        try {
+            do {
+                wordAlign();
+                if (isAtEndOfChunk(list)) {
+                    break;
+                }
+            }
+            while (readChunk(list) != null);
+        } catch (IncorrectRiffChunkParentSize e) {
+            log.warn("Recover from bad LIST size");
+            stream.seekLong(e.getContentStart() - 8);
         }
     }
 
@@ -717,8 +895,7 @@ public class RiffReader {
                 int cuePointID = stream.getIntLE();
                 String value = readFixedASCIIString(contentSize - 4); // value can be "Tempo: 160.0"
                 log.trace(String.format("adt label for Cue Point %d %s: %s", cuePointID, fieldID, value));
-                RiffAdtlLabelChunk subChunk = new RiffAdtlLabelChunk(fieldID, contentStart, contentSize, cuePointID, value);
-                c.addChild(subChunk);
+                RiffAdtlLabelChunk subChunk = new RiffAdtlLabelChunk(c, fieldID, contentStart, contentSize, cuePointID, value);
             } else if ("ltxt".equals(fieldID)) {
                 int contentSize = stream.getIntLE()/* - 4 - 4 - 4 - 2 - 2 - 2 - 2*/;
                 int contentStart = stream.positionUInt();
@@ -732,8 +909,7 @@ public class RiffReader {
                 int strSize = contentSize - (stream.positionUInt() - contentStart);
                 String value = readFixedASCIIString(strSize);
                 log.trace("adtl " + fieldID + ":" + value);
-                RiffAdtlTextChunk subChunk = new RiffAdtlTextChunk(fieldID, contentStart, contentSize, cuePointID, value, sampleLength, purposeId, countryId, language, dialect, codePage);
-                c.addChild(subChunk);
+                RiffAdtlTextChunk subChunk = new RiffAdtlTextChunk(c, fieldID, contentStart, contentSize, cuePointID, value, sampleLength, purposeId, countryId, language, dialect, codePage);
             } else {
                 log.warn("Unknown adtl LIST type: " + fieldID);
                 break;
@@ -762,22 +938,30 @@ public class RiffReader {
             int contentSize = stream.getIntLE();
             int contentStart = stream.positionUInt();
             String value = readFixedASCIIString(contentSize);
-            RiffChunk nfo = new RiffInfoChunk(fieldID, contentStart, contentSize, value);
-            c.addChild(nfo);
+            RiffChunk nfo = new RiffInfoChunk(c, fieldID, contentStart, contentSize, value);
             log.trace("LIST INFO " + fieldID + ":" + value);
             switch (fieldID) {
-                case "ISFT" -> info.getMetadata()
+                case "ISFT" -> fileInfo.getMetadata()
                         .put(MetadataField.SOFTWARE, value);
-                case "ICMT" -> info.getMetadata()
+                case "ICMT" -> fileInfo.getMetadata()
                         .put(MetadataField.DESCRIPTION, value);
-                case "IART", "IAUT" -> info.getMetadata()
+                case "IART", "IAUT" -> fileInfo.getMetadata()
                         .put(MetadataField.VENDOR, value);
-                case "IGNR" -> info.getMetadata()
+                case "IGNR" -> fileInfo.getMetadata()
                         .put(MetadataField.GENRE, value);
-                case "ICOP" -> info.getMetadata()
+                case "ICOP" -> fileInfo.getMetadata()
                         .put(MetadataField.COPYRIGHT, value);
-                case "ICRD" -> info.getMetadata()
+                case "ICRD" -> fileInfo.getMetadata()
                         .put(MetadataField.CREATED, value);
+                case "INAM" -> {
+                    if (c.getParent() != null && (c.getParent() instanceof RiffListChunk) && ((RiffListChunk) c.getParent()).getListType()
+                            .equals("wave")) {
+                        audioInfos.getLast()
+                                .setFilename(value);
+                    } else if (!isDLS2) {
+                        fileInfo.setFilename(value);
+                    }
+                }
                 case "IANN" -> {
                     // do nothing
                 }
@@ -804,7 +988,16 @@ public class RiffReader {
         }
     }
 
+    private RiffAudioInfo getCurrentAudioInfo(RiffChunk c) {
+        if (c.getParent() instanceof RiffListChunk) {
+            return audioInfos.getLast();// peek the latest added when entering inside parent chunk "wave"
+        } else {
+            return fileInfo.getAudioInfo();
+        }
+    }
+
     private void readFMT(RiffChunk c) throws IOException {
+        var currentFileInfo = getCurrentAudioInfo(c);
         int wFormatTag = (stream.getShortLE() & 0xffff);
         WaveCodecs codec = WaveCodecs.valueOf(wFormatTag);
         int nChannels = stream.getShortLE();
@@ -819,29 +1012,21 @@ public class RiffReader {
             short cbSize = stream.getShortLE();
             short validBitsPerSample = stream.getShortLE();
             int channelMask = stream.getIntLE();
-            info.getFileInfo()
-                    .setChannelsMask(channelMask);
-            info.getFileInfo()
-                    .setSubCodec(stream.getUUID());
+            currentFileInfo.setChannelsMask(channelMask);
+            currentFileInfo.setSubCodec(stream.getUUID());
         }
-        info.getFileInfo()
-                .setBitPerSample(wBitsPerSample);
-        info.getFileInfo()
-                .setSampleRate(nSamplesPerSec);
-        info.getFileInfo()
-                .setNbChannels(nChannels);
-        info.getFileInfo()
-                .setBytePerSample(nBlockAlign);
-        info.getFileInfo()
-                .setCodec(codec);
-
+        currentFileInfo.setBitPerSample(wBitsPerSample);
+        currentFileInfo.setSampleRate(nSamplesPerSec);
+        currentFileInfo.setNbChannels(nChannels);
+        currentFileInfo.setBytePerSample(nBlockAlign);
+        currentFileInfo.setCodec(codec);
+        currentFileInfo.setFmtChunk(c);
         log.trace(String.format("%s %d channels %d Hz %d bits Channels infos: %s",
                 codec,
                 nChannels,
                 nSamplesPerSec,
                 wBitsPerSample,
-                WaveChannels.getMask(info.getFileInfo()
-                        .getChannelsMask())));
+                WaveChannels.getMask(currentFileInfo.getChannelsMask())));
     }
 
     /*-
@@ -881,24 +1066,24 @@ public class RiffReader {
         int meterNumerator = stream.getShortLE();
         float tempo = stream.getFloatLE();
         int numberOfBars = numberOfBeats / meterNumerator;
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setNbBeats(numberOfBeats);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setRootNote(rootNote);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setMeterDenominator(meterDenominator);
-        info.getFileInfo()
+        fileInfo.getAudioInfo()
                 .setMeterNumerator(meterNumerator);
         log.trace(String.format("%f BPM %d/%d %d bars Root note: %d", tempo, meterNumerator, meterDenominator, numberOfBars, rootNote));
         // info.getData().put(MetadataField.BPM, df.format(tempo)); this tempo is always
         // wrong, we will compute the real one later
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.TIME_SIGNATURE, String.format("%d/%d", meterNumerator, meterDenominator));
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.BEATS, String.format("%d", numberOfBeats));
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.BARS, String.format("%d", numberOfBars));
-        info.getMetadata()
+        fileInfo.getMetadata()
                 .put(MetadataField.ROOT_NOTE, String.format("%d", rootNote));
     }
 
@@ -908,6 +1093,43 @@ public class RiffReader {
                 zipStream.write(data);
             }
             return byteStream.toByteArray();
+        }
+    }
+
+    public String computeAudioChecksum(RiffAudioInfo entry) throws IOException {
+        try (RandomAccessFile in = new RandomAccessFile(srcAudio, "r")) {
+            in.seek(entry.getDataChunk()
+                    .getContentStart());
+            var pcm = new byte[entry.getDataChunk()
+                    .getContentSize()];
+            in.readFully(pcm);
+            CRC32 fileCRC32 = new CRC32();
+            fileCRC32.update(pcm);
+            return String.format(Locale.US, "%08X", fileCRC32.getValue());
+        }
+    }
+
+    public void extract(RiffAudioInfo entry, File target) throws IOException {
+        try (RandomAccessFile in = new RandomAccessFile(srcAudio, "r")) {
+            target.getParentFile()
+                    .mkdirs();
+            try (RiffWriter rw = new RiffWriter(target)) {
+
+                in.seek(entry.getFmtChunk()
+                        .getContentStart());
+                var data = new byte[entry.getFmtChunk()
+                        .getContentSize()];
+                in.readFully(data);
+                rw.writeChunk(entry.getFmtChunk(), data);
+
+                in.seek(entry.getDataChunk()
+                        .getContentStart());
+                var pcm = new byte[entry.getDataChunk()
+                        .getContentSize()];
+                in.readFully(pcm);
+                rw.writeChunk(entry.getDataChunk(), pcm);
+                rw.setSize();
+            }
         }
     }
 }

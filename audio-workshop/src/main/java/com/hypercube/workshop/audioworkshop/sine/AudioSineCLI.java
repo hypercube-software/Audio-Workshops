@@ -19,21 +19,36 @@ public class AudioSineCLI {
     public void file(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-f") File file, @ShellOption(value = "-l") int loops) {
         AudioDeviceManager m = new AudioDeviceManager();
         m.collectDevices();
-        m.getOutputs().stream().filter(d -> d.getName().equals(outputDevice)).findFirst().ifPresentOrElse(d -> audioSine.playFile(d, file, loops), () -> log.error("Device not found:" + outputDevice));
+        m.getOutputs()
+                .stream()
+                .filter(d -> d.getName()
+                        .equals(outputDevice))
+                .findFirst()
+                .ifPresentOrElse(d -> audioSine.playFile(d, file, loops), () -> log.error("Device not found:" + outputDevice));
     }
 
     @ShellMethod(value = "Play a sine  in a precalculated buffer")
     public void sine(@ShellOption(value = "-o") String outputDevice) {
         AudioDeviceManager m = new AudioDeviceManager();
         m.collectDevices();
-        m.getOutputs().stream().filter(d -> d.getName().equals(outputDevice)).findFirst().ifPresentOrElse(audioSine::playSine, () -> log.error("Device not found:" + outputDevice));
+        m.getOutputs()
+                .stream()
+                .filter(d -> d.getName()
+                        .equals(outputDevice))
+                .findFirst()
+                .ifPresentOrElse(audioSine::playSine, () -> log.error("Device not found:" + outputDevice));
     }
 
     @ShellMethod(value = "Play a sine  in real time")
     public void vco(@ShellOption(value = "-o") String outputDevice) {
         AudioDeviceManager m = new AudioDeviceManager();
         m.collectDevices();
-        m.getOutputs().stream().filter(d -> d.getName().equals(outputDevice)).findFirst().ifPresentOrElse(audioSine::vco, () -> log.error("Device not found:" + outputDevice));
+        m.getOutputs()
+                .stream()
+                .filter(d -> d.getName()
+                        .equals(outputDevice))
+                .findFirst()
+                .ifPresentOrElse(audioSine::vco, () -> log.error("Device not found:" + outputDevice));
     }
 
     @ShellMethod(value = "Generate a signal in a file")

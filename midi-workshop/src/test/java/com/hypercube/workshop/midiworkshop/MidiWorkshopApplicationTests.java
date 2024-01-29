@@ -13,7 +13,9 @@ class MidiWorkshopApplicationTests {
     @Test
     void testMidiNote() {
         assertEquals(MidiNote.fromValue(42), MidiNote.fromName("F#1"));
-        assertEquals(MidiNote.fromName("F#1").value(), MidiNote.fromName("Gb1").value());
+        assertEquals(MidiNote.fromName("F#1")
+                .value(), MidiNote.fromName("Gb1")
+                .value());
         assertNotEquals(MidiNote.fromValue(43), MidiNote.fromName("F#1"));
         assertNotEquals(MidiNote.fromName("F#1"), MidiNote.fromName("Gb1"));
     }

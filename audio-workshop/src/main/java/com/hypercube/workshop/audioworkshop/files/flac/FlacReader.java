@@ -48,7 +48,7 @@ public class FlacReader {
     }
 
     public boolean parse(FlacMetadataConsumer consumer, FlacFramesConsumer frameConsumer) {
-        try (PositionalReadWriteStream stream = new PositionalReadWriteStream(inputFile)) {
+        try (PositionalReadWriteStream stream = new PositionalReadWriteStream(inputFile, false)) {
             String id = readID(stream);
             if (!id.equals("fLaC"))
                 throw new AudioParserException("Not a FLAC File");

@@ -2,6 +2,7 @@ package com.hypercube.workshop.audioworkshop.synth;
 
 import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
 import com.hypercube.workshop.audioworkshop.common.vco.CorrectVCO;
@@ -43,20 +44,20 @@ public class AudioSynth {
                     log.info("Terminating...");
                     midiInDevice.stopListening();
                 } catch (LineUnavailableException e) {
-                    throw new RuntimeException(e);
+                    throw new AudioError(e);
                 }
             });
             thread.setPriority(Thread.MAX_PRIORITY);
             stop = false;
             log.info("Play some notes ! Use the pitch bend to exit...");
             thread.start();
-            midiInDevice.listen(evt -> onMidiEvent(midiInDevice, evt, vca));
+            midiInDevice.listen(evt -> onMidiEvent(evt, vca));
         } catch (MidiUnavailableException e) {
             log.error("The Output device is Unavailable: " + midiInDevice.getName());
         }
     }
 
-    private void onMidiEvent(MidiInDevice midiInDevice, CustomMidiEvent evt, VCA vca) {
+    private void onMidiEvent(CustomMidiEvent evt, VCA vca) {
         MidiMessage msg = evt.getMessage();
         if (msg.getStatus() == ShortMessage.NOTE_ON) {
             midiNode = msg.getMessage()[1];

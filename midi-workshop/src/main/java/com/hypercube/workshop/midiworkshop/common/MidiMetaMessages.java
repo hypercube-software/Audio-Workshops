@@ -1,8 +1,12 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * @see <a href="http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html#BM3_1"></a>
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MidiMetaMessages {
     public static final int META_END_OF_TRACK_TYPE = 0x2F;
     public static final int META_TEMPO_TYPE = 0x51;

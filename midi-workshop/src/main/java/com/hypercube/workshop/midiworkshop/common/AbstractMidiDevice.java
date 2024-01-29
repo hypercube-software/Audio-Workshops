@@ -12,14 +12,18 @@ public abstract class AbstractMidiDevice {
     public void open() throws MidiUnavailableException {
         device.open();
     }
-    public boolean isOpen()    {
+
+    public boolean isOpen() {
         return device.isOpen();
     }
+
     public void close() {
         device.close();
     }
+
     public String getName() {
-        return device.getDeviceInfo().getName();
+        return device.getDeviceInfo()
+                .getName();
     }
 
 }

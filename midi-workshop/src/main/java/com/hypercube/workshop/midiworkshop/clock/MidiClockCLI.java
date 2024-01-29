@@ -19,8 +19,7 @@ public class MidiClockCLI {
     public void clock(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") MidiClockType clockType, @ShellOption(value = "-t") int tempo) {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(outputDevice).ifPresentOrElse(out -> clock.startClock(clockType, out, tempo), () -> {
-            log.error("Output Device not found " + outputDevice);
-        });
+        m.getOutput(outputDevice)
+                .ifPresentOrElse(out -> clock.startClock(clockType, out, tempo), () -> log.error("Output Device not found " + outputDevice));
     }
 }

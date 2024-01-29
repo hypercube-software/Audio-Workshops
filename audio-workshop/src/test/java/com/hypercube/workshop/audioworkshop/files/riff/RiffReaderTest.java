@@ -2,12 +2,14 @@ package com.hypercube.workshop.audioworkshop.files.riff;
 
 import com.hypercube.workshop.audioworkshop.files.meta.MetadataAssert;
 import com.hypercube.workshop.audioworkshop.files.meta.MetadataField;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
 import com.hypercube.workshop.audioworkshop.utils.AudioTestFileDownloader;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -60,39 +62,48 @@ class RiffReaderTest {
     }
 
     List<FormatAssert> surroundAsserts = List.of(
-            new FormatAssert("SBR_LFETest5_1-441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:45", List.of()),
-            new FormatAssert("ChID-BLITS-EBU-Narration441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:46", List.of()),
-            new FormatAssert("7.1auditionOutLeader v2.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,afsp,LIST,_PMX", 8, 16, 48000, "00:00:31", List.of()),
-            new FormatAssert("Nums_7dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 8, 24, 48000, "00:00:09", List.of()),
-            new FormatAssert("Nums_5dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 6, 24, 48000, "00:00:09", List.of()),
-            new FormatAssert("6_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 6, 16, 44100, "00:00:05", List.of()),
-            new FormatAssert("8_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 8, 24, 48000, "00:00:08", List.of()));
+            new FormatAssert("SBR_LFETest5_1-441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:45.179", List.of()),
+            new FormatAssert("ChID-BLITS-EBU-Narration441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:46.526", List.of()),
+            new FormatAssert("7.1auditionOutLeader v2.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,afsp,LIST,_PMX", 8, 16, 48000, "00:00:31.678", List.of()),
+            new FormatAssert("Nums_7dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 8, 24, 48000, "00:00:09.49", List.of()),
+            new FormatAssert("Nums_5dot1_24_48000.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data", 6, 24, 48000, "00:00:09.49", List.of()),
+            new FormatAssert("6_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 6, 16, 44100, "00:00:05.836", List.of()),
+            new FormatAssert("8_Channel_ID.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,cue,data", 8, 24, 48000, "00:00:08.49", List.of()));
     List<FormatAssert> stereoAsserts = List.of(
-            new FormatAssert("../forest.wav", "PCM", null, "fmt,data,LIST,id3", 1, 8, 48000, "00:00:09",
+            new FormatAssert("../forest.wav", "PCM", null, "fmt,data,LIST,id3", 1, 8, 48000, "00:00:09.21",
                     List.of(new MetadataAssert(MetadataField.CREATED, "2023"),
                             new MetadataAssert(MetadataField.YEAR, "2023"),
                             new MetadataAssert(MetadataField.DESCRIPTION, "Comment"),
                             new MetadataAssert(MetadataField.VENDOR, "Cklankbeeld freesound.org"),
                             new MetadataAssert(MetadataField.AUTHOR, "Cklankbeeld freesound.org"),
                             new MetadataAssert(MetadataField.GENRE, "Abstract"))),
-            new FormatAssert("M1F1-mulawC-AFsp.aif", "ITU_G711_ULAW", null, "FVER,COMM,ANNO,SSND", 2, 16, 8000, "00:00:01",
+            new FormatAssert("M1F1-mulawC-AFsp.aif", "ITU_G711_ULAW", null, "FVER,COMM,ANNO,SSND", 2, 16, 8000, "00:00:01.468",
                     List.of(new MetadataAssert(MetadataField.CREATED, "2003-01-30 03"),
                             new MetadataAssert(MetadataField.SOFTWARE, "CopyAudio"),
                             new MetadataAssert(MetadataField.AUTHOR, "kabal@CAPELLA")
                     )),
-            new FormatAssert("M1F1-int16C-AFsp.aif", "PCM", null, "FVER,COMM,ANNO,SSND", 2, 16, 8000, "00:00:02", List.of()),
-            new FormatAssert("M1F1-int8-AFsp.aif", "PCM", null, "COMM,ANNO,SSND", 2, 8, 8000, "00:00:02", List.of()),
-            new FormatAssert("M1F1-Alaw-AFsp.wav", "ITU_G711_ALAW", null, "fmt,fact,data,afsp,LIST", 2, 8, 8000, "00:00:02",
+            new FormatAssert("M1F1-int16C-AFsp.aif", "PCM", null, "FVER,COMM,ANNO,SSND", 2, 16, 8000, "00:00:02.936", List.of()),
+            new FormatAssert("M1F1-int8-AFsp.aif", "PCM", null, "COMM,ANNO,SSND", 2, 8, 8000, "00:00:02.937", List.of()),
+            new FormatAssert("M1F1-Alaw-AFsp.wav", "ITU_G711_ALAW", null, "fmt,fact,data,afsp,LIST", 2, 8, 8000, "00:00:02.936",
                     List.of(new MetadataAssert(MetadataField.CREATED, "2003-01-30 03:28:44 UTC"),
                             new MetadataAssert(MetadataField.SOFTWARE, "CopyAudio"),
                             new MetadataAssert(MetadataField.DESCRIPTION, "kabal@CAPELLA"))),
-            new FormatAssert("voxware.wav", "UNKNOWN", null, "fmt,fact,data", 1, 0, 8000, "00:00:00", List.of()),
-            new FormatAssert("Al Jarreau - Kissing My Love (CD).wav", "PCM", null, "fmt,data", 2, 16, 44100, "00:00:10", List.of())
+            new FormatAssert("voxware.wav", "UNKNOWN", null, "fmt,fact,data", 1, 0, 8000, "00:00:00.12", List.of()),
+            new FormatAssert("Al Jarreau - Kissing My Love (CD).wav", "PCM", null, "fmt,data", 2, 16, 44100, "00:00:10.690", List.of())
     );
 
     List<FormatAssert> appleLoopsAsserts = List.of(
             new FormatAssert("AlchemyLoopsBeatBoxBreaks-Vox Breaks 01a.wav", "PCM", null, "fmt,smpl,inst,FLLR,data", 1, 16, 44100, "00:00:04", List.of())
     );
+
+    @Test
+    void computeAudioMD5() throws IOException {
+        File f = new File("sounds/stereo/" + stereoAsserts.get(0)
+                .file());
+        RiffReader r = new RiffReader(f, false);
+        RiffFileInfo info = r.parse();
+        assertEquals("3BFEE932", r.computeAudioChecksum(info.getAudioInfo()));
+    }
 
     @Test
     void parseStereoFiles() {
@@ -118,18 +129,19 @@ class RiffReaderTest {
             assertNotNull(info);
             String chunks = listToString(info.getChunks(), RiffChunk::getId);
 
-            log.info("codec      : " + info.getCodecString());
+            log.info("codec      : " + info.getAudioInfo()
+                    .getCodecString());
             log.info("chunks     : " + chunks);
-            log.info("nbChannels : " + info.getFileInfo()
+            log.info("nbChannels : " + info.getAudioInfo()
                     .getNbChannels());
-            log.info("bitdepth   : " + info.getFileInfo()
+            log.info("bitdepth   : " + info.getAudioInfo()
                     .getBitPerSample());
-            log.info("samplerate : " + info.getFileInfo()
+            log.info("samplerate : " + info.getAudioInfo()
                     .getSampleRate());
-            log.info("tempo      : " + info.getFileInfo()
+            log.info("tempo      : " + info.getAudioInfo()
                     .getTempo());
 
-            log.info("duration   : " + info.getFileInfo()
+            log.info("duration   : " + info.getAudioInfo()
                     .getDurationString());
             log.info("Metadata   : %d entries".formatted(info.getMetadata()
                     .getAll()
@@ -141,18 +153,19 @@ class RiffReaderTest {
                     });
 
             if (a.format != null) {
-                assertEquals(a.format, info.getCodecString());
+                assertEquals(a.format, info.getAudioInfo()
+                        .getCodecString());
             }
-            assertEquals(a.nbChannels, info.getFileInfo()
+            assertEquals(a.nbChannels, info.getAudioInfo()
                     .getNbChannels());
-            assertEquals(a.bitdepth, info.getFileInfo()
+            assertEquals(a.bitdepth, info.getAudioInfo()
                     .getBitPerSample());
-            assertEquals(a.samplerate, info.getFileInfo()
+            assertEquals(a.samplerate, info.getAudioInfo()
                     .getSampleRate());
-            assertEquals(a.duration, info.getFileInfo()
+            assertEquals(a.duration, info.getAudioInfo()
                     .getDurationString());
             assertEquals(a.chunks, chunks);
-            assertEquals(a.subformat, info.getFileInfo()
+            assertEquals(a.subformat, info.getAudioInfo()
                     .getSubCodec());
             a.metadata.forEach(m -> {
                 if (!info.getMetadata()

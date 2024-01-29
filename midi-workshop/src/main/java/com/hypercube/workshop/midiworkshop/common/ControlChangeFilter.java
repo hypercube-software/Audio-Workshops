@@ -19,13 +19,14 @@ public class ControlChangeFilter implements Receiver {
     @Override
     public void send(MidiMessage message, long timeStamp) {
         if (message.getStatus() == ShortMessage.CONTROL_CHANGE) {
-            if (filter.contains(Integer.valueOf(message.getMessage()[1]))) {
+            if (filter.contains((int) message.getMessage()[1])) {
                 return;
             }
         }
         try {
             receiver.send(message, timeStamp);
         } catch (IllegalStateException e) {
+            log.error("Unexpected error", e);
         }
     }
 

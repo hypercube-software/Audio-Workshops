@@ -6,8 +6,9 @@ import java.util.Map;
 
 
 public record MidiControl(int id, String name) {
-    private static Map<Integer, String> namesMap = new HashMap<>();
-    private static List<Object> names = List.of(
+    private static final Map<Integer, String> namesMap = new HashMap<>();
+    @SuppressWarnings("java:S1192")
+    private static final List<Object> names = List.of(
             1, "Modulation Wheel",
             2, "Breath controller",
             4, "Foot Pedal (MSB)",

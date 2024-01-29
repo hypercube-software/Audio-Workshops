@@ -2,8 +2,8 @@ package com.hypercube.workshop.audioworkshop.common.vca;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("FieldCanBeLocal")
 @Slf4j
+@SuppressWarnings({"FieldCanBeLocal", "java:S1068"})
 public class AdsrVCA extends VCA {
     private enum State {
         OFF,
