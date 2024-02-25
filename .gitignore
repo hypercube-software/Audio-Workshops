@@ -41,3 +41,8 @@ hs_err_pid*
 /docs/index.html
 /audio-workshop/output/
 /audio-workshop/sounds/
+
+# memory map dumps
+*.map
+# memory dump
+*.dump

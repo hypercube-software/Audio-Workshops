@@ -14,8 +14,11 @@ public class AudioMetadata {
     public void put(MetadataField field, String value) {
         if (value == null)
             return;
-        if (values.containsKey(field.name())) {
-            log.warn("Metadata field {} already set", field);
+        var dup = values.get(field.name());
+        if (dup != null) {
+            if (!dup.equals(value)) {
+                //log.warn("Metadata field {} already set: {} != {}", field, dup, value);
+            }
             return;
         }
         value = value.trim();
