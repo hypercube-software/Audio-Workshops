@@ -51,7 +51,7 @@ public class AudioSynth {
             stop = false;
             log.info("Play some notes ! Use the pitch bend to exit...");
             thread.start();
-            midiInDevice.listen(evt -> onMidiEvent(evt, vca));
+            midiInDevice.listen((device, evt) -> onMidiEvent(evt, vca));
         } catch (MidiUnavailableException e) {
             log.error("The Output device is Unavailable: " + midiInDevice.getName());
         }

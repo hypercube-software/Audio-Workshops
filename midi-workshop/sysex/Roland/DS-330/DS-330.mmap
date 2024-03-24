@@ -1,0 +1,323 @@
+# -------------------------------------------
+# Memory Layout Roland/Boss DS-330
+# -------------------------------------------
+
+@Model Boss DS-330
+@Packed
+
+# -------------------------------------------
+# Memory zones
+# -------------------------------------------
+@400000-000100 Zone 1
+{
+	SystemParams
+}
+
+@400100-001000 Zone 2
+{
+	CommonPatchParams
+}
+
+@401000-002000 Zone 3
+{
+	PatchParams[16 block]
+}
+
+@402000-002000 Zone 3
+{
+	PatchSends[16 block]
+}
+
+@403000-000020 Information
+{
+	20 Information (String)
+}
+
+@410000-00000C Drum Map Name
+{
+	0C Name (String)
+}
+
+@410100 Drum Map
+{
+	01 Tune[128 Note]
+	01 Level[128 Note]
+	01 Group[128 Note]
+	01 Pan[128 Note]
+	01 Reverb[128 Note]
+	01 Chorus[128 Note]
+	01 Rx NoteOn[128 Note]
+	01 Rx NoteOff[128 Note]
+}
+
+@480000-001D10 NIBBLES Bulk Dump
+{
+    BulkSystemParams
+    BulkCommonPatchParams
+    01 Reserved[28]
+    BulkPatchParams[16 block]
+}
+
+@490000-001D10 NIBBLES Bulk Dump Drum
+{
+	01 data[3728]
+}
+
+# -------------------------------------------
+struct 000008 SystemParams
+{
+	04 Tune
+	01 Level
+	01 Pitch
+	01 Pan
+	01 reserved[120]
+	01 GS Init (Switch)
+}
+struct 000100 CommonPatchParams
+{
+	10 Name (String)
+	01 Partial[16 block]
+	01 reserved[16]
+	01 Reverb Type (ReverbType)
+	01 Reverb Character
+	01 Reverb Cutoff
+	01 Reverb Level
+	01 Reverb Time
+	01 Reverb Delay
+	01 Reverb To Chorus
+	01 reserved[1]
+	01 Chorus Type (ChorusType)
+	01 Chorus Cutoff
+	01 Chorus Level
+	01 Chorus Feedback
+	01 Chorus Delay
+	01 Chorus Rate
+	01 Chorus Depth
+	01 Chorus To Reverb
+}
+# PatchParams comes in a specific order: block 1-16 where block 1 is the one for the drum, Channel = 10 for this one
+# Patch Block 1 has channel 1
+# Patch Block 2 has channel 2
+# ...
+# Channel field is in the range [0-15] so "channel" in the first block = 09
+
+struct 000100 PatchParams
+{
+	02 Tone Command/Program Change
+	01 Channel
+	01 Rx Pitch Bend (Switch)
+	01 Rx Channel Aftertouch (Switch)
+	01 Rx Prorgram Change (Switch)
+	01 Rx Command Change (Switch)
+	01 Rx Polyphonic Aftertouch (Switch)
+	01 Rx Note Message (Switch)
+	01 Rx RPN (Switch)
+	01 Rx NRPN (Switch)
+	01 Rx Modulation (Switch)
+	01 Rx Volume (Switch)
+	01 Rx Panning (Switch)
+	01 Rx Expression (Switch)
+	01 Rx Sustain (Switch)
+	01 Rx Portamento (Switch)
+	01 Rx Sostenuto (Switch)
+	01 Rx Soft Pedal (Switch)
+	01 Mono Poly Mode
+	01 Assignation Mode
+	01 Drum Map
+	01 Pitch Coarse
+	02 Pitch Fine
+	01 Level
+	01 Velocity
+	01 Velocity Shift
+	01 Panning
+	01 Note range low
+	01 Note range high
+	01 CC1
+	01 CC2
+	01 Chorus Level
+	01 Reverb Level
+	01 Reserved[13]
+
+	01 Vibrato Rate
+	01 Vibrato Depth
+	01 TVF Cutoff
+	01 TVF Resonnance
+	01 Attack
+	01 Decay
+	01 Release
+	01 Vibrato Delay
+
+	01 reserved[8]
+
+	0C Fine Tune
+}
+struct 000100 PatchSends
+{
+    MOD (Send)
+    BEND (Send)
+    CAF (Send)
+    PAF (Send)
+    CC1 (Send)
+    CC2 (Send)
+}
+struct Send
+{
+	01 Pitch Coarse
+	01 TVF Cutoff
+	01 TVA
+	LFO1 (LFOSend)
+	LFO2 (LFOSend)
+	01 reserved[7]
+}
+struct LFOSend
+{
+	01 Rate
+	01 TVF
+	01 TVA
+}
+
+# -------------------------------------------
+# Bulk types
+# -------------------------------------------
+struct 000010 BulkSystemParams
+{
+	02 Tune[4]
+	02 Level
+	02 Pitch
+	02 Pan
+	02 GS Init (Switch)
+}
+
+struct 000064 BulkCommonPatchParams
+{
+	20 Name (String)
+	02 Partial[16 block]
+	02 Reserved[2]
+	02 Reverb Type (ReverbType)
+	02 Reverb Character
+	02 Reverb Cutoff
+	02 Reverb Level
+	02 Reverb Time
+	02 Reverb Delay
+	02 Reverb To Chorus
+	02 Reserved
+	02 Chorus Type (ChorusType)
+	02 Chorus Cutoff
+	02 Chorus Level
+	02 Chorus Feedback
+	02 Chorus Delay
+	02 Chorus Rate
+	02 Chorus Depth
+	02 Chorus To Reverb
+}
+struct BulkToneParams
+{
+	02 Vibrato Rate
+	02 Vibrato Depth
+	02 TVF Cutoff
+	02 TVF Resonance
+	02 Attack
+	02 Decay
+	02 Release
+	02 Vibrato Delay
+}
+struct BulkPatchParams
+{
+	02 Tone Command Change
+	02 Tone Program Change
+	02 Rx1
+	02 Rx2
+	02 Channel
+	02 Reserved # 0x81,0xD1 or 0xB1
+	02 Pitch Coarse
+	02 Pitch Fine
+    02 Level
+	02 Velocity
+	02 Velocity Shift
+	02 Panning
+
+	02 Note range low
+	02 Note range high
+
+	02 Chorus Level
+	02 Reverb Level
+
+    BulkToneParams
+
+    02 Reserved[2]
+    02 Fine Tune[12]
+	02 CC1
+	02 CC2
+
+	MOD (BulkSend)
+	BEND (BulkSend)
+	CAF (BulkSend)
+	PAF (BulkSend)
+	CC1 (BulkSend)
+	CC2 (BulkSend)
+}
+
+struct BulkSend
+{
+	02 Pitch (semitone)
+	02 TVF
+	02 TVA
+
+    LFO1 (BulkLFOSend)
+    LFO2 (BulkLFOSend)
+    02 Reserved
+}
+
+struct BulkLFOSend
+{
+	02 TVF
+	02 Rate
+	02 Pitch (cent)
+	02 TVA
+}
+
+# ------------------------------------------------------
+# Enums
+# ------------------------------------------------------
+enum SplitMode
+{
+	Off
+	Split
+	Dual
+}
+
+enum Switch
+{
+	Off
+	On
+}
+
+enum KeyboardMode
+{
+	MONO
+	POLY
+}
+
+enum ReverbType
+{
+	Room 1
+	Room 2
+	Room 3
+	Hall 1
+	Hall 2
+	Plate
+	Delay
+	Panning Delay
+}
+
+enum ChorusType
+{
+	Chorus 1
+	Chorus 2
+	Chorus 3
+	Chorus 4
+	Feedback Chorus
+	Flanger
+	Short Delay
+	Short Delay Feedback
+}

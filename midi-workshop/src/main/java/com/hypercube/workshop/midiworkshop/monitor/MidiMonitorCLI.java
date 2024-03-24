@@ -13,7 +13,7 @@ import org.springframework.shell.standard.ShellOption;
 @Slf4j
 @AllArgsConstructor
 public class MidiMonitorCLI {
-    private final MidiMonitor impl;
+    private final MidiMonitor midiMonitor;
 
     @ShellMethod(value = "Monitor MIDI input")
     public void monitor(@ShellOption(value = "-i", defaultValue = "") String inputDevice) {
@@ -21,9 +21,9 @@ public class MidiMonitorCLI {
         m.collectDevices();
         if (!inputDevice.isEmpty()) {
             m.getInput(inputDevice)
-                    .ifPresentOrElse(impl::monitor, () -> log.error("Input Device not found " + inputDevice));
+                    .ifPresentOrElse(midiMonitor::monitor, () -> log.error("Input Device not found " + inputDevice));
         } else {
-            impl.monitor(new MultiMidiInDevice(m.getInputs()));
+            midiMonitor.monitor(new MultiMidiInDevice(m.getInputs()));
         }
 
     }
@@ -48,7 +48,7 @@ public class MidiMonitorCLI {
 
     private void filter(MidiInDevice in, String outputDevice, MidiDeviceManager m) {
         m.getOutput(outputDevice)
-                .ifPresentOrElse(out -> impl.filter(in, out), () -> log.error("Output Device not found " + outputDevice));
+                .ifPresentOrElse(out -> midiMonitor.filter(in, out), () -> log.error("Output Device not found " + outputDevice));
     }
 
     @ShellMethod(value = "List MIDI devices")

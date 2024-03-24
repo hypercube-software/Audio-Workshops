@@ -1,0 +1,456 @@
+# MIDI System Exclusive
+
+This is a very special kind of MIDI messages which open the door to vendor specific content.
+
+- They can be used to save and restore the settings of a device
+- They can be used to modify settings which are not visible on the front panel of the device
+
+Unfortunately, most messages are not properly documented so this area requires a lot of **reverse engineering**.
+
+# Overview
+
+## Basic
+
+A SysEx is a train of bytes delimited by `0xF0` and `0xF7`.
+
+```
+F0 .... content .... F7
+F0: SysEx START
+F7: SysEx END
+```
+
+## Standard
+
+There is a subset of messages which are part of the standard MIDI specification. 
+
+- **Non-Real Time** SysEx header: `F0 7E`
+- **Real-Time** SysEx header: `F0 7F`
+- **Reserved for non-commercial use**: `F0 7D`
+
+The overall format is:
+
+```
+F0 hh ii cc .... F7
+hh: header (7E, 7F or 7D)
+ii: DEVICE ID, 7F = broadcast
+cc: Command
+```
+
+**Non real-time Commands**:
+
+```
+01: GM Dump header
+02: GM Dump data
+03: Sample Dump Standard (SDS)
+04: -
+05: Loop Point Transmission
+06: General Information
+07: File dump
+08: -
+09: GM System
+...
+```
+
+The command **06 General Information** gives you access to sub-commands. We will take a look on one of them: **Inquiry Request**
+
+More info can be found [here](https://www.lim.di.unimi.it/IEEE/MIDI/SOT4.HTM).
+
+## Device ID
+
+The concept of **Device ID** is used to target a specific hardware in case you have more than one identical (same brand, same model). It was called **SysEx channel** but recent specifications prefer Device ID. The special value `0x7F` is used to target any device, it is like a **broadcast**.
+
+⚠️ Do not mistake the **Device ID** with the **Model ID**. The Model ID is fixed and designate a specific hardware. The Device ID can be changed at will by the end user.
+
+## Manufacturer ID
+
+Since one byte is not enough, a special encoding is used to provides 16 bit identifiers when needed:
+
+```
+nn        8 bits identifier if not 0
+00 mm nn  16 bit identifiier if 0
+```
+
+Examples:
+
+- **Roland** is `0x41`
+- **Korg** is `0x42`
+- **Behringer** is `0x00 0x20 0x32`
+
+You can found various manufacturer lists on the Internet: [here](http://midi.teragonaudio.com/tech/midispec/id.htm), [here](https://electronicmusic.fandom.com/wiki/List_of_MIDI_Manufacturer_IDs) and [here](https://studiocode.dev/doc/midi-manufacturers/).
+
+## Inquiry Message
+
+This message is used to get informations from a device. It is part of the **General Information** command.
+
+```
+F0 7E ii 06 01 F7
+7E: NON REALTIME SysEx
+ii: DEVICE ID, 7F = broadcast
+06: General Information
+01: Identity Request
+```
+
+Here a response from a **Korg NanoKey 2** controller
+
+```
+F0 7E 00 06 02 42 11 01 01 00 03 00 01 00 F7
+7E: NON REALTIME SysEx
+00: Device ID
+06: General Information
+02: Identity Response
+42: Manufacturer ID => KORG
+11 01 01 00 03 00 01 00 => KORG Specific response
+```
+
+Here a response from a **AKAI MPK 261** keyboard
+
+```
+F0 7E 00 06 02 47 25 00 19 00 01 00 00 00 00 12 7F 7F 41 31 32 31 30 31 31 35 35 37 32 35 30 37 37 00 F7
+7E: NON REALTIME SysEx
+00: Device ID
+06: General Information
+02: Identity Response
+47: Manufacturer ID => AKAI
+25 00 19 00 01 00 00 00 00 12 7F 7F 41 31 32 31 30 31 31 35 35 37 32 35 30 37 37 00 => AKAI Specific response
+```
+
+👉 Unfortunately this message is not always recognized.
+
+# Uncharted territory
+
+We are interring now in vendor specific SysEx.
+
+- Pain Level 0: This involve digging in device owner manuals, knowing they are sometimes wrong
+- Pain Level 1: Sometimes you have to found hidden SysEx commands used by closed-source applications
+- Pain Level 2: Sometimes you have to reverse yourself the memory layout of your device
+
+## Wireshark
+
+[This tool](https://www.wireshark.org/) was primary designed to capture network packets, but it is now able to also capture USB packets and more especially **MIDI over USB**.
+
+So it is perfect to "spy" what a proprietary application, dedicated to your hardware, does.
+
+During the installation select "**Install USBCap**"
+
+![image-20240318201739906](assets/image-20240318201739906.png)
+
+This will trigger the USBCap installer:
+
+![image-20240318201941148](assets/image-20240318201941148.png)
+
+Select "Full":
+
+![image-20240318202026690](assets/image-20240318202026690.png)
+
+Reboot, run WireShark and select "USBPcap1" as capture interface:
+
+![image-20240318202653323](assets/image-20240318202653323.png)
+
+Now in the filter type `_ws.col.protocol == "SYSEX"`, this will display only MIDI SysEx messages over USB
+
+## Example
+
+Now it is time to run any editor for your MIDI device, let say [Korg Kontrol Editor](https://www.korg.com/us/support/download/product/1/133/), with the device **nanoKEY 2**
+
+In the filter type `_ws.col.protocol == "SYSEX"`
+
+![image-20240318203031889](assets/image-20240318203031889.png)
+
+You just have to click on any message to see the content:
+
+![image-20240318203321805](assets/image-20240318203321805.png)
+
+Here the payload appear on the right: `F0 42 50 00 02 F7`. Sometimes Wireshark is able to understand the entire message, sometimes not. 
+
+In this example, we can get information on Korg website about [nanoKEY2 MIDI Implementation](https://www.korg.com/us/support/download/manual/0/156/2709/)
+
+```
+F0 42 50 00 02 F7
+
+F0: SysEx START
+42: Manufacturer ID Korg
+50: Search Device
+00: Request
+02: Echo back ID
+F7: Sysex END
+```
+
+The next message is the response:
+
+![image-20240318204957178](assets/image-20240318204957178.png)
+
+```
+F0 42 50 01 00 02 11 01 01 00 03 00 01 00 F7
+
+F0   : SysEx START                      
+42   : Manufacturer ID Korg
+50   : Search Device                              
+01   : Reply                                      
+00   : MIDI Global Channel  ( Device ID )   
+02   : Echo Back ID                               
+11 01: Model ID (nanoKey)
+01 00: Member ID
+03 00: Minor Version
+01 00: Major Version 
+F7   :Sysex END                           
+```
+
+👉 Note the presence of **Little endian** values: LSB first, MSB last. For instance **Major Version** value is `0x0001`, not `0x0100`
+
+# Roland
+
+Roland provides a relative good amount of information regarding their SysEx. 
+
+- You will find SysEx descriptions at the end of any owner manual
+- Unfortunately sometimes the information is wrong, especially on parameters addresses.
+- They basically use SysEx to access to various **memory addresses** in the device in Read or Write.
+
+The overall format of a command looks like this:
+
+```
+F0 41 dd mm cc ... F7
+41: Manufacturer ID 'Roland'
+dd: Device ID
+mm: Model ID
+cc: Command ID
+```
+
+Two types of communication are provided with their relative commands:
+
+- **One Way** Transfer
+  - `0x11 RQ1`: Data Request
+  - `0x12 DT1`: Data Response
+- **Handshaking** Transfer
+  - `0x40 WSD`: Wait To Send Data
+  - `0x41 RQD`: Request Data
+  - `0x42 DAT`: Data Set
+  - `0x43 ACK`: Acknowledge
+  - `0x45 EOD`: End of Data
+  - `0x4E ERR`: Communication Error
+  - `0x4F RJC`: Rejection
+
+## Packed bytes
+
+Roland use this very specific format to encode 21 bit **addresses** and **sizes** into the SysEx message.
+
+- The main idea is to produce bytes witch are always below `0x80`, so the fist bit on the left is always Zero.
+- This mean a 21 bits address like `0x1FFFFF` will be encoded in `0x7F7F7F` in the SysEx.
+- I call this format **packed bytes**, because regular bytes are packed into 7 bit bytes
+
+💀 This is, of course, a real pain to deal with: Try to add sizes to addresses to see what I mean.
+
+## Nibbles
+
+Roland use also **half bytes**, also called [Nibbles](https://en.wikipedia.org/wiki/Nibble) to store information in the device memory.
+
+- This mean `0x7F` will be encoded into `0x070F`
+- Don't worry, there is no such thing as packed Nibbles. This is painful enough like this.
+
+Typically, you will found this encoding in **Bulk Dump** in their **Sound Canvas** devices.
+
+## Bulk Dumps
+
+Bulk Dumps is the term used by Roland to talk about **saving** and **restoring** device settings.
+
+- When you trigger a dump from the device panel, a Bulk Dump is sent to your computer
+- You can also programmatically query such dump with a `RQ1` message
+
+Given what we saw, you are now ready to understand the calculations found in various Roland owner manuals. 
+
+For instance the [Sound Canvas 55 Manual](https://en.wikipedia.org/wiki/Roland_SC-55) say this:
+
+> Bulk Dump:
+>
+> PATCH ALL = (64 + (112 * 16)) = 0x740 bytes
+>
+> 0x740 * 2 (Nibbles) = 1D 00
+
+First thing to understand: A bulk size is in **packed format**. So `0x1D00`  must be translated to the real size.
+
+```
+0x1D00 = 00011101 00000000
+         00001110 10000000 // shift 1 bit on the right
+       = 0xE80
+       = 3712 bytes
+```
+
+So the bulk size is `3712` and we know the content is **nibbles** so the real size is 
+
+```
+3712 / 2 = 1856
+         = 0x740
+```
+
+💀 Because of this, most of the documentation provided by Roland is a real nightmare to understand properly.
+
+- They mix unpacked sizes with normal sizes
+- They mix hexadecimal with decimal representation
+- They mix nibble sizes with normal sizes
+
+You have to understand that:
+
+- Some memory sections are dedicated to Bulk dumps and are encoded in Nibbles
+- Some memory sections are using regular bytes
+
+For instance in their Sound Canvas:
+
+- The address `0x400000` contains the **system parameters** in bytes
+- The address `0x480000` contains the same thing in nibbles for a Bulk Dump
+
+Most of the time they will describe precisely the first memory section, without explaining precisely the layout of the second section. Just know that everything will be **twice larger**. That's all.
+
+# AKAI
+
+AKAI doesn't provide a lot of information. This is the worst case. You can dump the memory with a SysEx but you have to understand yourself the layout.
+
+# Behringer
+
+Behringer provide a little bit of information but they don't provide all of it. You are supposed to use their closed-source application to edit parameters of your device (typically this is the case for their [Neutron](https://en.wikipedia.org/wiki/Neutron_(synthesizer))). In this case, with the right tool, you can discover which SysEx are send by their application.
+
+## Dump Request
+
+```
+F0 00 20 32 28 7F 05 F7
+
+F0      : SysEx START
+00 20 32: Manufacturer ID Behringer
+7F      : DEVICE ID (Broadcast)
+05      : Dump request
+F7      : Sysex END
+```
+
+
+
+# Korg
+
+Similar to Behringer, Korg won't give you much information about their SysEx. You have to use their closed-source application to edit device settings. In this case, with the right tool, you can discover which SysEx are send by their application.
+
+Nevertheless you can found some information for various devices:
+
+- [nanoKEY MIDI Implementation ](https://www.korg.com/us/support/download/manual/1/250/2712/) (surprisingly nothing is provided for [nanoKEY Studio](https://www.korg.com/us/support/download/product/0/551/))
+- [nanoKEY2 MIDI Implementation](https://www.korg.com/us/support/download/manual/0/156/2709/)
+- [nanoKontrol MIDI Implemntation](https://www.korg.com/us/support/download/manual/1/252/2713/)
+- [nanoKontrol2 MIDI Implementation](https://www.korg.com/us/support/download/manual/0/159/2710/)
+- [Korg M1 Owner Manual](https://www.korg.com/us/support/download/manual/1/139/1685/)
+
+## Overview
+
+Most Korg SysEx follow this scheme:
+
+```
+F0 42 xy yy ... F7
+
+F0: SysEx START
+42: Manufacturer ID Korg
+ x: Format
+ y: Device ID, also called Global Channel
+ ...
+F7: Sysex END
+```
+
+The content of the message depend of the **format** value.
+
+- x = 3, format used by old models like a Korg **M1** or **Triton**
+- x = 4, format used by recent models like a **NanoKey2** or **nanoKONTROL2**
+
+We will focus on the last one.
+
+## Models ID
+
+Depending on the message, a **Model ID** appear in 16 bit or 24 bits.  You can also consider 32 bit ids if you include the **Sub ID**.
+
+```
+32 bit Model ID = 0x00mmmmss
+mmmm = 16 bits Model ID
+ss = Sub ID
+
+NanoKey      = 0x00010200
+NanoKey2     = 0x00011101
+nanoKONTROL  = 0x00010400
+nanoKONTROL2 = 0x00011300
+```
+
+## Member ID
+
+The Member ID is the Korg Sub ID on 16 bits. Originally, it comes from standard **Inquiry messages**.
+
+## Search Device
+
+This message is used to identify recent Korg devices (NanoKey2, nanoKONTTROL2...). It is very close to the standard **Inquiry Message** we saw earlier.
+
+Request:
+
+```
+F0 42 50 00 02 F7
+
+F0: SysEx START
+42: Manufacturer ID Korg
+50: Search Device
+00: Request
+02: Echo back ID
+F7: Sysex END
+```
+
+Response:
+
+```
+F0 42 50 01 00 02 11 01 01 00 03 00 01 00 F7
+
+F0   : SysEx START                      
+42   : Manufacturer ID Korg
+50   : Search Device                              
+01   : Reply                                      
+00   : MIDI Global Channel  ( Device ID )   
+02   : Echo Back ID                               
+11 01: Model ID (nanoKey 2) in little endian
+01 00: Member ID in little endian
+03 00: Minor Version in little endian
+01 00: Major Version in little endian
+F7   : Sysex END        
+```
+
+Given the 16 bit **Model ID** and the 16 bit **Member ID** we can forge the 32 bit **Model ID** for the nanoKey2: `0x00011101`
+
+The version in this example is **1.3**
+
+## Data Dump
+
+This message is used to **retrieve settings** from recent Korg devices (NanoKey2, nanoKONTTROL2...).
+
+Request:
+
+```
+F0 42 40 00 01 11 01 1F 10 00 F7
+
+F0         : SysEx START                      
+42         : Manufacturer ID Korg
+40         : Format and Device ID (4 = Format, 0 = Deivce ID)
+00 01 11 01: Model ID (nanoKey2)
+1F         : Data Dump Command
+10         : Data Dump Request
+00         : -
+F7         : Sysex END   
+```
+
+Response:
+
+```
+F0 42 40 00 01 11 01 7F 4B 40 7A 00 7F 02 7F 7F
+7F 7F 71 7F 40 01 7F 7F 7F 7F 03 7F 7F 01 01 00
+00 7F 06 02 7F 7F 01 40 00 00 7C 7F 00 7F 7F 7F
+7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F
+7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F 7F
+7F 7F 01 7F F7
+
+F0         : SysEx START                      
+42         : Manufacturer ID Korg
+40         : Device ID (0x4g where g = id)
+00 01 11 01: Model ID (nanoKey2)
+7F         : Data Dump Command
+4B         : Data Dump size + 1
+40         : Data Dump Type: Scene
+...
+0x4A bytes of content
+...
+```
+

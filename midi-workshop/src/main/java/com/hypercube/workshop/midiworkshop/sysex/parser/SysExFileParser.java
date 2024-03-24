@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.sysex.parser;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.sysex.model.DeviceModel;
-import com.hypercube.workshop.midiworkshop.sysex.model.Manufacturer;
+import com.hypercube.workshop.midiworkshop.sysex.device.Device;
+import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.sysex.util.CustomByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.util.Optional;
+
+import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_START;
 
 @Slf4j
 @Component
@@ -19,29 +20,42 @@ public class SysExFileParser {
     /**
      * Read a SYSEX file and dump the content of the device memory
      *
-     * @param input  SYSEX file (*.syx)
-     * @param output Memory dump file (*.dump)
+     * @param input SYSEX file (*.syx)
      */
-    public void parse(File input, File output) {
+    public Device parse(File input) {
         try {
             byte[] data = Files.readAllBytes(input.toPath());
             CustomByteBuffer bb = new CustomByteBuffer(ByteBuffer.wrap(data));
 
-            DeviceModel device = null;
+            Device device = null;
             while (bb.remaining() > 0) {
                 int status = bb.getByte();
-                assert (status == SysExParser.SYSEX_START);
-                Manufacturer manufacturer = Manufacturer.get(bb.getByte());
-                DeviceModel currentDevice = manufacturer.parse(bb);
+                assert (status == SYSEX_START);
+                int manufacturerId = bb.getByte();
+                if (manufacturerId == 0) {
+                    int b1 = bb.getByte();
+                    int b2 = bb.getByte();
+                    manufacturerId = (b1 << 8) + b2;
+                }
+                Manufacturer manufacturer = Manufacturer.get(manufacturerId);
+                Device currentDevice = manufacturer.parse(bb);
                 if (device == null) {
                     device = currentDevice;
                 }
             }
-            Optional.ofNullable(device)
-                    .ifPresent(d -> d.getMemory()
-                            .dumpMemory(output));
+            // part 2
+            //device.getMemory()                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480110), MemoryInt24.fromPacked(0x401000), 112 * 16);
+
+         /*   int total = 3728;
+            device.getMemory()
+                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480000), MemoryInt24.fromPacked(0x400000), 8);
+            device.getMemory()
+                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480110), MemoryInt24.fromPacked(0x401000), 112 * 16);
+
+          */
+            return device;
         } catch (IOException e) {
-            throw new MidiError(e);
+            throw new MidiError("Unexpected error: %s".formatted(e.getMessage()), e);
         }
     }
 }

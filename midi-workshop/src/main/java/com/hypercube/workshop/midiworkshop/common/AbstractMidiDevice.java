@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.AllArgsConstructor;
 
 import javax.sound.midi.MidiDevice;
@@ -9,8 +10,12 @@ import javax.sound.midi.MidiUnavailableException;
 public abstract class AbstractMidiDevice {
     protected final MidiDevice device;
 
-    public void open() throws MidiUnavailableException {
-        device.open();
+    public void open() {
+        try {
+            device.open();
+        } catch (MidiUnavailableException e) {
+            throw new MidiError(e);
+        }
     }
 
     public boolean isOpen() {

@@ -27,7 +27,11 @@ public class MidiInDevice extends AbstractMidiDevice {
                     .setReceiver(new Receiver() {
                         @Override
                         public void send(MidiMessage message, long timeStamp) {
-                            listener.onEvent(new CustomMidiEvent(message, timeStamp));
+                            try {
+                                listener.onEvent(MidiInDevice.this, new CustomMidiEvent(message, timeStamp));
+                            } catch (RuntimeException e) {
+                                Log.error("Unexpected error in midi listener", e);
+                            }
                         }
 
                         @Override

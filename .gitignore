@@ -46,3 +46,4 @@ hs_err_pid*
 *.map
 # memory dump
 *.dump
+/Manuals/

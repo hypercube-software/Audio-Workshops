@@ -3,6 +3,7 @@
 - MIDI Workshops
     - [MIDI Monitor](midi-monitor.md)
     - [MIDI Sequencer](midi-sequencer.md)
+    - [MIDI SysEx](midi-sysex.md)
 - Audio Workshops
     - [Concepts](audio-dsp.md)
     - [Audio Formats](audio-formats.md)

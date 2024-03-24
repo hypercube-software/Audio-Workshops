@@ -38,6 +38,9 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void send(MidiEvent evt) {
+        if (!isOpen()) {
+            throw new MidiError("Open the device before sending anything");
+        }
         receiver.send(evt.getMessage(), evt.getTick());
     }
 

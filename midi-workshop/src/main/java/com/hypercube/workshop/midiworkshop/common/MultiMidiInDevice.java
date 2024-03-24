@@ -18,7 +18,7 @@ public class MultiMidiInDevice extends MidiInDevice {
     }
 
     @Override
-    public void open() throws MidiUnavailableException {
+    public void open() {
         for (var device : devices) {
             device.open();
         }
@@ -61,7 +61,11 @@ public class MultiMidiInDevice extends MidiInDevice {
                         .setReceiver(new Receiver() {
                             @Override
                             public void send(MidiMessage message, long timeStamp) {
-                                listener.onEvent(new CustomMidiEvent(message, timeStamp));
+                                try {
+                                    listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
+                                } catch (RuntimeException e) {
+                                    Log.error("Unexpected error in midi listener", e);
+                                }
                             }
 
                             @Override

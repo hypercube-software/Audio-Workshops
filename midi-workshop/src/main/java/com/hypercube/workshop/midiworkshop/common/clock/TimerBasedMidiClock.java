@@ -1,10 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common.clock;
 
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.sound.midi.MidiUnavailableException;
 
 @Slf4j
 public class TimerBasedMidiClock implements MidiClock {
@@ -26,14 +23,10 @@ public class TimerBasedMidiClock implements MidiClock {
     public TimerBasedMidiClock(MidiOutDevice clock) {
         this.clock = clock;
 
-        try {
-            clock.open();
-            calibrate();
-            thread = new Thread(this::threadLoop);
-            thread.start();
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(e);
-        }
+        clock.open();
+        calibrate();
+        thread = new Thread(this::threadLoop);
+        thread.start();
     }
 
     private void calibrate() {
