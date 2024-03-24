@@ -1,11 +1,11 @@
 package com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.command.RolandCommandParser;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
+import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.command.RolandCommandParser;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExParser;
-import com.hypercube.workshop.midiworkshop.sysex.util.CustomByteBuffer;
+import com.hypercube.workshop.midiworkshop.sysex.util.SysExReader;
 import org.jline.utils.Log;
 
 import java.nio.ByteBuffer;
@@ -13,9 +13,12 @@ import java.util.stream.IntStream;
 
 import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_END;
 
+/**
+ * Read a roland SysEx which is made of Roland Commands
+ */
 public class RolandSysExParser implements SysExParser {
     @Override
-    public Device parse(Manufacturer manufacturer, CustomByteBuffer buffer) {
+    public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         int deviceId = buffer.getByte();
 
         RolandDevice device = Manufacturer.ROLAND.getDevice(buffer.getByte());
@@ -33,7 +36,7 @@ public class RolandSysExParser implements SysExParser {
         }
         buffer.reset();
         byte[] body = buffer.getBytes(bodySize);
-        cmd.parse(deviceId, device, new CustomByteBuffer(ByteBuffer.wrap(body)));
+        cmd.parse(deviceId, device, new SysExReader(ByteBuffer.wrap(body)));
         int sum = IntStream.range(0, body.length)
                 .boxed()
                 .map(i -> Integer.valueOf(body[i]))
@@ -50,7 +53,7 @@ public class RolandSysExParser implements SysExParser {
     /**
      * Roland Command can be extended with 0x00 (0x01 is not the same than 0x0001, so we convert that by 0x0100)
      */
-    private int getCommand(CustomByteBuffer buffer) {
+    private int getCommand(SysExReader buffer) {
         for (int i = 0; i < 3; i++) {
             int b = buffer.getByte();
             if (b != 0) {

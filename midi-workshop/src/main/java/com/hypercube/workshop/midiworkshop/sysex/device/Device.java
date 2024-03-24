@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMapParser;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
@@ -21,7 +22,12 @@ import java.util.stream.IntStream;
 import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.*;
 
 /**
- * {@link Device} cannot be enum like {@link Manufacturer} because it is mutable via {@link Device#memory}
+ * This class represent a MIDI Device
+ * <ul>
+ *     <li>We can read and write in its virtual memory stored in a {@link DeviceMemory}</li>
+ *     <li>Its memory layout is stored in a {@link MemoryMap}</li>
+ * </ul>
+ * Note: {@link Device} cannot be enum like {@link Manufacturer} because it is mutable via {@link Device#memory}
  */
 
 @Getter
@@ -69,8 +75,18 @@ public abstract class Device {
         }
     }
 
+    /**
+     * Send an appropriate SysEx message to query the memory content of a MIDI device
+     *
+     * @param midiOutDevice MIDI port to a real MIDI hardware
+     * @param address       Memory address to query
+     * @param size          Size of the data to retrieve
+     */
     public abstract void requestData(MidiOutDevice midiOutDevice, MemoryInt24 address, MemoryInt24 size);
 
+    /**
+     * We store device memory maps in predefined folders
+     */
     public void loadMemoryMap() {
         String manufacturerName = manufacturer.getTitle();
         var memoryMap = new File("midi-workshop/sysex/%s/%s/%s.mmap".formatted(manufacturerName, name, name));

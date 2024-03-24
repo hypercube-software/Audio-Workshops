@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
-public class CustomByteBuffer {
+public class SysExReader {
     private final ByteBuffer buffer;
 
     public int getByte() {

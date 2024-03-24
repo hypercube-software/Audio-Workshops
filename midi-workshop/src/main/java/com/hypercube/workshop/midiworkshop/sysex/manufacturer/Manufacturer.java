@@ -1,13 +1,13 @@
 package com.hypercube.workshop.midiworkshop.sysex.manufacturer;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.sysex.device.Device;
+import com.hypercube.workshop.midiworkshop.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.behringer.BehringerDevice;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandDevice;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandSysExParser;
-import com.hypercube.workshop.midiworkshop.sysex.device.Device;
-import com.hypercube.workshop.midiworkshop.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExParser;
-import com.hypercube.workshop.midiworkshop.sysex.util.CustomByteBuffer;
+import com.hypercube.workshop.midiworkshop.sysex.util.SysExReader;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -17,6 +17,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * MIDI Manufacturer list with their Devices
+ */
 @Getter
 public enum Manufacturer {
     SEQUENTIAL_CIRCUITS("Sequential Circuits", 1),
@@ -108,22 +111,47 @@ public enum Manufacturer {
     private static final Map<Integer, Manufacturer> manufacturers = Arrays.stream(Manufacturer.values())
             .collect(Collectors.toMap(Manufacturer::getCode, Function.identity()));
 
+    /**
+     * Return a Manufacturer given its code (found in a SysEx)
+     *
+     * @param code Manufacturer code
+     * @return the Manufacturer or throw an exception MidiError if not found
+     */
 
     public static Manufacturer get(int code) {
         return Optional.ofNullable(manufacturers.get(code))
                 .orElseThrow(() -> new MidiError("Unknown Manufacturer 0x%02X".formatted(code)));
     }
 
+    /**
+     * Return a Manufacturer given its code (found in a SysEx)
+     *
+     * @param code Manufacturer code
+     * @return An empty Optional if not found
+     */
     public static Optional<Manufacturer> search(int code) {
         return Optional.ofNullable(manufacturers.get(code));
     }
 
-    public Device parse(CustomByteBuffer bb) {
+    /**
+     * Parse a SysEx dedicated to a specific Manufacturer
+     *
+     * @param sysExReader Input SysEx
+     * @return A device with its virtual memory properly set
+     */
+    public Device parse(SysExReader sysExReader) {
         return Optional.ofNullable(parser)
-                .map(p -> p.parse(this, bb))
+                .map(p -> p.parse(this, sysExReader))
                 .orElse(null);
     }
 
+    /**
+     * Retreive a device given its name
+     *
+     * @param name Name of a manufacturer device
+     * @param <T>  Expected device type
+     * @return A Manufacturer Device
+     */
     @SuppressWarnings("unchecked")
     public <T extends Device> T getDevice(String name) {
         return (T) Optional.ofNullable(devices)
@@ -131,6 +159,13 @@ public enum Manufacturer {
                 .orElse(null);
     }
 
+    /**
+     * Retreive a device given its code
+     *
+     * @param code Code of a manufacturer device
+     * @param <T>  Expected device type
+     * @return A Manufacturer Device
+     */
     @SuppressWarnings("unchecked")
     public <T extends Device> T getDevice(int code) {
         return (T) Optional.ofNullable(devices)

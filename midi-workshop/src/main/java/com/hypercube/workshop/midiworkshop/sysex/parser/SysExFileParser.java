@@ -3,7 +3,7 @@ package com.hypercube.workshop.midiworkshop.sysex.parser;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
-import com.hypercube.workshop.midiworkshop.sysex.util.CustomByteBuffer;
+import com.hypercube.workshop.midiworkshop.sysex.util.SysExReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class SysExFileParser {
     public Device parse(File input) {
         try {
             byte[] data = Files.readAllBytes(input.toPath());
-            CustomByteBuffer bb = new CustomByteBuffer(ByteBuffer.wrap(data));
+            SysExReader bb = new SysExReader(ByteBuffer.wrap(data));
 
             Device device = null;
             while (bb.remaining() > 0) {
@@ -43,16 +43,6 @@ public class SysExFileParser {
                     device = currentDevice;
                 }
             }
-            // part 2
-            //device.getMemory()                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480110), MemoryInt24.fromPacked(0x401000), 112 * 16);
-
-         /*   int total = 3728;
-            device.getMemory()
-                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480000), MemoryInt24.fromPacked(0x400000), 8);
-            device.getMemory()
-                    .copyNibblesToBytes(MemoryInt24.fromPacked(0x480110), MemoryInt24.fromPacked(0x401000), 112 * 16);
-
-          */
             return device;
         } catch (IOException e) {
             throw new MidiError("Unexpected error: %s".formatted(e.getMessage()), e);

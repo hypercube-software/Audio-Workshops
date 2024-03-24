@@ -7,11 +7,11 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
-import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryVisitor;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExFileParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +45,21 @@ public class SysExCLI {
     private CyclicBarrier sysExReceived = new CyclicBarrier(2);
 
     @ShellMethod(value = "parse SysEx file and dump the device memory to disk")
-    public void parse(@ShellOption(value = "-i") File input, @ShellOption(value = "-o") File output) {
+    public void parse(@ShellOption(value = "-i", help = "*.syx file") File input, @ShellOption(value = "-o", help = "Memory Dump in TXT format") File output) {
         Device d = sysExFileParser.parse(input);
         DeviceMemoryDumper dumper = new DeviceMemoryDumper(d.getMemory());
         dumper.dumpMemory(output);
     }
 
-    @ShellMethod(value = "Use the device memory map to query data and save everything disk as SysEx file")
+    @ShellMethod(value = "Use the device memory map to query data and save everything to disk as SysEx file")
     public void dumpMemory(@ShellOption(value = "-m", help = "Device Model") String modelName, @ShellOption(value = "-i", defaultValue = "") String inputDevice, @ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-f") File output) throws InterruptedException, IOException {
         if (output.exists()) {
             Files.delete(output.toPath());
         }
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
+
+        // List devices for convenience
         m.getOutputs()
                 .forEach(o -> log.info("OUT:" + o.getName()));
         m.getInputs()
@@ -66,6 +68,7 @@ public class SysExCLI {
 
         var out = m.getOutput(outputDevice)
                 .orElseThrow(() -> new MidiError("Input Device not found " + outputDevice));
+
         out.open();
         var model = Manufacturer.ROLAND.getDevice(modelName);
         model.loadMemoryMap();
@@ -75,26 +78,7 @@ public class SysExCLI {
         AtomicInteger total = new AtomicInteger();
         MidiMonitorEventListener listener = (device, evt) -> onMidiEvent(device, evt, output, total);
 
-        Thread listenerThread = new Thread(() -> {
-            try {
-                listenerThreadReady.await();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            if (!inputDevice.isEmpty()) {
-                m.getInput(inputDevice)
-                        .ifPresentOrElse(device -> midiMonitor.monitor(device, listener), () -> log.error("Input Device not found " + inputDevice));
-            } else {
-                midiMonitor.monitor(new MultiMidiInDevice(m.getInputs()), listener);
-            }
-        });
-        listenerThread.start();
-        waitListenerThread();
-        Thread.sleep(1000);
-        //model.sendIdentityRequest(out, 0x7F);
-        // Bulk All
-        //MemoryInt24.fromPacked(0x480000), MemoryInt24.from(128)
-        //model.requestData(out, MemoryInt24.fromPacked(0x480000), MemoryInt24.fromPacked(0x001D10));
+        Thread listenerThread = initListener(inputDevice, m, listener);
 
         dumper.visitMemory(new DeviceMemoryVisitor() {
             @Override
@@ -111,11 +95,29 @@ public class SysExCLI {
             }
         });
 
-        // Bulk Drum
-        //model.sendRequestDataRQ1(MemoryInt24.fromPacked(0x490000), MemoryInt24.fromPacked(0x000200), out);
-        //model.requestData(out);
         midiMonitor.close();
         listenerThread.join();
+        out.close();
+    }
+
+    private Thread initListener(String inputDevice, MidiDeviceManager m, MidiMonitorEventListener listener) throws InterruptedException {
+        Thread listenerThread = new Thread(() -> {
+            try {
+                listenerThreadReady.await();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if (!inputDevice.isEmpty()) {
+                m.getInput(inputDevice)
+                        .ifPresentOrElse(device -> midiMonitor.monitor(device, listener), () -> log.error("Input Device not found " + inputDevice));
+            } else {
+                midiMonitor.monitor(new MultiMidiInDevice(m.getInputs()), listener);
+            }
+        });
+        listenerThread.start();
+        waitListenerThread();
+        Thread.sleep(1000);
+        return listenerThread;
     }
 
     private void waitSysExReceived() {

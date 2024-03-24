@@ -15,7 +15,7 @@ public class SysExFileParserTest {
     @Test
     void loadD70Map() {
         SysExFileParser p = new SysExFileParser();
-        Device device = p.parse(new File("sysex/Roland/D-70 reset.syx"));
+        Device device = p.parse(new File("sysex/Roland/D-70/D-70 reset.syx"));
         var memory = device.getMemory();
         var dumper = new DeviceMemoryDumper(memory);
         dumper.dumpMemory(new File("target/D-70.memory"));
@@ -33,12 +33,12 @@ public class SysExFileParserTest {
     @Test
     void loadDS330Bulk() {
         SysExFileParser p = new SysExFileParser();
-        Device device = p.parse(new File("sysex/Roland/DS-330 - MultiMode.syx"));
+        Device device = p.parse(new File("sysex/Roland/DS-330/Boss-DS-330-MultiMode.syx"));
         DeviceMemory memory = device.getMemory();
         var dumper = new DeviceMemoryDumper(memory);
         dumper.dumpMemory(new File("target/DS-330.memory"));
         dumper.dumpMemoryMap(new File("target/DS-330.map"));
-        assertEquals(8, memory
+        assertEquals(9, memory
                 .getMemorySpaces()
                 .size());
     }

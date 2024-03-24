@@ -1,9 +1,9 @@
 package com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.command;
 
-import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandDevice;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
-import com.hypercube.workshop.midiworkshop.sysex.util.CustomByteBuffer;
+import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandDevice;
+import com.hypercube.workshop.midiworkshop.sysex.util.SysExReader;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -11,7 +11,7 @@ public class DataSetCommandParser implements RolandCommandParser {
     int count = 0;
 
     @Override
-    public void parse(int deviceId, RolandDevice model, CustomByteBuffer buffer) {
+    public void parse(int deviceId, RolandDevice model, SysExReader buffer) {
         MemoryInt24 address = MemoryInt24.fromPacked(buffer.getInt24());
         int size = buffer.remaining() - 1;
         count += size;

@@ -2,7 +2,7 @@
   <configuration default="false" name="dumpMemory" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="dump-memory -m &quot;DS-330&quot; -i &quot;MIDISPORT Uno In&quot; -o &quot;MIDISPORT Uno Out&quot; -f &quot;Boss-D330-All-NoBulk.syx&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="dump-memory -m &quot;DS-330&quot; -i &quot;MIDISPORT Uno In&quot; -o &quot;MIDISPORT Uno Out&quot; -f &quot;target/Boss-D330-All-NoBulk.syx&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />
