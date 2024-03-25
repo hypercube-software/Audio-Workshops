@@ -22,7 +22,6 @@ public class MidiInDevice extends AbstractMidiDevice {
 
     public void listen(MidiListener listener) throws MidiUnavailableException {
         try {
-            open();
             device.getTransmitter()
                     .setReceiver(new Receiver() {
                         @Override
@@ -47,9 +46,6 @@ public class MidiInDevice extends AbstractMidiDevice {
             Log.warn("Interrupted", e);
             Thread.currentThread()
                     .interrupt();
-        } finally {
-            close();
         }
-
     }
 }

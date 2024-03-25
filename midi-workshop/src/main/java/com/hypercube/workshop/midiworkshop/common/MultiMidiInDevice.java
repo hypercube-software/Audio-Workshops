@@ -5,6 +5,7 @@ import org.jline.utils.Log;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,7 +35,7 @@ public class MultiMidiInDevice extends MidiInDevice {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         for (var device : devices) {
             device.close();
         }
@@ -54,7 +55,6 @@ public class MultiMidiInDevice extends MidiInDevice {
     @Override
     public void listen(MidiListener listener) throws MidiUnavailableException {
         try {
-            open();
             runningListeners.set(0);
             for (var device : devices) {
                 device.device.getTransmitter()
@@ -86,9 +86,6 @@ public class MultiMidiInDevice extends MidiInDevice {
             Log.warn("Interrupted", e);
             Thread.currentThread()
                     .interrupt();
-        } finally {
-            close();
         }
-
     }
 }

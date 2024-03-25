@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.sysex.cheksum;
+package com.hypercube.workshop.midiworkshop.sysex.checksum;
 
 import com.hypercube.workshop.midiworkshop.sysex.util.SysExChecksum;
 

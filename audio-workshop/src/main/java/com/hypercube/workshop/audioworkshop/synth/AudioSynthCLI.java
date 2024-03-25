@@ -8,6 +8,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.io.IOException;
+
 @Slf4j
 @ShellComponent
 @AllArgsConstructor
@@ -15,20 +17,17 @@ public class AudioSynthCLI {
     private final AudioSynth audioSynth;
 
     @ShellMethod(value = "Play a sine  in real time")
-    public void synth(@ShellOption(value = "-i") String inputDevice, @ShellOption(value = "-o") String outputDevice) {
+    public void synth(@ShellOption(value = "-i") String inputDevice, @ShellOption(value = "-o") String outputDevice) throws IOException {
         var audioMgr = new AudioDeviceManager();
-        var midiMgr = new MidiDeviceManager();
         audioMgr.collectDevices();
-        midiMgr.collectDevices();
-        midiMgr.getInput(inputDevice)
-                .ifPresentOrElse(midi -> audioMgr.getOutputs()
-                        .stream()
-                        .filter(d -> d.getName()
-                                .equals(outputDevice))
-                        .findFirst()
-                        .ifPresentOrElse(audio -> audioSynth.synth(midi, audio),
-                                () -> log.error("Audio Device not found:" + outputDevice)), () -> log.error("Midi Device not found " + inputDevice));
 
+        MidiDeviceManager m = new MidiDeviceManager();
+        m.collectDevices();
+        try (var in = m.openInput(inputDevice)) {
+            audioMgr.getOutput(outputDevice)
+                    .ifPresentOrElse(audio -> audioSynth.synth(in, audio),
+                            () -> log.error("Audio Device not found:" + outputDevice));
+        }
     }
 
     @ShellMethod(value = "List Audio devices")

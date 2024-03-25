@@ -72,13 +72,9 @@ public class MidiMonitor {
 
     void filter(MidiInDevice in, MidiOutDevice out) {
         try {
-            out.open();
             in.listen((device, evt) -> filterEvent(evt, out));
-
         } catch (MidiUnavailableException e) {
             log.error("The Output device is Unavailable: " + in.getName());
-        } finally {
-            out.close();
         }
     }
 

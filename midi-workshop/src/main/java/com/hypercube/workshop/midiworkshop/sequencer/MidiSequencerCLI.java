@@ -8,6 +8,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.io.IOException;
+
 @ShellComponent
 @Slf4j
 @AllArgsConstructor
@@ -26,36 +28,46 @@ public class MidiSequencerCLI {
     }
 
     @ShellMethod(value = "Play something")
-    public void elise(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) {
+    public void elise(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(outputDevice)
-                .ifPresentOrElse(out -> sequencer.playResource(out, "midi/for_elise_by_beethoven.mid", tempo), () -> log.error("Output Device not found " + outputDevice));
+        m.listDevices();
+        try (var out = m.openOutput(outputDevice)) {
+            sequencer.playResource(out, "midi/for_elise_by_beethoven.mid", tempo);
+        }
     }
 
     @ShellMethod(value = "Play something")
-    public void bach(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) {
+    public void bach(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(outputDevice)
-                .ifPresentOrElse(out -> sequencer.playResource(out, "midi/bach_prelude_c_major_846.mid", tempo), () -> log.error("Output Device not found " + outputDevice));
+        m.listDevices();
+        try (var out = m.openOutput(outputDevice)) {
+            sequencer.playResource(out, "midi/bach_prelude_c_major_846.mid", tempo);
+        }
     }
 
     @ShellMethod(value = "Play something")
-    public void play1(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) {
+    public void play1(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(clockDevice)
-                .ifPresentOrElse(clock -> m.getOutput(outputDevice)
-                        .ifPresentOrElse(out -> sequencer.playSequence(MidiClockType.SEQ, clock, out, tempo), () -> log.error("Output Device not found " + outputDevice)), () -> log.error("Clock Device not found " + outputDevice));
+        m.listDevices();
+        try (var clock = m.openOutput(clockDevice)) {
+            try (var out = m.openOutput(outputDevice)) {
+                sequencer.playSequence(MidiClockType.SEQ, clock, out, tempo);
+            }
+        }
     }
 
     @ShellMethod(value = "Play something")
-    public void play2(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) {
+    public void play2(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(clockDevice)
-                .ifPresentOrElse(clock -> m.getOutput(outputDevice)
-                        .ifPresentOrElse(out -> sequencer.playSequence(MidiClockType.TMR, clock, out, tempo), () -> log.error("Output Device not found " + outputDevice)), () -> log.error("Clock Device not found " + outputDevice));
+        m.listDevices();
+        try (var clock = m.openOutput(clockDevice)) {
+            try (var out = m.openOutput(outputDevice)) {
+                sequencer.playSequence(MidiClockType.TMR, clock, out, tempo);
+            }
+        }
     }
 }

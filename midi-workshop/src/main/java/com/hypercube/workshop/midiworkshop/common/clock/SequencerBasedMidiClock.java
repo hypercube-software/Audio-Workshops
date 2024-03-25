@@ -6,19 +6,16 @@ import com.hypercube.workshop.midiworkshop.common.seq.MidiSequence;
 import org.jline.utils.Log;
 
 import javax.sound.midi.*;
+import java.io.IOException;
 
 public class SequencerBasedMidiClock implements MidiClock {
     public static final int CLOCK_RESOLUTION_PPQ = 24 * 8;
     private final Sequencer clockSequencer;
-    private final MidiOutDevice clock;
 
     private final Object midiTickSignal = new Object();
 
     public SequencerBasedMidiClock(MidiOutDevice clock) {
-        this.clock = clock;
-
         try {
-            clock.open();
             clockSequencer = MidiSystem.getSequencer(false);
             // javax.sound.midi.Sequencer send all note off on loop end which is a VERY bad idea for the MIDI Clock accuracy
             // so we need to filter out this and only send MIDI CLOCK to the output device
@@ -52,9 +49,8 @@ public class SequencerBasedMidiClock implements MidiClock {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         stop();
-        clock.close();
         clockSequencer.close();
     }
 
@@ -81,8 +77,6 @@ public class SequencerBasedMidiClock implements MidiClock {
                 midiTickSignal.wait();
             } catch (InterruptedException e) {
                 Log.warn("Interrupted", e);
-                Thread.currentThread()
-                        .interrupt();
             }
         }
     }

@@ -454,3 +454,183 @@ F0         : SysEx START
 ...
 ```
 
+# Code
+
+## Overview
+
+We need many things to handle SysEx:
+
+- A parser, which is able to found which manufacturer and which model is involved
+- A memory map to describe the content of the device
+- A dumper, which is able to convert the device memory to readable text
+- Utilities to handle checksums and packed bytes
+
+## MemoryMaps
+
+First thing first, we need to consider a device memory as a group of small memory areas. It is not contiguous.
+
+- Each memory area has an address and optionally a size (which is recalculated)
+- Size and addresses are in packed bytes or not
+- We call a memory area a `MemoryMap`, so a `*.mmap` file contains multiple `MemoryMap`.
+
+Here how to write your map file:
+
+```
+@Model Boss DS-330
+@Packed
+
+@400000-000100 Zone 1
+{
+	... one or more fields ...
+}
+
+@400100 Zone 2
+{
+	... one or more fields ...
+}
+```
+
+- `@Model` is used to name the memory map
+- `@Packed` is used to indicate addresses and sizes are in packed format (used by Roland in their manuals).
+- `@400100 Zone 2` define an area in the device memory without its size.
+- `@400000-000100 Zone 1` is the same but indicate its size.
+- `#` can be used to put a comment
+
+⚠️ Our parser is very simple so the syntax is very rigid. It is not possible to put '{' in the same line of a memory area definition
+
+## Fields
+
+A ``MemoryArea` is made of memory fields.
+
+- A memory field can be a **string** with a given size
+- It can be an **array**, multidimentional or not. Optionally, each dimension can have a name.
+- It can be a bunch of **bytes**
+- It can be a **struct** which is also a set of memory fields
+
+The overall format is:
+
+```
+regular field  : <optional type size> <field name> (optional field type)
+array of fields: <optional type size> <field type> [<dimension size> <optional dimension name>,...]
+```
+
+By default, the field type is `Byte`
+
+Here some examples:
+
+```
+01 Original Tone Media
+```
+
+This is the most simple: a field made of a single byte. It's the same than `01 Original Tone Media (Byte)`
+
+```
+01 Tune[128 Note]
+```
+
+This is an array of 128 entries. The dimension is called `Note`. The array type is called `Tune`. So the size of this field is 128 bytes.
+
+```
+PatchParams[16 block]
+```
+
+This is an array of 16 types **struct**. The dimension of the array is called `block`. The struct name is called `PatchParams`. The size of the array is not specified and will be computed. It is basically `sizeof(PatchParams) * 16` bytes.
+
+```
+Tone[5 Part, 4 Section]
+```
+
+This is an array with 2 dimensions. The first dimension is called `Part` and the second dimension is called `Section`. The array type is called `Tone`
+
+```
+20 Information (String)
+```
+
+This is a string of size 20. 
+
+```
+0A Name[16 Channel](String)
+```
+
+This is an array of 16 strings. Each string as a size of `0x0A` (10). So the array size will be 160 bytes.
+
+```
+01 Pedal Switch 1 Function (PedalSwitchFunction)
+```
+
+This is a field of type **Enum**. It uses the enum called `PedalSwitchFunction` and its size is 1 byte.
+
+## Enums
+
+Enums can be used to express which values are allowed for a field
+
+```
+enum Switch
+{
+	Off
+	On
+}
+```
+
+Implicitly 0 if `Off` and 1 is `On`
+
+It is typically used to list all the reverb types:
+
+```
+enum ReverbType
+{
+	ROOM_1
+	ROOM_2
+	ROOM_3
+	HALL_1
+	HALL_2
+	GATE
+	DELAY
+	CROSS_DELAY
+}
+```
+
+## Dump
+
+The class `DeviceMemoryDumper` will reveal the memory content of a device in readable text. 
+
+- It uses the visitor pattern, so you can do anything you want with the memory content
+- The method `dumpMemory` use a visitor to save everything to disk
+- The CLI command `dumpMemory` use another visitor to forge SysEx requests to get the value from a real device
+
+Here an example for a Roland D-70:
+
+```
+-------------------------------------
+Roland D-70 Memory dump
+0x000000 (packed: 0x000000)=64              Internal Memory Core/System Setup/Master Tune
+0x000001 (packed: 0x000001)=16              Internal Memory Core/System Setup/Control Channel
+0x000002 (packed: 0x000002)=16              Internal Memory Core/System Setup/Unit Number
+0x000003 (packed: 0x000003)=Off             Internal Memory Core/System Setup/Rx SysEx 
+0x000004 (packed: 0x000004)=Hold            Internal Memory Core/System Setup/Hold Pedal Function 
+0x000005 (packed: 0x000005)=MODULATION      Internal Memory Core/System Setup/Switch Pedal Function 
+0x000006 (packed: 0x000006)=On              Internal Memory Core/System Setup/Midi Out Link Mode 
+0x000007 (packed: 0x000007)=On              Internal Memory Core/System Setup/Local Mode 
+0x000008 (packed: 0x000008)="Ch 1      "    Internal Memory Core/Midi Channels/Channel[0]/Name
+0x000012 (packed: 0x000012)="Ch 2      "    Internal Memory Core/Midi Channels/Channel[1]/Name
+0x00001C (packed: 0x00001C)="Ch 3      "    Internal Memory Core/Midi Channels/Channel[2]/Name
+0x000026 (packed: 0x000026)="Ch 4      "    Internal Memory Core/Midi Channels/Channel[3]/Name
+0x000030 (packed: 0x000030)="Ch 5      "    Internal Memory Core/Midi Channels/Channel[4]/Name
+0x00003A (packed: 0x00003A)="Ch 6      "    Internal Memory Core/Midi Channels/Channel[5]/Name
+0x000044 (packed: 0x000044)="Ch 7      "    Internal Memory Core/Midi Channels/Channel[6]/Name
+0x00004E (packed: 0x00004E)="Ch 8      "    Internal Memory Core/Midi Channels/Channel[7]/Name
+0x000058 (packed: 0x000058)="Ch 9      "    Internal Memory Core/Midi Channels/Channel[8]/Name
+0x000062 (packed: 0x000062)="Ch 10     "    Internal Memory Core/Midi Channels/Channel[9]/Name
+0x00006C (packed: 0x00006C)="Ch 11     "    Internal Memory Core/Midi Channels/Channel[10]/Name
+0x000076 (packed: 0x000076)="Ch 12     "    Internal Memory Core/Midi Channels/Channel[11]/Name
+0x000080 (packed: 0x000100)="Ch 13     "    Internal Memory Core/Midi Channels/Channel[12]/Name
+0x00008A (packed: 0x00010A)="Ch 14     "    Internal Memory Core/Midi Channels/Channel[13]/Name
+0x000094 (packed: 0x000114)="Ch 15     "    Internal Memory Core/Midi Channels/Channel[14]/Name
+0x00009E (packed: 0x00011E)="Ch 16     "    Internal Memory Core/Midi Channels/Channel[15]/Name
+...
+```
+
+The Dump display addresses in **normal** and **packed** format, followed by the **content** and the **path**. As you can see when the field use an **Enum**, the enum value is displayed instead of the byte value (things like `On`, `Off`, `Hold` or `MODULATION`)
+
+👉Given this dump, you can easily compare what you read with what the device manual tells you.
+

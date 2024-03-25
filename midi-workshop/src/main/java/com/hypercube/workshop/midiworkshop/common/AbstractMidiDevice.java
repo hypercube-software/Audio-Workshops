@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
+import java.io.Closeable;
+import java.io.IOException;
 
 @AllArgsConstructor
-public abstract class AbstractMidiDevice {
+public abstract class AbstractMidiDevice implements Closeable {
     protected final MidiDevice device;
 
     public void open() {
@@ -18,12 +20,13 @@ public abstract class AbstractMidiDevice {
         }
     }
 
-    public boolean isOpen() {
-        return device.isOpen();
+    @Override
+    public void close() throws IOException {
+        device.close();
     }
 
-    public void close() {
-        device.close();
+    public boolean isOpen() {
+        return device.isOpen();
     }
 
     public String getName() {

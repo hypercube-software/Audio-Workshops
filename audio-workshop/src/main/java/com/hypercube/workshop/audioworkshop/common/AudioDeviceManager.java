@@ -7,6 +7,7 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class AudioDeviceManager {
@@ -24,6 +25,22 @@ public class AudioDeviceManager {
             else
                 outputs.add(new AudioOutputDevice(mixerInfo));
         }
+    }
+
+    public Optional<AudioInputDevice> getInput(String deviceName) {
+        return inputs
+                .stream()
+                .filter(d -> d.getName()
+                        .equals(deviceName))
+                .findFirst();
+    }
+
+    public Optional<AudioOutputDevice> getOutput(String deviceName) {
+        return outputs
+                .stream()
+                .filter(d -> d.getName()
+                        .equals(deviceName))
+                .findFirst();
     }
 
 }

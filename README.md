@@ -6,7 +6,13 @@
 | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Documentation%20build/badge.svg) | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Maven%20build/badge.svg) |
 |-----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
 
-⚠️ **This project is not complete yet**:
+⚠️ **This project is a constant "work in progress"**:
+
+## MIDI
+
+- SysEx are not finished yet (various devices need to be analyzed)
+
+## Audio synth
 
 - Filters are not implemented yet
 - ADSR envelopes are still in early stages.

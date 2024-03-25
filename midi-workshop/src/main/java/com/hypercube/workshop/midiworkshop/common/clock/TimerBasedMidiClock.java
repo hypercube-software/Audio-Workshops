@@ -3,10 +3,11 @@ package com.hypercube.workshop.midiworkshop.common.clock;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 @Slf4j
 public class TimerBasedMidiClock implements MidiClock {
     private static final int MIDI_CLOCK_PPQ = 24;
-
 
     private final MidiOutDevice clock;
 
@@ -64,9 +65,8 @@ public class TimerBasedMidiClock implements MidiClock {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         stop();
-        clock.close();
         if (thread != null) {
             exit = true;
             thread.interrupt();

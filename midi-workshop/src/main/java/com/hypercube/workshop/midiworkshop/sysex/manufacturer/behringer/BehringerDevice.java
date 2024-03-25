@@ -3,7 +3,7 @@ package com.hypercube.workshop.midiworkshop.sysex.manufacturer.behringer;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.sysex.cheksum.DefaultChecksum;
+import com.hypercube.workshop.midiworkshop.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;

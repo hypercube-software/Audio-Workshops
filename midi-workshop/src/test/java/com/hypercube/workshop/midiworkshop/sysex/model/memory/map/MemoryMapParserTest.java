@@ -8,7 +8,7 @@ import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MemoryMapParserTest {
+class MemoryMapParserTest {
 
     @Test
     void loadD70Map() {
@@ -29,6 +29,7 @@ public class MemoryMapParserTest {
         assertMemoryMapSize(0x000080, "Zone 1", dm);
         assertMemoryMapSize(0x000800, "Zone 2", dm);
         assertMemoryMapSize(0x001000, "Zone 3", dm);
+        assertMemoryMapSize(0x001000, "Zone 4", dm);
         assertMemoryMapSize(0x000020, "Information", dm);
         assertMemoryMapSize(0x00000C, "Drum Map Name", dm);
         assertMemoryMapSize(0x000400, "Drum Map", dm);

@@ -8,6 +8,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.io.IOException;
+
 @ShellComponent
 @Slf4j
 @AllArgsConstructor
@@ -16,10 +18,11 @@ public class MidiClockCLI {
 
 
     @ShellMethod(value = "Send a MIDI Clock at a given tempo")
-    public void clock(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") MidiClockType clockType, @ShellOption(value = "-t") int tempo) {
+    public void clock(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") MidiClockType clockType, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.getOutput(outputDevice)
-                .ifPresentOrElse(out -> clock.startClock(clockType, out, tempo), () -> log.error("Output Device not found " + outputDevice));
+        try (var out = m.openOutput(outputDevice)) {
+            clock.startClock(clockType, out, tempo);
+        }
     }
 }

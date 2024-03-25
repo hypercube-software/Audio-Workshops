@@ -37,7 +37,6 @@ public class MidiSequencer {
 
                 sequencer.waitEndOfSequence();
                 sequencer.stop();
-
             }
         } catch (IOException | InvalidMidiDataException e) {
             throw new MidiError(e);

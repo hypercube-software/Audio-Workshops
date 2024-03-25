@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,5 +49,35 @@ public class MidiDeviceManager {
                 .filter(d -> d.getName()
                         .equals(name))
                 .findFirst();
+    }
+
+    public MidiOutDevice openOutput(String name) {
+        MidiOutDevice out = getOutput(name)
+                .orElseThrow(() -> new MidiError("Output Device not found " + name));
+        out.open();
+        return out;
+    }
+
+    public MidiInDevice openInput(String name) {
+        MidiInDevice in = getInput(name)
+                .orElseThrow(() -> new MidiError("Input Device not found " + name));
+        in.open();
+        return in;
+    }
+
+    public MidiInDevice openInputs(List<MidiInDevice> devices) {
+        MidiInDevice in = new MultiMidiInDevice(devices);
+        in.open();
+        return in;
+    }
+
+    public void listDevices() {
+        // List devices for convenience
+        log.info("Available MIDI devices:");
+        outputs
+                .forEach(o -> log.info("OUT:" + o.getName()));
+        inputs
+                .forEach(o -> log.info("IN :" + o.getName()));
+
     }
 }
