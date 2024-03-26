@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.behringer.BehringerDevice;
+import com.hypercube.workshop.midiworkshop.sysex.manufacturer.behringer.BehringerSysExParser;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandDevice;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.RolandSysExParser;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExParser;
@@ -71,7 +72,7 @@ public enum Manufacturer {
     CASIO("Casio", 0x44),
     AKAI("Akai", 0x47),
     M_AUDIO("M-Audio", 0x2008),
-    BEHRINGER("Behringer", 0x2032, null, BehringerDevice.class, List.of(
+    BEHRINGER("Behringer", 0x2032, new BehringerSysExParser(), BehringerDevice.class, List.of(
             new DeviceDefinition("Neutron", 0x28)));
 
     private record DeviceDefinition(String name, int code) {
@@ -89,18 +90,19 @@ public enum Manufacturer {
                                 return deviceClass.getConstructor(Manufacturer.class, String.class, int.class)
                                         .newInstance(this, d.name, d.code);
                             } catch (Exception e) {
-                                throw new RuntimeException(e);
+                                throw new MidiError(e);
                             }
                         })
                         .toList());
-        this.parser = parser;
+        this.parser = Optional.ofNullable(parser)
+                .orElseGet(SysExParser::new);
     }
 
     private Manufacturer(String title, int code) {
         this.title = title;
         this.code = code;
         this.devices = null;
-        this.parser = null;
+        this.parser = new SysExParser();
     }
 
     private final String title;

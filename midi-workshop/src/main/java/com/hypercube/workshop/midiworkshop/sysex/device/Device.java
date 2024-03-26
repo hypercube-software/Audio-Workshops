@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.*;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.*;
 
 /**
  * This class represent a MIDI Device

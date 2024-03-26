@@ -143,7 +143,7 @@ public class MidiSequencer implements Closeable {
         } else if (metaMessage.getType() == MidiMetaMessages.META_PROPRIETARY) {
             // Do nothing
         } else {
-            log.info(String.format("Midi Meta message: %2X)", metaMessage.getType()));
+            log.info(String.format("Midi Meta message: %02X)", metaMessage.getType()));
         }
     }
 

@@ -42,11 +42,11 @@ public record MemoryArray(List<MemoryArrayIndex> indexes) {
                 .boxed()
                 .flatMap(i -> {
                     var txt = index.name() + "[" + i + "]";
-                    var nextEntrries = getAllEntries(idx + 1);
-                    if (nextEntrries.isEmpty()) {
+                    var nextEntries = getAllEntries(idx + 1);
+                    if (nextEntries.isEmpty()) {
                         return Stream.of(txt);
                     } else {
-                        return nextEntrries.stream()
+                        return nextEntries.stream()
                                 .map(e -> txt + "/" + e);
                     }
                 })
@@ -57,15 +57,18 @@ public record MemoryArray(List<MemoryArrayIndex> indexes) {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         for (MemoryArrayIndex i : indexes) {
-            if (!sb.isEmpty()) {
-                sb.append(",");
-            } else {
+            if (sb.isEmpty()) {
                 sb.append("[");
+            } else {
+                sb.append(",");
+
             }
             sb.append(i.size());
             if (!i.name()
-                    .isEmpty())
-                sb.append(" " + i.name());
+                    .isEmpty()) {
+                sb.append(" ")
+                        .append(i.name());
+            }
         }
         sb.append("]");
         return sb.toString();

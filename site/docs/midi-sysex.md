@@ -53,6 +53,14 @@ cc: Command
 
 The command **06 General Information** gives you access to sub-commands. We will take a look on one of them: **Inquiry Request**
 
+```
+F0 7E ii 06 cc F7
+7E: NON REALTIME SysEx
+ii: DEVICE ID, 7F = broadcast
+06: General Information
+cc: Sub Command
+```
+
 More info can be found [here](https://www.lim.di.unimi.it/IEEE/MIDI/SOT4.HTM).
 
 ## Device ID
@@ -87,7 +95,7 @@ F0 7E ii 06 01 F7
 7E: NON REALTIME SysEx
 ii: DEVICE ID, 7F = broadcast
 06: General Information
-01: Identity Request
+01: Sub Command: Identity Request (Inquiry)
 ```
 
 Here a response from a **Korg NanoKey 2** controller
@@ -233,7 +241,7 @@ Two types of communication are provided with their relative commands:
 
 Roland use this very specific format to encode 21 bit **addresses** and **sizes** into the SysEx message.
 
-- The main idea is to produce bytes witch are always below `0x80`, so the fist bit on the left is always Zero.
+- The main idea is to produce bytes witch are always below `0x80`, so the first bit on the left is always Zero.
 - This mean a 21 bits address like `0x1FFFFF` will be encoded in `0x7F7F7F` in the SysEx.
 - I call this format **packed bytes**, because regular bytes are packed into 7 bit bytes
 
@@ -465,6 +473,19 @@ We need many things to handle SysEx:
 - A dumper, which is able to convert the device memory to readable text
 - Utilities to handle checksums and packed bytes
 
+## Bytes in Java
+
+It is very unfortunate that Java does not handle **unsigned bytes**. A `byte` is always signed  so it can be negative. 
+
+- This is why we prefer to return represent a byte with `int`, so the value is never negative.
+- The class ` SysExReader` take care of this conversion:
+
+```java
+public int getByte() {
+    return buffer.get() & 0xFF;
+}
+```
+
 ## MemoryMaps
 
 First thing first, we need to consider a device memory as a group of small memory areas. It is not contiguous.
@@ -633,4 +654,22 @@ Roland D-70 Memory dump
 The Dump display addresses in **normal** and **packed** format, followed by the **content** and the **path**. As you can see when the field use an **Enum**, the enum value is displayed instead of the byte value (things like `On`, `Off`, `Hold` or `MODULATION`)
 
 👉Given this dump, you can easily compare what you read with what the device manual tells you.
+
+# CLI
+
+## parse
+
+This command is able to parse a SysEx file and dump the corresponding device memory.
+
+```
+java -jar target\midi-workshop-0.0.1-SNAPSHOT.jar parse -i "sysex/Roland/D-70/D-70 reset.syx" -o "target/D-70 reset.dump.txt"
+```
+
+For complex files (Roland dumps), you need a corresponding map for the device otherwise an error will be thrown.
+
+If the SysEx is a standard inquiry message you should get this:
+
+```
+Identity Response for KORG (device id: 0): 11 01 01 00 03 00 01 00
+```
 

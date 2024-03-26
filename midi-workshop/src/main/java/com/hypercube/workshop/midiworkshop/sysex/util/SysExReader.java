@@ -14,6 +14,13 @@ public class SysExReader {
         return buffer.get() & 0xFF;
     }
 
+    public int peekByte() {
+        int position = buffer.position();
+        int value = getByte();
+        buffer.position(position);
+        return value;
+    }
+
     public int remaining() {
         return buffer.remaining();
     }

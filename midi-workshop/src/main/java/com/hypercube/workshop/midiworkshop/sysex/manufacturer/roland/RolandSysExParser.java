@@ -11,12 +11,12 @@ import org.jline.utils.Log;
 import java.nio.ByteBuffer;
 import java.util.stream.IntStream;
 
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_END;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_END;
 
 /**
  * Read a roland SysEx which is made of Roland Commands
  */
-public class RolandSysExParser implements SysExParser {
+public class RolandSysExParser extends SysExParser {
     @Override
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         int deviceId = buffer.getByte();

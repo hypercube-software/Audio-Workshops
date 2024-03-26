@@ -53,9 +53,8 @@ public class MemoryField {
     public MemoryInt24 getTotalSize() {
         if (array != null) {
             return MemoryInt24.from(array.size() * size.value());
-        } else {
-            return size;
         }
+        return size;
     }
 
     @Override
@@ -63,9 +62,8 @@ public class MemoryField {
         String typeName = isReference() ? name : type + " " + name;
         if (array != null) {
             return typeName + array;
-        } else {
-            return typeName;
         }
+        return typeName;
     }
 
 

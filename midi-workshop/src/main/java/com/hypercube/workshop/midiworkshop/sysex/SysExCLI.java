@@ -26,8 +26,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_GENERAL_INFORMATION;
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_IDENTITY_RESPONSE;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_IDENTITY_RESPONSE;
 
 @ShellComponent()
 @ShellCommandGroup("SysEx CLI")
@@ -43,8 +43,10 @@ public class SysExCLI {
     @ShellMethod(value = "parse SysEx file and dump the device memory to disk")
     public void parse(@ShellOption(value = "-i", help = "*.syx file") File input, @ShellOption(value = "-o", help = "Memory Dump in TXT format") File output) {
         Device d = sysExFileParser.parse(input);
-        DeviceMemoryDumper dumper = new DeviceMemoryDumper(d.getMemory());
-        dumper.dumpMemory(output);
+        if (d != null) {
+            DeviceMemoryDumper dumper = new DeviceMemoryDumper(d.getMemory());
+            dumper.dumpMemory(output);
+        }
     }
 
     @ShellMethod(value = "Use the device memory map to query data and save everything to disk as SysEx file")

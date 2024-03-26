@@ -12,8 +12,8 @@ import org.jline.utils.Log;
 
 import javax.sound.midi.InvalidMidiDataException;
 
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_END;
-import static com.hypercube.workshop.midiworkshop.sysex.util.SystemExclusiveConstants.SYSEX_START;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_END;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_START;
 
 public class BehringerDevice extends Device {
 
