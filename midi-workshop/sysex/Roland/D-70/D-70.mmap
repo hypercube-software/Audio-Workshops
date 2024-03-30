@@ -11,13 +11,13 @@
 
 @000000 Internal Memory Core
 {
-	System Setup
-	Midi Channels
+	SystemSetup
+	MidiChannel[16]
 }
 
 @000128 Temporary Memory
 {
-	User Set
+	UserSet
 	Performance
 	Patch[5 Part]
 	Tone[5 Part,4 Section]
@@ -25,8 +25,8 @@
 
 @001029 Internal Memory
 {
-	Rhythm Setup
-	User Set[10]
+	RhythmSetup
+	UserSet[10]
 	Performance[64]
 	Patch[128]
 	Tone[128]
@@ -34,8 +34,8 @@
 
 @023301 Card Memory
 {
-	Rhythm Setup
-	User Set[10]
+	RhythmSetup
+	UserSet[10]
 	Performance[64]
 	Patch[128]
 	Tone[128]
@@ -43,109 +43,122 @@
 
 # -------------------------------------------
 
-struct 000008 System Setup
+struct 000008 SystemSetup
 {
-	01 Master Tune
-	01 Control Channel
-	01 Unit Number
-	01 Rx SysEx (Switch)
-	01 Hold Pedal Function (PedalSustainFunction)
-	01 Switch Pedal Function (PedalSwitchFunction)
-	01 Midi Out Link Mode (Switch)
-	01 Local Mode (Switch)
+	byte 				 Master Tune
+	byte 				 Control Channel
+	byte 				 Unit Number
+	Switch 				 Rx SysEx
+	PedalSustainFunction Hold Pedal Function
+	PedalSwitchFunction  Switch Pedal Function
+	Switch 				 Midi Out Link Mode
+	Switch 				 Local Mode
 }
 
-struct 0000A0 Midi Channels
+struct MidiChannel
 {
-	0A Name[16 Channel](String)
+	String Name[10]
 }
 
-struct 000005 User Set
+struct 000005 UserSet
 {
-	01 Performance[5 Function]
+	byte Performance[5 Function]
+}
+
+struct PedalSetting
+{
+	PedalFunction 	Function
+	Destination 	Destination
+	byte 			Value
+}
+struct PedalSwitchSetting
+{
+	PedalSwitchFunction Function
+	Destination 		Destination
 }
 
 struct 000171 Performance
 {
-	0A Name (String)
-	01 Played Part
-	01 Pedal 1 Function (PedalFunction)
-	01 Pedal 1 Destination (Destination)
-	01 Pedal 1 Value
-	01 Pedal 2 Function (PedalFunction)
-	01 Pedal 2 Destination (Destination)
-	01 Pedal 2 Value
-	01 Pedal Switch 1 Function (PedalSwitchFunction)
-	01 Pedal Switch 1 Destination (Destination)
-	01 Pedal Switch 2 Function (PedalSwitchFunction)
-	01 Pedal Switch 2 Destination (Destination)
+	String 				Name[10]
+	byte 				Played Part
+	PedalSetting		Pedal 1
+	PedalSetting		Pedal 2
+	PedalSwitchSetting 	Pedal 1
+	PedalSwitchSetting 	Pedal 2
 	PerformancePart[5]
 	PerformanceDrumPart
-	01 Reverb Type (ReverbType)
-	01 Reverb Delay
-	01 Reverb Level
-	01 Reverb Repeats
-	01 Chorus Type (ChorusType)
-	01 Chorus Output Mode
-	01 Chorus Level
-	01 Chorus Delay
-	01 Chorus Rate
-	01 Chorus Depth
-	01 Chorus Feedback
+	
+	ReverbType Reverb Type
+	byte Reverb Delay
+	byte Reverb Level
+	byte Reverb Repeats
+	
+	ChorusType Chorus Type
+	byte Chorus Output Mode
+	byte Chorus Level
+	byte Chorus Delay
+	byte Chorus Rate
+	byte Chorus Depth
+	byte Chorus Feedback
 }
 
 struct 00001D PerformancePart
 {
-	01 Channel
-	01 Patch
-	01 Level
-	01 Lower Zone
-	01 Upper Zone
-	01 Priority (Switch)
-	01 Effects (Switch)
-	01 Analog Feel
-	01 Rx Program (Switch)
-	01 Rx Volume (Switch)
-	01 Bender 1 Destination (Destination)
-	01 Bender 1 Up Depth
-	01 Bender 1 Down Depth
-	01 Bender 2 Function
-	01 Bender 2 Destination (Destination)
-	01 Bender 2 Value
-	01 Aftertouch 1 Function (AfterTouchFunction)
-	01 Aftertouch 1 Destination (Destination)
-	01 Aftertouch 1 Value
-	01 Aftertouch 2 Function (AfterTouchFunction)
-	01 Aftertouch 2 Destination (Destination)
-	01 Aftertouch 2 Value
-	01 Modulation 1 Function (ModulationFunction)
-	01 Modulation 1 Destination (Destination)
-	01 Modulation 1 Value
-	01 Modulation 2 Function (ModulationFunction)
-	01 Modulation 2 Destination (Destination)
-	01 Modulation 2 Value
-	01 Hold 1 Destination (Destination)
+	byte Channel
+	byte Patch
+	byte Level
+	byte Lower Zone
+	byte Upper Zone
+	Switch Priority
+	Switch Effects
+	byte Analog Feel
+	Switch Rx Program
+	Switch Rx Volume
+	Destination Bender 1 Destination
+	byte Bender 1 Up Depth
+	byte Bender 1 Down Depth
+	byte Bender 2 Function
+	Destination Bender 2 Destination
+	byte Bender 2 Value
+	
+	AfterTouchFunction Aftertouch 1 Function
+	Destination Aftertouch 1 Destination
+	byte Aftertouch 1 Value
+	
+	AfterTouchFunction Aftertouch 2 Function
+	Destination Aftertouch 2 Destination
+	byte Aftertouch 2 Value
+	
+	ModulationFunction Modulation 1 Function
+	Destination Modulation 1 Destination
+	byte Modulation 1 Value
+	
+	ModulationFunction Modulation 2 Function
+	Destination Modulation 2 Destination
+	byte Modulation 2 Value
+	
+	Destination Hold 1 Destination
 }
 
 struct 000007 PerformanceDrumPart
 {
-	01 Channel
-	01 Level
-	01 Lower Zone
-	01 Upper Zone
-	01 Priority (Switch)
-	01 Effects (Switch)
-	01 Rx Volume (Switch)
+	byte Channel
+	byte Level
+	byte Lower Zone
+	byte Upper Zone
+	Switch Priority
+	Switch Effects
+	Switch Rx Volume
 }
 
 struct 000057 Patch
 {
-	0A Name(String)
-	01 Level
-	01 Dynamic Curve
-	01 Dynamic Sensibility
-	01 Keyboard Mode
-	01 Split Point
+	String Name[10]
+	byte Level
+	byte Dynamic Curve
+	byte Dynamic Sensibility
+	byte Keyboard Mode
+	byte Split Point
 	LowerUpperPatch
 	LowerUpperPatch
 	PatchSection[4 Section]
@@ -153,96 +166,96 @@ struct 000057 Patch
 
 struct 00000A LowerUpperPatch
 {
-	01 Dynamic mode
-	01 Dynamic Threshold
-	01 Keyboard Assignation
-	01 Solo legato
-	01 Portamento Switch
-	01 Portamento Mode
-	01 Portamento Time
-	01 Rx Panning (Switch)
-	01 Reserved
-	01 Rx Portamento (Switch)
+	byte Dynamic mode
+	byte Dynamic Threshold
+	byte Keyboard Assignation
+	byte Solo legato
+	byte Portamento Switch
+	byte Portamento Mode
+	byte Portamento Time
+	Switch Rx Panning
+	byte Reserved
+	Switch Rx Portamento
 }
 
 struct 00000D PatchSection
 {
-	01 Tone
-	01 Level
-	01 Transpoition
-	01 Fine Tune
-	01 Frequency Cutoff
-	01 Resonance
-	01 Attack
-	01 Decay
-	01 Output Assignation
-	01 Panning
-	01 Tone Switch
-	01 Lower Zone
-	01 Upper Zone
+	byte Tone
+	byte Level
+	byte Transpoition
+	byte Fine Tune
+	byte Frequency Cutoff
+	byte Resonance
+	byte Attack
+	byte Decay
+	byte Output Assignation
+	byte Panning
+	byte Tone Switch
+	byte Lower Zone
+	byte Upper Zone
 }
 
 struct 00003E Tone
 {
-	0A Name(String)
-	01 Original Tone Media
-	01 Original Tone Number
-	01 DLM Switch
-	01 DLM Mode
-	01 DLM Start Address
-	01 DLM Loop Length
-	01 Tune Coarse
-	01 Tune Fine
-	01 Pitch Key Follow
-	01 Pitch Env KF
-	01 Pitch Env A Time
-	01 Pitch Env A Depth
-	01 Pitch Env E Time
-	01 Pitch Env E Depth
-	01 TVF Mode
-	01 TVF Cutoff
-	01 TVF Resonance
-	01 TVF Velocity Curve
-	01 TVF Cutoff Key Follow
-	01 TVF Env Depth
-	01 TVF Env Velo
-	01 TVF Env Time KF
-	01 TVF Env Time Vel
-	01 TVF Env Time rel Vel
-	01 TVF Env Attack Time
-	01 TVF Env Attack Level
-	01 TVF Env Decay 1 Time
-	01 TVF Env Decay BP
-	01 TVF Env Decay 2 Time
-	01 TVF Env Sustain Level
-	01 TVF Env Release Time
-	01 TVA Level
-	01 TVA Velocity Curve
-	01 TVA Velocity Sens
-	01 TVA Env Time KF
-	01 TVA Env Time om Vel
-	01 TVA Env Time rel Vel
-	01 TVA Env Attack Time
-	01 TVA Env Attack Level
-	01 TVA Env Decay 1 Time
-	01 TVA Env Decay BP
-	01 TVA Env Decay 2 Time
-	01 TVA Env Sustain Level
-	01 TVA Env Release Time
-	01 LFO Waveform
-	01 LFO Rate
-	01 LFO Delay Time
-	01 LFO Rise Time
-	01 LFO Offset
-	01 LFO Pitch Mod Depth
-	01 LFO TVF Mod Depth
-	01 LFO TVA Mod Depth
+	String Name[10]
+	byte Original Tone Media
+	byte Original Tone Number
+	byte DLM Switch
+	byte DLM Mode
+	byte DLM Start Address
+	byte DLM Loop Length
+	byte Tune Coarse
+	byte Tune Fine
+	byte Pitch Key Follow
+	byte Pitch Env KF
+	byte Pitch Env A Time
+	byte Pitch Env A Depth
+	byte Pitch Env E Time
+	byte Pitch Env E Depth
+	byte TVF Mode
+	byte TVF Cutoff
+	byte TVF Resonance
+	byte TVF Velocity Curve
+	byte TVF Cutoff Key Follow
+	byte TVF Env Depth
+	byte TVF Env Velo
+	byte TVF Env Time KF
+	byte TVF Env Time Vel
+	byte TVF Env Time rel Vel
+	byte TVF Env Attack Time
+	byte TVF Env Attack Level
+	byte TVF Env Decay 1 Time
+	byte TVF Env Decay BP
+	byte TVF Env Decay 2 Time
+	byte TVF Env Sustain Level
+	byte TVF Env Release Time
+	byte TVA Level
+	byte TVA Velocity Curve
+	byte TVA Velocity Sens
+	byte TVA Env Time KF
+	byte TVA Env Time om Vel
+	byte TVA Env Time rel Vel
+	byte TVA Env Attack Time
+	byte TVA Env Attack Level
+	byte TVA Env Decay 1 Time
+	byte TVA Env Decay BP
+	byte TVA Env Decay 2 Time
+	byte TVA Env Sustain Level
+	byte TVA Env Release Time
+	byte LFO Waveform
+	byte LFO Rate
+	byte LFO Delay Time
+	byte LFO Rise Time
+	byte LFO Offset
+	byte LFO Pitch Mod Depth
+	byte LFO TVF Mod Depth
+	byte LFO TVA Mod Depth
 }
 
-struct 001466 Rhythm Setup
+struct 001466 RhythmSetup
 {
-	01 Shift
-	01 Reserved
+	byte Shift
+	byte Reserved
 }
 
 # ------------------------------------------------------

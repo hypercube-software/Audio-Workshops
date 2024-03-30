@@ -7,6 +7,11 @@ import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
 import com.hypercube.workshop.midiworkshop.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryDumper;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryVisitor;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryField;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMap;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMapFormat;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExFileParser;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
@@ -45,6 +52,7 @@ public class SysExCLI {
         Device d = sysExFileParser.parse(input);
         if (d != null) {
             DeviceMemoryDumper dumper = new DeviceMemoryDumper(d.getMemory());
+            dumper.dumpMemoryMap(new File("target/memorymap.txt"));
             dumper.dumpMemory(output);
         }
     }
@@ -69,19 +77,46 @@ public class SysExCLI {
                 MidiMonitorEventListener listener = (device, evt) -> onMidiEvent(device, evt, output, total);
 
                 Thread listenerThread = initListener(in, listener);
+                dumper.visitMemory(new DeviceMemoryVisitor() {
+                    @Override
+                    public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
+                        // Nothing to do
+                    }
 
-                dumper.visitMemory((path, field, addr) -> {
-                    if (!path.contains("Bulk") && !field.isArray()) {
-                        log.info("Visit {}, {} {} {} {}", path, field.getParent()
-                                .getName(), addr.toString(), field.getName(), field.getSize()
-                                .toString());
-                        var size = field.getSize();
-                        model.requestData(out, addr, size);
-                        waitSysExReceived();
-                        sysExReceived.reset();
+                    @Override
+                    public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+                        if (!path.contains("Bulk") && !field.isArray()) {
+                            log.info("Visit {}, {} {} {} {}", path, field.getParent()
+                                    .getName(), addr.toString(), field.getName(), field.getSize()
+                                    .toString());
+                            var size = field.getSize();
+                            model.requestData(out, addr, size);
+                            waitSysExReceived();
+                            sysExReceived.reset();
+                        }
                     }
                 });
 
+                model.getMemory()
+                        .getMemoryMaps()
+                        .stream()
+                        .filter(MemoryMap::isTopLevel)
+                        .filter(mm -> mm.getFormat() == MemoryMapFormat.NIBBLES)
+                        .forEach(memoryMap -> {
+                            log.info(memoryMap.getName() + ":" + memoryMap.getBaseAddress()
+                                    .toString() + " " + memoryMap.getSize()
+                                    .toString());
+                            model.requestData(out, memoryMap.getBaseAddress(), memoryMap.getSize());
+                            int nbSysExReceived = 0;
+                            while (waitSysExReceived()) {
+                                nbSysExReceived++;
+                                log.info(nbSysExReceived + " SysEx received");
+                            }
+                            if (nbSysExReceived == 0) {
+                                throw new MidiError("Your MemoryMap is not correct, no SysEx received");
+                            }
+                            sysExReceived.reset();
+                        });
                 midiMonitor.close();
                 listenerThread.join();
             }
@@ -103,9 +138,12 @@ public class SysExCLI {
         return listenerThread;
     }
 
-    private void waitSysExReceived() {
+    private boolean waitSysExReceived() {
         try {
-            sysExReceived.await();
+            sysExReceived.await(2, TimeUnit.SECONDS);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
         } catch (Exception e) {
             throw new MidiError(e);
         }

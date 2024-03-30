@@ -8,272 +8,350 @@
 # -------------------------------------------
 # Memory zones
 # -------------------------------------------
-@400000-000100 Zone 1
+@400000-000100 SystemParams Zone
 {
 	SystemParams
 }
 
-@400100-001000 Zone 2
+@400100-001000 CommonPatchParams Zone
 {
 	CommonPatchParams
 }
 
-@401000-002000 Zone 3
+@401000-002000 PatchParams Zone
 {
 	PatchParams[16 block]
 }
 
-@402000-002000 Zone 4
+@402000-002000 PatchSends Zone
 {
 	PatchSends[16 block]
 }
 
-@403000-000020 Information
+@403000-000020 Information Zone
 {
-	20 Information (String)
+	String Information[32]
 }
 
-@410000-00000C Drum Map Name
+@410000-00000C Drum Map 1 Name
 {
-	0C Name (String)
+	String Name[12]
+}
+@411000-00000C Drum Map 2 Name
+{
+	String Name[12]
 }
 
-@410100 Drum Map
+@410100 Drum Map 1
 {
-	01 Tune[128 Note]
-	01 Level[128 Note]
-	01 Group[128 Note]
-	01 Pan[128 Note]
-	01 Reverb[128 Note]
-	01 Chorus[128 Note]
-	01 Rx NoteOn[128 Note]
-	01 Rx NoteOff[128 Note]
+	DrumMapSetting
+}
+
+@411100 Drum Map 2
+{
+	DrumMapSetting
 }
 
 @480000-001D10 NIBBLES Bulk Dump
 {
     BulkSystemParams
     BulkCommonPatchParams
-    01 Reserved[28]
+    byte reserved[14]
     BulkPatchParams[16 block]
 }
-
-@490000-001D10 NIBBLES Bulk Dump Drum
+# ------------------------------------------------
+# MAP 1
+# ------------------------------------------------
+@490000 NIBBLES Bulk DrumMap1 Key
 {
-	01 data[3728]
+	byte Key[128]
 }
-
-# -------------------------------------------
-struct 000008 SystemParams
+@490200 NIBBLES Bulk DrumMap1 Level
 {
-	04 Tune
-	01 Level
-	01 Pitch
-	01 Pan
-	01 reserved[120]
-	01 GS Init (Switch)
+	byte Level[128]
+}
+@490400 NIBBLES Bulk DrumMap1 Group
+{
+	byte Group[128]
+}
+@490600 NIBBLES Bulk DrumMap1 Pan
+{
+	byte Pan[128]
+}
+@490800 NIBBLES Bulk DrumMap1 Reverb
+{
+	byte Reverb[128]
+}
+@490A00 NIBBLES Bulk DrumMap1 Chorus
+{
+	byte Chorus[128]
+}
+@490E00 NIBBLES Bulk DrumMap1 Name
+{
+	String Name[12]
+}
+# ------------------------------------------------
+# MAP 2
+# ------------------------------------------------
+
+@491000 NIBBLES Bulk DrumMap2 Key
+{
+	byte Key[128]
+}
+@491200 NIBBLES Bulk DrumMap2 Level
+{
+	byte Level[128]
+}
+@491400 NIBBLES Bulk DrumMap2 Group
+{
+	byte Group[128]
+}
+@491600 NIBBLES Bulk DrumMap2 Pan
+{
+	byte Pan[128]
+}
+@491800 NIBBLES Bulk DrumMap2 Reverb
+{
+	byte Reverb[128]
+}
+@491A00 NIBBLES Bulk DrumMap2 Chorus
+{
+	byte Chorus[128]
+}
+@491E00 NIBBLES Bulk DrumMap2 Name
+{
+	String Name[12]
+}
+# -------------------------------------------
+struct SystemParams
+{
+	int  Tune
+	byte Level
+	byte Pitch
+	byte Pan
+	byte reserved[120]
+	Switch GS Init
 }
 struct 000100 CommonPatchParams
 {
-	10 Name (String)
-	01 Partial[16 block]
-	01 reserved[16]
-	01 Reverb Type (ReverbType)
-	01 Reverb Character
-	01 Reverb Cutoff
-	01 Reverb Level
-	01 Reverb Time
-	01 Reverb Delay
-	01 Reverb To Chorus
-	01 reserved[1]
-	01 Chorus Type (ChorusType)
-	01 Chorus Cutoff
-	01 Chorus Level
-	01 Chorus Feedback
-	01 Chorus Delay
-	01 Chorus Rate
-	01 Chorus Depth
-	01 Chorus To Reverb
+	String Name[16]
+	byte Partial[16 block]
+	byte reserved[16]
+	ReverbType Reverb Type
+	byte Reverb Character
+	byte Reverb Cutoff
+	byte Reverb Level
+	byte Reverb Time
+	byte Reverb Delay
+	byte Reverb To Chorus
+	byte reserved[1]
+	ChorusType Chorus Type
+	byte Chorus Cutoff
+	byte Chorus Level
+	byte Chorus Feedback
+	byte Chorus Delay
+	byte Chorus Rate
+	byte Chorus Depth
+	byte Chorus To Reverb
 }
 # PatchParams comes in a specific order: block 1-16 where block 1 is the one for the drum, Channel = 10 for this one
-# Patch Block 1 has channel 1
+# Patch Block 1 has channel 10
 # Patch Block 2 has channel 2
 # ...
 # Channel field is in the range [0-15] so "channel" in the first block = 09
 
+struct ToneParams
+{
+	byte Vibrato Rate
+	byte Vibrato Depth
+	byte TVF Cutoff
+	byte TVF Resonance
+	byte Attack
+	byte Decay
+	byte Release
+	byte Vibrato Delay
+}
+
 struct 000100 PatchParams
 {
-	02 Tone Command/Program Change
-	01 Channel
-	01 Rx Pitch Bend (Switch)
-	01 Rx Channel Aftertouch (Switch)
-	01 Rx Prorgram Change (Switch)
-	01 Rx Command Change (Switch)
-	01 Rx Polyphonic Aftertouch (Switch)
-	01 Rx Note Message (Switch)
-	01 Rx RPN (Switch)
-	01 Rx NRPN (Switch)
-	01 Rx Modulation (Switch)
-	01 Rx Volume (Switch)
-	01 Rx Panning (Switch)
-	01 Rx Expression (Switch)
-	01 Rx Sustain (Switch)
-	01 Rx Portamento (Switch)
-	01 Rx Sostenuto (Switch)
-	01 Rx Soft Pedal (Switch)
-	01 Mono Poly Mode
-	01 Assignation Mode
-	01 Drum Map
-	01 Pitch Coarse
-	02 Pitch Fine
-	01 Level
-	01 Velocity
-	01 Velocity Shift
-	01 Panning
-	01 Note range low
-	01 Note range high
-	01 CC1
-	01 CC2
-	01 Chorus Level
-	01 Reverb Level
-	01 Reserved[13]
+	short Tone Command and Program Change
+	byte Channel
+	Switch Rx Pitch Bend
+	Switch Rx Channel Aftertouch
+	Switch Rx Prorgram Change
+	Switch Rx Command Change
+	Switch Rx Polyphonic Aftertouch
+	Switch Rx Note Message
+	Switch Rx RPN
+	Switch Rx NRPN
+	Switch Rx Modulation
+	Switch Rx Volume
+	Switch Rx Panning
+	Switch Rx Expression
+	Switch Rx Sustain
+	Switch Rx Portamento
+	Switch Rx Sostenuto
+	Switch Rx Soft Pedal
+	byte Mono Poly Mode
+	byte Assignation Mode
+	byte Drum Map
+	byte Pitch Coarse
+	short Pitch Fine
+	byte Level
+	byte Velocity
+	byte Velocity Shift
+	byte Panning
+	byte Note range low
+	byte Note range high
+	byte CC1
+	byte CC2
+	byte Chorus Level
+	byte Reverb Level
+	byte reserved[13]
 
-	01 Vibrato Rate
-	01 Vibrato Depth
-	01 TVF Cutoff
-	01 TVF Resonnance
-	01 Attack
-	01 Decay
-	01 Release
-	01 Vibrato Delay
-
-	01 reserved[8]
+	ToneParams
+	
+	byte reserved[8]
 
 	0C Fine Tune
 }
 struct 000100 PatchSends
 {
-    MOD (Send)
-    BEND (Send)
-    CAF (Send)
-    PAF (Send)
-    CC1 (Send)
-    CC2 (Send)
+    Send MOD
+    Send BEND
+    Send CAF
+    Send PAF
+    Send CC1
+    Send CC2
 }
 struct Send
 {
-	01 Pitch Coarse
-	01 TVF Cutoff
-	01 TVA
-	LFO1 (LFOSend)
-	LFO2 (LFOSend)
-	01 reserved[7]
+	byte Pitch Coarse
+	byte TVF
+	byte TVA
+	LFOSend LFO1
+	LFOSend LFO2
+	byte reserved[5]
 }
 struct LFOSend
 {
-	01 Rate
-	01 TVF
-	01 TVA
+	byte Rate
+	byte Pitch
+	byte TVF
+	byte TVA
 }
-
+struct DrumMapSetting
+{
+    byte Tune[128 Note]
+	byte Level[128 Note]
+	byte Group[128 Note]
+	byte Pan[128 Note]
+	byte Reverb[128 Note]
+	byte Chorus[128 Note]
+	Switch Rx NoteOn[128 Note]
+	Switch Rx NoteOff[128 Note]
+}
 # -------------------------------------------
 # Bulk types
 # -------------------------------------------
-struct 000010 BulkSystemParams
+struct BulkSystemParams
 {
-	02 Tune[4]
-	02 Level
-	02 Pitch
-	02 Pan
-	02 GS Init (Switch)
+	short  Tune # 0400 mean 00040000, apparently it is NOT in NIBBLE but we don't handle this craziness
+	byte   Level
+	byte   unknown
+	Switch GS Init
+	byte   Pitch
+	byte   Pan
+	byte   unknown
 }
 
-struct 000064 BulkCommonPatchParams
+struct BulkCommonPatchParams
 {
-	20 Name (String)
-	02 Partial[16 block]
-	02 Reserved[2]
-	02 Reverb Type (ReverbType)
-	02 Reverb Character
-	02 Reverb Cutoff
-	02 Reverb Level
-	02 Reverb Time
-	02 Reverb Delay
-	02 Reverb To Chorus
-	02 Reserved
-	02 Chorus Type (ChorusType)
-	02 Chorus Cutoff
-	02 Chorus Level
-	02 Chorus Feedback
-	02 Chorus Delay
-	02 Chorus Rate
-	02 Chorus Depth
-	02 Chorus To Reverb
+	String Name[16]
+	byte Partial[16 block]
+	byte reserved[2]
+	ReverbType Reverb Type
+	byte Reverb Character
+	byte Reverb Cutoff
+	byte Reverb Level
+	byte Reverb Time
+	byte Reverb Delay
+	byte Reverb To Chorus
+	byte reserved
+	ChorusType Chorus Type
+	byte Chorus Cutoff
+	byte Chorus Level
+	byte Chorus Feedback
+	byte Chorus Delay
+	byte Chorus Rate
+	byte Chorus Depth
+	byte Chorus To Reverb
 }
 struct BulkToneParams
 {
-	02 Vibrato Rate
-	02 Vibrato Depth
-	02 TVF Cutoff
-	02 TVF Resonance
-	02 Attack
-	02 Decay
-	02 Release
-	02 Vibrato Delay
+	byte Vibrato Rate
+	byte Vibrato Depth
+	byte TVF Cutoff
+	byte TVF Resonance
+	byte Attack
+	byte Decay
+	byte Release
+	byte Vibrato Delay
 }
+
 struct BulkPatchParams
 {
-	02 Tone Command Change
-	02 Tone Program Change
-	02 Rx1
-	02 Rx2
-	02 Channel
-	02 Reserved # 0x81,0xD1 or 0xB1
-	02 Pitch Coarse
-	02 Pitch Fine
-    02 Level
-	02 Velocity
-	02 Velocity Shift
-	02 Panning
+	short Tone Command and Program Change
+	short Rx Mask
+	byte Channel
+	byte unknown1 # B0 for channel 10, 81 for the other
+	byte Pitch Coarse
+	byte Pitch Fine # 80 means 0800, apparently it is NOT in NIBBLE but we don't handle this craziness
 
-	02 Note range low
-	02 Note range high
+	byte Level
+	byte Velocity
+	byte Velocity Shift
+	byte Panning
+	byte Note range low
+	byte Note range high
+	byte Chorus Level
+	byte Reverb Level
 
-	02 Chorus Level
-	02 Reverb Level
+	BulkToneParams
 
-    BulkToneParams
+    byte unknown
+    byte unknown
 
-    02 Reserved[2]
-    02 Fine Tune[12]
-	02 CC1
-	02 CC2
+	0C Fine Tune
 
-	MOD (BulkSend)
-	BEND (BulkSend)
-	CAF (BulkSend)
-	PAF (BulkSend)
-	CC1 (BulkSend)
-	CC2 (BulkSend)
+	byte CC1
+	byte CC2
+	
+	BulkSend MOD
+    BulkSend BEND
+    BulkSend CAF
+    BulkSend PAF
+    BulkSend CC1
+    BulkSend CC2
 }
 
 struct BulkSend
 {
-	02 Pitch (semitone)
-	02 TVF
-	02 TVA
+	byte Pitch
+	byte TVF
+	byte TVA
+    byte reserved
 
-    LFO1 (BulkLFOSend)
-    LFO2 (BulkLFOSend)
-    02 Reserved
+    BulkLFOSend LFO1
+    BulkLFOSend LFO2
 }
 
 struct BulkLFOSend
 {
-	02 TVF
-	02 Rate
-	02 Pitch (cent)
-	02 TVA
+	byte Rate
+	byte Pitch
+	byte TVF
+	byte TVA
 }
 
 # ------------------------------------------------------
@@ -318,6 +396,6 @@ enum ChorusType
 	Chorus 4
 	Feedback Chorus
 	Flanger
-	Short Delay
-	Short Delay Feedback
+	byte Delay
+	byte Delay Feedback
 }

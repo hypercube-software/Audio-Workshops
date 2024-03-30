@@ -46,6 +46,14 @@ public record MemoryInt24(int value, int packedValue) {
         return MemoryInt24.from(value + amount.value);
     }
 
+    public MemoryInt24 div(int amount) {
+        return MemoryInt24.from(value / amount);
+    }
+
+    public MemoryInt24 mul(int amount) {
+        return MemoryInt24.from(value * amount);
+    }
+
     @Override
     public String toString() {
         return "0x%06X (packed: 0x%06X)".formatted(value, packedValue);

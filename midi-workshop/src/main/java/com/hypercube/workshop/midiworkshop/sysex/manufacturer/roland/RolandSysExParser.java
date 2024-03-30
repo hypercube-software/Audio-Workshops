@@ -6,6 +6,7 @@ import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.sysex.manufacturer.roland.command.RolandCommandParser;
 import com.hypercube.workshop.midiworkshop.sysex.parser.SysExParser;
 import com.hypercube.workshop.midiworkshop.sysex.util.SysExReader;
+import lombok.extern.slf4j.Slf4j;
 import org.jline.utils.Log;
 
 import java.nio.ByteBuffer;
@@ -16,12 +17,15 @@ import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSE
 /**
  * Read a roland SysEx which is made of Roland Commands
  */
+@Slf4j
 public class RolandSysExParser extends SysExParser {
     @Override
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         int deviceId = buffer.getByte();
 
-        RolandDevice device = Manufacturer.ROLAND.getDevice(buffer.getByte());
+        int deviceModel = buffer.getByte();
+        log.info("Device Model {}", deviceModel);
+        RolandDevice device = Manufacturer.ROLAND.getDevice(deviceModel);
 
         if (device.getMemory() == null) {
             device.loadMemoryMap();

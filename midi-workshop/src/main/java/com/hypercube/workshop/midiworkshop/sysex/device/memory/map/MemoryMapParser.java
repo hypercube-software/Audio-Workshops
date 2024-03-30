@@ -3,9 +3,9 @@ package com.hypercube.workshop.midiworkshop.sysex.device.memory.map;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryArray;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryArrayIndex;
 import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryEnum;
+import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -28,10 +29,14 @@ import java.util.stream.IntStream;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemoryMapParser {
-    private static final Pattern MEMORY_DEF = Pattern.compile("@(?<addr>[0-9A-F]+)(-(?<size>[0-9A-F]+))?(\\s(?<format>[A-Z]+))?\\s(?<name>[a-zA-Z0-9 ]+)");
-    private static final Pattern STRUCT_DEF = Pattern.compile("struct\\s((?<size>[0-9A-F]+)\\s)?((?<format>[A-Z]+)\\s)?(?<name>[a-zA-Z0-9 ]+)");
-    private static final Pattern FIELD_DEF = Pattern.compile("^((?<size>[0-9A-F]+)\\s)?(?<name>[a-zA-Z0-9 ]+[a-zA-Z0-9]+)(\\[(?<array>[^\\]]+)\\])?(\\s*\\((?<type>[a-zA-Z$]+)\\))?");
-    private static final Pattern ARRAY_DEF = Pattern.compile("((?<size>[0-9]+)(\\s(?<name>[a-zA-Z]+))?),?");
+    private static final String LITTERAL = "a-zA-Z0-9";
+    private static final String HEXA_NUMBER = "0-9A-F";
+
+    private static final String DECI_NUMBER = "0-9";
+    private static final Pattern MEMORY_DEF = Pattern.compile("@(?<addr>[%s]+)(-(?<size>[%s]+))?(\\s(?<format>[A-Z]+))?\\s(?<name>[%s ]+)".formatted(HEXA_NUMBER, HEXA_NUMBER, LITTERAL));
+    private static final Pattern STRUCT_DEF = Pattern.compile("struct\\s((?<size>[%s]+)\\s)?((?<format>[A-Z]+)\\s)?(?<name>[%s ]+)".formatted(HEXA_NUMBER, LITTERAL));
+    private static final Pattern FIELD_DEF = Pattern.compile("^(?<type>[%s]+)(?<name>\\s+[%s ]+)?(\\[(?<array>[^\\]]+)\\])?".formatted(LITTERAL, LITTERAL));
+    private static final Pattern ARRAY_DIMENSIONS_DEF = Pattern.compile("((?<size>[%s]+)(\\s(?<name>[%s]+))?),?".formatted(DECI_NUMBER, LITTERAL));
 
     private final File file;
     private final State state;
@@ -49,7 +54,7 @@ public class MemoryMapParser {
         boolean inDefinitionBlock;
         boolean packedAddress;
         MemoryMap currentMemoryMap;
-        public MemoryEnum currentEnum;
+        MemoryEnum currentEnum;
 
     }
 
@@ -71,11 +76,11 @@ public class MemoryMapParser {
                 .forEach(this::parseLine);
         resolveTypeReferences();
         resolveAddresses();
-        var topLevelMemorySpaces = memoryMaps.stream()
+        var topLevelMemoryMaps = memoryMaps.stream()
                 .filter(MemoryMap::isTopLevel)
                 .toList();
-        topLevelMemorySpaces.forEach(MemoryMap::allocateMemory);
-        return new DeviceMemory(state.currentModel, topLevelMemorySpaces);
+        topLevelMemoryMaps.forEach(MemoryMap::allocateMemory);
+        return new DeviceMemory(state.currentModel, topLevelMemoryMaps);
     }
 
     private void resolveAddresses() {
@@ -98,35 +103,51 @@ public class MemoryMapParser {
      * </ul>
      */
     private void resolveTypeReferences() {
-        memoryMaps.forEach(this::resolveTypeReferences);
+        memoryMaps.stream()
+                .filter(MemoryMap::isTopLevel)
+                .forEach(memoryMap -> {
+                    if (memoryMap.getType() == MemoryMapType.STRUCT) {
+                        throw new MidiError("Unused Struct: " + memoryMap.getName());
+                    }
+                    resolveTypeReferences(memoryMap, memoryMap.getFormat());
+                });
     }
 
-    private void resolveTypeReferences(MemoryMap memoryMap) {
+    private void resolveTypeReferences(MemoryMap memoryMap, MemoryMapFormat parentFormat) {
+        resolveEnumReferences();
+        updateMemoryFormat(memoryMap, parentFormat);
         memoryMap.getFields()
-                .forEach(f -> {
-                    if (f.getSize() == null) {
-                        resolveTypeReference(memoryMap, f);
+                .forEach(field -> {
+                    if (field.getSize() == null) {
+                        resolveTypeReference(memoryMap, field);
                     }
                 });
-        updateDeviceMemorySpaceSize(memoryMap);
-        resolveEnumReferences();
+        updateDeviceMemoryMapSize(memoryMap);
+    }
+
+    private void updateMemoryFormat(MemoryMap memoryMap, MemoryMapFormat parentformat) {
+        if (memoryMap.getFormat() == null) {
+            memoryMap.setFormat(parentformat);
+        } else if (memoryMap.getFormat() != parentformat) {
+            throw new MidiError("Child Struct %s don't use the same format than parent %s, You must define a separate one".formatted(memoryMap.getName(), parentformat.name()));
+        }
     }
 
     private void resolveTypeReference(MemoryMap memoryMap, MemoryField field) {
         if (field.getSize() != null)
             return;
-        log.info("Resolve %s in %s".formatted(field.getName(), memoryMap.getName()));
-        var type = field.getType() == null ? field.getName() : field.getType();
+        var type = field.getType();
+        log.info("Resolve %s in %s".formatted(type, memoryMap.getName()));
         var referencedMemoryMap = memoryMaps.stream()
                 .filter(dms -> dms.getName()
                         .equals(type))
                 .findFirst()
-                .orElseThrow(() -> new MidiError("Field reference %s not found at line %d".formatted(field.getName(), field.getLine())));
+                .orElseThrow(() -> new MidiError("Type reference %s not found at line %d".formatted(type, field.getLine())));
         if (referencedMemoryMap.getFormat() == null) {
             referencedMemoryMap.setFormat(memoryMap.getFormat());
         }
         referencedMemoryMap.incReferenceCount();
-        resolveTypeReferences(referencedMemoryMap);
+        resolveTypeReferences(referencedMemoryMap, memoryMap.getFormat());
         field.setReference(referencedMemoryMap);
         field.setSize(referencedMemoryMap.getSize());
     }
@@ -135,7 +156,10 @@ public class MemoryMapParser {
         memoryEnums.forEach(e -> fields.stream()
                 .filter(f -> e.getName()
                         .equals(f.getType()))
-                .forEach(f -> f.setEnumReference(e)));
+                .forEach(f -> {
+                    f.setEnumReference(e);
+                    f.setSize(MemoryInt24.from(1));
+                }));
     }
 
     /**
@@ -143,7 +167,7 @@ public class MemoryMapParser {
      *
      * @param memoryMap A memoryMap without size
      */
-    public void updateDeviceMemorySpaceSize(MemoryMap memoryMap) {
+    public void updateDeviceMemoryMapSize(MemoryMap memoryMap) {
         if (memoryMap.getSize() != null)
             return;
 
@@ -207,12 +231,21 @@ public class MemoryMapParser {
             if (!state.inDefinitionBlock) {
                 throw new MidiError("Unexpected field declaration outside any block at line " + state.currentLineNumber + ": " + state.currentLine);
             }
-            parseField(state.currentLine);
+            if (state.currentEnum != null) {
+                parseEnumValue(state.currentLine);
+            } else {
+                parseField(state.currentLine);
+            }
         }
     }
 
+    private void parseEnumValue(String currentLine) {
+        state.currentEnum.add(currentLine.trim());
+    }
+
     private String removeIndentation(String line) {
-        return line.replaceAll("^\\s+", "");
+        //return line.replaceAll("^\\s+", "");
+        return line.trim();
     }
 
     private void parseEnum(String currentLine) {
@@ -222,31 +255,37 @@ public class MemoryMapParser {
         memoryEnums.add(state.currentEnum);
     }
 
-    private String getFieldType(String fieldName, MemoryInt24 fieldSize, String fieldTypeName) {
-        if (fieldTypeName != null) {
-            return fieldTypeName;
-        }
-        if (fieldSize == null) {
-            return fieldName;
-        } else {
-            return "Byte";
-        }
-    }
-
     private void parseField(String currentLine) {
         Matcher m = FIELD_DEF.matcher(currentLine);
         if (m.find()) {
-            MemoryInt24 size = MemoryInt24.from(m.group("size"), state.packedAddress);
-            String name = m.group("name");
             String type = m.group("type");
+            String name = Optional.ofNullable(m.group("name"))
+                    .map(String::trim)
+                    .orElse(null);
             String array = m.group("array");
-            if (state.currentEnum != null) {
-                state.currentEnum.add(name);
-            } else {
-                var field = new MemoryField(state.currentMemoryMap, state.currentLineNumber, name, getFieldType(name, size, type), parseMemoryArray(array));
-                field.setSize(size);
+            try {
+                MemoryArray memoryArray = type.equals("String") ? null : parseMemoryArray(array);
+                boolean typeIsFieldSize = type.length() == 2;
+                var fieldType = typeIsFieldSize ? "byte" : type;
+                var field = new MemoryField(state.currentMemoryMap, state.currentLineNumber, name, fieldType, memoryArray);
+                switch (type) {
+                    case "byte" -> field.setSize(MemoryInt24.from(1));
+                    case "short" -> field.setSize(MemoryInt24.from(2));
+                    case "int" -> field.setSize(MemoryInt24.from(4));
+                    case "long" -> field.setSize(MemoryInt24.from(8));
+                    case "String" -> field.setSize(MemoryInt24.from(Integer.parseInt(array)));
+                    default -> {
+                        if (typeIsFieldSize) {
+                            field.setSize(MemoryInt24.from(Integer.parseInt(type, 16)));
+                        } else {
+                            field.setSize(null);
+                        }
+                    }
+                }
                 fields.add(field);
                 state.currentMemoryMap.add(field);
+            } catch (NumberFormatException e) {
+                throw new MidiError("Unexpected Field Definition at line " + state.currentLineNumber + ": " + currentLine, e);
             }
         } else {
             throw new MidiError("Unexpected Field Definition at line " + state.currentLineNumber + ": " + currentLine);
@@ -257,7 +296,7 @@ public class MemoryMapParser {
         if (array == null) {
             return null;
         }
-        Matcher m = ARRAY_DEF.matcher(array);
+        Matcher m = ARRAY_DIMENSIONS_DEF.matcher(array);
         List<MemoryArrayIndex> indexes = new ArrayList<>();
         while (m.find()) {
             String size = m.group("size");
@@ -270,14 +309,17 @@ public class MemoryMapParser {
     private void parseMemoryZone(String currentLine) {
         Matcher m = MEMORY_DEF.matcher(currentLine);
         if (m.find()) {
-            MemoryInt24 addr = MemoryInt24.from(m.group("addr"), state.packedAddress);
-            MemoryInt24 size = MemoryInt24.from(m.group("size"), state.packedAddress);
             String name = m.group("name");
             String format = m.group("format");
             MemoryMapFormat type = format == null ? MemoryMapFormat.BYTES : MemoryMapFormat.valueOf(format);
-            MemoryMap memorySpace = size == null ? new MemoryMap(MemoryMapType.MEMORY, name, addr, type) : new MemoryMap(MemoryMapType.MEMORY, name, addr, size, type);
-            memoryMaps.add(memorySpace);
-            state.currentMemoryMap = memorySpace;
+            MemoryInt24 addr = MemoryInt24.from(m.group("addr"), state.packedAddress);
+            MemoryInt24 size = MemoryInt24.from(m.group("size"), state.packedAddress);
+            if (type == MemoryMapFormat.NIBBLES && size != null) {
+                size = size.div(2);
+            }
+            MemoryMap memoryMap = size == null ? new MemoryMap(MemoryMapType.MEMORY, name, addr, type) : new MemoryMap(MemoryMapType.MEMORY, name, addr, size, type);
+            memoryMaps.add(memoryMap);
+            state.currentMemoryMap = memoryMap;
         } else {
             throw new MidiError("Unexpected Zone Definition at line " + state.currentLineNumber + ": " + currentLine);
         }
@@ -290,10 +332,10 @@ public class MemoryMapParser {
             MemoryInt24 size = MemoryInt24.from(m.group("size"), state.packedAddress);
             String name = m.group("name");
             String format = m.group("format");
-            MemoryMapFormat type = format == null ? null : MemoryMapFormat.valueOf(format);
-            MemoryMap memorySpace = size == null ? new MemoryMap(MemoryMapType.STRUCT, name, addr, type) : new MemoryMap(MemoryMapType.STRUCT, name, addr, size, type);
-            memoryMaps.add(memorySpace);
-            state.currentMemoryMap = memorySpace;
+            MemoryMapFormat memoryMapFormat = format == null ? null : MemoryMapFormat.valueOf(format);
+            MemoryMap memoryMap = size == null ? new MemoryMap(MemoryMapType.STRUCT, name, addr, memoryMapFormat) : new MemoryMap(MemoryMapType.STRUCT, name, addr, size, memoryMapFormat);
+            memoryMaps.add(memoryMap);
+            state.currentMemoryMap = memoryMap;
         } else {
             throw new MidiError("Unexpected Struct Definition at line " + state.currentLineNumber + ": " + currentLine);
         }

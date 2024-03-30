@@ -50,6 +50,19 @@ public class MemoryField {
         return enumReference != null;
     }
 
+    /**
+     * @return Take into account the {@link MemoryMapFormat} to get the real size in bytes
+     */
+    public MemoryInt24 getEffectiveSize() {
+        return MemoryInt24.from(switch (parent.getFormat()) {
+            case BYTES -> size.value();
+            case NIBBLES -> size.value() * 2;
+        });
+    }
+
+    /**
+     * @return {@link #getSize()} including the array size if available
+     */
     public MemoryInt24 getTotalSize() {
         if (array != null) {
             return MemoryInt24.from(array.size() * size.value());
@@ -57,9 +70,19 @@ public class MemoryField {
         return size;
     }
 
+    /**
+     * @return {@link #getEffectiveSize()} including the array size if available
+     */
+    public MemoryInt24 getEffectiveTotalSize() {
+        if (array != null) {
+            return MemoryInt24.from(array.size() * getEffectiveSize().value());
+        }
+        return getEffectiveSize();
+    }
+
     @Override
     public String toString() {
-        String typeName = isReference() ? name : type + " " + name;
+        String typeName = name != null ? type + " " + name : type;
         if (array != null) {
             return typeName + array;
         }

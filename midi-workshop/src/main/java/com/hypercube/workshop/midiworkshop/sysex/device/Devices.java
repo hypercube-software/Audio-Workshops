@@ -15,24 +15,32 @@ import java.util.stream.Collectors;
  * @param <T> class implementing the device
  */
 public class Devices<T extends Device> {
-    private final Map<Integer, T> devices;
+    private final Map<String, T> devices;
 
     public Devices(List<T> devices) {
         this.devices = devices.stream()
-                .collect(Collectors.toMap(T::getCode, Function.identity()));
+                .collect(Collectors.toMap(T::getName, Function.identity()));
     }
 
     public T get(int code) {
-        return Optional.ofNullable(devices.get(code))
-                .orElseThrow(() -> new MidiError("Unknown device 0x%02X".formatted(code)));
+        // Roland Sound Canvas share the same code, so system property FORCE_DEVICE must be used
+        String forceDeviceName = System.getProperty("FORCE_DEVICE");
+        List<T> matches = devices.values()
+                .stream()
+                .filter(d -> (forceDeviceName != null) ? d.getName()
+                        .equals(forceDeviceName) : (d.getCode() == code))
+                .toList();
+        if (matches.size() == 1) {
+            return matches.getFirst();
+        } else if (matches.isEmpty()) {
+            throw new MidiError("Unknown device 0x%02X".formatted(code));
+        } else {
+            throw new MidiError("Multiple devices share the same code 0x%02X".formatted(code));
+        }
     }
 
     public T get(String name) {
-        return devices.values()
-                .stream()
-                .filter(m -> m.getName()
-                        .equals(name))
-                .findFirst()
+        return Optional.ofNullable(devices.get(name))
                 .orElseThrow(() -> new MidiError("Unknown device " + name));
     }
 }

@@ -18,6 +18,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.ROLAND_SOUND_CANVAS_DEVICE_MULTI;
+import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.ROLAND_SOUND_CANVAS_DEVICE_SINGLE;
+
 /**
  * MIDI Manufacturer list with their Devices
  */
@@ -63,8 +66,14 @@ public enum Manufacturer {
     ROLAND("Roland", 0x41, new RolandSysExParser(), RolandDevice.class,
             List.of(
                     new DeviceDefinition("RSP-550", 0x38),
-                    new DeviceDefinition("DS-330", 0x42),
-                    new DeviceDefinition("DS-330 (Single Mode)", 0x55),
+                    new DeviceDefinition("DS-330", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
+                    new DeviceDefinition("SC-33", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
+                    new DeviceDefinition("SC-55", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
+                    new DeviceDefinition("SC-88", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
+                    new DeviceDefinition("DS-330 (Single Mode)", ROLAND_SOUND_CANVAS_DEVICE_SINGLE),
+                    new DeviceDefinition("SC-33 (Single Mode)", ROLAND_SOUND_CANVAS_DEVICE_SINGLE),
+                    new DeviceDefinition("SC-55 (Single Mode)", ROLAND_SOUND_CANVAS_DEVICE_SINGLE),
+                    new DeviceDefinition("SC-88 (Single Mode)", ROLAND_SOUND_CANVAS_DEVICE_SINGLE),
                     new DeviceDefinition("D-70", 0x39),
                     new DeviceDefinition("JV-1010", 0x6A))),
     KORG("Korg", 0x42),
@@ -174,4 +183,6 @@ public enum Manufacturer {
                 .map(d -> d.get(code))
                 .orElse(null);
     }
+
+
 }

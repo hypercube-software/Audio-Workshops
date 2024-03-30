@@ -14,4 +14,6 @@ public class SysExConstants {
     public static final int SYSEX_IDENTITY_RESPONSE = 0x02;
     public static final int SYSEX_IDENTITY_REQUEST = 0x01; // aka Device Inquiry request
 
+    public static final int ROLAND_SOUND_CANVAS_DEVICE_MULTI = 0x42;
+    public static final int ROLAND_SOUND_CANVAS_DEVICE_SINGLE = 0x55;
 }

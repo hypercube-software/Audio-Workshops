@@ -300,7 +300,7 @@ You have to understand that:
 - Some memory sections are dedicated to Bulk dumps and are encoded in Nibbles
 - Some memory sections are using regular bytes
 
-For instance in their Sound Canvas:
+For instance in their **Sound Canvas**:
 
 - The address `0x400000` contains the **system parameters** in bytes
 - The address `0x480000` contains the same thing in nibbles for a Bulk Dump
@@ -494,6 +494,8 @@ First thing first, we need to consider a device memory as a group of small memor
 - Size and addresses are in packed bytes or not
 - We call a memory area a `MemoryMap`, so a `*.mmap` file contains multiple `MemoryMap`.
 
+### File format
+
 Here how to write your map file:
 
 ```
@@ -519,67 +521,27 @@ Here how to write your map file:
 
 ⚠️ Our parser is very simple so the syntax is very rigid. It is not possible to put '{' in the same line of a memory area definition
 
-## Fields
+### NIBBLES
 
-A ``MemoryArea` is made of memory fields.
-
-- A memory field can be a **string** with a given size
-- It can be an **array**, multidimentional or not. Optionally, each dimension can have a name.
-- It can be a bunch of **bytes**
-- It can be a **struct** which is also a set of memory fields
-
-The overall format is:
+If a memory zone use NIBBLES, you just have to do this:
 
 ```
-regular field  : <optional type size> <field name> (optional field type)
-array of fields: <optional type size> <field type> [<dimension size> <optional dimension name>,...]
+@480000-001D10 NIBBLES Bulk Dump
+{
+    BulkSystemParams
+    BulkCommonPatchParams
+    byte reserved[14]
+    BulkPatchParams[16 block]
+}
 ```
 
-By default, the field type is `Byte`
+The parser will take care of all the conversions. So when you write `byte reserved[14]` the parser automatically understand `byte` is in fact 2 `nibble bytes` in the memory. So the real size will be 2*14 = 28 bytes instead of 14.
 
-Here some examples:
+⚠️I found **fine tuning** parameters never use NIBBLES even they are in the middle of a Bulk Dump. We don't handle that for now. You will read `0400` instead of `00040000`
 
-```
-01 Original Tone Media
-```
+## Hexadecimal
 
-This is the most simple: a field made of a single byte. It's the same than `01 Original Tone Media (Byte)`
-
-```
-01 Tune[128 Note]
-```
-
-This is an array of 128 entries. The dimension is called `Note`. The array type is called `Tune`. So the size of this field is 128 bytes.
-
-```
-PatchParams[16 block]
-```
-
-This is an array of 16 types **struct**. The dimension of the array is called `block`. The struct name is called `PatchParams`. The size of the array is not specified and will be computed. It is basically `sizeof(PatchParams) * 16` bytes.
-
-```
-Tone[5 Part, 4 Section]
-```
-
-This is an array with 2 dimensions. The first dimension is called `Part` and the second dimension is called `Section`. The array type is called `Tone`
-
-```
-20 Information (String)
-```
-
-This is a string of size 20. 
-
-```
-0A Name[16 Channel](String)
-```
-
-This is an array of 16 strings. Each string as a size of `0x0A` (10). So the array size will be 160 bytes.
-
-```
-01 Pedal Switch 1 Function (PedalSwitchFunction)
-```
-
-This is a field of type **Enum**. It uses the enum called `PedalSwitchFunction` and its size is 1 byte.
+All values are in hexadecimal except the dimensions of arrays.
 
 ## Enums
 
@@ -611,11 +573,88 @@ enum ReverbType
 }
 ```
 
+## Fields
+
+A `MemoryArea` is made of memory fields.
+
+- A memory field can be a **string** with a given size
+- It can be an **array**, multidimentional or not. Optionally, each dimension can have a name.
+- It can be a bunch of **bytes**
+- It can be a **struct** which is also a set of memory fields
+
+The overall format is:
+
+```bash
+<type or size> <field name>                                                     # for regular fields
+<type or size> <field type> [<dimension size> <optional dimension name>,...]    # for arrays
+```
+
+### Raw types
+
+```bash
+byte  My Field Name 1 # Size = 1 byte
+short My Field Name 2 # Size = 2 bytes
+int   My Field Name 3 # Size = 4 bytes
+long  My Field Name 4 # Size = 8 bytes
+0C    My Field Name 5 # Size = 12 bytes
+```
+
+### Arrays
+
+You can define an array like this:
+
+```
+01 Tune[128 Note]
+```
+
+This is an array of 128 entries of size 1 byte. The dimension is called `Note`.
+
+```
+PatchParams[16 block]
+```
+
+This is an array of 16 types **struct**. 
+
+- The field don't have a name
+- The dimension of the array is called `block`. 
+- The struct name is called `PatchParams`. 
+- The total size in bytes is  `sizeof(PatchParams) * 16` .
+
+```
+Tone[5 Part, 4 Section]
+```
+
+This is an array with 2 dimensions. 
+
+- The first dimension is called `Part` 
+- The second dimension is called `Section`. 
+- The array type is called `Tone`
+
+###  Strings
+
+```
+String Information[20]
+```
+
+- This is a string of size 20. 
+- Like arrays, 20 is not in Hexadecimal
+
+### Enums
+
+```
+PedalSwitchFunction Pedal Switch 1 Function
+```
+
+This is a field of type **Enum**. 
+
+- It uses the enum called `PedalSwitchFunction` and its size is 1 byte.
+- The name of the field is `Pedal Switch 1 Function`
+
 ## Dump
 
 The class `DeviceMemoryDumper` will reveal the memory content of a device in readable text. 
 
-- It uses the visitor pattern, so you can do anything you want with the memory content
+- It uses the **visitor pattern**, so you can do anything you want with the memory content
 - The method `dumpMemory` use a visitor to save everything to disk
 - The CLI command `dumpMemory` use another visitor to forge SysEx requests to get the value from a real device
 
@@ -624,30 +663,33 @@ Here an example for a Roland D-70:
 ```
 -------------------------------------
 Roland D-70 Memory dump
-0x000000 (packed: 0x000000)=64              Internal Memory Core/System Setup/Master Tune
-0x000001 (packed: 0x000001)=16              Internal Memory Core/System Setup/Control Channel
-0x000002 (packed: 0x000002)=16              Internal Memory Core/System Setup/Unit Number
-0x000003 (packed: 0x000003)=Off             Internal Memory Core/System Setup/Rx SysEx 
-0x000004 (packed: 0x000004)=Hold            Internal Memory Core/System Setup/Hold Pedal Function 
-0x000005 (packed: 0x000005)=MODULATION      Internal Memory Core/System Setup/Switch Pedal Function 
-0x000006 (packed: 0x000006)=On              Internal Memory Core/System Setup/Midi Out Link Mode 
-0x000007 (packed: 0x000007)=On              Internal Memory Core/System Setup/Local Mode 
-0x000008 (packed: 0x000008)="Ch 1      "    Internal Memory Core/Midi Channels/Channel[0]/Name
-0x000012 (packed: 0x000012)="Ch 2      "    Internal Memory Core/Midi Channels/Channel[1]/Name
-0x00001C (packed: 0x00001C)="Ch 3      "    Internal Memory Core/Midi Channels/Channel[2]/Name
-0x000026 (packed: 0x000026)="Ch 4      "    Internal Memory Core/Midi Channels/Channel[3]/Name
-0x000030 (packed: 0x000030)="Ch 5      "    Internal Memory Core/Midi Channels/Channel[4]/Name
-0x00003A (packed: 0x00003A)="Ch 6      "    Internal Memory Core/Midi Channels/Channel[5]/Name
-0x000044 (packed: 0x000044)="Ch 7      "    Internal Memory Core/Midi Channels/Channel[6]/Name
-0x00004E (packed: 0x00004E)="Ch 8      "    Internal Memory Core/Midi Channels/Channel[7]/Name
-0x000058 (packed: 0x000058)="Ch 9      "    Internal Memory Core/Midi Channels/Channel[8]/Name
-0x000062 (packed: 0x000062)="Ch 10     "    Internal Memory Core/Midi Channels/Channel[9]/Name
-0x00006C (packed: 0x00006C)="Ch 11     "    Internal Memory Core/Midi Channels/Channel[10]/Name
-0x000076 (packed: 0x000076)="Ch 12     "    Internal Memory Core/Midi Channels/Channel[11]/Name
-0x000080 (packed: 0x000100)="Ch 13     "    Internal Memory Core/Midi Channels/Channel[12]/Name
-0x00008A (packed: 0x00010A)="Ch 14     "    Internal Memory Core/Midi Channels/Channel[13]/Name
-0x000094 (packed: 0x000114)="Ch 15     "    Internal Memory Core/Midi Channels/Channel[14]/Name
-0x00009E (packed: 0x00011E)="Ch 16     "    Internal Memory Core/Midi Channels/Channel[15]/Name
+-------------------------------------
+Internal Memory Core 0x000000 (packed: 0x000000) 0x0000A8 (packed: 0x000128) BYTES
+-------------------------------------
+0x000000 (packed: 0x000000)=40              Internal Memory Core/SystemSetup/Master Tune
+0x000001 (packed: 0x000001)=10              Internal Memory Core/SystemSetup/Control Channel
+0x000002 (packed: 0x000002)=10              Internal Memory Core/SystemSetup/Unit Number
+0x000003 (packed: 0x000003)=00 Off          Internal Memory Core/SystemSetup/Rx SysEx
+0x000004 (packed: 0x000004)=00 Hold         Internal Memory Core/SystemSetup/Hold Pedal Function
+0x000005 (packed: 0x000005)=00 MODULATION   Internal Memory Core/SystemSetup/Switch Pedal Function
+0x000006 (packed: 0x000006)=01 On           Internal Memory Core/SystemSetup/Midi Out Link Mode
+0x000007 (packed: 0x000007)=01 On           Internal Memory Core/SystemSetup/Local Mode
+0x000008 (packed: 0x000008)="Ch 1      "    Internal Memory Core/[0]/MidiChannel/Name
+0x000012 (packed: 0x000012)="Ch 2      "    Internal Memory Core/[1]/MidiChannel/Name
+0x00001C (packed: 0x00001C)="Ch 3      "    Internal Memory Core/[2]/MidiChannel/Name
+0x000026 (packed: 0x000026)="Ch 4      "    Internal Memory Core/[3]/MidiChannel/Name
+0x000030 (packed: 0x000030)="Ch 5      "    Internal Memory Core/[4]/MidiChannel/Name
+0x00003A (packed: 0x00003A)="Ch 6      "    Internal Memory Core/[5]/MidiChannel/Name
+0x000044 (packed: 0x000044)="Ch 7      "    Internal Memory Core/[6]/MidiChannel/Name
+0x00004E (packed: 0x00004E)="Ch 8      "    Internal Memory Core/[7]/MidiChannel/Name
+0x000058 (packed: 0x000058)="Ch 9      "    Internal Memory Core/[8]/MidiChannel/Name
+0x000062 (packed: 0x000062)="Ch 10     "    Internal Memory Core/[9]/MidiChannel/Name
+0x00006C (packed: 0x00006C)="Ch 11     "    Internal Memory Core/[10]/MidiChannel/Name
+0x000076 (packed: 0x000076)="Ch 12     "    Internal Memory Core/[11]/MidiChannel/Name
+0x000080 (packed: 0x000100)="Ch 13     "    Internal Memory Core/[12]/MidiChannel/Name
+0x00008A (packed: 0x00010A)="Ch 14     "    Internal Memory Core/[13]/MidiChannel/Name
+0x000094 (packed: 0x000114)="Ch 15     "    Internal Memory Core/[14]/MidiChannel/Name
+0x00009E (packed: 0x00011E)="Ch 16     "    Internal Memory Core/[15]/MidiChannel/Name
 ...
 ```
 
@@ -656,6 +698,11 @@ The Dump display addresses in **normal** and **packed** format, followed by the 
 👉Given this dump, you can easily compare what you read with what the device manual tells you.
 
 # CLI
+
+## FORCE_DEVICE
+
+- Because Roland use the same model ID for many Sound Canvas, you have to use `-DFORCE_DEVICE` to specify the right model.
+- If the device is not a Sound Canvas, you don't need this setting
 
 ## parse
 
@@ -671,5 +718,11 @@ If the SysEx is a standard inquiry message you should get this:
 
 ```
 Identity Response for KORG (device id: 0): 11 01 01 00 03 00 01 00
+```
+
+If it is a Sound Canvas (The **Boss DS-330** is a Sound Canvas) you need to do that:
+
+```
+java -DFORCE_DEVICE=DS-330 -jar target\midi-workshop-0.0.1-SNAPSHOT.jar parse -i "sysex/Roland/DS-330/Boss-DS-330-All.syx" -o "target/DS-330.dump.txt"
 ```
 
