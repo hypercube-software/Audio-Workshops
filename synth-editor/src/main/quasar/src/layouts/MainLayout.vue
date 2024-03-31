@@ -5,15 +5,20 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-icon name="equalizer" size="2em" />
-          {{ store.appTitle }} - {{ store.appVersion }}
+          {{ app.store.appTitle }} v{{ app.store.appVersion }}
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" overlay elevated>
       <!-- drawer content -->
-      <div class="q-pa-md" style="max-width: 350px">
-        <q-list bordered>
+      <div style="margin: 15px;">
+        <q-select v-model="app.store.selectedMidiInDevice" :options="app.store.devices.inputs" option-label="name"
+          label="MIDI In device" />
+        <q-select v-model="app.store.selectedMidiOutDevice" :options="app.store.devices.ouputs" option-label="name"
+          label="MIDI Out device" />
+        <div style="height: 20px;"></div>
+        <q-list>
           <q-item clickable v-ripple>
             <q-item-section>System Parameters</q-item-section>
             <q-item-section avatar>
@@ -39,21 +44,18 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { mainStore } from 'stores/main-store';
-import synthEditorAPI from "../api/synth-editor-api.js";
+import { ref } from 'vue';
+import app from '../app/SynthEditorApp.js';
 
 export default {
   setup() {
-    const store = mainStore()
-
     return {
-      store,
-      leftDrawerOpen: true
+      app,
+      leftDrawerOpen: true,
+      onSelectMidiIn: device => {
+        console.log("select " + device);
+      }
     }
-  },
-  mounted() {
-    //synthEditorAPI.connectWebSocket();
   }
 }
 </script>

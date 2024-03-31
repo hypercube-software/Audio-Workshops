@@ -1,21 +1,37 @@
 import { defineStore } from "pinia";
 
-export const mainStore = defineStore("mainStore", {
+const store = defineStore("mainStore", {
   state: () => ({
     appTitle: "Synth Editor",
     appVersion: "1.0.0",
-    counter: 0,
+    devices: {
+      inputs: [],
+      outputs: [],
+    },
+    selectedMidiInDevice: null,
+    selectedMidiOutDevice: null,
   }),
 
   getters: {
-    doubleCount(state) {
-      return state.counter * 2;
+    inputDevices(state) {
+      return state.inputs;
+    },
+    outputDevices(state) {
+      return state.outputs;
     },
   },
 
   actions: {
-    increment() {
-      this.counter++;
+    setDevices(devices) {
+      this.devices = devices;
+    },
+    setMidiInDevice(device) {
+      this.selectedMidiInDevice = device;
+    },
+    setMidiOutDevice(device) {
+      this.selectedMidiOutDevice = device;
     },
   },
 });
+
+export default store;

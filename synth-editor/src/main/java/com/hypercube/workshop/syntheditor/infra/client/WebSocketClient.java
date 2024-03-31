@@ -2,6 +2,7 @@ package com.hypercube.workshop.syntheditor.infra.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hypercube.workshop.syntheditor.infra.client.dto.SynthEditorMessage;
+import com.hypercube.workshop.syntheditor.model.SynthEditorService;
 import com.hypercube.workshop.syntheditor.model.error.SynthEditorException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class WebSocketClient extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
-
+    private final SynthEditorService synthEditorService;
     Map<String, WebSocketSession> sessionMap = new ConcurrentHashMap<>();
 
     public void send(WebSocketSession session, SynthEditorMessage msg) {
@@ -36,6 +37,8 @@ public class WebSocketClient extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("afterConnectionClosed: sessionId {} status {}", session.getId(), status.toString());
         sessionMap.remove(session.getId());
+        synthEditorService.closeCurrentInputDevice();
+        synthEditorService.closeCurrentOutputDevice();
     }
 
     @Override

@@ -7,6 +7,12 @@ class SynthEditorAPI {
     const devices = await response.json();
     return devices;
   }
+  async selectMidiInDevice(deviceName) {
+    const response = await fetch(`api/input/${deviceName}`);
+  }
+  async selectMidiOutDevice(deviceName) {
+    const response = await fetch(`api/ouput/${deviceName}`);
+  }
 
   async connectWebSocket() {
     const url = `ws://${window.location.host}/ws`;
