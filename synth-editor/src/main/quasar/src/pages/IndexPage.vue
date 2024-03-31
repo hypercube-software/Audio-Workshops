@@ -1,14 +1,20 @@
 <template>
   <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
+    <q-btn push color="primary" label="Call SpringBoot" @click="onClick" />
   </q-page>
 </template>
 
+<script>
+import synthEditorAPI from "../api/synth-editor-api.js";
+
+async function onClick(event) {
+  const devices = await synthEditorAPI.getMIDIDevices();
+  console.log(devices);
+}
+</script>
+
 <script setup>
+
 defineOptions({
   name: 'IndexPage'
 });
