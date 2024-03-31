@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class SynthEditorApplication {
     private final ServletWebServerApplicationContext webServerApplicationContext;
+    private final Environment environment;
 
     private Process execute(String... params) {
         try {
@@ -58,8 +60,10 @@ public class SynthEditorApplication {
 
     @EventListener({ApplicationReadyEvent.class})
     void applicationReadyEvent() {
-        openBrowser("http://localhost:%d/".formatted(webServerApplicationContext.getWebServer()
-                .getPort()));
+        if (environment.getActiveProfiles().length == 0) {
+            openBrowser("http://localhost:%d/".formatted(webServerApplicationContext.getWebServer()
+                    .getPort()));
+        }
     }
 
     public static void main(String[] args) {
