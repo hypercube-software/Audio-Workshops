@@ -41,6 +41,7 @@
 <script>
 import { ref } from 'vue'
 import { mainStore } from 'stores/main-store';
+import synthEditorAPI from "../api/synth-editor-api.js";
 
 export default {
   setup() {
@@ -50,6 +51,9 @@ export default {
       store,
       leftDrawerOpen: true
     }
+  },
+  mounted() {
+    //synthEditorAPI.connectWebSocket();
   }
 }
 </script>

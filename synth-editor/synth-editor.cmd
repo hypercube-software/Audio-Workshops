@@ -1,0 +1,1 @@
+java -jar target/synth-editor-0.0.1-SNAPSHOT.jar

@@ -79,6 +79,13 @@ module.exports = configure(function (/* ctx */) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
       proxy: {
+        "/ws": {
+          target: "ws://localhost:8080",
+          ws: true,
+          pathRewrite: {
+            "^/api": "",
+          },
+        },
         // proxy all requests starting with /api to jsonplaceholder
         "/api": {
           target: "http://localhost:8080",
