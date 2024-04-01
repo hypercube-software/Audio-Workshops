@@ -76,14 +76,14 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>npm install (initialize)</id>
+                        <id>npm ci (initialize)</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
                             <arguments>
-                                <argument>install</argument>
+                                <argument>ci</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -43,19 +43,9 @@
   </q-layout>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
 import app from '../app/SynthEditorApp.js';
 
-export default {
-  setup() {
-    return {
-      app,
-      leftDrawerOpen: true,
-      onSelectMidiIn: device => {
-        console.log("select " + device);
-      }
-    }
-  }
-}
+const leftDrawerOpen = true;
+
 </script>

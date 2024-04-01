@@ -82,9 +82,6 @@ module.exports = configure(function (/* ctx */) {
         "/ws": {
           target: "ws://localhost:8080",
           ws: true,
-          pathRewrite: {
-            "^/api": "",
-          },
         },
         // proxy all requests starting with /api to jsonplaceholder
         "/api": {
