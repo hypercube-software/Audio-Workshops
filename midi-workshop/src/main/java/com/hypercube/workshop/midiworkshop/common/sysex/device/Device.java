@@ -18,7 +18,9 @@ import org.jline.utils.Log;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.SysexMessage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -97,18 +99,24 @@ public abstract class Device {
      */
     public abstract void sendData(MidiOutDevice midiOutDevice, MemoryInt24 address, int value);
 
+    private File getSysExFolder() {
+        String[] folders = new String[]{System.getProperty("SYSEX_FOLDER"), "./sysex", "../sysex"};
+        return Arrays.stream(folders)
+                .map(Optional::ofNullable)
+                .flatMap(Optional::stream)
+                .map(File::new)
+                .filter(File::exists)
+                .findFirst()
+                .orElseThrow(() -> new MidiError("SysEx folder not found"));
+    }
+
     /**
      * We store device memory maps in predefined folders
      */
     public void loadMemoryMap() {
         String manufacturerName = manufacturer.getTitle();
-        var memoryMap = new File("midi-workshop/sysex/%s/%s/%s.mmap".formatted(manufacturerName, name, name));
-        if (!memoryMap.exists()) {
-            memoryMap = new File("sysex/%s/%s/%s.mmap".formatted(manufacturerName, name, name));
-            if (!memoryMap.exists()) {
-                throw new MidiError("Memory map is missing: " + memoryMap.getAbsolutePath());
-            }
-        }
+        String sysexFolder = getSysExFolder().getAbsolutePath();
+        var memoryMap = new File("%s/%s/%s/%s.mmap".formatted(sysexFolder, manufacturerName, name, name));
         var deviceMemory = MemoryMapParser.load(memoryMap);
         setMemory(deviceMemory);
     }

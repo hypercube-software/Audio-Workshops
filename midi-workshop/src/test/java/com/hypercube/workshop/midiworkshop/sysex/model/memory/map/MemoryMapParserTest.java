@@ -12,7 +12,7 @@ class MemoryMapParserTest {
 
     @Test
     void loadD70Map() {
-        DeviceMemory dm = MemoryMapParser.load(new File("sysex/Roland/D-70/D-70.mmap"));
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/D-70/D-70.mmap"));
         assertEquals(4, dm.getMemoryMaps()
                 .size());
         assertMemoryMapSize(0x0000A8, "Internal Memory Core", dm);
@@ -23,7 +23,7 @@ class MemoryMapParserTest {
 
     @Test
     void loadDS330Map() {
-        DeviceMemory dm = MemoryMapParser.load(new File("sysex/Roland/DS-330/DS-330.mmap"));
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/DS-330/DS-330.mmap"));
         assertEquals(24, dm.getMemoryMaps()
                 .size());
         assertMemoryMapSize(0x000080, "SystemParams Zone", dm);

@@ -24,7 +24,7 @@ public class SysExParserTest {
     @Test
     void loadD70Map() {
         SysExParser p = new SysExParser();
-        Device device = p.parse(new File("sysex/Roland/D-70/D-70 reset.syx"));
+        Device device = p.parse(new File("../sysex/Roland/D-70/D-70 reset.syx"));
         var memory = device.getMemory();
         var dumper = new DeviceMemoryDumper(memory);
         dumper.dumpMemory(new File("target/D-70.memory"));
@@ -43,7 +43,7 @@ public class SysExParserTest {
     void loadDS330Bulk() {
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, "DS-330");
         SysExParser p = new SysExParser();
-        Device device = p.parse(new File("sysex/Roland/DS-330/Boss-DS-330-MultiMode.syx"));
+        Device device = p.parse(new File("../sysex/Roland/DS-330/Boss-DS-330-MultiMode.syx"));
         DeviceMemory memory = device.getMemory();
         var dumper = new DeviceMemoryDumper(memory);
         dumper.dumpMemory(new File("target/DS-330.memory"));

@@ -64,6 +64,9 @@ public class MemoryMapParser {
     }
 
     private DeviceMemory parse() {
+        if (!file.exists()) {
+            throw new MidiError("File not found:" + file);
+        }
         try {
             lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -169,7 +172,7 @@ public class MemoryMapParser {
     public void updateDeviceMemoryMapSize(MemoryMap memoryMap) {
         if (memoryMap.getSize() != null)
             return;
-        
+
         int size = 0;
         for (MemoryField f : memoryMap.getFields()) {
             if (f.getSize() == null) {
