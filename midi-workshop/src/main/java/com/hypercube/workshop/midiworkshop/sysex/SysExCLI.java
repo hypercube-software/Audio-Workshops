@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.sysex;
 
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Devices;
@@ -106,50 +107,57 @@ public class SysExCLI {
                 MidiMonitorEventListener listener = (device, evt) -> onMidiEvent(device, evt, output, total);
 
                 Thread listenerThread = initListener(in, listener);
-                dumper.visitMemory(new DeviceMemoryVisitor() {
-                    @Override
-                    public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
-                        // Nothing to do
-                    }
-
-                    @Override
-                    public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
-                        if (!path.contains("Bulk") && !field.isArray()) {
-                            log.info("Visit {}, {} {} {} {}", path, field.getParent()
-                                    .getName(), addr.toString(), field.getName(), field.getSize()
-                                    .toString());
-                            var size = field.getSize();
-                            model.requestData(out, addr, size);
-                            waitSysExReceived();
-                            sysExReceived.reset();
-                        }
-                    }
-                });
-
-                model.getMemory()
-                        .getMemoryMaps()
-                        .stream()
-                        .filter(MemoryMap::isTopLevel)
-                        .filter(mm -> mm.getFormat() == MemoryMapFormat.NIBBLES)
-                        .forEach(memoryMap -> {
-                            log.info(memoryMap.getName() + ":" + memoryMap.getBaseAddress()
-                                    .toString() + " " + memoryMap.getSize()
-                                    .toString());
-                            model.requestData(out, memoryMap.getBaseAddress(), memoryMap.getSize());
-                            int nbSysExReceived = 0;
-                            while (waitSysExReceived()) {
-                                nbSysExReceived++;
-                                log.info(nbSysExReceived + " SysEx received");
-                            }
-                            if (nbSysExReceived == 0) {
-                                throw new MidiError("Your MemoryMap is not correct, no SysEx received");
-                            }
-                            sysExReceived.reset();
-                        });
+                receiveNonBulkMemory(dumper, model, out);
+                receiveBulkMemory(model, out);
                 midiMonitor.close();
                 listenerThread.join();
             }
         }
+    }
+
+    private void receiveBulkMemory(Device model, MidiOutDevice out) {
+        model.getMemory()
+                .getMemoryMaps()
+                .stream()
+                .filter(MemoryMap::isTopLevel)
+                .filter(mm -> mm.getFormat() == MemoryMapFormat.NIBBLES)
+                .forEach(memoryMap -> {
+                    log.info(memoryMap.getName() + ":" + memoryMap.getBaseAddress()
+                            .toString() + " " + memoryMap.getEffectiveSize()
+                            .toString());
+                    model.requestData(out, memoryMap.getBaseAddress(), memoryMap.getEffectiveSize());
+                    int nbSysExReceived = 0;
+                    while (waitSysExReceived()) {
+                        nbSysExReceived++;
+                        log.info(nbSysExReceived + " SysEx received");
+                    }
+                    if (nbSysExReceived == 0) {
+                        throw new MidiError("Your MemoryMap is not correct, no SysEx received");
+                    }
+                    sysExReceived.reset();
+                });
+    }
+
+    private void receiveNonBulkMemory(DeviceMemoryDumper dumper, Device model, MidiOutDevice out) {
+        dumper.visitMemory(new DeviceMemoryVisitor() {
+            @Override
+            public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
+                // Nothing to do
+            }
+
+            @Override
+            public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+                if (!path.contains("Bulk") && !field.isArray()) {
+                    log.info("Visit {}, {} {} {} {}", path, field.getParent()
+                            .getName(), addr.toString(), field.getName(), field.getSize()
+                            .toString());
+                    var size = field.getSize();
+                    model.requestData(out, addr, size);
+                    waitSysExReceived();
+                    sysExReceived.reset();
+                }
+            }
+        });
     }
 
     private Thread initListener(MidiInDevice inputDevice, MidiMonitorEventListener listener) throws InterruptedException {
@@ -169,7 +177,7 @@ public class SysExCLI {
 
     private boolean waitSysExReceived() {
         try {
-            sysExReceived.await(2, TimeUnit.SECONDS);
+            sysExReceived.await(500, TimeUnit.MILLISECONDS);
             return true;
         } catch (TimeoutException e) {
             return false;
