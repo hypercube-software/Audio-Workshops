@@ -1,9 +1,10 @@
-package com.hypercube.workshop.syntheditor.infra.client;
+package com.hypercube.workshop.syntheditor.infra.bus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hypercube.workshop.syntheditor.infra.client.dto.SynthEditorMessage;
-import com.hypercube.workshop.syntheditor.model.SynthEditorService;
+import com.hypercube.workshop.syntheditor.infra.bus.dto.ParameterUpdateDTO;
+import com.hypercube.workshop.syntheditor.infra.bus.dto.SynthEditorMessageDTO;
 import com.hypercube.workshop.syntheditor.model.error.SynthEditorException;
+import com.hypercube.workshop.syntheditor.service.SynthEditorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,15 +18,18 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Bidirectional interface between browser and server
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WebSocketClient extends TextWebSocketHandler {
+public class WebSocketBus extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
     private final SynthEditorService synthEditorService;
     Map<String, WebSocketSession> sessionMap = new ConcurrentHashMap<>();
 
-    public void send(WebSocketSession session, SynthEditorMessage msg) {
+    public void send(WebSocketSession session, SynthEditorMessageDTO msg) {
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(msg)));
         } catch (IOException e) {
@@ -37,6 +41,7 @@ public class WebSocketClient extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         log.info("afterConnectionClosed: sessionId {} status {}", session.getId(), status.toString());
         sessionMap.remove(session.getId());
+        session.close();
         synthEditorService.closeCurrentInputDevice();
         synthEditorService.closeCurrentOutputDevice();
     }
@@ -49,15 +54,19 @@ public class WebSocketClient extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("handleTextMessage: sessionId=" + session.getId() + " Message=" + message.getPayload());
+        try {
+            ParameterUpdateDTO parameterUpdateDTO = objectMapper.readValue(message.getPayload(), ParameterUpdateDTO.class);
+            synthEditorService.onMsg(parameterUpdateDTO);
+        } catch (Exception e) {
+            log.error("Unexpected error", e);
+        }
     }
 
     @Scheduled(fixedRate = 3000)
     public void task() {
         sessionMap.values()
                 .forEach(session -> {
-                    log.info("Send msg to client {}", session.getId());
-                    send(session, new SynthEditorMessage("Hello from server"));
+                    send(session, new SynthEditorMessageDTO("Hello from server"));
                 });
     }
 }

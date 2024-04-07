@@ -135,7 +135,7 @@ struct SystemParams
 struct 000100 CommonPatchParams
 {
 	String Name[16]
-	byte Partial[16 block]
+	10 Partials
 	byte reserved[16]
 	ReverbType Reverb Type
 	byte Reverb Character

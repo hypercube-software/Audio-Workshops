@@ -70,6 +70,7 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -106,6 +107,7 @@
                     <workingDirectory>${basedir}/src/main/quasar/</workingDirectory>
                 </configuration>
             </plugin>
+            -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>

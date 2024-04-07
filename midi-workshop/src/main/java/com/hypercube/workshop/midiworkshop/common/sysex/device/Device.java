@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapParser;
@@ -124,16 +125,18 @@ public abstract class Device {
     public int requestMemory(MidiInDevice in, MidiOutDevice out, MemoryInt24 address, MemoryInt24 size) {
         try {
             final CountDownLatch sysExReceived = new CountDownLatch(1);
-            in.addSysExListener((device, event) -> {
+            final MidiListener listener = (device, event) -> {
                 Log.info("Receive SYSEX:" + event.toString());
                 SysExParser sysExParser = new SysExParser();
                 Device d = sysExParser.parse(event.getMessage());
                 assert (d == this);
                 sysExReceived.countDown();
-
-            });
+            };
+            in.addSysExListener(listener);
             requestData(out, address, size);
-            if (!sysExReceived.await(5, TimeUnit.SECONDS)) {
+            boolean timedOut = !sysExReceived.await(500, TimeUnit.MILLISECONDS);
+            in.removeListener(listener);
+            if (timedOut) {
                 Log.error("Timeout waiting SysEx...");
                 return 0;
             }

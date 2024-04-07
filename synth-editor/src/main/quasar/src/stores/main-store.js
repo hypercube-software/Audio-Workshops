@@ -8,8 +8,29 @@ const store = defineStore("mainStore", {
       inputs: [],
       outputs: [],
     },
+    synth: {
+      params: {
+        level: {
+          caption: "Level",
+          value: 127,
+        },
+        attack: {
+          caption: "Attack",
+          value: 127,
+        },
+        decay: {
+          caption: "Decay",
+          value: 127,
+        },
+        release: {
+          caption: "Release",
+          value: 127,
+        },
+      },
+    },
     selectedMidiInDevice: null,
     selectedMidiOutDevice: null,
+    block: 1,
   }),
 
   getters: {
@@ -24,6 +45,13 @@ const store = defineStore("mainStore", {
   actions: {
     setDevices(devices) {
       this.devices = devices;
+    },
+    setParameters(parameters) {
+      this.synth.params = parameters.map((p) => {
+        const caption = p.path.substring(p.path.lastIndexOf("/") + 1);
+        p.caption = caption;
+        return p;
+      });
     },
     setMidiInDevice(device) {
       this.selectedMidiInDevice = device;

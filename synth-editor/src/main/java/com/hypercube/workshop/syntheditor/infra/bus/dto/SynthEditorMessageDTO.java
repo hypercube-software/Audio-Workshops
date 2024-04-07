@@ -1,4 +1,4 @@
-package com.hypercube.workshop.syntheditor.infra.client.dto;
+package com.hypercube.workshop.syntheditor.infra.bus.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class SynthEditorMessage {
+public class SynthEditorMessageDTO {
     private String msg;
 }

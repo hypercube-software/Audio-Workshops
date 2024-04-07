@@ -15,7 +15,7 @@
       <div style="margin: 15px;">
         <q-select v-model="app.store.selectedMidiInDevice" :options="app.store.devices.inputs" option-label="name"
           label="MIDI In device" />
-        <q-select v-model="app.store.selectedMidiOutDevice" :options="app.store.devices.ouputs" option-label="name"
+        <q-select v-model="app.store.selectedMidiOutDevice" :options="app.store.devices.outputs" option-label="name"
           label="MIDI Out device" />
         <div style="height: 20px;"></div>
         <q-list>

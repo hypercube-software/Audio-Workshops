@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
 import org.jline.utils.Log;
 
 import javax.sound.midi.MidiMessage;

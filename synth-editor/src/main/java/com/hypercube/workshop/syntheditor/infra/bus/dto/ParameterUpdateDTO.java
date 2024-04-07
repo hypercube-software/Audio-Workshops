@@ -1,0 +1,13 @@
+package com.hypercube.workshop.syntheditor.infra.bus.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+public class ParameterUpdateDTO {
+    private int address;
+    private int value;
+}
