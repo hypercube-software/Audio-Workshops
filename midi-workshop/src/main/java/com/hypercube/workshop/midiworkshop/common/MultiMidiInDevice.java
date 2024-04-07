@@ -54,38 +54,29 @@ public class MultiMidiInDevice extends MidiInDevice {
 
     @Override
     public void listen(MidiListener listener) throws MidiUnavailableException {
-        try {
-            runningListeners.set(0);
-            for (var device : devices) {
-                device.device.getTransmitter()
-                        .setReceiver(new Receiver() {
-                            @Override
-                            public void send(MidiMessage message, long timeStamp) {
-                                try {
-                                    listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
-                                } catch (RuntimeException e) {
-                                    Log.error("Unexpected error in midi listener", e);
-                                }
+        runningListeners.set(0);
+        for (var device : devices) {
+            device.device.getTransmitter()
+                    .setReceiver(new Receiver() {
+                        @Override
+                        public void send(MidiMessage message, long timeStamp) {
+                            try {
+                                listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
+                            } catch (RuntimeException e) {
+                                Log.error("Unexpected error in midi listener", e);
                             }
+                        }
 
-                            @Override
-                            public void close() {
-                                int v = runningListeners.addAndGet(-1);
-                                if (v <= 0) {
-                                    stopListening();
-                                }
+                        @Override
+                        public void close() {
+                            int v = runningListeners.addAndGet(-1);
+                            if (v <= 0) {
+                                stopListening();
                             }
-                        });
-                runningListeners.addAndGet(1);
-            }
-
-            synchronized (closeSignal) {
-                closeSignal.wait();
-            }
-        } catch (InterruptedException e) {
-            Log.warn("Interrupted", e);
-            Thread.currentThread()
-                    .interrupt();
+                        }
+                    });
+            runningListeners.addAndGet(1);
         }
+        waitNotListening();
     }
 }

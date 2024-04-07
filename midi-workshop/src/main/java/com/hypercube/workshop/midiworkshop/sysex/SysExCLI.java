@@ -3,17 +3,18 @@ package com.hypercube.workshop.midiworkshop.sysex;
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.Devices;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.dump.DeviceMemoryDumper;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.dump.DeviceMemoryVisitor;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryField;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMap;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapFormat;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.Manufacturer;
+import com.hypercube.workshop.midiworkshop.common.sysex.parser.SysExParser;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
-import com.hypercube.workshop.midiworkshop.sysex.device.Device;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryDumper;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.dump.DeviceMemoryVisitor;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryField;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMap;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMapFormat;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.primitives.MemoryInt24;
-import com.hypercube.workshop.midiworkshop.sysex.manufacturer.Manufacturer;
-import com.hypercube.workshop.midiworkshop.sysex.parser.SysExFileParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -22,6 +23,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
-import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSEX_IDENTITY_RESPONSE;
+import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
+import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_IDENTITY_RESPONSE;
 
 @ShellComponent()
 @ShellCommandGroup("SysEx CLI")
@@ -42,18 +44,45 @@ import static com.hypercube.workshop.midiworkshop.sysex.util.SysExConstants.SYSE
 @RequiredArgsConstructor
 public class SysExCLI {
 
-    private final SysExFileParser sysExFileParser;
+    private final SysExParser sysExParser;
     private final MidiMonitor midiMonitor;
     private CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
     private CyclicBarrier sysExReceived = new CyclicBarrier(2);
 
     @ShellMethod(value = "parse SysEx file and dump the device memory to disk")
     public void parse(@ShellOption(value = "-i", help = "*.syx file") File input, @ShellOption(value = "-o", help = "Memory Dump in TXT format") File output) {
-        Device d = sysExFileParser.parse(input);
+        Device d = sysExParser.parse(input);
         if (d != null) {
             DeviceMemoryDumper dumper = new DeviceMemoryDumper(d.getMemory());
             dumper.dumpMemoryMap(new File("target/memorymap.txt"));
             dumper.dumpMemory(output);
+        }
+    }
+
+    @ShellMethod(value = "read device memory")
+    public void readMemory(@ShellOption(value = "-m", help = "Device Model") String modelName,
+                           @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,
+                           @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
+                           @ShellOption(value = "-a", help = "Roland Packed Address of a parameter") String address,
+                           @ShellOption(value = "-s", help = "Parameter size in bytes") int size) throws IOException, MidiUnavailableException {
+        MidiDeviceManager m = new MidiDeviceManager();
+        m.collectDevices();
+        m.listPorts();
+
+        var device = Manufacturer.ROLAND.getDevice(modelName);
+        device.loadMemoryMap();
+        System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, modelName);
+        try (var out = m.openOutput(outputDevice)) {
+            try (var in = m.openInput(inputDevice)) {
+                in.startListening();
+                MemoryInt24 paramSize = MemoryInt24.from(size);
+                MemoryInt24 paramAddress = MemoryInt24.from(address, true);
+                log.info("Query device at address {} with size {}", paramAddress, paramSize);
+                int value = device.requestMemory(in, out, paramAddress, paramSize);
+                log.info("Value at {} is {}", paramAddress, value);
+                in.stopListening();
+                in.waitNotListening();
+            }
         }
     }
 
@@ -64,7 +93,7 @@ public class SysExCLI {
         }
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.listDevices();
+        m.listPorts();
 
         try (var out = m.openOutput(outputDevice)) {
             try (var in = inputDevice.isEmpty() ? m.openInputs(m.getInputs()) : m.openInput(inputDevice)) {

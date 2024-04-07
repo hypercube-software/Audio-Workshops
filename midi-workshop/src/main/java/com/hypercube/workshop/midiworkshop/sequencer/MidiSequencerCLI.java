@@ -31,7 +31,7 @@ public class MidiSequencerCLI {
     public void elise(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.listDevices();
+        m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
             sequencer.playResource(out, "midi/for_elise_by_beethoven.mid", tempo);
         }
@@ -41,7 +41,7 @@ public class MidiSequencerCLI {
     public void bach(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.listDevices();
+        m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
             sequencer.playResource(out, "midi/bach_prelude_c_major_846.mid", tempo);
         }
@@ -51,7 +51,7 @@ public class MidiSequencerCLI {
     public void play1(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.listDevices();
+        m.listPorts();
         try (var clock = m.openOutput(clockDevice)) {
             try (var out = m.openOutput(outputDevice)) {
                 sequencer.playSequence(MidiClockType.SEQ, clock, out, tempo);
@@ -63,7 +63,7 @@ public class MidiSequencerCLI {
     public void play2(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
-        m.listDevices();
+        m.listPorts();
         try (var clock = m.openOutput(clockDevice)) {
             try (var out = m.openOutput(outputDevice)) {
                 sequencer.playSequence(MidiClockType.TMR, clock, out, tempo);

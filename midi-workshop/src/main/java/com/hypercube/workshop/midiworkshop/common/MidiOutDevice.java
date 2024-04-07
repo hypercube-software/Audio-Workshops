@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.common;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 
 import javax.sound.midi.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -11,7 +12,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
     public static final int CTRL_ALL_NOTE_OFF = 123;
     public static final int CTRL_ALL_SOUND_OFF = 120;
     public static final int CTRL_ALL_CONTROLLERS_OFF = 121;
-    private final Receiver receiver;
+    private Receiver receiver;
     private final ShortMessage clockMessage;
 
     private final ShortMessage activeSensingMessage;
@@ -20,11 +21,25 @@ public class MidiOutDevice extends AbstractMidiDevice {
     private final ShortMessage pauseMessage;
     private final ShortMessage resumeMessage;
 
+    @Override
+    public void close() throws IOException {
+        receiver.close();
+        super.close();
+    }
+
+    @Override
+    public void open() {
+        super.open();
+        try {
+            receiver = device.getReceiver();
+        } catch (MidiUnavailableException e) {
+            throw new MidiError(e);
+        }
+    }
 
     public MidiOutDevice(MidiDevice device) throws MidiUnavailableException {
 
         super(device);
-        receiver = device.getReceiver();
         try {
             clockMessage = new ShortMessage(ShortMessage.TIMING_CLOCK);
             activeSensingMessage = new ShortMessage(ShortMessage.ACTIVE_SENSING);

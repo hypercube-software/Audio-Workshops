@@ -32,7 +32,7 @@ public class MidiDeviceManager {
                 }
 
             } catch (MidiUnavailableException e) {
-                log.error("Device " + info.getDescription() + " is not available");
+                log.error("Port " + info.getDescription() + " is not available");
             }
         }
     }
@@ -53,14 +53,14 @@ public class MidiDeviceManager {
 
     public MidiOutDevice openOutput(String name) {
         MidiOutDevice out = getOutput(name)
-                .orElseThrow(() -> new MidiError("Output Device not found " + name));
+                .orElseThrow(() -> new MidiError("Output Port not found " + name));
         out.open();
         return out;
     }
 
     public MidiInDevice openInput(String name) {
         MidiInDevice in = getInput(name)
-                .orElseThrow(() -> new MidiError("Input Device not found " + name));
+                .orElseThrow(() -> new MidiError("Input Port not found " + name));
         in.open();
         return in;
     }
@@ -71,9 +71,9 @@ public class MidiDeviceManager {
         return in;
     }
 
-    public void listDevices() {
+    public void listPorts() {
         // List devices for convenience
-        log.info("Available MIDI devices:");
+        log.info("Available MIDI ports:");
         outputs
                 .forEach(o -> log.info("OUT:" + o.getName()));
         inputs

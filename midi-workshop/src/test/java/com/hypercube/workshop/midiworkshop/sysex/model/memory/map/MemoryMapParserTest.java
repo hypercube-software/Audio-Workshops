@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.sysex.model.memory.map;
 
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.DeviceMemory;
-import com.hypercube.workshop.midiworkshop.sysex.device.memory.map.MemoryMapParser;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -36,7 +36,7 @@ class MemoryMapParserTest {
         assertMemoryMapSize(0x00000C, "Drum Map 2 Name", dm);
         assertMemoryMapSize(0x000400, "Drum Map 2", dm);
         assertMemoryMapSize(0x000748, "Bulk Dump", dm);
-        
+
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Key", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Level", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Pan", dm);
