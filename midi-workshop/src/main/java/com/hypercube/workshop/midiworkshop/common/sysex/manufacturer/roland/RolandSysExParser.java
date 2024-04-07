@@ -24,7 +24,7 @@ public class RolandSysExParser extends ManufacturerSysExParser {
         int deviceId = buffer.getByte();
 
         int deviceModel = buffer.getByte();
-        log.info("Roland Device Model %02X".formatted(deviceModel));
+        //log.info("Roland Device Model %02X".formatted(deviceModel));
         RolandDevice device = Manufacturer.ROLAND.getDevice(deviceModel);
 
         if (device.getMemory() == null) {

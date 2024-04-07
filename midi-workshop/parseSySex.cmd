@@ -1,1 +1,1 @@
-java -jar target\midi-workshop-0.0.1-SNAPSHOT.jar parse -i "sysex/Roland/D-70/D-70 reset.syx" -o "target/D-70 reset.dump.txt"
+java -jar target\midi-workshop-0.0.1-SNAPSHOT.jar parse -i "../sysex/Roland/D-70/D-70 reset.syx" -o "target/D-70 reset.dump.txt"

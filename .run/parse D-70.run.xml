@@ -2,7 +2,7 @@
   <configuration default="false" name="parse D-70" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="parse -i &quot;midi-workshop/sysex/Roland/D-70/D-70 reset.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="parse -i &quot;sysex/Roland/D-70/D-70 reset.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

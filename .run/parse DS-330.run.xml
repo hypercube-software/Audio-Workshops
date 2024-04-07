@@ -2,7 +2,7 @@
   <configuration default="false" name="parse DS-330" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="parse -i &quot;midi-workshop/sysex/Roland/DS-330/Boss-DS-330-All.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="parse -i &quot;sysex/Roland/DS-330/Boss-DS-330-All.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
     <option name="VM_PARAMETERS" value="-DFORCE_DEVICE=DS-330" />
     <extension name="coverage">
       <pattern>
