@@ -1,6 +1,6 @@
 <template>
   <div class="column items-center knob-container">
-    <q-knob v-model="p.value" :min="0" :max="127" size="45px" :thickness="0.2" color="orange"
+    <q-knob v-model="p.value" :min="0" :max="127" :angle="180" size="45px" :thickness="0.2" color="orange"
       center-color="orange-10" />
     <pre class="knob-caption">{{ p.caption }}</pre>
     <pre class="knob-value">{{ p.value }}</pre>

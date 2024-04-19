@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 
 const store = defineStore("mainStore", {
   state: () => ({
+    dialogVisible: false,
+    progress: 0,
     appTitle: "Synth Editor",
     appVersion: "1.0.0",
     devices: {
@@ -40,9 +42,18 @@ const store = defineStore("mainStore", {
     outputDevices(state) {
       return state.outputs;
     },
+    progressLabel(state) {
+      return Math.floor(state.progress * 100) + "%";
+    },
   },
 
   actions: {
+    setProgress(value) {
+      this.progress = value / 100;
+    },
+    showDialog(visible) {
+      this.dialogVisible = visible;
+    },
     setDevices(devices) {
       this.devices = devices;
     },

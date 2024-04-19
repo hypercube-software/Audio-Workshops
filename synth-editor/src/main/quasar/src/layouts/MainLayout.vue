@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-
+    <DialogMsg />
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <q-toolbar-title>
@@ -18,7 +18,9 @@
         <q-select v-model="app.store.selectedMidiOutDevice" :options="app.store.devices.outputs" option-label="name"
           label="MIDI Out device" />
         <div style="height: 20px;"></div>
+
         <q-list>
+          <q-btn label="Refresh Params" @click="app.refreshParams()" />
           <q-item clickable v-ripple>
             <q-item-section>System Parameters</q-item-section>
             <q-item-section avatar>
@@ -45,7 +47,7 @@
 
 <script setup>
 import app from '../app/SynthEditorApp.js';
+import DialogMsg from '../components/DialogMsg.vue';
 
 const leftDrawerOpen = true;
-
 </script>

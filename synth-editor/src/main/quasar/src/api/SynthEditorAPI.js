@@ -1,7 +1,10 @@
 class SynthEditorAPI {
   // WebSocket handle
   #ws = null;
-
+  #app = null;
+  setApp(app) {
+    this.app = app;
+  }
   async getMIDIDevices() {
     const response = await fetch("api/devices");
     const devices = await response.json();
@@ -12,6 +15,10 @@ class SynthEditorAPI {
     const parameters = await response.json();
     return parameters;
   }
+  async refreshParameters() {
+    const response = await fetch("api/parameters/update");
+  }
+
   async selectMidiInDevice(deviceName) {
     const response = await fetch(`api/input/${deviceName}`);
   }
@@ -32,7 +39,9 @@ class SynthEditorAPI {
   }
 
   onWebSocketMessage(evt) {
-    console.log("Message is received:" + evt.data);
+    if (this.app) {
+      this.app.onServerMsg(JSON.parse(evt.data));
+    }
   }
 
   onWebSocketclose() {

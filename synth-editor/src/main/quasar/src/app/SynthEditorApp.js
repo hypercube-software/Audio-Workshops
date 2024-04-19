@@ -11,6 +11,7 @@ class SynthEditorAPI {
 
   async onStart() {
     this.store = store();
+    synthEditorAPI.setApp(this);
     synthEditorAPI.connectWebSocket();
     this.store.setDevices(await synthEditorAPI.getMIDIDevices());
 
@@ -46,9 +47,31 @@ class SynthEditorAPI {
   }
 
   getParam(path) {
-    const result = this.store.synth.params.filter((p) => p.path === path);
-    if (result.length == 1) return result[0];
-    return null;
+    if (this.store.synth.params) {
+      const result = this.store.synth.params.filter((p) => p.path === path);
+      if (result.length == 1) return result[0];
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  refreshParams() {
+    console.log("Refresh params");
+    this.store.setProgress(0);
+    this.store.showDialog(true);
+    synthEditorAPI.refreshParameters().then(async () => {
+      console.log("Refresh params done");
+      this.store.setParameters(await synthEditorAPI.getParameters());
+      this.store.showDialog(false);
+    });
+  }
+
+  onServerMsg(evt) {
+    console.log("Message is received:" + evt);
+    if (evt.type === "PROGRESS") {
+      this.store.setProgress(Number(evt.msg));
+    }
   }
 }
 

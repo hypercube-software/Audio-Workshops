@@ -3,10 +3,12 @@ package com.hypercube.workshop.syntheditor.infra.bus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hypercube.workshop.syntheditor.infra.bus.dto.ParameterUpdateDTO;
 import com.hypercube.workshop.syntheditor.infra.bus.dto.SynthEditorMessageDTO;
+import com.hypercube.workshop.syntheditor.infra.bus.dto.SynthEditorMessageType;
 import com.hypercube.workshop.syntheditor.model.error.SynthEditorException;
-import com.hypercube.workshop.syntheditor.service.SynthEditorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
@@ -26,8 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class WebSocketBus extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
-    private final SynthEditorService synthEditorService;
     Map<String, WebSocketSession> sessionMap = new ConcurrentHashMap<>();
+    @Autowired
+    @Lazy
+    private SynthEditorBusListener synthEditorBusListener;
 
     public void send(WebSocketSession session, SynthEditorMessageDTO msg) {
         try {
@@ -42,8 +46,7 @@ public class WebSocketBus extends TextWebSocketHandler {
         log.info("afterConnectionClosed: sessionId {} status {}", session.getId(), status.toString());
         sessionMap.remove(session.getId());
         session.close();
-        synthEditorService.closeCurrentInputDevice();
-        synthEditorService.closeCurrentOutputDevice();
+        synthEditorBusListener.onSessionClosed();
     }
 
     @Override
@@ -56,7 +59,7 @@ public class WebSocketBus extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         try {
             ParameterUpdateDTO parameterUpdateDTO = objectMapper.readValue(message.getPayload(), ParameterUpdateDTO.class);
-            synthEditorService.onMsg(parameterUpdateDTO);
+            synthEditorBusListener.onMsg(parameterUpdateDTO);
         } catch (Exception e) {
             log.error("Unexpected error", e);
         }
@@ -66,7 +69,12 @@ public class WebSocketBus extends TextWebSocketHandler {
     public void task() {
         sessionMap.values()
                 .forEach(session -> {
-                    send(session, new SynthEditorMessageDTO("Hello from server"));
+                    send(session, new SynthEditorMessageDTO(SynthEditorMessageType.INFO, "Hello from server"));
                 });
+    }
+
+    public void sendProgress(int progress) {
+        sessionMap.values()
+                .forEach(s -> send(s, new SynthEditorMessageDTO(SynthEditorMessageType.PROGRESS, Integer.toString(progress))));
     }
 }

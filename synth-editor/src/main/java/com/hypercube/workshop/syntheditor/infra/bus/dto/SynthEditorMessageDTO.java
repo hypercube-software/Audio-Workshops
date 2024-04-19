@@ -8,5 +8,6 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class SynthEditorMessageDTO {
+    private SynthEditorMessageType type;
     private String msg;
 }

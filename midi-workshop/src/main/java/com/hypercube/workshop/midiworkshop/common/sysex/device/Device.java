@@ -124,6 +124,8 @@ public abstract class Device {
 
     public int requestMemory(MidiInDevice in, MidiOutDevice out, MemoryInt24 address, MemoryInt24 size) {
         try {
+            if (in == null)
+                return 0;
             final CountDownLatch sysExReceived = new CountDownLatch(1);
             final MidiListener listener = (device, event) -> {
                 Log.info("Receive SYSEX:" + event.toString());

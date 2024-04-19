@@ -12,12 +12,15 @@ import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.Memory
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.roland.RolandDevice;
+import com.hypercube.workshop.syntheditor.infra.bus.SynthEditorBusListener;
+import com.hypercube.workshop.syntheditor.infra.bus.WebSocketBus;
 import com.hypercube.workshop.syntheditor.infra.bus.dto.ParameterUpdateDTO;
 import com.hypercube.workshop.syntheditor.model.EditableParameter;
 import com.hypercube.workshop.syntheditor.model.EditableParameters;
 import com.hypercube.workshop.syntheditor.model.error.SynthEditorException;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,9 @@ import java.util.List;
 @Setter
 @Getter
 @Slf4j
-public class SynthEditorService {
+@RequiredArgsConstructor
+public class SynthEditorService implements SynthEditorBusListener {
+    private final WebSocketBus bus;
     private final MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
     private MidiInDevice inputDevice;
     private MidiOutDevice outputDevice;
@@ -77,12 +82,16 @@ public class SynthEditorService {
                 return;
             }
             inputDevice.startListening();
-            editableParameters.getAll()
-                    .forEach(p -> {
-                        log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
-                        int value = device.requestMemory(inputDevice, outputDevice, MemoryInt24.fromPacked(p.getAddress()), MemoryInt24.from(p.getSize()));
-                        p.setValue(value);
-                    });
+            int progress = 0;
+            var params = editableParameters.getAll();
+            for (int i = 0; i < params.size(); i++) {
+                var p = params.get(i);
+                log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
+                int value = device.requestMemory(inputDevice, outputDevice, MemoryInt24.fromPacked(p.getAddress()), MemoryInt24.from(p.getSize()));
+                p.setValue(value);
+                progress = (i + 1) * 100 / params.size();
+                bus.sendProgress(progress);
+            }
             inputDevice.stopListening();
             inputDevice.waitNotListening();
         } catch (MidiUnavailableException e) {
@@ -130,9 +139,16 @@ public class SynthEditorService {
         outputDevice.open();
     }
 
+    @Override
     public void onMsg(ParameterUpdateDTO parameterUpdateDTO) {
         if (outputDevice != null) {
             device.sendData(outputDevice, MemoryInt24.fromPacked(parameterUpdateDTO.getAddress()), parameterUpdateDTO.getValue());
         }
+    }
+
+    @Override
+    public void onSessionClosed() {
+        closeCurrentInputDevice();
+        closeCurrentOutputDevice();
     }
 }
