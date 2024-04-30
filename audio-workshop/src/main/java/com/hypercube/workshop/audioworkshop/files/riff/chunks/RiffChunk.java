@@ -11,9 +11,10 @@ import java.util.Optional;
 
 @Getter
 public class RiffChunk {
-    private final int contentStart;
     private final String id;
     private final List<RiffChunk> children = new ArrayList<>();
+    @Setter
+    private int contentStart;
     @Setter
     private int contentSize; // does not include final padding
     @Setter

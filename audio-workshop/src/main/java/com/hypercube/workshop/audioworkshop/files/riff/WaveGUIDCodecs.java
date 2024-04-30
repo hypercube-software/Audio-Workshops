@@ -1,7 +1,13 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
+import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
 
 /**
  * We are using UUID to store GUID.
@@ -35,5 +41,37 @@ public class WaveGUIDCodecs {
             WMMEDIASUBTYPE_PCM_BE_FL64);
 
     private WaveGUIDCodecs() {
+    }
+
+    public static byte[] getBytes(UUID uuid) {
+        Matcher m = CachedRegExp.get("([^- ]{8})-([^- ]{4})-([^- ]{4})-([^- ]{2})([^- ]{2})-([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})([^- ]{2})", uuid.toString());
+        if (m.find()) {
+            ByteBuffer buffer = ByteBuffer.allocate(16);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            int time_low = Integer.parseInt(m.group(1), 16);
+            int time_mid = Integer.parseInt(m.group(2), 16);
+            int time_hi_and_version = Integer.parseInt(m.group(3), 16);
+            int clock_seq_hi_and_reserved = Integer.parseInt(m.group(4), 16);
+            int clock_seq_low = Integer.parseInt(m.group(5), 16);
+            int node0 = Integer.parseInt(m.group(6), 16);
+            int node1 = Integer.parseInt(m.group(7), 16);
+            int node2 = Integer.parseInt(m.group(8), 16);
+            int node3 = Integer.parseInt(m.group(9), 16);
+            int node4 = Integer.parseInt(m.group(10), 16);
+            int node5 = Integer.parseInt(m.group(11), 16);
+            buffer.putInt(time_low);
+            buffer.putShort((short) time_mid);
+            buffer.putShort((short) time_hi_and_version);
+            buffer.put((byte) clock_seq_hi_and_reserved);
+            buffer.put((byte) clock_seq_low);
+            buffer.put((byte) node0);
+            buffer.put((byte) node1);
+            buffer.put((byte) node2);
+            buffer.put((byte) node3);
+            buffer.put((byte) node4);
+            buffer.put((byte) node5);
+            return buffer.array();
+        }
+        throw new AudioError("Illegal UUID " + uuid.toString());
     }
 }

@@ -60,6 +60,35 @@ public class SysExCLI {
         }
     }
 
+
+    @ShellMethod(value = "read device identity")
+    public void queryIdentity(
+            @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,
+            @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
+            @ShellOption(value = "-f") File output) throws IOException, MidiUnavailableException, InterruptedException {
+        MidiDeviceManager m = new MidiDeviceManager();
+        m.collectDevices();
+        m.listPorts();
+        try (var out = m.openOutput(outputDevice)) {
+            try (var in = m.openInput(inputDevice)) {
+                AtomicInteger total = new AtomicInteger();
+                MidiMonitorEventListener listener = (device, evt) -> onMidiEvent(device, evt, output, total);
+                Thread listenerThread = initListener(in, listener);
+                Device.sendIdentityRequest(out, 0);
+                int nbSysExReceived = 0;
+                while (waitSysExReceived()) {
+                    nbSysExReceived++;
+                    log.info(nbSysExReceived + " SysEx received");
+                }
+                if (nbSysExReceived == 0) {
+                    throw new MidiError("No SysEx received, your device does not recognize Identity Request");
+                }
+                midiMonitor.close();
+                listenerThread.join();
+            }
+        }
+    }
+
     @ShellMethod(value = "read device memory")
     public void readMemory(@ShellOption(value = "-m", help = "Device Model") String modelName,
                            @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,

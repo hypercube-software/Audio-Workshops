@@ -39,4 +39,21 @@ public enum WaveChannels {
         return channels.toString();
     }
 
+    public static int toMask(int nChannels) {
+        if (nChannels == 1) {
+            return WaveChannels.SPEAKER_FRONT_CENTER.value;
+        } else if (nChannels == 2) {
+            return WaveChannels.SPEAKER_FRONT_LEFT.value | WaveChannels.SPEAKER_FRONT_RIGHT.value;
+        } else if (nChannels == 3) {
+            return WaveChannels.SPEAKER_FRONT_CENTER.value | WaveChannels.SPEAKER_FRONT_LEFT.value | WaveChannels.SPEAKER_BACK_RIGHT.value;
+        } else if (nChannels == 4) {
+            return WaveChannels.SPEAKER_FRONT_LEFT.value | WaveChannels.SPEAKER_FRONT_RIGHT.value | WaveChannels.SPEAKER_BACK_LEFT.value | WaveChannels.SPEAKER_BACK_RIGHT.value;
+        } else if (nChannels == 5) {
+            return WaveChannels.SPEAKER_FRONT_CENTER.value | WaveChannels.SPEAKER_FRONT_LEFT.value | WaveChannels.SPEAKER_FRONT_RIGHT.value | WaveChannels.SPEAKER_BACK_LEFT.value | WaveChannels.SPEAKER_BACK_RIGHT.value;
+        } else if (nChannels == 6) {
+            return WaveChannels.SPEAKER_FRONT_CENTER.value | WaveChannels.SPEAKER_BACK_CENTER.value | WaveChannels.SPEAKER_FRONT_LEFT.value | WaveChannels.SPEAKER_FRONT_RIGHT.value | WaveChannels.SPEAKER_BACK_LEFT.value | WaveChannels.SPEAKER_BACK_RIGHT.value;
+        } else {
+            return 0;
+        }
+    }
 }

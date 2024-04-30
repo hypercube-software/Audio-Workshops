@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="help" type="Application" factoryName="Application">
+  <configuration default="false" name="listen audio" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.audioworkshop.AudioWorkshopApplication" />
     <module name="audio-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="help" />
+    <option name="PROGRAM_PARAMETERS" value="listen -i &quot;Mixage stéréo (Realtek High Definition Audio)&quot; -o &quot;Périphérique audio principal&quot; -f &quot;output.wav&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.audioworkshop.*" />

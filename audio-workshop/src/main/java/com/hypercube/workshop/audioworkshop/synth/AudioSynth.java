@@ -1,8 +1,8 @@
 package com.hypercube.workshop.audioworkshop.synth;
 
 import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.common.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
 import com.hypercube.workshop.audioworkshop.common.vco.CorrectVCO;
@@ -35,11 +35,11 @@ public class AudioSynth {
             //VCO vco = new WavetableVCO(WavetableType.SINE, bufferSizeMs, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
 
             Thread thread = new Thread(() -> {
-                try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, bufferSizeMs)) {
+                try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, bufferSizeMs)) {
                     line.start();
                     while (!stop) {
                         byte[] data = vco.generateSignal(VCO.midiNoteToFrequency(midiNode));
-                        line.sendBuffer(data);
+                        line.sendBuffer(data, data.length);
                     }
                     log.info("Terminating...");
                     midiInDevice.stopListening();

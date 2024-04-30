@@ -32,11 +32,24 @@ public class RiffWriter implements Closeable {
     }
 
     public void writeChunk(RiffChunk chunk, byte[] data) throws IOException {
+        writeChunk(chunk);
+        out.writeBytes(data);
+    }
+
+    public void writeChunk(RiffChunk chunk) throws IOException {
         if (out.position() % 2 != 0)
             out.writeByte(0);
         out.writeChunkId(chunk.getId());
         out.writeIntLE(chunk.getContentSize());
-        out.writeBytes(data);
+        chunk.setContentStart((int) out.position());
+    }
+
+    public void closeChunk(RiffChunk chunk) throws IOException {
+        long pos = out.position();
+        chunk.setContentSize((int) (out.position() - chunk.getContentStart()));
+        out.seek(chunk.getContentStart() - 8);
+        writeChunk(chunk);
+        out.seek(pos);
     }
 
     public void setSize() throws IOException {
@@ -90,5 +103,13 @@ public class RiffWriter implements Closeable {
         out.seek(pos + 4);
         out.writeIntLE((int) size);
         out.seek(end);
+    }
+
+    public void write(byte[] data, int nbRead) throws IOException {
+        out.writeBytes(data, nbRead);
+    }
+
+    public long getPosition() throws IOException {
+        return out.position();
     }
 }

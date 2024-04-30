@@ -3,9 +3,11 @@ package com.hypercube.workshop.audioworkshop.common;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +22,17 @@ public class AudioDeviceManager {
             Mixer m = AudioSystem.getMixer(mixerInfo);
 
             Line.Info[] lines = m.getTargetLineInfo();
-            if (lines.length > 0)
-                inputs.add(new AudioInputDevice(mixerInfo));
-            else
+            if (lines.length > 0) {
+                var dataLines = Arrays.stream(lines)
+                        .filter(l -> l instanceof DataLine.Info)
+                        .map(l -> (DataLine.Info) l)
+                        .toList();
+                if (dataLines.size() > 0) {
+                    inputs.add(new AudioInputDevice(mixerInfo, dataLines));
+                }
+            } else {
                 outputs.add(new AudioOutputDevice(mixerInfo));
+            }
         }
     }
 

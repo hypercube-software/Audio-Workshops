@@ -66,7 +66,7 @@ public abstract class Device {
      * @param midiOutDevice where to send the request
      * @param sysExChannel  between [0-15] or 127 for broadcast
      */
-    public void sendIdentityRequest(MidiOutDevice midiOutDevice, int sysExChannel) {
+    public static void sendIdentityRequest(MidiOutDevice midiOutDevice, int sysExChannel) {
         List<Integer> bytes = List.of(SYSEX_START, SYSEX_NON_REALTIME, sysExChannel, SYSEX_GENERAL_INFORMATION, SYSEX_IDENTITY_REQUEST, SYSEX_END);
         byte[] data = new byte[bytes.size()];
         IntStream.range(0, data.length)

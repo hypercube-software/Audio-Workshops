@@ -1,8 +1,8 @@
 package com.hypercube.workshop.audioworkshop.sine;
 
 import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.common.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.vca.AdsrVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.common.vca.VCA;
@@ -68,7 +68,7 @@ public class AudioSine {
         try {
             Thread.currentThread()
                     .setPriority(Thread.MAX_PRIORITY);
-            try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, 100)) {
+            try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, 100)) {
                 line.start();
 
                 // use our broken VCO, then try width CorrectVCO
@@ -83,7 +83,7 @@ public class AudioSine {
                             long start = System.currentTimeMillis();
                             while (System.currentTimeMillis() - start < 4000) {
                                 byte[] data = vco.generateSignal(freq);
-                                line.sendBuffer(data);
+                                line.sendBuffer(data, data.length);
                             }
                         });
             }
