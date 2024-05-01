@@ -1,12 +1,12 @@
 package com.hypercube.workshop.audioworkshop.synth;
 
-import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.common.vca.SimpleVCA;
-import com.hypercube.workshop.audioworkshop.common.vca.VCA;
-import com.hypercube.workshop.audioworkshop.common.vco.CorrectVCO;
-import com.hypercube.workshop.audioworkshop.common.vco.VCO;
+import com.hypercube.workshop.audioworkshop.synth.vca.SimpleVCA;
+import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
+import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
+import com.hypercube.workshop.audioworkshop.synth.vco.VCO;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import lombok.extern.slf4j.Slf4j;

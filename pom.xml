@@ -24,6 +24,7 @@
     <modules>
         <module>midi-workshop</module>
         <module>audio-workshop</module>
+        <module>synth-ripper</module>
         <module>synth-editor</module>
     </modules>
     <dependencyManagement>

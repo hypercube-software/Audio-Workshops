@@ -1,11 +1,11 @@
 package com.hypercube.workshop.audioworkshop.common.line;
 
-import com.hypercube.workshop.audioworkshop.common.AudioInputDevice;
-import com.hypercube.workshop.audioworkshop.common.RecordListener;
+import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.common.pcm.PCMconverter;
-import com.hypercube.workshop.audioworkshop.common.wav.WavRecordListener;
+import com.hypercube.workshop.audioworkshop.common.record.RecordListener;
+import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class AudioInputLine extends AudioLine implements Closeable {
-    private static final ByteOrder order = ByteOrder.LITTLE_ENDIAN;
     private final TargetDataLine line;
     private final AudioInputDevice device;
 

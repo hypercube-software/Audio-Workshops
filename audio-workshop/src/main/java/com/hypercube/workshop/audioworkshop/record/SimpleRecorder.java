@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.record;
 
-import com.hypercube.workshop.audioworkshop.common.AudioInputDevice;
+import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
 

@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="midi:Play sequence 1" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
+    <module name="midi-workshop" />
+    <option name="PROGRAM_PARAMETERS" value="play1 -o &quot;Microsoft GS Wavetable Synth&quot; -t &quot;100&quot; -c &quot;MidiClock&quot;" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

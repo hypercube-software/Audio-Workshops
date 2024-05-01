@@ -1,0 +1,9 @@
+projectName: "BOSS-DS330"
+devices:
+  inputAudioDevice: "Microphone (Realtek High Definition Audio)"
+  outputAudioDevice: "Périphérique audio principal"
+  outputMidiDevice: "4- MIDISPORT Uno Out"
+midi:
+  lowestNote: "C4"
+  highestNote: "C6"
+  notesPerOctave: 2

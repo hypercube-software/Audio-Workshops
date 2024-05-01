@@ -8,7 +8,6 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.hypercube.workshop</groupId>
     <artifactId>audio-workshop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>audio-workshop</name>
@@ -61,6 +60,21 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
+                        <id>audio-api-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>client</classifier>
+                            <includes>
+                                <include>**/common/**</include>
+                                <include>**/files/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>audio-formats-api-jar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>

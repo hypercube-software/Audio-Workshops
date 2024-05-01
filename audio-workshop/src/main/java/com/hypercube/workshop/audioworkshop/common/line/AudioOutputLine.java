@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.line;
 
-import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -11,7 +11,6 @@ import java.nio.ByteOrder;
 @SuppressWarnings({"FieldCanBeLocal", "java:S1068"})
 public class AudioOutputLine extends AudioLine implements AutoCloseable {
     private final SourceDataLine line;
-
     private final AudioOutputDevice device;
 
     public AudioOutputLine(AudioOutputDevice device, AudioFormat format, int bufferDurationMs) throws LineUnavailableException {

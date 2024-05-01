@@ -1,11 +1,11 @@
 package com.hypercube.workshop.audioworkshop.record;
 
-import com.hypercube.workshop.audioworkshop.common.AudioInputDevice;
-import com.hypercube.workshop.audioworkshop.common.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
+import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.common.wav.WavRecordListener;
+import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MonitorRecorder extends WavRecordListener {
-    public static final int BUFFER_DURATION_MS = 250;
+    public static final int BUFFER_DURATION_MS = 62;
     private final int nbChannels;
     private final float[] loudness;
     private final long startTime = System.currentTimeMillis();
@@ -31,7 +31,8 @@ public class MonitorRecorder extends WavRecordListener {
     public void recordWithMonitoring(AudioInputDevice inputDevice, AudioOutputDevice outputDevice, AudioFormat format) {
         try (AudioInputLine line = new AudioInputLine(inputDevice, format, BUFFER_DURATION_MS)) {
             try (AudioOutputLine outLine = new AudioOutputLine(outputDevice, format, BUFFER_DURATION_MS)) {
-                line.record(this, null);
+                outLine.start();
+                line.record(this, outLine);
             }
         } catch (LineUnavailableException | IOException e) {
             throw new AudioError(e);

@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="midi:dumpMemory" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
+    <module name="midi-workshop" />
+    <option name="PROGRAM_PARAMETERS" value="dump-memory -m &quot;DS-330&quot; -i &quot;MIDISPORT Uno In&quot; -o &quot;MIDISPORT Uno Out&quot; -f &quot;target/Boss-DS-330-All.syx&quot;" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
