@@ -17,11 +17,15 @@ public class SynthRipperConfiguration {
     private String projectName;
     private DevicesSettings devices;
     private MidiSettings midi;
-
+    private AudioSettings audio;
+    
     public static SynthRipperConfiguration loadConfig(File configFile) {
         Yaml yaml = new Yaml(new Constructor(SynthRipperConfiguration.class, new LoaderOptions()));
         try (FileInputStream inputStream = new FileInputStream(configFile)) {
-            return yaml.load(inputStream);
+            SynthRipperConfiguration cfg = yaml.load(inputStream);
+            cfg.getMidi()
+                    .buildFilesNames();
+            return cfg;
         } catch (IOException e) {
             throw new AudioError(e);
         }

@@ -3,6 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.synthripper.SynthRipperApplication" />
     <module name="synth-ripper" />
     <option name="PROGRAM_PARAMETERS" value="rip -c &quot;./config/config.yml&quot;" />
+    <option name="VM_PARAMETERS" value="-XX:+UseZGC" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/synth-ripper" />
     <extension name="coverage">
       <pattern>
