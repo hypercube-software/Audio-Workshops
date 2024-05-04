@@ -6,7 +6,6 @@ import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.record.RecordListener;
-import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
@@ -24,28 +23,33 @@ public class SynthRipper {
     private final SynthRipperConfiguration conf;
     public static final int BUFFER_DURATION_MS = 60;
     private final AudioFormat format;
+    private final AudioFormat wavFormat;
     private MidiOutDevice midiOutDevice;
     private AudioInputLine inputLine;
 
     private final SynthRipperState state = new SynthRipperState();
-    private WavRecordListener wavRecordListener;
+    private WavRecorder wavRecorder;
 
-    private File getOutputFile(int cc, int note) {
-        return new File("output/%03d %s - Note %03d.wav".formatted(cc, conf.getMidi()
-                .getFilename(cc), note));
+    private File getOutputFile(int cc, int note, int velocity) {
+        return new File("output/%03d %s/Note %03d - Velo %03d.wav".formatted(cc, conf.getMidi()
+                .getFilename(cc), note, velocity));
     }
 
     public SynthRipper(SynthRipperConfiguration config, AudioFormat format) throws IOException {
         this.conf = config;
         this.format = format;
+        this.wavFormat = config.getAudio()
+                .getWavFormat();
         MidiSettings midiSettings = config.getMidi();
         state.lowestCC = midiSettings.getLowestCC();
         state.highestCC = midiSettings.getHighestCC();
         state.lowestNote = midiSettings.getLowestNoteInt();
         state.highestNote = midiSettings.getHighestNoteInt();
         state.noteIncrement = 12 / midiSettings.getNotesPerOctave();
+        state.veloIncrement = (int) Math.ceil(127.f / midiSettings.getVelocityPerNote());
         state.cc = state.lowestCC;
         state.note = state.lowestNote;
+        state.velocity = state.veloIncrement;
     }
 
     public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
@@ -74,15 +78,17 @@ public class SynthRipper {
                         }
                     }
                     if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
-                        if (state.note == state.lowestNote) {
+                        if (state.note == state.lowestNote && state.velocity == state.veloIncrement) {
                             log.info("Program Change %03d".formatted(state.cc));
                             MidiEvent midiCC = new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, state.cc, 0), 0);
                             midiOutDevice.send(midiCC);
                         }
-                        File outputFile = getOutputFile(state.cc, state.note);
+                        File outputFile = getOutputFile(state.cc, state.note, state.velocity);
+                        outputFile.getParentFile()
+                                .mkdirs();
                         log.info("Record %s".formatted(outputFile.getName()));
-                        wavRecordListener = new WavRecordListener(outputFile, format);
-                        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, state.note, 127), 0);
+                        wavRecorder = new WavRecorder(outputFile, wavFormat);
+                        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, state.note, state.velocity), 0);
                         midiOutDevice.send(noteOn);
                         state.state = SynthRipperStateEnum.NOTE_ON;
                         state.durationInSec = 0;
@@ -94,20 +100,29 @@ public class SynthRipper {
                     } else if (state.state == SynthRipperStateEnum.NOTE_OFF && (state.durationInSec > state.maxNoteReleaseDurationSec)) {
                         state.state = SynthRipperStateEnum.IDLE;
                         state.durationInSec = 0;
-                        wavRecordListener.close();
-                        wavRecordListener = null;
-                        state.note += state.noteIncrement;
-                        if (state.note > state.highestNote) {
-                            state.note = state.lowestNote;
-                            state.cc++;
+                        wavRecorder.close();
+                        wavRecorder = null;
+                        state.velocity = (int) Math.min(127, state.velocity + state.veloIncrement);
+                        if (state.prevVelocity == state.velocity && state.velocity == 127) {
+                            // all velocities are record, jump to the next note
+                            state.prevVelocity = -1;
+                            state.velocity = state.veloIncrement;
+                            state.note += state.noteIncrement;
+                            if (state.note > state.highestNote) {
+                                state.note = state.lowestNote;
+                                state.cc++;
+                            }
+                        } else {
+                            state.prevVelocity = state.velocity;
                         }
                     }
                 } catch (InvalidMidiDataException | IOException e) {
                     throw new AudioError(e);
                 }
-                if (wavRecordListener != null && (state.state == SynthRipperStateEnum.NOTE_ON || state.state == SynthRipperStateEnum.NOTE_OFF)) {
+                if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON || state.state == SynthRipperStateEnum.NOTE_OFF)) {
                     if (!isSilentBuffer) {
-                        wavRecordListener.onNewBuffer(sampleBuffer, nbSamples, pcmBuffer, pcmSize);
+                        wavRecorder.write(sampleBuffer, nbSamples, conf.getAudio()
+                                .getChannelMap());
                     }
                 }
                 return !finished();
@@ -115,6 +130,7 @@ public class SynthRipper {
         };
         this.midiOutDevice = midiDevice;
         this.midiOutDevice.open();
+        this.midiOutDevice.sendAllOff();
         try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format, BUFFER_DURATION_MS)) {
             this.inputLine = inputLine;
             try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format, BUFFER_DURATION_MS)) {
@@ -124,8 +140,8 @@ public class SynthRipper {
         } catch (LineUnavailableException | IOException e) {
             throw new AudioError(e);
         } finally {
-            if (wavRecordListener != null) {
-                wavRecordListener.close();
+            if (wavRecorder != null) {
+                wavRecorder.close();
             }
             try {
                 midiDevice.close();
@@ -154,29 +170,55 @@ public class SynthRipper {
         for (int cc = conf.getMidi()
                 .getLowestCC(); cc <= conf.getMidi()
                 .getHighestCC(); cc++) {
-            try (PrintWriter out = new PrintWriter(new FileOutputStream(new File("output/%03d %s.sfz".formatted(cc, conf.getMidi()
-                    .getFilename(cc)))))) {
+            String filename = conf.getMidi()
+                    .getFilename(cc);
+            File sfzFile = new File("output/%03d %s.sfz".formatted(cc, filename));
+            try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
+                out.println("----------------------------------------------------------");
+                out.println("%s".formatted(filename));
+                out.println("----------------------------------------------------------");
                 out.println("<control>");
                 out.println("default_path=.");
                 out.println("<global>");
-                out.println("<group>");
-                int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
-                int regionSize = state.noteIncrement;
-                for (int r = 0; r < nbRegion; r++) {
-                    out.println("<region>");
-                    int note = state.lowestNote + r * state.noteIncrement;
-                    int begin = note;
-                    int end = note + state.noteIncrement - 1;
-                    if (r == 0) {
-                        begin = 0;
+                int prevVelo = -1;
+                int nbVelocityPerNote = conf.getMidi()
+                        .getVelocityPerNote();
+                int velocityOffset = (int) Math.ceil(127.f / nbVelocityPerNote);
+                for (int group = 1; group <= nbVelocityPerNote; group++) {
+                    int startVelo = prevVelo + 1;
+                    int endVelo = (int) Math.min(127, velocityOffset * group);
+                    out.println("----------------------------------------------------------");
+                    out.println(" Velocity layer %03d".formatted(endVelo));
+                    out.println("----------------------------------------------------------");
+                    out.println("<group>");
+                    out.println("lovel=" + startVelo);
+                    out.println("hivel=" + endVelo);
+                    prevVelo = endVelo;
+
+                    out.println("");
+                    int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
+                    int regionSize = state.noteIncrement;
+                    for (int r = 0; r < nbRegion; r++) {
+                        out.println("<region>");
+                        int note = state.lowestNote + r * state.noteIncrement;
+                        int begin = note;
+                        int end = note + state.noteIncrement - 1;
+                        if (r == 0) {
+                            begin = 0;
+                        }
+                        if (r == nbRegion - 1) {
+                            end = 127;
+                        }
+                        String path = sfzFile.getParentFile()
+                                .toPath()
+                                .relativize(getOutputFile(cc, note, endVelo).toPath())
+                                .toString()
+                                .replace("\\", "/");
+                        out.println("sample=" + path);
+                        out.println("lokey=" + begin);
+                        out.println("pitch_keycenter=" + note);
+                        out.println("hikey=" + end);
                     }
-                    if (r == nbRegion - 1) {
-                        end = 127;
-                    }
-                    out.println("sample=" + getOutputFile(cc, note).getName());
-                    out.println("lokey=" + begin);
-                    out.println("pitch_keycenter=" + note);
-                    out.println("hikey=" + end);
                 }
             }
         }

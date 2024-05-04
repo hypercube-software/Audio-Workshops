@@ -20,6 +20,7 @@ public class MidiSettings {
     private String lowestNote;
     private String highestNote;
     private int notesPerOctave;
+    private int velocityPerNote;
     private List<String> presets;
     private Map<Integer, String> filenames = new HashMap<>();
 

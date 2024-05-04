@@ -37,7 +37,7 @@ public class SynthRipperCLI {
                 .forEach(d -> d.logFormats());
 
         AudioFormat format = cfg.getAudio()
-                .getFormat();
+                .getAudioFormat();
 
         var audioInputDevice = audioDeviceManager.getInput(cfg.getDevices()
                         .getInputAudioDevice())
