@@ -18,6 +18,9 @@ import java.io.IOException;
 @ShellComponent
 @AllArgsConstructor
 public class SynthRipperCLI {
+
+    public static final String DEVICE_NOT_FOUND = "Device not found:";
+
     @ShellMethod(value = "Get device infos")
     public void info(@ShellOption(value = "-v", defaultValue = "false") boolean verbose) {
         log.info("Available devices:");
@@ -59,15 +62,15 @@ public class SynthRipperCLI {
 
         var audioInputDevice = audioDeviceManager.getInput(cfg.getDevices()
                         .getInputAudioDevice())
-                .orElseThrow(() -> new AudioError("Device not found:" + cfg.getDevices()
+                .orElseThrow(() -> new AudioError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getInputAudioDevice()));
         var audioOutputDevice = audioDeviceManager.getOutput(cfg.getDevices()
                         .getOutputAudioDevice())
-                .orElseThrow(() -> new AudioError("Device not found:" + cfg.getDevices()
+                .orElseThrow(() -> new AudioError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getOutputAudioDevice()));
         var midiOutDevice = midiDeviceManager.getOutput(cfg.getDevices()
                         .getOutputMidiDevice())
-                .orElseThrow(() -> new MidiError("Device not found:" + cfg.getDevices()
+                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getOutputMidiDevice()));
         SynthRipper synthRecorder = null;
         try {

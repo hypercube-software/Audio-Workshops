@@ -12,6 +12,7 @@ import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffFmtChunk;
 import com.hypercube.workshop.synthripper.config.ChannelMap;
 import com.hypercube.workshop.synthripper.config.ChannelMapping;
 import lombok.RequiredArgsConstructor;
+import org.jline.utils.Log;
 
 import java.io.Closeable;
 import java.io.File;
@@ -56,7 +57,7 @@ public class WavRecorder implements Closeable {
         out.writeChunk(dataChunk);
     }
 
-    public boolean write(float[][] sampleBuffer, int nbSamples, ChannelMap channelMap) {
+    public boolean write(float[][] sampleBuffer, int startPosInSamples, int nbSamples, ChannelMap channelMap) {
         try {
             for (int c = 0; c < sampleBuffer.length; c++) {
                 ChannelMapping dstChannel = channelMap.get(c);
@@ -67,7 +68,11 @@ public class WavRecorder implements Closeable {
             for (int c = 0; c < format.getNbChannels(); c++) {
                 int pcmSize = nbSamples * format.getBytesPerSamples();
                 converter.convert(outSampleBuffer, pcmByteBuffer, nbSamples, format.getNbChannels());
-                out.write(pcmBuffer, pcmSize);
+                int offset = startPosInSamples * format.getBytesPerSamples() * format.getNbChannels();
+                if (offset != 0) {
+                    Log.info("Skip " + startPosInSamples + " samples , " + offset + " bytes");
+                }
+                out.write(pcmBuffer, offset, pcmSize - offset);
             }
             currentDurationInSamples += nbSamples;
             if (maxDurationInSamples != INFINITE_DURATION) {

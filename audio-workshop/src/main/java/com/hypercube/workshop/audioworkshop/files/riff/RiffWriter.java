@@ -109,6 +109,10 @@ public class RiffWriter implements Closeable {
         out.writeBytes(data, nbRead);
     }
 
+    public void write(byte[] data, int offset, int nbRead) throws IOException {
+        out.writeBytes(data, offset, nbRead);
+    }
+
     public long getPosition() throws IOException {
         return out.position();
     }

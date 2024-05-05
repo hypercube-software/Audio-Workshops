@@ -47,5 +47,4 @@ hs_err_pid*
 # memory dump
 *.dump
 /Manuals/
-/synth-ripper/output/*.sfz
-/synth-ripper/output/**/*.wav
+/synth-ripper/output/**/*.*

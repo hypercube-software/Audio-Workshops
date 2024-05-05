@@ -14,9 +14,9 @@ midi:
   maxNoteReleaseDurationSec: 1
   lowestCC: 48
   highestCC: 48
-  lowestNote: "C4"
-  highestNote: "C5"
-  notesPerOctave: 3
+  lowestNote: "C3"
+  highestNote: "C3"
+  notesPerOctave: 1
   velocityPerNote: 1
   presetOffset: 1
   presets:

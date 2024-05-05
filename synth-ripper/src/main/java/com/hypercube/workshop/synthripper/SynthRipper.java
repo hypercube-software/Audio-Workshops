@@ -8,6 +8,7 @@ import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,6 @@ public class SynthRipper {
     private final AudioLineFormat format;
     private final AudioLineFormat wavFormat;
     private MidiOutDevice midiOutDevice;
-    private AudioInputLine inputLine;
 
     private final SynthRipperState state = new SynthRipperState();
     private final List<LoopSetting> loopSettings = new ArrayList<>();
@@ -37,10 +37,10 @@ public class SynthRipper {
     private File getOutputFile(int cc, int note, int velocity) {
         var midiNote = MidiNote.fromValue(note);
         return new File("%s/%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), cc, conf.getMidi()
-                .getFilename(cc), midiNote.name(), (int) Math.min(127, velocity)));
+                .getFilename(cc), midiNote.name(), Math.min(127, velocity)));
     }
 
-    public SynthRipper(SynthRipperConfiguration config) throws IOException {
+    public SynthRipper(SynthRipperConfiguration config) {
         this.conf = config;
         this.format = config.getAudio()
                 .getAudioFormat();
@@ -75,7 +75,6 @@ public class SynthRipper {
         this.midiOutDevice.open();
         this.midiOutDevice.sendAllOff();
         try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
-            this.inputLine = inputLine;
             try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
                 outputLine.start();
                 inputLine.record(this::onNewBuffer, outputLine);
@@ -89,7 +88,7 @@ public class SynthRipper {
             try {
                 midiDevice.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new MidiError(e);
             }
         }
         generateSFZ();
@@ -103,8 +102,7 @@ public class SynthRipper {
     private boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
         computeLoudness(sampleBuffer, nbSamples);
 
-        state.durationInSec += (float) nbSamples / inputLine.getFormat()
-                .getSampleRate();
+        state.durationInSec += (float) nbSamples / format.getSampleRate();
         try {
             if (state.state == SynthRipperStateEnum.GET_NOISE_FLOOR) {
                 onGetNoiseFloorState();
@@ -119,10 +117,8 @@ public class SynthRipper {
             throw new AudioError(e);
         }
         if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON || state.state == SynthRipperStateEnum.NOTE_OFF)) {
-            if (!state.isSilentBuffer()) {
-                wavRecorder.write(sampleBuffer, nbSamples, conf.getAudio()
-                        .getChannelMap());
-            }
+            wavRecorder.write(sampleBuffer, 0, nbSamples, conf.getAudio()
+                    .getChannelMap());
         }
         return !finished();
     }
@@ -184,10 +180,10 @@ public class SynthRipper {
             if (state.noiseFloor == -1) {
                 log.info("Capture noise floor...");
             }
-            state.noiseFloor = (float) (Math.max(state.noiseFloor, state.loudness));
+            state.noiseFloor = Math.max(state.noiseFloor, state.loudness);
         }
 
-        if (state.durationInSec > 1 + 10) {
+        if (state.durationInSec > 1 + 4) {
             log.info("Noise floor: %d dB".formatted(state.getNoiseFloorDb()));
             state.state = SynthRipperStateEnum.IDLE;
         }
@@ -216,9 +212,10 @@ public class SynthRipper {
                     .getFilename(cc);
             File sfzFile = new File("%s/%03d %s.sfz".formatted(conf.getOutputDir(), cc, filename));
             try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
-                out.println("----------------------------------------------------------");
+                final String SEPARATOR = "----------------------------------------------------------";
+                out.println(SEPARATOR);
                 out.println("%s".formatted(filename));
-                out.println("----------------------------------------------------------");
+                out.println(SEPARATOR);
                 out.println("<control>");
                 out.println("default_path=.");
                 out.println("<global>");
@@ -228,10 +225,10 @@ public class SynthRipper {
                 int velocityOffset = (int) Math.ceil(127.f / nbVelocityPerNote);
                 for (int group = 1; group <= nbVelocityPerNote; group++) {
                     int startVelo = prevVelo + 1;
-                    int endVelo = (int) Math.min(127, velocityOffset * group);
-                    out.println("----------------------------------------------------------");
+                    int endVelo = Math.min(127, velocityOffset * group);
+                    out.println(SEPARATOR);
                     out.println(" Velocity layer %03d".formatted(endVelo));
-                    out.println("----------------------------------------------------------");
+                    out.println(SEPARATOR);
                     out.println("<group>");
                     out.println("lovel=" + startVelo);
                     out.println("hivel=" + endVelo);
@@ -239,7 +236,6 @@ public class SynthRipper {
 
                     out.println("");
                     int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
-                    int regionSize = state.noteIncrement;
                     for (int r = 0; r < nbRegion; r++) {
                         out.println("<region>");
                         int note = state.lowestNote + r * state.noteIncrement;

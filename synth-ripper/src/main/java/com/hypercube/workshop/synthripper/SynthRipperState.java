@@ -1,12 +1,12 @@
 package com.hypercube.workshop.synthripper;
 
 public class SynthRipperState {
-    public int nbChannels;
-    public float[] loudnessPerChannel;
-    public float loudness;
-    public float noiseFloor = -1;
-    public float maxNoteDurationSec;
-    public float maxNoteReleaseDurationSec;
+    int nbChannels;
+    float[] loudnessPerChannel;
+    float loudness;
+    float noiseFloor = -1;
+    float maxNoteDurationSec;
+    float maxNoteReleaseDurationSec;
     float durationInSec;
     int velocity;
     int note;

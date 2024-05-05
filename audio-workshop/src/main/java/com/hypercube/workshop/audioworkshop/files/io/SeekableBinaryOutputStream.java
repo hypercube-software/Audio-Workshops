@@ -114,6 +114,10 @@ public class SeekableBinaryOutputStream implements AutoCloseable {
         ch.write(ByteBuffer.wrap(value, 0, size));
     }
 
+    public void writeBytes(byte[] value, int offset, int size) throws IOException {
+        ch.write(ByteBuffer.wrap(value, offset, size));
+    }
+
     public void seek(long position) throws IOException {
         ch.position(position);
     }

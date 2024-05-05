@@ -53,4 +53,11 @@ public class MidiSettings {
                 .value();
     }
 
+    public int getLowestCC() {
+        return lowestCC - presetOffset;
+    }
+
+    public int getHighestCC() {
+        return highestCC - presetOffset;
+    }
 }
