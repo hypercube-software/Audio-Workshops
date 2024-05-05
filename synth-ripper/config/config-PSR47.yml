@@ -1,0 +1,122 @@
+projectName: "BOSS-DS330"
+devices:
+  inputAudioDevice: "Multichannel (M-Audio ProFire 610)"
+  outputAudioDevice: "Profire 610 (M-Audio ProFire 610)"
+  outputMidiDevice: "Profire 610 MIDI"
+audio:
+  bufferDurationMs: 250
+  nbChannels: 2
+  channelMapping: "1:0"
+  bitDepth: 16
+  sampleRate: 44100
+midi:
+  maxNoteDurationSec: 3
+  maxNoteReleaseDurationSec: 1
+  highestCC: 99
+  lowestNote: "C3"
+  highestNote: "C4"
+  notesPerOctave: 3
+  velocityPerNote: 1
+  presetOffset: 0
+  presets:
+    - 00 Piano 1
+    - 01 Piano 2
+    - 02 Honky-Tonk Piano
+    - 03 Elec. Piano 1
+    - 04 Elec. Piano 2
+    - 05 Harpsichord
+    - 06 Clavi
+    - 07 Synth Clavi
+    - 08 Celesta
+    - 09 Toy Piano
+    - 10 Vibes
+    - 11 Chimes
+    - 12 Xylophone
+    - 13 Marimba
+    - 14 Bamboo Marimba
+    - 15 Timpani
+    - 16 Steel Drum
+    - 17 Kalimba
+    - 18 Gamelan
+    - 19 Music Box
+    - 20 Strings
+    - 21 Pizz. Strings
+    - 22 Synth Strings 1
+    - 23 Synth Strings 2
+    - 24 Violin
+    - 25 Cello
+    - 26 Harp
+    - 27 Flute
+    - 28 Pan Flute
+    - 29 Recorder
+    - 30 Clarinet
+    - 31 Oboe
+    - 32 Bassoon
+    - 33 Saxophone
+    - 34 Harmonica
+    - 35 Accordion
+    - 36 Bagpipe
+    - 37 Trumpet
+    - 38 Mute Trumpet
+    - 39 Trombone
+    - 40 Horn
+    - 41 Tuba
+    - 42 Brass Ensemble
+    - 43 Synth Brass 1
+    - 44 Synth Brass 2
+    - 45 Pipe Organ
+    - 46 Jazz Organ
+    - 47 Rock Organ
+    - 48 Street Organ
+    - 49 Reed Organ
+    - 50 Human Vox
+    - 51 Synth Vox
+    - 52 Whistle
+    - 53 Classic Guitar
+    - 54 Folk Guitar
+    - 55 Jazz Guitar
+    - 56 Rock Guitar
+    - 57 Distortion Guitar
+    - 58 Mute Guitar
+    - 59 Banjo
+    - 60 Mandolin
+    - 61 Sitar
+    - 62 Koto
+    - 63 Shamisen
+    - 64 Acoustic Bass
+    - 65 Bowed Bass
+    - 66 Elec. Bass
+    - 67 Slap. Bass
+    - 68 Fretless Bass
+    - 69 Synth Bass 1
+    - 70 Synth Bass 2
+    - 71 Synth Bass 3
+    - 72 Analog Synth
+    - 73 Reed Synth
+    - 74 Synth Music Box
+    - 75 Space Flute
+    - 76 Aqua
+    - 77 Landscape
+    - 78 Fuzz Bass
+    - 79 Metallic Reed
+    - 80 Crystal
+    - 81 Ice Block
+    - 82 Synth Tom
+    - 83 Samba Whistle
+    - 84 African Percuss
+    - 85 Birds
+    - 86 Digi Sweep
+    - 87 Hammer Shot
+    - 88 Crystal Block
+    - 89 Invader
+    - 90 Shock Alarm
+    - 91 Ow!
+    - 92 Water Drop
+    - 93 Emergency
+    - 94 Zing
+    - 95 Racing Circuit
+    - 96 Scrape
+    - 97 Construction
+    - 98 Waves
+    - 99 Orchestra Hit
+    

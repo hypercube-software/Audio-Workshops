@@ -4,19 +4,20 @@ devices:
   outputAudioDevice: "Périphérique audio principal"
   outputMidiDevice: "4- MIDISPORT Uno Out"
 audio:
-  bufferDurationMs: 250
+  bufferDurationMs: 60
   nbChannels: 2
   channelMapping: "1:0"
   bitDepth: 16
   sampleRate: 44100
 midi:
-  maxNoteDurationSec: 5
+  maxNoteDurationSec: 3
   maxNoteReleaseDurationSec: 1
+  baseCC: 1
   lowestCC: 48
   highestCC: 48
-  lowestNote: "C4"
-  highestNote: "C5"
-  notesPerOctave: 3
+  lowestNote: "C3"
+  highestNote: "C3"
+  notesPerOctave: 1
   velocityPerNote: 1
   presetOffset: 1
   presets:

@@ -17,6 +17,9 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class SynthRipper {
@@ -27,17 +30,20 @@ public class SynthRipper {
     private AudioInputLine inputLine;
 
     private final SynthRipperState state = new SynthRipperState();
+    private final List<LoopSetting> loopSettings = new ArrayList<>();
+
     private WavRecorder wavRecorder;
 
     private File getOutputFile(int cc, int note, int velocity) {
         var midiNote = MidiNote.fromValue(note);
-        return new File("output/%03d %s/Note %s - Velo %03d.wav".formatted(cc, conf.getMidi()
+        return new File("%s/%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), cc, conf.getMidi()
                 .getFilename(cc), midiNote.name(), (int) Math.min(127, velocity)));
     }
 
-    public SynthRipper(SynthRipperConfiguration config, AudioLineFormat format) throws IOException {
+    public SynthRipper(SynthRipperConfiguration config) throws IOException {
         this.conf = config;
-        this.format = format;
+        this.format = config.getAudio()
+                .getAudioFormat();
         this.wavFormat = config.getAudio()
                 .getWavFormat();
         initState(config);
@@ -58,13 +64,13 @@ public class SynthRipper {
     }
 
     public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
+        createOutputDir();
         state.nbChannels = format.getNbChannels();
         state.loudnessPerChannel = new float[state.nbChannels];
         state.maxNoteReleaseDurationSec = conf.getMidi()
                 .getMaxNoteReleaseDurationSec();
         state.maxNoteDurationSec = conf.getMidi()
                 .getMaxNoteDurationSec();
-        generateSFZ();
         this.midiOutDevice = midiDevice;
         this.midiOutDevice.open();
         this.midiOutDevice.sendAllOff();
@@ -86,11 +92,17 @@ public class SynthRipper {
                 throw new RuntimeException(e);
             }
         }
+        generateSFZ();
     }
 
-    public boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    private void createOutputDir() {
+        File f = new File(conf.getOutputDir());
+        f.mkdirs();
+    }
+
+    private boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
         computeLoudness(sampleBuffer, nbSamples);
-        boolean isSilentBuffer = state.loudness <= state.noiseFloor;
+
         state.durationInSec += (float) nbSamples / inputLine.getFormat()
                 .getSampleRate();
         try {
@@ -98,16 +110,16 @@ public class SynthRipper {
                 onGetNoiseFloorState();
             } else if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
                 onIdleStateTerminated();
-            } else if (state.state == SynthRipperStateEnum.NOTE_ON && (state.durationInSec > state.maxNoteDurationSec)) {
+            } else if (state.state == SynthRipperStateEnum.NOTE_ON && (state.durationInSec > state.maxNoteDurationSec /*|| state.isSilentBuffer()*/)) {
                 onNoteOnTerminated();
-            } else if (state.state == SynthRipperStateEnum.NOTE_OFF && state.durationInSec > state.maxNoteReleaseDurationSec && isSilentBuffer) {
+            } else if (state.state == SynthRipperStateEnum.NOTE_OFF && state.durationInSec > state.maxNoteReleaseDurationSec && state.isSilentBuffer()) {
                 onNoteOffTerminated();
             }
         } catch (InvalidMidiDataException | IOException e) {
             throw new AudioError(e);
         }
         if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON || state.state == SynthRipperStateEnum.NOTE_OFF)) {
-            if (!isSilentBuffer) {
+            if (!state.isSilentBuffer()) {
                 wavRecorder.write(sampleBuffer, nbSamples, conf.getAudio()
                         .getChannelMap());
             }
@@ -136,6 +148,16 @@ public class SynthRipper {
         MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, state.note, 0), 0);
         midiOutDevice.send(noteOff);
         state.state = SynthRipperStateEnum.NOTE_OFF;
+
+        if (!state.isSilentBuffer()) {
+            LoopSetting currentLoop = new LoopSetting();
+            currentLoop.setNote(state.note);
+            currentLoop.setCc(state.cc);
+            currentLoop.setSampleStart((long) (1.0f * format.getSampleRate()));
+            currentLoop.setSampleEnd((long) (state.durationInSec * format.getSampleRate()));
+            loopSettings.add(currentLoop);
+        }
+
         state.durationInSec = 0;
     }
 
@@ -158,11 +180,14 @@ public class SynthRipper {
     }
 
     private void onGetNoiseFloorState() {
-        if (state.noiseFloor == -1) {
-            log.info("Capture noise floor...");
+        if (state.durationInSec > 1) {
+            if (state.noiseFloor == -1) {
+                log.info("Capture noise floor...");
+            }
+            state.noiseFloor = (float) (Math.max(state.noiseFloor, state.loudness));
         }
-        state.noiseFloor = (float) (Math.max(state.noiseFloor, state.loudness));
-        if (state.durationInSec > 4) {
+
+        if (state.durationInSec > 1 + 10) {
             log.info("Noise floor: %d dB".formatted(state.getNoiseFloorDb()));
             state.state = SynthRipperStateEnum.IDLE;
         }
@@ -189,7 +214,7 @@ public class SynthRipper {
                 .getHighestCC(); cc++) {
             String filename = conf.getMidi()
                     .getFilename(cc);
-            File sfzFile = new File("output/%03d %s.sfz".formatted(cc, filename));
+            File sfzFile = new File("%s/%03d %s.sfz".formatted(conf.getOutputDir(), cc, filename));
             try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
                 out.println("----------------------------------------------------------");
                 out.println("%s".formatted(filename));
@@ -231,14 +256,28 @@ public class SynthRipper {
                                 .relativize(getOutputFile(cc, note, endVelo).toPath())
                                 .toString()
                                 .replace("\\", "/");
+
+                        getLoop(cc, note).ifPresentOrElse(l -> {
+                            out.println("loop_mode=loop_sustain");
+                            out.println("loop_start=" + l.getSampleStart());
+                            out.println("loop_end=" + l.getSampleEnd());
+                        }, () -> out.println("loop_mode=no_loop"));
+
                         out.println("sample=" + path);
                         out.println("lokey=" + begin);
                         out.println("pitch_keycenter=" + note);
                         out.println("hikey=" + end);
+                        out.println("");
                     }
                 }
             }
         }
+    }
+
+    private Optional<LoopSetting> getLoop(int cc, int note) {
+        return loopSettings.stream()
+                .filter(l -> l.getCc() == cc && l.getNote() == note)
+                .findFirst();
     }
 
     private boolean finished() {

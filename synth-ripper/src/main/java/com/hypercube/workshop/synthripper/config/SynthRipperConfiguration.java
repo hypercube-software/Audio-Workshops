@@ -18,7 +18,7 @@ public class SynthRipperConfiguration {
     private DevicesSettings devices;
     private MidiSettings midi;
     private AudioSettings audio;
-    
+
     public static SynthRipperConfiguration loadConfig(File configFile) {
         Yaml yaml = new Yaml(new Constructor(SynthRipperConfiguration.class, new LoaderOptions()));
         try (FileInputStream inputStream = new FileInputStream(configFile)) {
@@ -29,5 +29,9 @@ public class SynthRipperConfiguration {
         } catch (IOException e) {
             throw new AudioError(e);
         }
+    }
+
+    public String getOutputDir() {
+        return "output/" + projectName;
     }
 }

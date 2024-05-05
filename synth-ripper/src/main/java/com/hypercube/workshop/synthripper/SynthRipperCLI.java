@@ -2,7 +2,6 @@ package com.hypercube.workshop.synthripper;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioDeviceManager;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
@@ -54,18 +53,9 @@ public class SynthRipperCLI {
 
         MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
         midiDeviceManager.collectDevices();
-        midiDeviceManager.getOutputs()
-                .forEach(d -> log.info(d.getName()));
 
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
         audioDeviceManager.collectDevices();
-        audioDeviceManager.getInputs()
-                .forEach(d -> d.logFormats());
-        audioDeviceManager.getOutputs()
-                .forEach(d -> d.logFormats());
-
-        AudioLineFormat format = cfg.getAudio()
-                .getAudioFormat();
 
         var audioInputDevice = audioDeviceManager.getInput(cfg.getDevices()
                         .getInputAudioDevice())
@@ -81,7 +71,7 @@ public class SynthRipperCLI {
                         .getOutputMidiDevice()));
         SynthRipper synthRecorder = null;
         try {
-            synthRecorder = new SynthRipper(cfg, format);
+            synthRecorder = new SynthRipper(cfg);
             synthRecorder.recordSynth(audioInputDevice, audioOutputDevice, midiOutDevice);
         } catch (IOException e) {
             throw new AudioError(e);

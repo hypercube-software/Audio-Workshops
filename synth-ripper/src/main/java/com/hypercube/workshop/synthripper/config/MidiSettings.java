@@ -21,6 +21,7 @@ public class MidiSettings {
     private String highestNote;
     private int notesPerOctave;
     private int velocityPerNote;
+    private int presetOffset;
     private List<String> presets;
     private Map<Integer, String> filenames = new HashMap<>();
 
@@ -28,7 +29,7 @@ public class MidiSettings {
         presets.forEach(p -> {
             Matcher matcher = CachedRegExp.get("([0-9]+)\\s+(.*)", p);
             if (matcher.find()) {
-                int cc = Integer.parseInt(matcher.group(1)) - 1;
+                int cc = Integer.parseInt(matcher.group(1)) - presetOffset;
                 String filename = matcher.group(2);
                 filenames.put(cc, filename);
             }
