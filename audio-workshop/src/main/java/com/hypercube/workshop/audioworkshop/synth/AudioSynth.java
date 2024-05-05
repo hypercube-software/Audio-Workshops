@@ -2,7 +2,10 @@ package com.hypercube.workshop.audioworkshop.synth;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.synth.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
 import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
@@ -29,13 +32,14 @@ public class AudioSynth {
     void synth(MidiInDevice midiInDevice, AudioOutputDevice audioOutputDevice) {
         try {
             int bufferSizeMs = 100;
+            AudioLineFormat format = new AudioLineFormat(100, SAMPLE_RATE, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.BIG_ENDIAN);
             VCA vca = new SimpleVCA(SAMPLE_RATE, 10);
             VCO vco = new CorrectVCO(bufferSizeMs, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
             //VCA vca = new AdsrVCA(SAMPLE_RATE, 50, 10, 50);
             //VCO vco = new WavetableVCO(WavetableType.SINE, bufferSizeMs, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
 
             Thread thread = new Thread(() -> {
-                try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, bufferSizeMs)) {
+                try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, format)) {
                     line.start();
                     while (!stop) {
                         byte[] data = vco.generateSignal(VCO.midiNoteToFrequency(midiNode));

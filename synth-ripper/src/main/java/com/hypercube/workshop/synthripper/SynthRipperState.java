@@ -9,7 +9,6 @@ public class SynthRipperState {
     public float maxNoteReleaseDurationSec;
     float durationInSec;
     int velocity;
-    int prevVelocity;
     int note;
     int cc;
     int lowestCC;
@@ -18,6 +17,7 @@ public class SynthRipperState {
     int highestNote;
     int noteIncrement;
     int veloIncrement;
+    int upperBoundVelocity;
     SynthRipperStateEnum state = SynthRipperStateEnum.GET_NOISE_FLOOR;
 
     public int getLoudnessDb() {
@@ -26,5 +26,9 @@ public class SynthRipperState {
 
     public int getNoiseFloorDb() {
         return (int) (20 * Math.log10(noiseFloor));
+    }
+
+    public boolean isFirstVelocity() {
+        return velocity == veloIncrement;
     }
 }

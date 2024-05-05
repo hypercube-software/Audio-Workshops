@@ -17,9 +17,9 @@ public class AudioInputDevice extends AbstractAudioDevice {
     }
 
     public void logFormats() {
-        log.info("INPUT: " + getName());
+        log.info("AUDIO INPUT : " + getName());
         inputLines.forEach(dataline -> {
-            log.info("\t" + dataline.toString());
+            log.info("\tDATA LINE: " + dataline.toString());
             Arrays.stream(dataline.getFormats())
                     .forEach(format -> log.info("\t\t" + format.toString()));
         });

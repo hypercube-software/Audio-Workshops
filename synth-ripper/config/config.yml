@@ -4,6 +4,7 @@ devices:
   outputAudioDevice: "Périphérique audio principal"
   outputMidiDevice: "4- MIDISPORT Uno Out"
 audio:
+  bufferDurationMs: 60
   nbChannels: 2
   channelMapping: "1:0"
   bitDepth: 16
@@ -13,10 +14,10 @@ midi:
   maxNoteReleaseDurationSec: 1
   lowestCC: 48
   highestCC: 54
-  lowestNote: "C4"
-  highestNote: "C5"
-  notesPerOctave: 2
-  velocityPerNote: 3
+  lowestNote: "C3"
+  highestNote: "C7"
+  notesPerOctave: 3
+  velocityPerNote: 4
   presets:
     - 1 Acoustic Grand Piano
     - 2 Bright Acoustic Piano

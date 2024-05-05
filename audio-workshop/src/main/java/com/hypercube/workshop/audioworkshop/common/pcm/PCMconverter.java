@@ -1,140 +1,200 @@
 package com.hypercube.workshop.audioworkshop.common.pcm;
 
+import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
+
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class PCMconverter {
-    public static void convert(float[][] normalizedInput, byte[] pcmOutput, int nbSamples, int nbChannels, BitDepth bitdepth, boolean bigEndian, boolean signed) {
-        ByteBuffer buffer = ByteBuffer.wrap(pcmOutput);
-        buffer.order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        if (signed) {
-            switch (bitdepth) {
-                case BIT_DEPTH_8 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            float sample = normalizedInput[channel][s] * (float) 0x80;
-                            buffer.put((byte) sample);
-                        }
+    public static PCMtoSampleFunction getPCMtoSampleFunction(AudioLineFormat format) {
+        switch (format.getEncoding()) {
+            case SIGNED -> {
+                switch (format.getBitDepth()) {
+                    case BIT_DEPTH_8 -> {
+                        return PCMconverter::signed8BitToSample;
                     }
-                }
-                case BIT_DEPTH_16 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            float sample = normalizedInput[channel][s] * (float) 0x8000;
-                            buffer.putShort((short) sample);
-                        }
+                    case BIT_DEPTH_16 -> {
+                        return PCMconverter::signed16BitToSample;
                     }
-                }
-                case BIT_DEPTH_24 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = (int) (normalizedInput[channel][s] * (float) 0x800000);
-                            buffer.putShort((short) (sample >> 8));
-                            buffer.put((byte) (sample & 0xff));
-                        }
+                    case BIT_DEPTH_24 -> {
+                        return PCMconverter::signed24BitToSample;
                     }
-                }
-                case BIT_DEPTH_32 -> {
-                    throw new UnsupportedOperationException();
+                    case BIT_DEPTH_32 -> {
+                        return PCMconverter::signed32BitToSample;
+                    }
                 }
             }
-        } else {
-            switch (bitdepth) {
-                case BIT_DEPTH_8 -> {
-                    throw new UnsupportedOperationException();
+            case UNSIGNED -> {
+                switch (format.getBitDepth()) {
+                    case BIT_DEPTH_8 -> {
+                        return PCMconverter::unsigned8BitToSample;
+                    }
+                    case BIT_DEPTH_16 -> {
+                        return PCMconverter::unsigned16BitToSample;
+                    }
+                    case BIT_DEPTH_24 -> {
+                        return PCMconverter::unsigned24BitToSample;
+                    }
+                    case BIT_DEPTH_32 -> {
+                        return PCMconverter::unsigned32BitToSample;
+                    }
                 }
-                case BIT_DEPTH_16 -> {
-                    throw new UnsupportedOperationException();
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static SampleToPCMFunction getSampleToPCMFunction(AudioLineFormat format) {
+        switch (format.getEncoding()) {
+            case SIGNED -> {
+                switch (format.getBitDepth()) {
+                    case BIT_DEPTH_8 -> {
+                        return PCMconverter::sampleToSigned8Bits;
+                    }
+                    case BIT_DEPTH_16 -> {
+                        return PCMconverter::sampleToSigned16Bits;
+                    }
+                    case BIT_DEPTH_24 -> {
+                        return PCMconverter::sampleToSigned24Bits;
+                    }
+                    case BIT_DEPTH_32 -> {
+                        throw new UnsupportedOperationException();
+                    }
                 }
-                case BIT_DEPTH_24 -> {
-                    throw new UnsupportedOperationException();
+            }
+            case UNSIGNED -> {
+                switch (format.getBitDepth()) {
+                    case BIT_DEPTH_8 -> {
+                        throw new UnsupportedOperationException();
+                    }
+                    case BIT_DEPTH_16 -> {
+                        throw new UnsupportedOperationException();
+                    }
+                    case BIT_DEPTH_24 -> {
+                        throw new UnsupportedOperationException();
+                    }
+                    case BIT_DEPTH_32 -> {
+                        throw new UnsupportedOperationException();
+                    }
                 }
-                case BIT_DEPTH_32 -> {
-                    throw new UnsupportedOperationException();
-                }
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static void sampleToSigned8Bits(float[][] normalizedInput, ByteBuffer pcmBuffer, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                float sample = normalizedInput[channel][s] * (float) 0x80;
+                pcmBuffer.put((byte) sample);
             }
         }
     }
 
-    public static void convert(byte[] pcmInput, float[][] normalizedOutput, int nbSamples, int nbChannels, BitDepth bitdepth, boolean bigEndian, boolean signed) {
-        ByteBuffer buffer = ByteBuffer.wrap(pcmInput);
-        buffer.order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-        if (signed) {
-            switch (bitdepth) {
-                case BIT_DEPTH_8 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = buffer.get();
-                            normalizedOutput[channel][s] = sample / (float) 0x80;
-                        }
-                    }
-                }
-                case BIT_DEPTH_16 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = buffer.getShort();
-                            normalizedOutput[channel][s] = sample / (float) 0x8000;
-                        }
-                    }
-                }
-                case BIT_DEPTH_24 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample_h = buffer.get() & 0xFF;
-                            int sample_l = buffer.getShort() & 0xFFFF;
-                            int sample = (sample_h << 16 | sample_l);
-                            if ((sample & 0x800000) != 0) {
-                                sample = sample | 0xFF000000;
-                            }
-                            normalizedOutput[channel][s] = sample / (float) 0x800000;
-                        }
-                    }
-                }
-                case BIT_DEPTH_32 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = buffer.getInt();
-                            normalizedOutput[channel][s] = sample / (float) 0x80000000;
-                        }
-                    }
-                }
+    public static void sampleToSigned16Bits(float[][] normalizedInput, ByteBuffer pcmBuffer, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                float sample = normalizedInput[channel][s] * (float) 0x8000;
+                pcmBuffer.putShort((short) sample);
             }
-        } else {
-            switch (bitdepth) {
-                case BIT_DEPTH_8 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = (buffer.get() & 0xFF) - 0x80;
-                            normalizedOutput[channel][s] = sample / (float) 0x80;
-                        }
-                    }
+        }
+    }
+
+    public static void sampleToSigned24Bits(float[][] normalizedInput, ByteBuffer pcmBuffer, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = (int) (normalizedInput[channel][s] * (float) 0x800000);
+                pcmBuffer.putShort((short) (sample >> 8));
+                pcmBuffer.put((byte) (sample & 0xff));
+            }
+        }
+    }
+
+    private static void signed8BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = pcmBuffer.get();
+                normalizedOutput[channel][s] = sample / (float) 0x80;
+            }
+        }
+    }
+
+    private static void signed16BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = pcmBuffer.getShort();
+                normalizedOutput[channel][s] = sample / (float) 0x8000;
+            }
+        }
+    }
+
+    private static void signed24BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample_h = pcmBuffer.get() & 0xFF;
+                int sample_l = pcmBuffer.getShort() & 0xFFFF;
+                int sample = (sample_h << 16 | sample_l);
+                if ((sample & 0x800000) != 0) {
+                    sample = sample | 0xFF000000;
                 }
-                case BIT_DEPTH_16 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = (buffer.getShort() & 0xFFFF) - 0x8000;
-                            normalizedOutput[channel][s] = sample / (float) 0x8000;
-                        }
-                    }
-                }
-                case BIT_DEPTH_24 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample_h = buffer.get() & 0xFF;
-                            int sample_l = buffer.getShort() & 0xFFFF;
-                            int sample = ((sample_h << 16 | sample_l) & 0xFFFFFF) - 0x800000;
-                            normalizedOutput[channel][s] = sample / (float) 0x800000;
-                        }
-                    }
-                }
-                case BIT_DEPTH_32 -> {
-                    for (int s = 0; s < nbSamples; s++) {
-                        for (int channel = 0; channel < nbChannels; channel++) {
-                            int sample = buffer.getInt() - 0x80000000;
-                            normalizedOutput[channel][s] = sample / (float) 0x80000000;
-                        }
-                    }
-                }
+                normalizedOutput[channel][s] = sample / (float) 0x800000;
+            }
+        }
+    }
+
+    private static void signed32BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = pcmBuffer.getInt();
+                normalizedOutput[channel][s] = sample / (float) 0x80000000;
+            }
+        }
+    }
+
+    private static void unsigned8BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = (pcmBuffer.get() & 0xFF) - 0x80;
+                normalizedOutput[channel][s] = sample / (float) 0x80;
+            }
+        }
+    }
+
+    private static void unsigned16BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = (pcmBuffer.getShort() & 0xFFFF) - 0x8000;
+                normalizedOutput[channel][s] = sample / (float) 0x8000;
+            }
+        }
+    }
+
+    private static void unsigned24BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample_h = pcmBuffer.get() & 0xFF;
+                int sample_l = pcmBuffer.getShort() & 0xFFFF;
+                int sample = ((sample_h << 16 | sample_l) & 0xFFFFFF) - 0x800000;
+                normalizedOutput[channel][s] = sample / (float) 0x800000;
+            }
+        }
+    }
+
+    private static void unsigned32BitToSample(ByteBuffer pcmBuffer, float[][] normalizedOutput, int nbSamples, int nbChannels) {
+        pcmBuffer.rewind();
+        for (int s = 0; s < nbSamples; s++) {
+            for (int channel = 0; channel < nbChannels; channel++) {
+                int sample = pcmBuffer.getInt() - 0x80000000;
+                normalizedOutput[channel][s] = sample / (float) 0x80000000;
             }
         }
     }

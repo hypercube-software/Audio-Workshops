@@ -2,7 +2,10 @@ package com.hypercube.workshop.audioworkshop.synth.sine;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.synth.vca.AdsrVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
@@ -70,7 +73,9 @@ public class AudioSine {
         try {
             Thread.currentThread()
                     .setPriority(Thread.MAX_PRIORITY);
-            try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, SAMPLE_RATE, BIT_DEPTH, ByteOrder.BIG_ENDIAN, BUFFER_SIZE_REQUESTED_IN_MS)) {
+            AudioLineFormat format = new AudioLineFormat(BUFFER_SIZE_REQUESTED_IN_MS, SAMPLE_RATE, BitDepth.valueOf(BIT_DEPTH), 1, PCMEncoding.SIGNED, ByteOrder.BIG_ENDIAN);
+
+            try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, format)) {
                 line.start();
 
                 // use our broken VCO, then try width CorrectVCO

@@ -2,7 +2,6 @@ package com.hypercube.workshop.audioworkshop.common.line;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.common.pcm.PCMconverter;
 import com.hypercube.workshop.audioworkshop.common.record.RecordListener;
 import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
@@ -15,7 +14,7 @@ import javax.sound.sampled.TargetDataLine;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteOrder;
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -23,18 +22,12 @@ public class AudioInputLine extends AudioLine implements Closeable {
     private final TargetDataLine line;
     private final AudioInputDevice device;
 
-    public AudioInputLine(AudioInputDevice device, AudioFormat format, int bufferDurationMs) throws LineUnavailableException {
-        super(format, bufferDurationMs);
+    public AudioInputLine(AudioInputDevice device, AudioLineFormat format) throws LineUnavailableException {
+        super(format);
         this.device = device;
-        this.line = AudioSystem.getTargetDataLine(format, device.getMixerInfo());
-        line.open(format, byteBufferSize);
-    }
-
-    public AudioInputLine(AudioInputDevice device, int sampleRate, int nbChannels, BitDepth bitDepth, ByteOrder byteOrder, int bufferDurationMs) throws LineUnavailableException {
-        super(new AudioFormat(sampleRate, bitDepth.getBits(), nbChannels, true, byteOrder == ByteOrder.BIG_ENDIAN), bufferDurationMs);
-        this.device = device;
-        this.line = AudioSystem.getTargetDataLine(format, device.getMixerInfo());
-        line.open(format, byteBufferSize);
+        AudioFormat audioFormat = format.getAudioFormat();
+        this.line = AudioSystem.getTargetDataLine(audioFormat, device.getMixerInfo());
+        line.open(audioFormat, format.getByteBufferSize());
     }
 
     @Override
@@ -47,11 +40,13 @@ public class AudioInputLine extends AudioLine implements Closeable {
     }
 
     public void record(RecordListener listener, AudioOutputLine outputLine) {
+        int nbChannels = format.getNbChannels();
+        int frameSize = format.getBytesPerSamples() * nbChannels;
+        var converter = PCMconverter.getPCMtoSampleFunction(format);
+        byte[] pcmData = format.allocatePcmBuffer();
+        float[][] normalizedData = format.allocateSampleBuffer();
+        ByteBuffer pcmBuffer = format.wrapPCMBuffer(pcmData);
         line.start();
-        final byte[] pcmData = new byte[byteBufferSize];
-        final float[][] normalizedData = new float[nbChannels][sampleBufferSize];
-        boolean bigEndian = order == ByteOrder.BIG_ENDIAN;
-        int frameSize = bytesPerSamples * nbChannels;
         for (; ; ) {
             int nbRead = line.read(pcmData, 0, pcmData.length);
             if (nbRead <= 0)
@@ -60,7 +55,7 @@ public class AudioInputLine extends AudioLine implements Closeable {
                 outputLine.sendBuffer(pcmData, nbRead);
             }
             int nbSampleRead = nbRead / frameSize;
-            PCMconverter.convert(pcmData, normalizedData, nbSampleRead, nbChannels, bitDepth, bigEndian, true);
+            converter.convert(pcmBuffer, normalizedData, nbSampleRead, nbChannels);
             if (!listener.onNewBuffer(normalizedData, nbSampleRead, pcmData, nbRead))
                 break;
         }
