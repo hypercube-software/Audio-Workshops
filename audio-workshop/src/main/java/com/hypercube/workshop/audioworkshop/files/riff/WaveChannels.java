@@ -9,11 +9,41 @@ import java.util.Arrays;
  */
 @Getter
 public enum WaveChannels {
-    SPEAKER_FRONT_LEFT(0x1), SPEAKER_FRONT_RIGHT(0x2), SPEAKER_FRONT_CENTER(0x4), SPEAKER_LOW_FREQUENCY(0x8), SPEAKER_BACK_LEFT(0x10), SPEAKER_BACK_RIGHT(0x20), SPEAKER_FRONT_LEFT_OF_CENTER(0x40), SPEAKER_FRONT_RIGHT_OF_CENTER(0x80), SPEAKER_BACK_CENTER(0x100), SPEAKER_SIDE_LEFT(0x200), SPEAKER_SIDE_RIGHT(0x400), SPEAKER_TOP_CENTER(0x800), SPEAKER_TOP_FRONT_LEFT(0x1000), SPEAKER_TOP_FRONT_CENTER(0x2000), SPEAKER_TOP_FRONT_RIGHT(0x4000), SPEAKER_TOP_BACK_LEFT(0x8000), SPEAKER_TOP_BACK_CENTER(0x10000), SPEAKER_TOP_BACK_RIGHT(0x20000), SPEAKER_RESERVED(0x80000000), UNKNOWN(0);
+    //@formatter:off
+    SPEAKER_FRONT_LEFT(0x1,"Front Left"),
+    SPEAKER_FRONT_RIGHT(0x2,"Front Right"),
+    SPEAKER_FRONT_CENTER(0x4,"Center"),
+    SPEAKER_LOW_FREQUENCY(0x8,"Sub woofer"),
+    SPEAKER_BACK_LEFT(0x10,"Rear Lef"),
+    SPEAKER_BACK_RIGHT(0x20,"Rear Right"),
+    SPEAKER_FRONT_LEFT_OF_CENTER(0x40,"Front left of Center"),
+    SPEAKER_FRONT_RIGHT_OF_CENTER(0x80,"Front right of Center "),
+    SPEAKER_BACK_CENTER(0x100,"Rear Center"),
+    SPEAKER_SIDE_LEFT(0x200,"Side Left"),
+    SPEAKER_SIDE_RIGHT(0x400,"Side Right"),
+    SPEAKER_TOP_CENTER(0x800,"Top Center"),
+    SPEAKER_TOP_FRONT_LEFT(0x1000,"Top Front Left"),
+    SPEAKER_TOP_FRONT_CENTER(0x2000,"Top Front Center"),
+    SPEAKER_TOP_FRONT_RIGHT(0x4000,"To Dront Right"),
+    SPEAKER_TOP_BACK_LEFT(0x8000,"To Rear Left"),
+    SPEAKER_TOP_BACK_CENTER(0x10000,"Rear Center"),
+    SPEAKER_TOP_BACK_RIGHT(0x20000,"Rear Right"),
+    SPEAKER_RESERVED(0x80000000,"Reserved"),
+    UNKNOWN(0,"Unknown");
+    //@formatter:on
     private int value;
+    private String shortTitle;
 
-    WaveChannels(int value) {
+    WaveChannels(int value, String shortTitle) {
         this.value = value;
+        this.shortTitle = shortTitle;
+    }
+
+    public static WaveChannels valueOfOrdinal(int channel) {
+        return Arrays.stream(WaveChannels.values())
+                .filter(e -> e.ordinal() == channel)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ordinal value %d for enum WaveChannels".formatted(channel)));
     }
 
     public static WaveChannels valueOf(int wChannel) {

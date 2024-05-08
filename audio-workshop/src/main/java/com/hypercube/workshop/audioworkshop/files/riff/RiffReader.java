@@ -21,6 +21,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -518,7 +520,7 @@ public class RiffReader {
         fileInfo.getAudioInfo()
                 .setNbChannels(numChannels);
         fileInfo.getAudioInfo()
-                .setBytePerSample((sampleSize / 8) * numChannels);
+                .setFrameSizeInBytes((sampleSize / 8) * numChannels);
 
     }
 
@@ -585,10 +587,10 @@ public class RiffReader {
         long dataChunkSize = (fileInfo.getAudioInfo()
                 .getNbAudioBytes()) & 0xFFFFFFFFL;
         long partialSample = dataChunkSize % fileInfo.getAudioInfo()
-                .getBytePerSample();
+                .getFrameSizeInBytes();
         if (partialSample != 0) {
             long expectedSize = dataChunkSize - partialSample + fileInfo.getAudioInfo()
-                    .getBytePerSample();
+                    .getFrameSizeInBytes();
             String errorMsg = String.format("DATA Chunk size mismatch (partial sample). Expected %d/0x%X, have %d/0x%X bytes", expectedSize, expectedSize, dataChunkSize, dataChunkSize);
             if (canFixSource) {
                 log.warn(errorMsg);
@@ -1018,7 +1020,7 @@ public class RiffReader {
         currentFileInfo.setBitPerSample(wBitsPerSample);
         currentFileInfo.setSampleRate(nSamplesPerSec);
         currentFileInfo.setNbChannels(nChannels);
-        currentFileInfo.setBytePerSample(nBlockAlign);
+        currentFileInfo.setFrameSizeInBytes(nBlockAlign);
         currentFileInfo.setCodec(codec);
         currentFileInfo.setFmtChunk(c);
         log.trace(String.format("%s %d channels %d Hz %d bits Channels infos: %s",
@@ -1129,6 +1131,26 @@ public class RiffReader {
                 in.readFully(pcm);
                 rw.writeChunk(entry.getDataChunk(), pcm);
                 rw.setSize();
+            }
+        }
+    }
+
+    public void streamChunk(RiffChunk dataChunk, int bufferSize, ChunkDataConsumer consumer) throws IOException {
+        byte[] buffer = new byte[bufferSize];
+        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer)
+                .order(ByteOrder.LITTLE_ENDIAN);
+        try (PositionalReadWriteStream in = new PositionalReadWriteStream(srcAudio, false)) {
+            in.seekLong(dataChunk.getContentStart());
+            long pos = 0;
+            for (; ; ) {
+                byteBuffer.rewind();
+                long remain = dataChunk.getContentSize() - pos;
+                int readSize = remain > bufferSize ? bufferSize : (int) remain;
+                int nbRead = in.read(buffer, 0, readSize);
+                if (nbRead <= 0)
+                    break;
+                pos += nbRead;
+                consumer.onNewBuffer(byteBuffer, nbRead);
             }
         }
     }

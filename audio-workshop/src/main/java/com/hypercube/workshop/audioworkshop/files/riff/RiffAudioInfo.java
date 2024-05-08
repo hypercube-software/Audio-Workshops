@@ -18,9 +18,9 @@ public class RiffAudioInfo {
      */
     private int bitPerSample;
     /**
-     * this includes all the channels, here sample = multichannel sample
+     * One frame is the number of bytes required to read one sample for all channels
      */
-    private int bytePerSample;
+    private int frameSizeInBytes;
     /**
      * number of multichannel samples in the file
      */
@@ -104,7 +104,7 @@ public class RiffAudioInfo {
     private boolean used;
 
     public void computeDuration() {
-        nbSamples = nbAudioBytes / bytePerSample;
+        nbSamples = nbAudioBytes / frameSizeInBytes;
         duration = nbSamples / (float) sampleRate;
 
         long ms = (long) ((duration - Math.floor(duration)) * 1000);
