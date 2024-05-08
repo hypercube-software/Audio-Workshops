@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
  * <p>
  * References:
  * <a href="https://gigamonkeys.com/book/practical-an-id3-parser.html">practical-an-id3-parser.html</a>
+ * <a href="https://mutagen-specs.readthedocs.io/en/latest/">Mutagen Spec Collection</a>
  */
 @Slf4j
 @SuppressWarnings({"java:S1481", "java:S1854"})
@@ -61,11 +62,24 @@ public class ID3Parser {
         return (mask & (1 << pos)) != 0;
     }
 
+    /**
+     * Taken from the doc:
+     *
+     * <div>
+     * The ID3v2 tag size is encoded with four bytes where the most significant bit (bit 7) is set to zero
+     * in every byte, making a total of 28 bits. The zeroed bits are ignored,
+     * so a 257 bytes long tag is represented as $00 00 02 01.
+     * </div>
+     */
     private int getSyncSafeInteger() {
         int v0 = getByte();
         int v1 = getByte();
         int v2 = getByte();
         int v3 = getByte();
+        // xaaaaaaa xbbbbbbb xccccccc xddddddd
+        // aaaaaaabbbbbbbcccccccddddddd
+        //        |      |      |
+        //        21     14     7
         return v0 << 21 | v1 << 14 | v2 << 7 | v3;
     }
 
@@ -83,6 +97,8 @@ public class ID3Parser {
         int versionMajor = getByte();
         int versionMinor = getByte();
         String version = "2.%d.%d".formatted(versionMajor, versionMinor);
+        if (!version.equals("2.3.0") && !version.equals("2.4.0"))
+            return null;
         int flag = getByte();
         boolean unsynchronisation = bit(flag, 7);
         boolean extendedHeader = bit(flag, 6);
@@ -102,7 +118,9 @@ public class ID3Parser {
             String frameID = getFrameId();
             if (frameID == null)
                 break;
-            int frameSize = getSyncSafeInteger();
+            // SyncSafeInteger seems only used in 2.4 spec for frameSize
+            // see: https://hydrogenaud.io/index.php/topic,67145.0.html
+            int frameSize = version.equals("2.3.0") ? b.getInt() : getSyncSafeInteger();
             int flag1 = getByte();
             int flag2 = getByte();
             byte[] frameData = new byte[frameSize];
