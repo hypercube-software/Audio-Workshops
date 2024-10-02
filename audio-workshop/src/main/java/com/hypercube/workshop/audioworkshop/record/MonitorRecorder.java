@@ -3,8 +3,9 @@ package com.hypercube.workshop.audioworkshop.record;
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +18,17 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MonitorRecorder extends WavRecordListener {
     private final int nbChannels;
-    private final float[] loudness;
+    private final double[] loudness;
     private final long startTime = System.currentTimeMillis();
     private long lastTime = 0;
 
-    public MonitorRecorder(File output, AudioLineFormat format, int maxDuration, TimeUnit maxDurationUnit) throws IOException {
+    public MonitorRecorder(File output, PCMFormat format, int maxDuration, TimeUnit maxDurationUnit) throws IOException {
         super(output, format, maxDuration, maxDurationUnit);
         nbChannels = format.getNbChannels();
-        loudness = new float[nbChannels];
+        loudness = new double[nbChannels];
     }
 
-    public void recordWithMonitoring(AudioInputDevice inputDevice, AudioOutputDevice outputDevice, AudioLineFormat format) {
+    public void recordWithMonitoring(AudioInputDevice inputDevice, AudioOutputDevice outputDevice, PCMBufferFormat format) {
         try (AudioInputLine line = new AudioInputLine(inputDevice, format)) {
             try (AudioOutputLine outLine = new AudioOutputLine(outputDevice, format)) {
                 outLine.start();
@@ -39,15 +40,15 @@ public class MonitorRecorder extends WavRecordListener {
     }
 
     @Override
-    public boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    public boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
         computeLoudness(sampleBuffer, nbSamples);
         return super.onNewBuffer(sampleBuffer, nbSamples, pcmBuffer, pcmSize);
     }
 
-    private void computeLoudness(float[][] sampleBuffer, int nbSamples) {
+    private void computeLoudness(double[][] sampleBuffer, int nbSamples) {
         for (int c = 0; c < nbChannels; c++) {
             for (int s = 0; s < nbSamples; s++) {
-                float sample = Math.abs(sampleBuffer[c][s]);
+                double sample = Math.abs(sampleBuffer[c][s]);
                 loudness[c] += sample;
             }
         }

@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 @SuppressWarnings("unused")
 public class WaveGUIDCodecs {
     public static final UUID WMMEDIASUBTYPE_PCM = UUID.fromString("00000001-0000-0010-8000-00aa00389b71");
-    public static final UUID WMMEDIASUBTYPE_IEEE754_LE_FLOAT = UUID.fromString("00000003-0000-0010-8000-00aa00389b71");
+    public static final UUID WMMEDIASUBTYPE_IEEE754_LE_double = UUID.fromString("00000003-0000-0010-8000-00aa00389b71");
     public static final UUID WMMEDIASUBTYPE_PCM_BE_INT24 = UUID.fromString("34326E69-0000-0010-8000-00AA00389B71");
     public static final UUID WMMEDIASUBTYPE_PCM_BE_INT32 = UUID.fromString("32336E69-0000-0010-8000-00AA00389B71");
     public static final UUID WMMEDIASUBTYPE_PCM_BE_FL32 = UUID.fromString("32336C66-0000-0010-8000-00AA00389B71");

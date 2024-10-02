@@ -135,18 +135,18 @@ public class PositionalReadWriteStream implements Closeable {
 
     }
 
-    public float getFloatBE() throws IOException {
+    public double getdoubleBE() throws IOException {
         byte[] data = readNBytes(4);
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.BIG_ENDIAN);
-        return bb.getFloat();
+        return bb.getDouble();
     }
 
-    public float getFloatLE() throws IOException {
+    public double getdoubleLE() throws IOException {
         byte[] data = readNBytes(4);
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        return bb.getFloat();
+        return bb.getDouble();
     }
 
     public short getShortBE() throws IOException {
@@ -281,5 +281,20 @@ public class PositionalReadWriteStream implements Closeable {
             read(); // padding (not included in count)
         }
         return new String(data, StandardCharsets.ISO_8859_1);
+    }
+
+    public String getASCIIString(int size) throws IOException {
+        byte[] data = readNBytes(size);
+        return new String(data, StandardCharsets.US_ASCII);
+    }
+
+    public String getBEString() throws IOException {
+        int size = getIntBE();
+        String str = getASCIIString(size - 1);
+        int zero = getByte();
+        if (zero != 0) {
+            throw new AssertionError("BEString not ended with zero at %08X".formatted(positionUInt()));
+        }
+        return str;
     }
 }

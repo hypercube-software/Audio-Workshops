@@ -45,12 +45,12 @@ public class RiffFileInfo {
                 );
     }
 
-    public boolean isIEEE754FLOAT() {
+    public boolean isIEEE754double() {
         RiffAudioInfo currentAudioInfo = getAudioInfo();
-        return currentAudioInfo.getCodec() == WaveCodecs.IEEE754_FLOAT ||
+        return currentAudioInfo.getCodec() == WaveCodecs.IEEE754_double ||
                 (currentAudioInfo.getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE
                         && currentAudioInfo.getSubCodec()
-                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_IEEE754_LE_FLOAT)
+                        .equals(WaveGUIDCodecs.WMMEDIASUBTYPE_IEEE754_LE_double)
                 );
     }
 
@@ -58,36 +58,44 @@ public class RiffFileInfo {
         chunks.add(chunk);
     }
 
-    public List<RiffChunk> getChunks() {
+    public List<RiffChunk> collectChunks() {
         return Collections.unmodifiableList(chunks);
     }
 
     public RiffChunk getDataChunk() {
         // WAV files: data
         // AIFF files: SSND
-        return getChunk("data").orElse(getChunk("SSND").orElse(null));
+        return getRootChunk(Chunks.DATA).orElse(getRootChunk(Chunks.AIFF_SSND).orElse(null));
     }
 
-    public List<RiffChunk> getListChunks() {
-        return getChunks("LIST");
-    }
-
-    public Optional<RiffChunk> getChunk(String chunkId) {
-        assert (chunkId.length() == 4);
+    public Optional<RiffChunk> getRootChunk(String chunkId) {
+        checkChunkId(chunkId);
         return chunks.stream()
                 .filter(c -> c.getId()
-                        .equals(chunkId) || (c instanceof RiffListChunk && ((RiffListChunk) c).getListType()
+                        .equals(chunkId) || (c instanceof RiffListChunk riffListChunk && riffListChunk.getListType()
                         .equals(chunkId)))
                 .findFirst();
-
     }
 
-    public List<RiffChunk> getChunks(String chunkId) {
-        assert (chunkId.length() == 4);
-        return chunks.stream()
-                .filter(c -> c.getId()
-                        .equals(chunkId))
-                .toList();
+    public <T extends RiffChunk> List<T> collectChunks(String chunkId) {
+        checkChunkId(chunkId);
+        List<T> result = new ArrayList<>();
+        chunks.forEach(chunk -> collectChunks(chunkId, chunk, result));
+        return result;
+    }
+
+    public <T extends RiffChunk> void collectChunks(String chunkId, RiffChunk chunk, List<T> bag) {
+        if (chunk.getId()
+                .equals(chunkId))
+            bag.add((T) chunk);
+        chunk.getChildren()
+                .forEach(child -> collectChunks(chunkId, child, bag));
+    }
+
+    private void checkChunkId(String chunkId) {
+        if ((chunkId.length() != 4)) {
+            throw new AssertionError("Chunk ID must be 4 characters: " + chunkId);
+        }
     }
 
     public void collectInstruments() {
@@ -105,9 +113,9 @@ public class RiffFileInfo {
 
             samplePool.put(offset, f);
         });
-        for (RiffChunk insChunk : getChunk(Chunks.LINS).map(lins -> lins.getChunks(Chunks.INS))
+        for (RiffChunk insChunk : getRootChunk(Chunks.LINS).map(lins -> lins.getChunks(Chunks.INS))
                 .orElse(List.of())) {
-            String instrumentName = insChunk.getChunk(Chunks.INFO)
+            String instrumentName = insChunk.getChunk(Chunks.LIST_TYPE_INFO)
                     .flatMap(info -> info.getChunk(Chunks.INAM)
                             .map(g -> ((RiffInfoChunk) g).getValue()))
                     .orElseThrow();
@@ -180,7 +188,7 @@ public class RiffFileInfo {
     private Optional<Long> getSampleOffset(int sampleOffsetIndex) {
         if (sampleOffsetIndex == -1)
             return Optional.empty();
-        return getChunk(Chunks.PTBL).map(ptbl -> ((RiffPoolTableChunk) ptbl).getSampleOffsets()
+        return getRootChunk(Chunks.PTBL).map(ptbl -> ((RiffPoolTableChunk) ptbl).getSampleOffsets()
                 .get(sampleOffsetIndex));
     }
 }

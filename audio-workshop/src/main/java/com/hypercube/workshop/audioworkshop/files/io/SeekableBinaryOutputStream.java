@@ -17,7 +17,7 @@ public class SeekableBinaryOutputStream implements AutoCloseable {
     private final FileOutputStream out;
     private final FileChannel ch;
     private final ByteBuffer buffer;
-    private static final int MAX_BUFFER_SIZE = 8;
+    private static final int MAX_BUFFER_SIZE = 255; // for ASCII Strings
 
     public SeekableBinaryOutputStream(FileOutputStream out) {
         this.out = out;
@@ -65,11 +65,18 @@ public class SeekableBinaryOutputStream implements AutoCloseable {
     }
 
     public void writeChunkId(String value) throws IOException {
+        if (value.length() != 4) {
+            throw new IllegalArgumentException("Chunk ID is not 4 characters: " + value);
+        }
+        writeASCII(value);
+    }
+
+    public void writeASCII(String value) throws IOException {
         buffer.clear();
         buffer.rewind();
         byte[] bytes = value.getBytes(StandardCharsets.US_ASCII);
         buffer.put(bytes);
-        ch.write(buffer.slice(0, 4));
+        ch.write(buffer.slice(0, bytes.length));
     }
 
     public void writeLongBE(long value) throws IOException {
@@ -137,19 +144,19 @@ public class SeekableBinaryOutputStream implements AutoCloseable {
         ch.write(ByteBuffer.wrap(pad));
     }
 
-    public void writeFloatLE(float value) throws IOException {
+    public void writeDoubleLE(double value) throws IOException {
         buffer.clear();
         buffer.rewind();
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putFloat(value);
+        buffer.putDouble(value);
         ch.write(buffer.slice(0, 4));
     }
 
-    public void writeFloatBE(float value) throws IOException {
+    public void writeDoubleBE(double value) throws IOException {
         buffer.clear();
         buffer.rewind();
         buffer.order(ByteOrder.BIG_ENDIAN);
-        buffer.putFloat(value);
+        buffer.putDouble(value);
         ch.write(buffer.slice(0, 4));
     }
 }

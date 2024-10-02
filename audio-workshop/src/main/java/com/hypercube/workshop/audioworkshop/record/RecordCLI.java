@@ -2,7 +2,7 @@ package com.hypercube.workshop.audioworkshop.record;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioDeviceManager;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class RecordCLI {
         m.collectDevices();
         m.getInputs()
                 .forEach(d -> d.logFormats());
-        AudioLineFormat format = new AudioLineFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
+        PCMBufferFormat format = new PCMBufferFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
         var in = m.getInput(inputDevice)
                 .orElseThrow(() -> new AudioError("Device not found:" + inputDevice));
         log.info("Record 4 seconds of audio into {}", wavFile);
@@ -44,7 +44,7 @@ public class RecordCLI {
                 .forEach(d -> d.logFormats());
         m.getOutputs()
                 .forEach(d -> log.info("OUTPUT: " + d.getName()));
-        AudioLineFormat format = new AudioLineFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 2, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
+        PCMBufferFormat format = new PCMBufferFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 2, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
         var in = m.getInput(inputDevice)
                 .orElseThrow(() -> new AudioError("Device not found:" + inputDevice));
         var out = m.getOutput(outputDevice)

@@ -3,9 +3,12 @@ package com.hypercube.workshop.synthripper;
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.common.insights.dft.fast.FFTCalculator;
+import com.hypercube.workshop.audioworkshop.common.insights.dft.windows.BlackmanHarris;
 import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.common.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
@@ -19,16 +22,18 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 public class SynthRipper {
+    public static final int NOISEFLOOR_CAPUTRE_DURATION_IN_SEC = 4;
     private final SynthRipperConfiguration conf;
-    private final AudioLineFormat format;
-    private final AudioLineFormat wavFormat;
+    private final PCMBufferFormat format;
+    private final PCMBufferFormat wavFormat;
     private MidiOutDevice midiOutDevice;
-
+    private final ThreadLogger threadLogger;
     private final SynthRipperState state = new SynthRipperState();
     private final List<LoopSetting> loopSettings = new ArrayList<>();
 
@@ -36,11 +41,13 @@ public class SynthRipper {
 
     private File getOutputFile(int cc, int note, int velocity) {
         var midiNote = MidiNote.fromValue(note);
-        return new File("%s/%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), cc, conf.getMidi()
+        return new File("%s/%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), conf.getMidi()
+                .getDisplayedCC(cc), conf.getMidi()
                 .getFilename(cc), midiNote.name(), Math.min(127, velocity)));
     }
 
     public SynthRipper(SynthRipperConfiguration config) {
+        this.threadLogger = new ThreadLogger();
         this.conf = config;
         this.format = config.getAudio()
                 .getAudioFormat();
@@ -61,12 +68,16 @@ public class SynthRipper {
         state.note = state.lowestNote;
         state.velocity = state.veloIncrement;
         state.upperBoundVelocity = state.veloIncrement * (midiSettings.getVelocityPerNote() + 1);
+        state.noiseFloorFrequencies = new double[format.getSampleBufferSize() / 2];
+        state.signalFrequencies = new double[format.getSampleBufferSize() / 2];
+        state.resetNoiseFloorFrequencies();
     }
+
 
     public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
         createOutputDir();
         state.nbChannels = format.getNbChannels();
-        state.loudnessPerChannel = new float[state.nbChannels];
+        state.loudnessPerChannel = new double[state.nbChannels];
         state.maxNoteReleaseDurationSec = conf.getMidi()
                 .getMaxNoteReleaseDurationSec();
         state.maxNoteDurationSec = conf.getMidi()
@@ -74,17 +85,19 @@ public class SynthRipper {
         this.midiOutDevice = midiDevice;
         this.midiOutDevice.open();
         this.midiOutDevice.sendAllOff();
-        try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
-            try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
-                outputLine.start();
-                inputLine.record(this::onNewBuffer, outputLine);
+        try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
+            try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
+                try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
+                    threadLogger.start();
+                    outputLine.start();
+                    inputLine.record((sampleBuffer, nbSamples, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, sampleBuffer, nbSamples, pcmBuffer, pcmSize), outputLine);
+                } finally {
+                    threadLogger.stop();
+                }
             }
         } catch (LineUnavailableException | IOException e) {
             throw new AudioError(e);
         } finally {
-            if (wavRecorder != null) {
-                wavRecorder.close();
-            }
             try {
                 midiDevice.close();
             } catch (IOException e) {
@@ -99,24 +112,50 @@ public class SynthRipper {
         f.mkdirs();
     }
 
-    private boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    private boolean onNewBuffer(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
         computeLoudness(sampleBuffer, nbSamples);
-
         state.durationInSec += (float) nbSamples / format.getSampleRate();
+        state.durationInSamples += nbSamples;
         try {
             if (state.state == SynthRipperStateEnum.GET_NOISE_FLOOR) {
-                onGetNoiseFloorState();
-            } else if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
-                onIdleStateTerminated();
-            } else if (state.state == SynthRipperStateEnum.NOTE_ON && (state.durationInSec > state.maxNoteDurationSec /*|| state.isSilentBuffer()*/)) {
-                onNoteOnTerminated();
-            } else if (state.state == SynthRipperStateEnum.NOTE_OFF && state.durationInSec > state.maxNoteReleaseDurationSec && state.isSilentBuffer()) {
-                onNoteOffTerminated();
+                onGetNoiseFloorState(fftCalculator, sampleBuffer, nbSamples);
+            } else {
+                fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
+                int ch = 0;
+                for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
+                    state.signalFrequencies[bin] = fftCalculator.getMagnitudes()[ch].getLast()
+                            .getMagnitudes()[bin];
+                }
+
+                if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
+                    sendNoteOn();
+                    state.state = SynthRipperStateEnum.NOTE_ON_SEND;
+                    state.durationInSec = 0;
+                } else if (state.state == SynthRipperStateEnum.NOTE_ON_SEND && !state.isSilentBuffer()) {
+                    threadLogger.info("NOTE_ON_START after " + state.durationInSec + " sec");
+                    state.state = SynthRipperStateEnum.NOTE_ON_START;
+                    state.durationInSec = 0;
+                    state.durationInSamples = 0;
+                } else if (state.state == SynthRipperStateEnum.NOTE_ON_START && (state.durationInSec > state.maxNoteDurationSec || state.isSilentBuffer())) {
+                    sendNoteOff();
+                    state.noteOffSampleMarker = state.durationInSamples;
+                    threadLogger.info("NOTE_OFF after " + state.durationInSec + " sec at position " + state.noteOffSampleMarker);
+                    state.state = SynthRipperStateEnum.NOTE_OFF;
+                    state.durationInSec = 0;
+                } else if (state.state == SynthRipperStateEnum.NOTE_OFF && (state.durationInSec > state.maxNoteReleaseDurationSec || state.isSilentBuffer())) {
+                    onNoteOffTerminated();
+                    threadLogger.info("IDLE after " + state.durationInSec + " sec");
+                    state.state = SynthRipperStateEnum.IDLE;
+                    state.durationInSec = 0;
+                }
             }
         } catch (InvalidMidiDataException | IOException e) {
             throw new AudioError(e);
         }
-        if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON || state.state == SynthRipperStateEnum.NOTE_OFF)) {
+        //
+        // record WAV to disk
+        //
+        if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON_START || state.state == SynthRipperStateEnum.NOTE_OFF)) {
             wavRecorder.write(sampleBuffer, 0, nbSamples, conf.getAudio()
                     .getChannelMap());
         }
@@ -124,8 +163,8 @@ public class SynthRipper {
     }
 
     private void onNoteOffTerminated() throws IOException {
-        state.state = SynthRipperStateEnum.IDLE;
-        state.durationInSec = 0;
+        wavRecorder.endWrite();
+        wavRecorder.writeMarkers(List.of(PCMMarker.of("Buffer Size", format.getSampleBufferSize()), PCMMarker.of("Note Off", state.noteOffSampleMarker)));
         wavRecorder.close();
         wavRecorder = null;
         state.velocity = state.velocity + state.veloIncrement;
@@ -140,10 +179,9 @@ public class SynthRipper {
         }
     }
 
-    private void onNoteOnTerminated() throws InvalidMidiDataException {
+    private void sendNoteOff() throws InvalidMidiDataException {
         MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, state.note, 0), 0);
         midiOutDevice.send(noteOff);
-        state.state = SynthRipperStateEnum.NOTE_OFF;
 
         if (!state.isSilentBuffer()) {
             LoopSetting currentLoop = new LoopSetting();
@@ -153,46 +191,52 @@ public class SynthRipper {
             currentLoop.setSampleEnd((long) (state.durationInSec * format.getSampleRate()));
             loopSettings.add(currentLoop);
         }
-
-        state.durationInSec = 0;
     }
 
-    private void onIdleStateTerminated() throws InvalidMidiDataException, IOException {
+    private void sendNoteOn() throws InvalidMidiDataException, IOException {
         if (state.note == state.lowestNote && state.isFirstVelocity()) {
-            log.info("Program Change %03d".formatted(state.cc));
+            threadLogger.info("Program Change %03d".formatted(state.cc));
             MidiEvent midiCC = new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, state.cc, 0), 0);
             midiOutDevice.send(midiCC);
         }
         File outputFile = getOutputFile(state.cc, state.note, state.velocity);
-        outputFile.getParentFile()
-                .mkdirs();
-        log.info("Record %s".formatted(outputFile.getParentFile()
+        threadLogger.info("Record %s".formatted(outputFile.getParentFile()
                 .getName() + "/" + outputFile.getName()));
         wavRecorder = new WavRecorder(outputFile, wavFormat);
         MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, state.note, Math.min(127, state.velocity)), 0);
         midiOutDevice.send(noteOn);
-        state.state = SynthRipperStateEnum.NOTE_ON;
-        state.durationInSec = 0;
     }
 
-    private void onGetNoiseFloorState() {
+    private void onGetNoiseFloorState(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples) {
         if (state.durationInSec > 1) {
             if (state.noiseFloor == -1) {
-                log.info("Capture noise floor...");
+                threadLogger.info("Capture noise floor...");
+                state.resetNoiseFloorFrequencies();
             }
+            fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
+            int ch = 0;
+            for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
+                state.noiseFloorFrequencies[bin] = Math.max(state.noiseFloorFrequencies[bin], fftCalculator.getMagnitudes()[ch].getLast()
+                        .getMagnitudes()[bin]);
+            }
+            state.noiseSamplesRead += nbSamples;
             state.noiseFloor = Math.max(state.noiseFloor, state.loudness);
         }
 
-        if (state.durationInSec > 1 + 4) {
-            log.info("Noise floor: %d dB".formatted(state.getNoiseFloorDb()));
+        if (state.durationInSec > 1 + NOISEFLOOR_CAPUTRE_DURATION_IN_SEC) {
             state.state = SynthRipperStateEnum.IDLE;
+            threadLogger.info("Noise floor: %d dB".formatted(state.getNoiseFloorDb()));
+            double max = Arrays.stream(state.noiseFloorFrequencies)
+                    .average()
+                    .orElse(0);
+            threadLogger.info("Noise floor via FFT: %f dB".formatted(max));
         }
     }
 
-    private void computeLoudness(float[][] sampleBuffer, int nbSamples) {
+    private void computeLoudness(double[][] sampleBuffer, int nbSamples) {
         for (int c = 0; c < state.nbChannels; c++) {
             for (int s = 0; s < nbSamples; s++) {
-                float sample = sampleBuffer[c][s] * sampleBuffer[c][s];
+                double sample = sampleBuffer[c][s] * sampleBuffer[c][s];
                 state.loudnessPerChannel[c] += sample;
             }
         }
@@ -210,7 +254,8 @@ public class SynthRipper {
                 .getHighestCC(); cc++) {
             String filename = conf.getMidi()
                     .getFilename(cc);
-            File sfzFile = new File("%s/%03d %s.sfz".formatted(conf.getOutputDir(), cc, filename));
+            File sfzFile = new File("%s/%03d %s.sfz".formatted(conf.getOutputDir(), conf.getMidi()
+                    .getDisplayedCC(cc), filename));
             try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
                 final String SEPARATOR = "----------------------------------------------------------";
                 out.println(SEPARATOR);

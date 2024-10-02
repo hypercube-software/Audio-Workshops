@@ -7,5 +7,5 @@ public interface RecordListener {
      * @param nbSamples    number of samples in each buffer
      * @return false to stop the recording
      */
-    boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize);
+    boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize);
 }

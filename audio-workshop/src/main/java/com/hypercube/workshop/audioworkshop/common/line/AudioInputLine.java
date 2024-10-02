@@ -2,7 +2,8 @@ package com.hypercube.workshop.audioworkshop.common.line;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMconverter;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.common.pcm.PCMConverter;
 import com.hypercube.workshop.audioworkshop.common.record.RecordListener;
 import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class AudioInputLine extends AudioLine implements Closeable {
     private final TargetDataLine line;
     private final AudioInputDevice device;
 
-    public AudioInputLine(AudioInputDevice device, AudioLineFormat format) throws LineUnavailableException {
+    public AudioInputLine(AudioInputDevice device, PCMBufferFormat format) throws LineUnavailableException {
         super(format);
         this.device = device;
         AudioFormat audioFormat = format.getAudioFormat();
@@ -42,9 +43,9 @@ public class AudioInputLine extends AudioLine implements Closeable {
     public void record(RecordListener listener, AudioOutputLine outputLine) {
         int nbChannels = format.getNbChannels();
         int frameSize = format.getBytesPerSamples() * nbChannels;
-        var converter = PCMconverter.getPCMtoSampleFunction(format);
+        var converter = PCMConverter.getPCMtoSampleFunction(format);
         byte[] pcmData = format.allocatePcmBuffer();
-        float[][] normalizedData = format.allocateSampleBuffer();
+        double[][] normalizedData = format.allocateSampleBuffer();
         ByteBuffer pcmBuffer = format.wrapPCMBuffer(pcmData);
         line.start();
         for (; ; ) {

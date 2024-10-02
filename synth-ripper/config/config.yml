@@ -2,18 +2,18 @@ projectName: "BOSS-DS330"
 devices:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Périphérique audio principal"
-  outputMidiDevice: "4- MIDISPORT Uno Out"
+  outputMidiDevice: "2- MIDISPORT Uno Out"
 audio:
-  bufferDurationMs: 250
+  bufferDurationMs: 100
   nbChannels: 2
   channelMapping: "1:0"
   bitDepth: 16
   sampleRate: 44100
 midi:
   maxNoteDurationSec: 5
-  maxNoteReleaseDurationSec: 1
-  lowestCC: 48
-  highestCC: 48
+  maxNoteReleaseDurationSec: 5
+  lowestCC: 95
+  highestCC: 95
   lowestNote: "C3"
   highestNote: "C3"
   notesPerOctave: 1

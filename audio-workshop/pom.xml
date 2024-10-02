@@ -38,6 +38,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>fftw-platform</artifactId>
+            <version>3.3.10-1.5.10</version>
+        </dependency>
     </dependencies>
 
     <build>

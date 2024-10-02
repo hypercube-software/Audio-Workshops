@@ -1,9 +1,14 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
+import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffFmtChunk;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.nio.ByteOrder;
 import java.util.UUID;
 
 @Getter
@@ -40,7 +45,7 @@ public class RiffAudioInfo {
     /**
      * duration in seconds
      */
-    private float duration;
+    private double duration;
 
     /**
      * duration in HH:MM::SS
@@ -50,7 +55,7 @@ public class RiffAudioInfo {
     /**
      * BPM beats per seconds
      */
-    private float tempo;
+    private double tempo;
     /**
      * Codec informations
      */
@@ -91,7 +96,7 @@ public class RiffAudioInfo {
     /**
      * Originating 'fmt ' Chunk
      */
-    private RiffChunk fmtChunk;
+    private RiffFmtChunk fmtChunk;
 
     /**
      * Originating 'data' Chunk
@@ -105,7 +110,7 @@ public class RiffAudioInfo {
 
     public void computeDuration() {
         nbSamples = nbAudioBytes / frameSizeInBytes;
-        duration = nbSamples / (float) sampleRate;
+        duration = nbSamples / (double) sampleRate;
 
         long ms = (long) ((duration - Math.floor(duration)) * 1000);
         long seconds = (long) duration;
@@ -128,5 +133,9 @@ public class RiffAudioInfo {
                     .toString();
         }
         return getCodec() + (getCodec() == WaveCodecs.WAVE_FORMAT_EXTENSIBLE ? " " + subCodecString : "");
+    }
+
+    public PCMFormat toPCMFormat() {
+        return new PCMFormat(sampleRate, BitDepth.valueOf(bitPerSample), nbChannels, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
     }
 }

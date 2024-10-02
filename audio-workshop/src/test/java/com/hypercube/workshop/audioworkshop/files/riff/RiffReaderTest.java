@@ -124,63 +124,66 @@ class RiffReaderTest {
     private void assertFormat(FormatAssert a, File f) {
         if (f.exists()) {
             log.info("Parse " + f.getAbsolutePath());
-            RiffReader r = new RiffReader(f, false);
-            RiffFileInfo info = r.parse();
-            assertNotNull(info);
-            String chunks = listToString(info.getChunks(), RiffChunk::getId);
+            try (RiffReader r = new RiffReader(f, false)) {
+                RiffFileInfo info = r.parse();
+                assertNotNull(info);
+                String chunks = listToString(info.collectChunks(), RiffChunk::getId);
 
-            log.info("codec      : " + info.getAudioInfo()
-                    .getCodecString());
-            log.info("chunks     : " + chunks);
-            log.info("nbChannels : " + info.getAudioInfo()
-                    .getNbChannels());
-            log.info("bitdepth   : " + info.getAudioInfo()
-                    .getBitPerSample());
-            log.info("samplerate : " + info.getAudioInfo()
-                    .getSampleRate());
-            log.info("tempo      : " + info.getAudioInfo()
-                    .getTempo());
-
-            log.info("duration   : " + info.getAudioInfo()
-                    .getDurationString());
-            log.info("Metadata   : %d entries".formatted(info.getMetadata()
-                    .getAll()
-                    .size()));
-            info.getMetadata()
-                    .getAll()
-                    .forEach((k, v) -> {
-                        log.info("       %s   : %s".formatted(k, v));
-                    });
-
-            if (a.format != null) {
-                assertEquals(a.format, info.getAudioInfo()
+                log.info("codec      : " + info.getAudioInfo()
                         .getCodecString());
+                log.info("chunks     : " + chunks);
+                log.info("nbChannels : " + info.getAudioInfo()
+                        .getNbChannels());
+                log.info("bitdepth   : " + info.getAudioInfo()
+                        .getBitPerSample());
+                log.info("samplerate : " + info.getAudioInfo()
+                        .getSampleRate());
+                log.info("tempo      : " + info.getAudioInfo()
+                        .getTempo());
+
+                log.info("duration   : " + info.getAudioInfo()
+                        .getDurationString());
+                log.info("Metadata   : %d entries".formatted(info.getMetadata()
+                        .getAll()
+                        .size()));
+                info.getMetadata()
+                        .getAll()
+                        .forEach((k, v) -> {
+                            log.info("       %s   : %s".formatted(k, v));
+                        });
+
+                if (a.format != null) {
+                    assertEquals(a.format, info.getAudioInfo()
+                            .getCodecString());
+                }
+                assertEquals(a.nbChannels, info.getAudioInfo()
+                        .getNbChannels());
+                assertEquals(a.bitdepth, info.getAudioInfo()
+                        .getBitPerSample());
+                assertEquals(a.samplerate, info.getAudioInfo()
+                        .getSampleRate());
+                assertEquals(a.duration, info.getAudioInfo()
+                        .getDurationString());
+                assertEquals(a.chunks, chunks);
+                assertEquals(a.subformat, info.getAudioInfo()
+                        .getSubCodec());
+                a.metadata.forEach(m -> {
+                    if (!info.getMetadata()
+                            .contains(m.name())) {
+                        log.error("{} not found in metadata", m.name());
+                        assertTrue(false);
+                    }
+                    var value = info.getMetadata()
+                            .get(m.name());
+                    if (!m.value()
+                            .equals(value)) {
+                        log.error("Value for {} differ: \"{}\", expected \"{}\"", m.name(), value, m.value());
+                        assertTrue(false);
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            assertEquals(a.nbChannels, info.getAudioInfo()
-                    .getNbChannels());
-            assertEquals(a.bitdepth, info.getAudioInfo()
-                    .getBitPerSample());
-            assertEquals(a.samplerate, info.getAudioInfo()
-                    .getSampleRate());
-            assertEquals(a.duration, info.getAudioInfo()
-                    .getDurationString());
-            assertEquals(a.chunks, chunks);
-            assertEquals(a.subformat, info.getAudioInfo()
-                    .getSubCodec());
-            a.metadata.forEach(m -> {
-                if (!info.getMetadata()
-                        .contains(m.name())) {
-                    log.error("{} not found in metadata", m.name());
-                    assertTrue(false);
-                }
-                var value = info.getMetadata()
-                        .get(m.name());
-                if (!m.value()
-                        .equals(value)) {
-                    log.error("Value for {} differ: \"{}\", expected \"{}\"", m.name(), value, m.value());
-                    assertTrue(false);
-                }
-            });
         }
     }
 

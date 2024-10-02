@@ -215,7 +215,7 @@ public class FlacReader {
         log.trace("FLAC %d bits %d channels %dHz %d/0x%X samples".formatted(bitPerSample, numChannels, sampleRate,
                 totalSamples, totalSamples));
 
-        float duration = totalSamples / (float) sampleRate;
+        double duration = totalSamples / (double) sampleRate;
 
         var seconds = (long) duration;
         long hh = seconds / 3600;

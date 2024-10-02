@@ -1,12 +1,10 @@
 package com.hypercube.workshop.audioworkshop.common.record;
 
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
+import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffWriter;
-import com.hypercube.workshop.audioworkshop.files.riff.WaveGUIDCodecs;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.Chunks;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
-import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffFmtChunk;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Closeable;
@@ -21,9 +19,9 @@ public class WavRecordListener implements RecordListener, Closeable {
     private final RiffChunk dataChunk;
     private final long maxDurationInSamples;
     protected long currentDurationInSamples = 0;
-    protected final AudioLineFormat format;
+    protected final PCMFormat format;
 
-    public WavRecordListener(File output, AudioLineFormat format) throws IOException {
+    public WavRecordListener(File output, PCMFormat format) throws IOException {
         this.format = checkFormat(format);
         this.out = new RiffWriter(output);
         this.dataChunk = new RiffChunk(null, Chunks.DATA, (int) out.getPosition(), 0);
@@ -31,14 +29,14 @@ public class WavRecordListener implements RecordListener, Closeable {
         createChunks(format);
     }
 
-    private AudioLineFormat checkFormat(AudioLineFormat format) {
+    private PCMFormat checkFormat(PCMFormat format) {
         if (format.isBigEndian()) {
             throw new AudioError("BigEndian is not supported by WAV format");
         }
         return format;
     }
 
-    public WavRecordListener(File output, AudioLineFormat format, int maxDuration, TimeUnit maxDurationUnit) throws IOException {
+    public WavRecordListener(File output, PCMFormat format, int maxDuration, TimeUnit maxDurationUnit) throws IOException {
         this.format = checkFormat(format);
         this.out = new RiffWriter(output);
         this.dataChunk = new RiffChunk(null, Chunks.DATA, (int) out.getPosition(), 0);
@@ -46,19 +44,18 @@ public class WavRecordListener implements RecordListener, Closeable {
         createChunks(format);
     }
 
-    private long computeMaxDurationInSamples(AudioLineFormat format, int maxDuration, TimeUnit maxDurationUnit) {
+    private long computeMaxDurationInSamples(PCMFormat format, int maxDuration, TimeUnit maxDurationUnit) {
         long maxDurationInSeconds = TimeUnit.SECONDS.convert(maxDuration, maxDurationUnit);
         return (long) (format.getSampleRate() * maxDurationInSeconds);
     }
 
-    private void createChunks(AudioLineFormat format) throws IOException {
-        RiffFmtChunk fmt = new RiffFmtChunk(format.getNbChannels(), (int) format.getSampleRate(), (int) format.getSampleSizeInBits(), WaveGUIDCodecs.WMMEDIASUBTYPE_PCM);
-        out.writeChunk(fmt, fmt.getBytes());
-        out.writeChunk(dataChunk);
+    private void createChunks(PCMFormat format) throws IOException {
+        out.writeFmtChunk(format);
+        out.beginChunk(Chunks.DATA);
     }
 
     @Override
-    public boolean onNewBuffer(float[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    public boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
         try {
             out.write(pcmBuffer, pcmSize);
             currentDurationInSamples += nbSamples;
@@ -74,8 +71,7 @@ public class WavRecordListener implements RecordListener, Closeable {
 
     @Override
     public void close() throws IOException {
-        out.closeChunk(dataChunk);
-        out.setSize();
+        out.endChunk(); // end DATA chunk
         out.close();
     }
 }

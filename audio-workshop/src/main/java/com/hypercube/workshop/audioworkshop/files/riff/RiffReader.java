@@ -15,6 +15,11 @@ import com.hypercube.workshop.audioworkshop.files.riff.chunks.dsl2.RiffRegionHea
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.dsl2.RiffWaveLinkChunk;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.gig.G3Dimension;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.gig.RiffG3DimensionChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.adtl.*;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.cue.CuePoint;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.cue.RiffCueChunk;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.playlist.PlaylistSegment;
+import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.playlist.RiffPlaylistChunk;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.XMLInputFactory;
@@ -24,6 +29,9 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -74,13 +82,10 @@ import java.util.zip.GZIPOutputStream;
  */
 @SuppressWarnings({"java:S1172", "unused"})
 @Slf4j
-public class RiffReader {
-    public static final List<String> KNOWN_TYPES = List.of("WAVE", "AIFF", "AIFC", "DLS ");
+public class RiffReader implements AutoCloseable {
+    public static final List<String> KNOWN_TYPES = List.of(Chunks.WAVE, Chunks.AIFF, Chunks.AIFC, Chunks.DLS, Chunks.NUND);
     public static final int LOWEST_TEMPO = 40;
     public static final int HIGHEST_TEMPO = 300;
-    public static final String AIFF_TYPE_AIFC = "AIFC";
-    public static final String RIFF_TYPE_AIFF = "AIFF";
-    public static final String AIFF_TYPE_DLS = "DLS "; // include Gigastudio
     private final File srcAudio;
     private final RiffFileInfo fileInfo = new RiffFileInfo();
 
@@ -98,14 +103,21 @@ public class RiffReader {
 
     private boolean isDLS2;
 
+    private boolean isSteinbergProject;
+
     /**
      * @param srcAudio     the WAV file to parse
      * @param canFixSource true will allow modifying the size of the chunk if wrong in checkSampleCount
      */
-    public RiffReader(File srcAudio, boolean canFixSource) {
+    public RiffReader(File srcAudio, boolean canFixSource) throws IOException {
         super();
         this.srcAudio = srcAudio;
         this.canFixSource = canFixSource;
+        if (!srcAudio.exists())
+            throw new AudioParserException("File does not exists: " + srcAudio.getAbsolutePath());
+        if (srcAudio.length() == 0)
+            throw new AudioParserException("File is empty: " + srcAudio.getAbsolutePath());
+        stream = new PositionalReadWriteStream(srcAudio, canFixSource);
     }
 
     /**
@@ -119,7 +131,7 @@ public class RiffReader {
     private boolean checkChunkID(byte[] data) throws IOException {
         int nbIllegalChars = 0;
         if (data[0] == 0 && data[1] == 0 && data[2] == 0 && data[3] == 0) {
-            throw new UnexpectedNullChunk(srcAudio.getAbsolutePath(), stream.positionUInt() - 4);
+            throw new UnexpectedNullChunk(srcAudio.getAbsolutePath(), stream.positionUInt() - 4L);
         }
         for (int ch : data) {
             if (!(ch == ' ' || ch == '_' || ch == '-' || (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))) {
@@ -159,23 +171,14 @@ public class RiffReader {
 
     @SuppressWarnings("java:S2093")
     public RiffFileInfo parse() {
-
-        if (!srcAudio.exists())
-            throw new AudioParserException("File does not exists: " + srcAudio.getAbsolutePath());
-        if (srcAudio.length() == 0)
-            throw new AudioParserException("File is empty: " + srcAudio.getAbsolutePath());
-
         log.trace("-------------");
         log.trace("Parse " + srcAudio.getAbsolutePath());
         try {
-
-            stream = new PositionalReadWriteStream(srcAudio, canFixSource);
-
             String riff = readChunkID();
-            if (!"RIFF".equals(riff) && !"FORM".equals(riff)) {
+            if (!RiffConstants.RIFF.equals(riff) && !RiffConstants.FORM.equals(riff)) {
                 throw new AudioParserException("not a RIFF file");
             }
-            long size = "FORM".equals(riff) ? stream.getUIntBE() : stream.getUIntLE();
+            long size = RiffConstants.FORM.equals(riff) ? stream.getUIntBE() : stream.getUIntLE();
             long expectedTotalSize = size + 8;
             if (srcAudio.length() != expectedTotalSize) {
                 long delta = srcAudio.length() - expectedTotalSize;
@@ -188,49 +191,52 @@ public class RiffReader {
             String type = readChunkID();
 
             if (!KNOWN_TYPES.contains(type)) {
-                throw new AudioParserException("not a WAVE/AIFF file " + srcAudio.getAbsolutePath());
+                throw new AudioParserException("Riff type not supported: " + type);
             }
-            isAFIC = AIFF_TYPE_AIFC.equals(type);
-            isAIFF = RIFF_TYPE_AIFF.equals(type) || isAFIC;
-            isDLS2 = AIFF_TYPE_DLS.equals(type);
+            isAFIC = RiffConstants.AIFF_TYPE_AIFC.equals(type);
+            isAIFF = RiffConstants.RIFF_TYPE_AIFF.equals(type) || isAFIC;
+            isDLS2 = RiffConstants.AIFF_TYPE_DLS.equals(type);
+            isSteinbergProject = RiffConstants.NUND.equals(type);
 
-            try {
-                for (; ; ) {
-                    RiffChunk c = readChunk(null);
-                    if (c == null) break;
-                    fileInfo.addChunk(c);
-                }
-            } catch (UnexpectedNullChunk e) {
-                log.warn(e.toString());
-            }
-            if (misalignedChunksCount > 0) {
-                log.trace("Illegal RIFF: %d misaligned chunks in %s".formatted(misalignedChunksCount, srcAudio.getAbsolutePath()));
-            }
-            if (!isDLS2) {
-                fileInfo.getAudioInfo()
-                        .computeDuration();
-                checkSampleCount();
-                storeMetadataTempo();
-                storeMetadataKey();
-                storeNonAudioData(srcAudio);
+            readAllChunks();
+
+            if (isSteinbergProject) {
+
             } else {
-                audioInfos.forEach(RiffAudioInfo::computeDuration);
-                fileInfo.getFiles()
-                        .addAll(audioInfos);
-                fileInfo.collectInstruments();
+                if (misalignedChunksCount > 0) {
+                    log.trace("Illegal RIFF: %d misaligned chunks in %s".formatted(misalignedChunksCount, srcAudio.getAbsolutePath()));
+                }
+
+                if (!isDLS2) {
+                    fileInfo.getAudioInfo()
+                            .computeDuration();
+                    checkSampleCount();
+                    storeMetadataTempo();
+                    storeMetadataKey();
+                    storeNonAudioData(srcAudio);
+                } else {
+                    audioInfos.forEach(RiffAudioInfo::computeDuration);
+                    fileInfo.getFiles()
+                            .addAll(audioInfos);
+                    fileInfo.collectInstruments();
+                }
             }
             return fileInfo;
         } catch (Exception e) {
             log.error("Unexpected error parsing " + srcAudio.getAbsolutePath(), e);
             return null;
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    log.error("Unexpected error parsing " + srcAudio.getAbsolutePath(), e);
-                }
+        }
+    }
+
+    private void readAllChunks() throws IOException {
+        try {
+            for (; ; ) {
+                RiffChunk c = readChunk(null);
+                if (c == null) break;
+                fileInfo.addChunk(c);
             }
+        } catch (UnexpectedNullChunk e) {
+            log.warn(e.toString());
         }
     }
 
@@ -247,22 +253,22 @@ public class RiffReader {
         var currentFileInfo = this.fileInfo.getAudioInfo();
         DecimalFormat df = new DecimalFormat("#.#");
         if (currentFileInfo.getNbBeats() != 0 && currentFileInfo.getTempo() == 0) {
-            float beatDuration = currentFileInfo.getDuration() / currentFileInfo.getNbBeats();
-            float tempo = 60f / beatDuration;
+            double beatDuration = currentFileInfo.getDuration() / currentFileInfo.getNbBeats();
+            double tempo = 60f / beatDuration;
             currentFileInfo.setTempo(tempo);
             this.fileInfo.getMetadata()
                     .put(MetadataField.BPM, df.format(tempo));
         } else if (currentFileInfo.getTempo() == 0) {
             String name = srcAudio.getName();
             Matcher m = CachedRegExp.get("[0-9]+", name);
-            List<Float> numbers = new ArrayList<>();
+            List<Double> numbers = new ArrayList<>();
             while (m.find()) {
-                float tempo = Float.parseFloat(m.group());
+                double tempo = Double.parseDouble(m.group());
                 numbers.add(tempo);
             }
             numbers.stream()
                     .filter(n -> n >= LOWEST_TEMPO && n <= HIGHEST_TEMPO)
-                    .max(Float::compare)
+                    .max(Double::compare)
                     .ifPresent(tempo -> {
                         currentFileInfo.setTempo(tempo);
                         this.fileInfo.getMetadata()
@@ -310,7 +316,7 @@ public class RiffReader {
     private RiffChunk readChunk(RiffChunk parent) throws IOException {
         String chunkId = readChunkID();
         if (chunkId == null) return null;
-        final int contentSize = isAIFF ? stream.getIntBE() : stream.getIntLE();
+        final int contentSize = isAIFF || isSteinbergProject ? stream.getIntBE() : stream.getIntLE();
         final int contentStart = stream.positionUInt();
         final int end = contentStart + contentSize;
         log.trace(String.format("CHUNK %s : %d/0x%X bytes at 0x%X end 0x%X", chunkId, contentSize, contentSize, contentStart - 8, end));
@@ -328,14 +334,16 @@ public class RiffReader {
             case Chunks.RGNH -> riffChunk = readRegionHeader(parent, chunkId, contentStart, contentSize);
             case Chunks.PTBL -> riffChunk = readPoolTable(parent, chunkId, contentStart, contentSize);
             case Chunks.G3_DIMENSIONS -> riffChunk = readGigDimensions(parent, chunkId, contentStart, contentSize);
+            case Chunks.CUE -> riffChunk = readCUE(parent, chunkId, contentStart, contentSize);
+            case Chunks.PLAYLIST -> riffChunk = readPlaylist(parent, chunkId, contentStart, contentSize);
+            case Chunks.FORMAT -> riffChunk = readFMT(parent, chunkId, contentStart, contentSize);
             default -> {
+                // We don't use a specific class by lack of time
                 riffChunk = new RiffChunk(parent, chunkId, contentStart, contentSize);
                 switch (chunkId) {
                     case Chunks.VERS -> readVERS(riffChunk);
                     case Chunks.DATA -> readDATA(riffChunk);
                     case Chunks.ACID -> readACID(riffChunk);
-                    case Chunks.FORMAT -> readFMT(riffChunk);
-                    case Chunks.CUE -> readCUE(riffChunk);
                     case Chunks.BEXT -> readBEXT(riffChunk);
                     case Chunks.UMID -> readUMID(riffChunk);
                     case Chunks.IXML -> readIXML(riffChunk);
@@ -347,6 +355,8 @@ public class RiffReader {
                     case Chunks.COPYRIGHT -> readTEXT(riffChunk, MetadataField.COPYRIGHT); // AIFF
                     case Chunks.AUTHOR -> readTEXT(riffChunk, MetadataField.AUTHOR); // AIFF
                     case Chunks.NAME -> readTEXT(riffChunk, MetadataField.NAME); // AIFF
+                    case Chunks.ROOT -> readROOT(riffChunk);
+                    case Chunks.ARCH -> readARCH(riffChunk);
                     default -> {
                         //do nothing
                     }
@@ -366,6 +376,139 @@ public class RiffReader {
             }
         }
         return riffChunk;
+    }
+
+    private int count = 0;
+
+    /**
+     * Can be found in Steinberg project (.npr, .cpr), this is work in progress
+     */
+    private void readARCH(RiffChunk riffChunk) throws IOException {
+        byte data[] = stream.readNBytes(riffChunk.getContentSize());
+        String dump = "./target/ARCH-%02d".formatted(count);
+        log.info(dump);
+        File dumpFile = new File(dump);
+        dumpFile.getParentFile()
+                .mkdirs();
+        Files.write(Path.of(dump + ".dat"), data, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        count++;
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(dump + ".log")))) {
+            ByteBuffer b = ByteBuffer.wrap(data)
+                    .order(ByteOrder.BIG_ENDIAN);
+            while (b.remaining() > 4) {
+                int pos = b.position();
+                int v = b.getInt();
+                if (v == 0xFFFFFFFF || v == 0xFFFFFFFE) {
+                    int size = b.getInt();
+                    if (size <= 0 || size > 0x40) {
+                        String msg = "%08X %08X Wrong string size: %08X".formatted(pos, v, size);
+                        log.info(msg);
+                        out.println(msg);
+                    } else {
+                        byte[] d = new byte[size - 1];
+                        b.get(d);
+                        b.get();
+                        int type = b.getShort();
+                        int pointer = b.getInt();
+                        String name = new String(d, StandardCharsets.US_ASCII);
+                        String msg = "%08X %08X %s TYPE: %01X @%08X".formatted(pos, v, name, type, pointer);
+                        log.info(msg);
+                        out.println(msg);
+                        b.position(b.position() - 4);
+                    }
+                } else {
+                    b.position(pos + 1);
+                }
+            }
+        }
+        readGenericModelTable(riffChunk);
+    }
+
+    private void readGenericModelTable(RiffChunk riffChunk) throws IOException {
+        int entry = 1;
+        while (stream.positionUInt() != riffChunk.getChunkEnd()) {
+            int pos = stream.positionUInt();
+            int magic = stream.getIntBE();
+            String field = stream.getBEString();
+            short f0 = stream.getShortBE();
+            log.info("Entry %02X: %08X %08X".formatted(entry, pos, magic) + " Field: " + field + " " + " " + f0);
+            entry++;
+            if (field.equals("Nuendo")) {
+                String name = stream.getBEString();
+                int v = stream.getShortBE();
+                String version = stream.getBEString();
+                log.info(name + " " + version);
+                int something = stream.getIntBE();
+            } else if (field.equals("MRoot")) {
+                stream.skip(0x1A);
+                int asize = stream.getIntBE();
+            } else if (field.equals("MSignatureTrackEvent")) {
+                int asize = stream.getIntBE();
+                int v1 = stream.getIntBE();
+                int v2 = stream.getIntBE();
+                int num = stream.getShortBE();
+                int den = stream.getShortBE();
+                stream.skip(0x10);
+                log.info("Signature %d/%d".formatted(num, den));
+            } else if (field.equals("MMidiTrackEvent")) {
+                int asize = stream.getIntBE();
+                stream.skip(0x1A);
+            } else if (field.equals("MMidiPartEvent")) {
+                int asize = stream.getIntBE();
+                stream.skip(0x1A);
+            } else if (field.equals("MTempoTrackEvent")) {
+                int asize = stream.getIntBE();
+                stream.skip(asize);
+            } else if (field.equals("MMidiPart")) {
+                int asize = stream.getIntBE();
+                String node = stream.getBEString();
+                log.info("Part " + node);
+                int v1 = stream.getIntBE();
+                int v2 = stream.getIntBE();
+                int v3 = stream.getIntBE();
+                int v4 = stream.getIntBE();
+                int v5 = stream.getByte();
+            } else if (field.equals("MListNode")) {
+                int asize = stream.getIntBE();
+                String node = stream.getBEString();
+                log.info("Node " + node);
+                int zero = stream.getIntBE();
+            } else if (field.equals("MMidiNote")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiNote")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiAfterTouch")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiPolyPressure")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiProgramChange")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiController")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiPitchBend")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MMidiSysex")) {
+                int asize = stream.getIntBE();
+            } else if (field.equals("MTrackList")) {
+                int asize = stream.getIntBE();
+                String trackName = stream.getBEString();
+                log.info("Track " + trackName);
+                stream.skip(0x12);
+            } else {
+                var list = List.of("PArrangement", "FMemoryStream", "UWindowLayout", "FAttributes");
+                if (list.contains(field)) {
+                    int asize = stream.getIntBE();
+                }
+            }
+        }
+    }
+
+    private void readROOT(RiffChunk parent) throws IOException {
+        while (stream.positionUInt() != parent.getChunkEnd()) {
+            int strSize = stream.getIntBE();
+            String s = stream.getASCIIString(strSize);
+            log.info(s);
+        }
     }
 
     private void readVERS(RiffChunk riffChunk) throws IOException {
@@ -468,6 +611,7 @@ public class RiffReader {
                             .put(MetadataField.SOFTWARE, value);
                     case "date" -> fileInfo.getMetadata()
                             .put(MetadataField.CREATED, value);
+                    default -> log.trace("Unknown key:" + key);
                 }
             }
         } else {
@@ -500,7 +644,7 @@ public class RiffReader {
                 case "NONE", "sowt" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.PCM);
                 case "fl32", "FL32", "fl64" -> fileInfo.getAudioInfo()
-                        .setCodec(WaveCodecs.IEEE754_FLOAT);
+                        .setCodec(WaveCodecs.IEEE754_double);
                 case "alaw", "ALAW" -> fileInfo.getAudioInfo()
                         .setCodec(WaveCodecs.ITU_G711_ALAW);
                 case "ulaw", "ULAW" -> fileInfo.getAudioInfo()
@@ -547,18 +691,35 @@ public class RiffReader {
         }
     }
 
-    private void readCUE(RiffChunk c) throws IOException {
+    private RiffCueChunk readCUE(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        RiffCueChunk cueChunk = new RiffCueChunk(parent, chunkId, contentStart, contentSize);
         int nbCuePoints = stream.getIntLE();
         log.trace(String.format("CUE Points: %d entries", nbCuePoints));
         for (int i = 0; i < nbCuePoints; i++) {
-            int id = stream.getIntLE();
+            int dwIdentifier = stream.getIntLE();
             int dwPosition = stream.getIntLE();
             String fccChunk = readChunkID();
             int dwChunkStart = stream.getIntLE();
             int dwBlockStart = stream.getIntLE();
             int dwSampleOffset = stream.getIntLE();
-            log.trace(String.format("CUE Point %d in chunk %s start: 0x%X dwSampleOffset: %d/0x%X", id, fccChunk, dwChunkStart, dwSampleOffset, dwSampleOffset));
+            cueChunk.addCuePoint(new CuePoint(dwIdentifier, dwPosition, fccChunk, dwChunkStart, dwBlockStart, dwSampleOffset));
+            log.trace(String.format("CUE Point %d, position %d, in chunk '%s' start: 0x%X sampleOffset: %d/0x%X", dwIdentifier, dwPosition, fccChunk, dwChunkStart, dwSampleOffset, dwSampleOffset));
         }
+        return cueChunk;
+    }
+
+    private RiffPlaylistChunk readPlaylist(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        RiffPlaylistChunk plstChunk = new RiffPlaylistChunk(parent, chunkId, contentStart, contentSize);
+        int nbSegments = stream.getIntLE();
+        log.trace(String.format("Playlist segments: %d entries", nbSegments));
+        for (int i = 0; i < nbSegments; i++) {
+            int dwIdentifier = stream.getIntLE();
+            int dwLength = stream.getIntLE();
+            int dwRepeats = stream.getIntLE();
+            plstChunk.addSegment(new PlaylistSegment(dwIdentifier, dwLength, dwRepeats));
+            log.trace(String.format("Playlist Segment %d length %d repeats %s", dwIdentifier, dwLength, dwRepeats));
+        }
+        return plstChunk;
     }
 
     /**
@@ -628,10 +789,8 @@ public class RiffReader {
         stream.read(data);
         ID3Parser id3 = new ID3Parser(data);
         var id3Info = id3.parse();
-        if (fileInfo != null) {
-            fileInfo.getMetadata()
-                    .merge(id3Info.getMetadata());
-        }
+        fileInfo.getMetadata()
+                .merge(id3Info.getMetadata());
     }
 
     // https://www.adobe.com/products/xmp.html
@@ -703,7 +862,7 @@ public class RiffReader {
                             }
                             if ("MusicalTempo".equals(name)) {
                                 fileInfo.getAudioInfo()
-                                        .setTempo(Float.parseFloat(currentAttribute.get(IXML_VALUE)));
+                                        .setTempo(Double.parseDouble(currentAttribute.get(IXML_VALUE)));
                             }
 
                             // Not official
@@ -848,9 +1007,9 @@ public class RiffReader {
         }
         var listOfList = List.of("wvpl", "wave", Chunks.LINS, Chunks.LRGN, "lart", Chunks.INS, Chunks.RGN, "lar2", "lar3", Chunks.RGN2);
         var listOfListGigastudio = List.of("3gri", "3gnl", "3dnl", "3prg", "3ewl", "3dnm");
-        if (Chunks.INFO.equals(listType)) {
+        if (Chunks.LIST_TYPE_INFO.equals(listType)) {
             readInfoSubChunks(list);
-        } else if ("adtl".equals(listType)) {
+        } else if (Chunks.LIST_TYPE_ADTL.equals(listType)) {
             readAdtlSubChunks(list);
         } else if (listOfList.contains(listType)) {
             readLISTChildren(list);
@@ -873,7 +1032,7 @@ public class RiffReader {
             while (readChunk(list) != null);
         } catch (IncorrectRiffChunkParentSize e) {
             log.warn("Recover from bad LIST size");
-            stream.seekLong(e.getContentStart() - 8);
+            stream.seekLong(e.getContentStart() - 8L);
         }
     }
 
@@ -884,21 +1043,25 @@ public class RiffReader {
     // Associated data list chunk
     // https://www.recordingblogs.com/wiki/associated-data-list-chunk-of-a-wave-file
     @SuppressWarnings("java:S135")
-    private void readAdtlSubChunks(RiffChunk c) throws IOException {
+    private void readAdtlSubChunks(RiffListChunk parent) throws IOException {
+        List<RiffAdtlLabelChunk> labels = new ArrayList<>();
+        List<RiffAdtlTextChunk> texts = new ArrayList<>();
         for (; ; ) {
             wordAlign();
-            if (isAtEndOfChunk(c)) {
+            if (isAtEndOfChunk(parent)) {
                 break;
             }
             String fieldID = readChunkID();
-            if ("labl".equals(fieldID) || "note".equals(fieldID)) {
+            if (Chunks.ADTL_LABEL.equals(fieldID) || Chunks.ADTL_NOTE.equals(fieldID)) {
                 int contentSize = stream.getIntLE();
                 int contentStart = stream.positionUInt();
                 int cuePointID = stream.getIntLE();
                 String value = readFixedASCIIString(contentSize - 4); // value can be "Tempo: 160.0"
-                log.trace(String.format("adt label for Cue Point %d %s: %s", cuePointID, fieldID, value));
-                RiffAdtlLabelChunk subChunk = new RiffAdtlLabelChunk(c, fieldID, contentStart, contentSize, cuePointID, value);
-            } else if ("ltxt".equals(fieldID)) {
+                CuePointLabel cuePointLabel = new CuePointLabel(cuePointID, value);
+                log.trace(String.format("adt %s for Cue Point %d %s: %s", fieldID, cuePointID, fieldID, value));
+                RiffAdtlLabelChunk subChunk = new RiffAdtlLabelChunk(parent, fieldID, contentStart, contentSize, cuePointLabel);
+                labels.add(subChunk);
+            } else if (Chunks.ADTL_LONG_TEXT.equals(fieldID)) {
                 int contentSize = stream.getIntLE()/* - 4 - 4 - 4 - 2 - 2 - 2 - 2*/;
                 int contentStart = stream.positionUInt();
                 int cuePointID = stream.getIntLE();
@@ -909,14 +1072,17 @@ public class RiffReader {
                 int dialect = stream.getShortLE();
                 int codePage = stream.getShortLE();
                 int strSize = contentSize - (stream.positionUInt() - contentStart);
-                String value = readFixedASCIIString(strSize);
-                log.trace("adtl " + fieldID + ":" + value);
-                RiffAdtlTextChunk subChunk = new RiffAdtlTextChunk(c, fieldID, contentStart, contentSize, cuePointID, value, sampleLength, purposeId, countryId, language, dialect, codePage);
+                String label = readFixedASCIIString(strSize);
+                log.trace("adtl " + fieldID + ":" + label);
+                CuePointLabeledText cuePointLabeledText = new CuePointLabeledText(cuePointID, label, sampleLength, purposeId, countryId, language, dialect, codePage);
+                RiffAdtlTextChunk subChunk = new RiffAdtlTextChunk(parent, fieldID, contentStart, contentSize, cuePointLabeledText);
+                texts.add(subChunk);
             } else {
                 log.warn("Unknown adtl LIST type: " + fieldID);
                 break;
             }
         }
+        parent.setAdtl(new Adtl(texts, labels));
     }
 
     /**
@@ -956,7 +1122,7 @@ public class RiffReader {
                 case "ICRD" -> fileInfo.getMetadata()
                         .put(MetadataField.CREATED, value);
                 case "INAM" -> {
-                    if (c.getParent() != null && (c.getParent() instanceof RiffListChunk) && ((RiffListChunk) c.getParent()).getListType()
+                    if ((c.getParent() instanceof RiffListChunk riffListChunk) && riffListChunk.getListType()
                             .equals("wave")) {
                         audioInfos.getLast()
                                 .setFilename(value);
@@ -998,8 +1164,8 @@ public class RiffReader {
         }
     }
 
-    private void readFMT(RiffChunk c) throws IOException {
-        var currentFileInfo = getCurrentAudioInfo(c);
+    private RiffFmtChunk readFMT(RiffChunk parent, String chunkId, int contentStart, int contentSize) throws IOException {
+        RiffFmtChunk fmt = new RiffFmtChunk(parent, chunkId, contentStart, contentSize);
         int wFormatTag = (stream.getShortLE() & 0xffff);
         WaveCodecs codec = WaveCodecs.valueOf(wFormatTag);
         int nChannels = stream.getShortLE();
@@ -1007,6 +1173,12 @@ public class RiffReader {
         int nAvgBytesPerSec = stream.getIntLE();
         int nBlockAlign = stream.getShortLE();
         int wBitsPerSample = stream.getShortLE();
+        fmt.setFormatTag(wFormatTag);
+        fmt.setNChannels(nChannels);
+        fmt.setNSamplesPerSec(nSamplesPerSec);
+        fmt.setNAvgBytesPerSec(nAvgBytesPerSec);
+        fmt.setNBlockAlign(nBlockAlign);
+        fmt.setBitsPerSample(wBitsPerSample);
         if (codec == WaveCodecs.WAVE_FORMAT_EXTENSIBLE) // multichannel wave files
         {
             // https://learn.microsoft.com/en-us/windows/win32/api/mmreg/ns-mmreg-waveformatextensible
@@ -1014,21 +1186,32 @@ public class RiffReader {
             short cbSize = stream.getShortLE();
             short validBitsPerSample = stream.getShortLE();
             int channelMask = stream.getIntLE();
-            currentFileInfo.setChannelsMask(channelMask);
-            currentFileInfo.setSubCodec(stream.getUUID());
+            UUID uuid = stream.getUUID();
+            fmt.setChannelMask(channelMask);
+            fmt.setCodec(uuid);
         }
-        currentFileInfo.setBitPerSample(wBitsPerSample);
-        currentFileInfo.setSampleRate(nSamplesPerSec);
-        currentFileInfo.setNbChannels(nChannels);
-        currentFileInfo.setFrameSizeInBytes(nBlockAlign);
-        currentFileInfo.setCodec(codec);
-        currentFileInfo.setFmtChunk(c);
         log.trace(String.format("%s %d channels %d Hz %d bits Channels infos: %s",
                 codec,
                 nChannels,
                 nSamplesPerSec,
                 wBitsPerSample,
-                WaveChannels.getMask(currentFileInfo.getChannelsMask())));
+                WaveChannels.getMask(fmt.getChannelMask())));
+
+        updateCurrentAudioInfo(fmt);
+
+        return fmt;
+    }
+
+    private void updateCurrentAudioInfo(RiffFmtChunk fmt) {
+        var currentFileInfo = getCurrentAudioInfo(fmt);
+        currentFileInfo.setFmtChunk(fmt);
+        currentFileInfo.setChannelsMask(fmt.getChannelMask());
+        currentFileInfo.setSubCodec(fmt.getCodec());
+        currentFileInfo.setBitPerSample(fmt.getBitsPerSample());
+        currentFileInfo.setSampleRate(fmt.getNSamplesPerSec());
+        currentFileInfo.setNbChannels(fmt.getNChannels());
+        currentFileInfo.setFrameSizeInBytes(fmt.getNBlockAlign());
+        currentFileInfo.setCodec(WaveCodecs.valueOf(fmt.getFormatTag()));
     }
 
     /*-
@@ -1043,7 +1226,7 @@ public class RiffReader {
             int beatCount;
             short timeSigDen;
             short timeSigNum;
-            float tempo; // THIS TEMPO IS ALWAYS WRONG, COMPUTE IT USING beatCount and fmt chunk !!
+            double tempo; // THIS TEMPO IS ALWAYS WRONG, COMPUTE IT USING beatCount and fmt chunk !!
         }
      */
     private void readACID(RiffChunk c) throws IOException {
@@ -1062,11 +1245,11 @@ public class RiffReader {
         int rootNote = stream.getShortLE();
 
         int v1 = stream.getShortLE();
-        float v2 = stream.getFloatLE();
+        double v2 = stream.getdoubleLE();
         int numberOfBeats = stream.getIntLE();
         int meterDenominator = stream.getShortLE();
         int meterNumerator = stream.getShortLE();
-        float tempo = stream.getFloatLE();
+        double tempo = stream.getdoubleLE();
         int numberOfBars = numberOfBeats / meterNumerator;
         fileInfo.getAudioInfo()
                 .setNbBeats(numberOfBeats);
@@ -1113,8 +1296,6 @@ public class RiffReader {
 
     public void extract(RiffAudioInfo entry, File target) throws IOException {
         try (RandomAccessFile in = new RandomAccessFile(srcAudio, "r")) {
-            target.getParentFile()
-                    .mkdirs();
             try (RiffWriter rw = new RiffWriter(target)) {
 
                 in.seek(entry.getFmtChunk()
@@ -1122,15 +1303,16 @@ public class RiffReader {
                 var data = new byte[entry.getFmtChunk()
                         .getContentSize()];
                 in.readFully(data);
-                rw.writeChunk(entry.getFmtChunk(), data);
+                rw.writeFmtChunk(entry.getFmtChunk());
 
                 in.seek(entry.getDataChunk()
                         .getContentStart());
                 var pcm = new byte[entry.getDataChunk()
                         .getContentSize()];
                 in.readFully(pcm);
-                rw.writeChunk(entry.getDataChunk(), pcm);
-                rw.setSize();
+                rw.beginChunk(Chunks.DATA);
+                rw.writeBytes(pcm);
+                rw.endChunk();
             }
         }
     }
@@ -1152,6 +1334,13 @@ public class RiffReader {
                 pos += nbRead;
                 consumer.onNewBuffer(byteBuffer, nbRead);
             }
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (stream != null) {
+            stream.close();
         }
     }
 }

@@ -158,7 +158,7 @@ Obviously, you can't convert any voltage with an infinite precision. You have to
 
 Here some examples:
 
-- For float samples, we are in the range `[-1,1] `
+- For double samples, we are in the range `[-1,1] `
 - For 8 bit signed samples, we are in the range `[-0x80,0x7F] `
 - For 16 bit signed samples, we are in the range `[-0x8000,0x7FFF] `
 - For 24 bit signed samples, we are in the range `[-0x800000,0x7FFFFF] `

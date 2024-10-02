@@ -1,6 +1,7 @@
 package com.hypercube.workshop.audioworkshop.common.line;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -12,7 +13,7 @@ public class AudioOutputLine extends AudioLine implements AutoCloseable {
     private final SourceDataLine line;
     private final AudioOutputDevice device;
 
-    public AudioOutputLine(AudioOutputDevice device, AudioLineFormat format) throws LineUnavailableException {
+    public AudioOutputLine(AudioOutputDevice device, PCMBufferFormat format) throws LineUnavailableException {
         super(format);
         this.device = device;
         AudioFormat audioFormat = format.getAudioFormat();

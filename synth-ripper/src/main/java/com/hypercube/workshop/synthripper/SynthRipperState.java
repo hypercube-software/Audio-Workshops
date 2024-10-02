@@ -2,12 +2,20 @@ package com.hypercube.workshop.synthripper;
 
 public class SynthRipperState {
     int nbChannels;
-    float[] loudnessPerChannel;
+    double[] loudnessPerChannel;
     float loudness;
     float noiseFloor = -1;
+    double[] noiseFloorFrequencies;
+    double[] signalFrequencies;
+    long noiseSamplesRead = 0;
+
     float maxNoteDurationSec;
     float maxNoteReleaseDurationSec;
     float durationInSec;
+
+    long durationInSamples;
+    long noteOffSampleMarker;
+
     int velocity;
     int note;
     int cc;
@@ -30,10 +38,23 @@ public class SynthRipperState {
     }
 
     public boolean isSilentBuffer() {
-        return loudness <= noiseFloor;
+        //return loudness <= noiseFloor;
+        for (int i = 0; i < noiseFloorFrequencies.length; i++) {
+            if (signalFrequencies[i] > noiseFloorFrequencies[i] * 2) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isFirstVelocity() {
         return velocity == veloIncrement;
+    }
+
+    public void resetNoiseFloorFrequencies() {
+        noiseSamplesRead = 0;
+        for (int i = 0; i < noiseFloorFrequencies.length; i++) {
+            noiseFloorFrequencies[i] = 0;
+        }
     }
 }

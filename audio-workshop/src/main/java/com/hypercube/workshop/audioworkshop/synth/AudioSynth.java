@@ -2,7 +2,7 @@ package com.hypercube.workshop.audioworkshop.synth;
 
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.line.AudioLineFormat;
+import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
@@ -32,7 +32,7 @@ public class AudioSynth {
     void synth(MidiInDevice midiInDevice, AudioOutputDevice audioOutputDevice) {
         try {
             int bufferSizeMs = 100;
-            AudioLineFormat format = new AudioLineFormat(100, SAMPLE_RATE, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.BIG_ENDIAN);
+            PCMBufferFormat format = new PCMBufferFormat(100, SAMPLE_RATE, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.BIG_ENDIAN);
             VCA vca = new SimpleVCA(SAMPLE_RATE, 10);
             VCO vco = new CorrectVCO(bufferSizeMs, SAMPLE_RATE, 16, ByteOrder.BIG_ENDIAN, vca);
             //VCA vca = new AdsrVCA(SAMPLE_RATE, 50, 10, 50);
