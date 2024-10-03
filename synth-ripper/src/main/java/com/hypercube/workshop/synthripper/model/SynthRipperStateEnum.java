@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper;
+package com.hypercube.workshop.synthripper.model;
 
 public enum SynthRipperStateEnum {
     GET_NOISE_FLOOR,

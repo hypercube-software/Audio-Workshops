@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SimpleDFTCalculator implements DFTCalculator {
+    @Getter
     private final PCMBufferFormat format;
     private final int windowSizeInSamples;
     private final DFTWindowGenerator dftWindowGenerator;

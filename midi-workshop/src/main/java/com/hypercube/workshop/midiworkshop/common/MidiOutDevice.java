@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 
 import javax.sound.midi.*;
 import java.io.IOException;
@@ -57,6 +58,32 @@ public class MidiOutDevice extends AbstractMidiDevice {
             throw new MidiError("Open the device before sending anything");
         }
         receiver.send(evt.getMessage(), evt.getTick());
+    }
+
+    public void sendPresetChange(MidiPreset preset) {
+        try {
+            switch (preset.presetFormat()) {
+                case BANK_MSB_PRG, BANK_MSB_PRG1 -> {
+                    send(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 0, preset.bank()), 0));
+                }
+                case BANK_LSB_PRG, BANK_LSB_PRG1 -> {
+                    send(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 32, preset.bank()), 0));
+                }
+                case BANK_MSB_LSB_PRG, BANK_MSB_LSB_PRG1 -> {
+                    int bankMSB = (preset.bank() >> 7) & 0x7F;
+                    int bankLSB = (preset.bank()) & 0x7F;
+                    send(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 0, bankMSB), 0));
+                    send(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 32, bankLSB), 0));
+                }
+            }
+            int programNumber = switch (preset.presetFormat()) {
+                case BANK_MSB_PRG, BANK_LSB_PRG, BANK_MSB_LSB_PRG -> preset.program();
+                case BANK_MSB_PRG1, BANK_LSB_PRG1, BANK_MSB_LSB_PRG1 -> preset.program() - 1;
+            };
+            send(new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, programNumber, 0), 0));
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
     }
 
     public void bindToSequencer(Sequencer sequencer) throws MidiUnavailableException {

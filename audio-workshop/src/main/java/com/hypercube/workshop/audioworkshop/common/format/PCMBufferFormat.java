@@ -29,6 +29,10 @@ public class PCMBufferFormat extends PCMFormat {
         this.byteBufferSize = sampleBufferSize * getFrameSizeInBytes();
     }
 
+    public PCMBufferFormat withDuration(int bufferDurationMs) {
+        return new PCMBufferFormat(bufferDurationMs, sampleRate, bitDepth, nbChannels, encoding, byteOrder);
+    }
+
     public byte[] allocatePcmBuffer() {
         return new byte[bytesPerSamples * sampleBufferSize * nbChannels];
     }

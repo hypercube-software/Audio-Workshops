@@ -12,13 +12,33 @@ audio:
 midi:
   maxNoteDurationSec: 5
   maxNoteReleaseDurationSec: 5
-  lowestCC: 95
-  highestCC: 95
-  lowestNote: "C3"
-  highestNote: "C3"
+  #
+  # Select the preset format expected by your device:
+  # -------------------------------------------------
+  # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+  # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+  # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+  # BANK_MSB_PRG1    : Send CC "BANK Select MSB" only, then Program Change -1
+  # BANK_LSB_PRG1    : Send CC "BANK Select LSB" only, then Program Change -1
+  # BANK_MSB_LSB_PRG1: Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change -1
+  #
+  presetFormat: BANK_MSB_PRG1
+  #
+  # preset numbers can be in two forms:
+  #   <bank number>-<program number>
+  #   <program number> only, in this case bank will be 0
+  #
+  # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
+  #
+  lowestPreset: 100
+  highestPreset: 110
+  lowestNote: C3
+  highestNote: C3
   notesPerOctave: 1
   velocityPerNote: 1
-  presetOffset: 1
+  #
+  # presets order is important due to lowestPreset and highestPreset
+  #
   presets:
     - 1 Acoustic Grand Piano
     - 2 Bright Acoustic Piano
@@ -127,7 +147,8 @@ midi:
     - 105 Sitar
     - 106 Banjo
     - 107 Shamisen
-    - 108 Koto
+    - 0000-108 Koto
+    - 8-108 Taisho Koto
     - 109 Kalimba
     - 110 Bag Pipe
     - 111 Fiddle

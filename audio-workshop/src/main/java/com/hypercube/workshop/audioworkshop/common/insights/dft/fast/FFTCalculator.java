@@ -28,7 +28,7 @@ public class FFTCalculator implements DFTCalculator, AutoCloseable {
         Loader.load(org.bytedeco.fftw.global.fftw3.class);
     }
 
-
+    @Getter
     private final PCMBufferFormat format;
 
     private fftw3.fftw_plan[] plan;

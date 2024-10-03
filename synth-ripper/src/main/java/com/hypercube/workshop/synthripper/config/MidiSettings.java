@@ -1,14 +1,14 @@
 package com.hypercube.workshop.synthripper.config;
 
-import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.stream.IntStream;
 
 @Setter
 @Getter
@@ -22,17 +22,17 @@ public class MidiSettings {
      */
     private float maxNoteReleaseDurationSec;
     /**
-     * real MIDI cc = displayed cc - presetOffset (it is usually 1)
+     * How preset numbers must be parsed
      */
-    private int presetOffset;
+    private MidiPresetFormat presetFormat;
     /**
-     * Lower bound (included) for displayed CC
+     * Lower bound (included)
      */
-    private int lowestCC;
+    private String lowestPreset;
     /**
-     * Upper bound (included) for displayed CC
+     * Upper bound (included)
      */
-    private int highestCC;
+    private String highestPreset;
     /**
      * lower bound (included)
      */
@@ -54,24 +54,9 @@ public class MidiSettings {
      */
     private List<String> presets;
     /**
-     * Filename for a given CC value based on presets lists
+     * Presets to record
      */
-    private Map<Integer, String> filenames = new HashMap<>();
-
-    public void buildFilesNames() {
-        presets.forEach(p -> {
-            Matcher matcher = CachedRegExp.get("([0-9]+)\\s+(.*)", p);
-            if (matcher.find()) {
-                int cc = Integer.parseInt(matcher.group(1)) - presetOffset;
-                String filename = matcher.group(2);
-                filenames.put(cc, filename);
-            }
-        });
-    }
-
-    public String getFilename(int cc) {
-        return filenames.get(cc);
-    }
+    private List<MidiPreset> selectedPresets;
 
     public int getLowestNoteInt() {
         return getNoteNumber(lowestNote);
@@ -81,20 +66,37 @@ public class MidiSettings {
         return getNoteNumber(highestNote);
     }
 
+    public List<MidiPreset> getSelectedPresets() {
+        if (selectedPresets == null) {
+            String lowestPresetPrefix = lowestPreset + " ";
+            String highestPresetPrefix = highestPreset + " ";
+            int startIdx = IntStream.range(0, presets.size())
+                    .filter(idx -> presets.get(idx)
+                            .startsWith(lowestPresetPrefix))
+                    .findFirst()
+                    .orElseThrow(() -> new MidiError("Lowest preset not found:" + lowestPreset));
+            int endIdx = IntStream.range(0, presets.size())
+                    .filter(idx -> presets.get(idx)
+                            .startsWith(highestPresetPrefix))
+                    .findFirst()
+                    .orElseThrow(() -> new MidiError("Highest preset not found:" + highestPreset));
+            selectedPresets = IntStream.rangeClosed(startIdx, endIdx)
+                    .boxed()
+                    .map(idx -> {
+                        String definition = presets.get(idx);
+                        MidiPreset preset = MidiPreset.fromString(presetFormat, definition);
+                        if (preset.title() == null) {
+                            throw new MidiError("Preset without name: " + definition);
+                        }
+                        return preset;
+                    })
+                    .toList();
+        }
+        return selectedPresets;
+    }
+
     private int getNoteNumber(String note) {
         return MidiNote.fromName(note)
                 .value();
-    }
-
-    public int getLowestCC() {
-        return lowestCC - presetOffset;
-    }
-
-    public int getHighestCC() {
-        return highestCC - presetOffset;
-    }
-
-    public int getDisplayedCC(int cc) {
-        return cc + presetOffset;
     }
 }

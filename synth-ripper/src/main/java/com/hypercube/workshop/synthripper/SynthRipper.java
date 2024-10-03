@@ -12,8 +12,13 @@ import com.hypercube.workshop.audioworkshop.common.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
+import com.hypercube.workshop.synthripper.log.ThreadLogger;
+import com.hypercube.workshop.synthripper.model.LoopSetting;
+import com.hypercube.workshop.synthripper.model.SynthRipperState;
+import com.hypercube.workshop.synthripper.model.SynthRipperStateEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -39,11 +44,9 @@ public class SynthRipper {
 
     private WavRecorder wavRecorder;
 
-    private File getOutputFile(int cc, int note, int velocity) {
+    private File getOutputFile(MidiPreset preset, int note, int velocity) {
         var midiNote = MidiNote.fromValue(note);
-        return new File("%s/%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), conf.getMidi()
-                .getDisplayedCC(cc), conf.getMidi()
-                .getFilename(cc), midiNote.name(), Math.min(127, velocity)));
+        return new File("%s/%01d-%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), preset.bank(), preset.program(), preset.title(), midiNote.name(), Math.min(127, velocity)));
     }
 
     public SynthRipper(SynthRipperConfiguration config) {
@@ -58,19 +61,18 @@ public class SynthRipper {
 
     private void initState(SynthRipperConfiguration config) {
         MidiSettings midiSettings = config.getMidi();
-        state.lowestCC = midiSettings.getLowestCC();
-        state.highestCC = midiSettings.getHighestCC();
+        state.presetIndex = 0;
         state.lowestNote = midiSettings.getLowestNoteInt();
         state.highestNote = midiSettings.getHighestNoteInt();
         state.noteIncrement = 12 / midiSettings.getNotesPerOctave();
         state.veloIncrement = (int) Math.ceil(127.f / midiSettings.getVelocityPerNote());
-        state.cc = state.lowestCC;
         state.note = state.lowestNote;
         state.velocity = state.veloIncrement;
         state.upperBoundVelocity = state.veloIncrement * (midiSettings.getVelocityPerNote() + 1);
         state.noiseFloorFrequencies = new double[format.getSampleBufferSize() / 2];
         state.signalFrequencies = new double[format.getSampleBufferSize() / 2];
         state.resetNoiseFloorFrequencies();
+        updateCurrentPreset();
     }
 
 
@@ -86,13 +88,15 @@ public class SynthRipper {
         this.midiOutDevice.open();
         this.midiOutDevice.sendAllOff();
         try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
-            try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
-                try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
-                    threadLogger.start();
-                    outputLine.start();
-                    inputLine.record((sampleBuffer, nbSamples, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, sampleBuffer, nbSamples, pcmBuffer, pcmSize), outputLine);
-                } finally {
-                    threadLogger.stop();
+            try (FFTCalculator shortTermfftCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
+                try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
+                    try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
+                        threadLogger.start();
+                        outputLine.start();
+                        inputLine.record((sampleBuffer, nbSamples, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermfftCalculator, sampleBuffer, nbSamples, pcmBuffer, pcmSize), outputLine);
+                    } finally {
+                        threadLogger.stop();
+                    }
                 }
             }
         } catch (LineUnavailableException | IOException e) {
@@ -112,26 +116,28 @@ public class SynthRipper {
         f.mkdirs();
     }
 
-    private boolean onNewBuffer(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
-        computeLoudness(sampleBuffer, nbSamples);
+    private boolean onNewBuffer(FFTCalculator fftCalculator, FFTCalculator shortTermfftCalculator, double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+        //
+        // update duration
+        //
         state.durationInSec += (float) nbSamples / format.getSampleRate();
         state.durationInSamples += nbSamples;
+        //
+        // inspect incoming buffer and change state accordingly
+        //
+        computeLoudness(sampleBuffer, nbSamples);
         try {
             if (state.state == SynthRipperStateEnum.GET_NOISE_FLOOR) {
                 onGetNoiseFloorState(fftCalculator, sampleBuffer, nbSamples);
             } else {
-                fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
-                int ch = 0;
-                for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
-                    state.signalFrequencies[bin] = fftCalculator.getMagnitudes()[ch].getLast()
-                            .getMagnitudes()[bin];
-                }
+                updateSignalFrequencies(fftCalculator, sampleBuffer, nbSamples);
 
                 if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
                     sendNoteOn();
                     state.state = SynthRipperStateEnum.NOTE_ON_SEND;
                     state.durationInSec = 0;
                 } else if (state.state == SynthRipperStateEnum.NOTE_ON_SEND && !state.isSilentBuffer()) {
+                    preciseLookupSignalStart(shortTermfftCalculator, sampleBuffer, nbSamples);
                     threadLogger.info("NOTE_ON_START after " + state.durationInSec + " sec");
                     state.state = SynthRipperStateEnum.NOTE_ON_START;
                     state.durationInSec = 0;
@@ -162,9 +168,25 @@ public class SynthRipper {
         return !finished();
     }
 
+    private void preciseLookupSignalStart(FFTCalculator shortTermfftCalculator, double[][] sampleBuffer, int nbSamples) {
+        int nbBlocks = nbSamples / shortTermfftCalculator.getFormat()
+                .getSampleBufferSize();
+        threadLogger.info(nbBlocks + " blocks to inspect with shortTermfftCalculator");
+        //shortTermfftCalculator.onBuffer(sampleBuffer);
+    }
+
+    private void updateSignalFrequencies(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples) {
+        fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
+        int ch = 0;
+        for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
+            state.signalFrequencies[bin] = fftCalculator.getMagnitudes()[ch].getLast()
+                    .getMagnitudes()[bin];
+        }
+    }
+
     private void onNoteOffTerminated() throws IOException {
         wavRecorder.endWrite();
-        wavRecorder.writeMarkers(List.of(PCMMarker.of("Buffer Size", format.getSampleBufferSize()), PCMMarker.of("Note Off", state.noteOffSampleMarker)));
+        wavRecorder.writeMarkers(List.of(PCMMarker.of("Buffer Size " + format.getBufferDurationMs() + " ms", format.getSampleBufferSize()), PCMMarker.of("Note Off", state.noteOffSampleMarker)));
         wavRecorder.close();
         wavRecorder = null;
         state.velocity = state.velocity + state.veloIncrement;
@@ -174,8 +196,19 @@ public class SynthRipper {
             state.note += state.noteIncrement;
             if (state.note > state.highestNote) {
                 state.note = state.lowestNote;
-                state.cc++;
+                state.presetIndex++;
+                updateCurrentPreset();
             }
+        }
+    }
+
+    private void updateCurrentPreset() {
+        List<MidiPreset> selectedPresets = conf.getMidi()
+                .getSelectedPresets();
+        if (state.presetIndex < selectedPresets.size()) {
+            state.preset = selectedPresets.get(state.presetIndex);
+        } else {
+            state.preset = null;
         }
     }
 
@@ -184,9 +217,10 @@ public class SynthRipper {
         midiOutDevice.send(noteOff);
 
         if (!state.isSilentBuffer()) {
+            threadLogger.info("Looping sound detected");
             LoopSetting currentLoop = new LoopSetting();
             currentLoop.setNote(state.note);
-            currentLoop.setCc(state.cc);
+            currentLoop.setPreset(state.preset);
             currentLoop.setSampleStart((long) (1.0f * format.getSampleRate()));
             currentLoop.setSampleEnd((long) (state.durationInSec * format.getSampleRate()));
             loopSettings.add(currentLoop);
@@ -195,11 +229,10 @@ public class SynthRipper {
 
     private void sendNoteOn() throws InvalidMidiDataException, IOException {
         if (state.note == state.lowestNote && state.isFirstVelocity()) {
-            threadLogger.info("Program Change %03d".formatted(state.cc));
-            MidiEvent midiCC = new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, state.cc, 0), 0);
-            midiOutDevice.send(midiCC);
+            threadLogger.info("Preset Change %d-%03d".formatted(state.preset.bank(), state.preset.program()));
+            midiOutDevice.sendPresetChange(state.preset);
         }
-        File outputFile = getOutputFile(state.cc, state.note, state.velocity);
+        File outputFile = getOutputFile(state.preset, state.note, state.velocity);
         threadLogger.info("Record %s".formatted(outputFile.getParentFile()
                 .getName() + "/" + outputFile.getName()));
         wavRecorder = new WavRecorder(outputFile, wavFormat);
@@ -248,81 +281,81 @@ public class SynthRipper {
         state.loudness = state.loudness / state.nbChannels;
     }
 
-    private void generateSFZ() throws FileNotFoundException {
-        for (int cc = conf.getMidi()
-                .getLowestCC(); cc <= conf.getMidi()
-                .getHighestCC(); cc++) {
-            String filename = conf.getMidi()
-                    .getFilename(cc);
-            File sfzFile = new File("%s/%03d %s.sfz".formatted(conf.getOutputDir(), conf.getMidi()
-                    .getDisplayedCC(cc), filename));
-            try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
-                final String SEPARATOR = "----------------------------------------------------------";
-                out.println(SEPARATOR);
-                out.println("%s".formatted(filename));
-                out.println(SEPARATOR);
-                out.println("<control>");
-                out.println("default_path=.");
-                out.println("<global>");
-                int prevVelo = -1;
-                int nbVelocityPerNote = conf.getMidi()
-                        .getVelocityPerNote();
-                int velocityOffset = (int) Math.ceil(127.f / nbVelocityPerNote);
-                for (int group = 1; group <= nbVelocityPerNote; group++) {
-                    int startVelo = prevVelo + 1;
-                    int endVelo = Math.min(127, velocityOffset * group);
-                    out.println(SEPARATOR);
-                    out.println(" Velocity layer %03d".formatted(endVelo));
-                    out.println(SEPARATOR);
-                    out.println("<group>");
-                    out.println("lovel=" + startVelo);
-                    out.println("hivel=" + endVelo);
-                    prevVelo = endVelo;
+    private void generateSFZ() {
+        conf.getMidi()
+                .getSelectedPresets()
+                .forEach(p -> {
+                    File sfzFile = new File("%s/%01d-%03d %s.sfz".formatted(conf.getOutputDir(), p.bank(), p.program(), p.title()));
+                    try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
+                        final String SEPARATOR = "----------------------------------------------------------";
+                        out.println(SEPARATOR);
+                        out.println("%s".formatted(p.title()));
+                        out.println(SEPARATOR);
+                        out.println("<control>");
+                        out.println("default_path=.");
+                        out.println("<global>");
+                        int prevVelo = -1;
+                        int nbVelocityPerNote = conf.getMidi()
+                                .getVelocityPerNote();
+                        int velocityOffset = (int) Math.ceil(127.f / nbVelocityPerNote);
+                        for (int group = 1; group <= nbVelocityPerNote; group++) {
+                            int startVelo = prevVelo + 1;
+                            int endVelo = Math.min(127, velocityOffset * group);
+                            out.println(SEPARATOR);
+                            out.println(" Velocity layer %03d".formatted(endVelo));
+                            out.println(SEPARATOR);
+                            out.println("<group>");
+                            out.println("lovel=" + startVelo);
+                            out.println("hivel=" + endVelo);
+                            prevVelo = endVelo;
 
-                    out.println("");
-                    int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
-                    for (int r = 0; r < nbRegion; r++) {
-                        out.println("<region>");
-                        int note = state.lowestNote + r * state.noteIncrement;
-                        int begin = note;
-                        int end = note + state.noteIncrement - 1;
-                        if (r == 0) {
-                            begin = 0;
+                            out.println("");
+                            int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
+                            for (int r = 0; r < nbRegion; r++) {
+                                out.println("<region>");
+                                int note = state.lowestNote + r * state.noteIncrement;
+                                int begin = note;
+                                int end = note + state.noteIncrement - 1;
+                                if (r == 0) {
+                                    begin = 0;
+                                }
+                                if (r == nbRegion - 1) {
+                                    end = 127;
+                                }
+                                String path = sfzFile.getParentFile()
+                                        .toPath()
+                                        .relativize(getOutputFile(p, note, endVelo).toPath())
+                                        .toString()
+                                        .replace("\\", "/");
+
+                                getLoop(p, note).ifPresentOrElse(l -> {
+                                    out.println("loop_mode=loop_sustain");
+                                    out.println("loop_start=" + l.getSampleStart());
+                                    out.println("loop_end=" + l.getSampleEnd());
+                                }, () -> out.println("loop_mode=no_loop"));
+
+                                out.println("sample=" + path);
+                                out.println("lokey=" + begin);
+                                out.println("pitch_keycenter=" + note);
+                                out.println("hikey=" + end);
+                                out.println("");
+                            }
                         }
-                        if (r == nbRegion - 1) {
-                            end = 127;
-                        }
-                        String path = sfzFile.getParentFile()
-                                .toPath()
-                                .relativize(getOutputFile(cc, note, endVelo).toPath())
-                                .toString()
-                                .replace("\\", "/");
-
-                        getLoop(cc, note).ifPresentOrElse(l -> {
-                            out.println("loop_mode=loop_sustain");
-                            out.println("loop_start=" + l.getSampleStart());
-                            out.println("loop_end=" + l.getSampleEnd());
-                        }, () -> out.println("loop_mode=no_loop"));
-
-                        out.println("sample=" + path);
-                        out.println("lokey=" + begin);
-                        out.println("pitch_keycenter=" + note);
-                        out.println("hikey=" + end);
-                        out.println("");
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
-                }
-            }
-        }
+                });
     }
 
-    private Optional<LoopSetting> getLoop(int cc, int note) {
+    private Optional<LoopSetting> getLoop(MidiPreset preset, int note) {
         return loopSettings.stream()
-                .filter(l -> l.getCc() == cc && l.getNote() == note)
+                .filter(l -> l.getPreset()
+                        .equals(preset) && l.getNote() == note)
                 .findFirst();
     }
 
     private boolean finished() {
-        return state.state == SynthRipperStateEnum.IDLE && state.cc > state.highestCC;
+        return state.state == SynthRipperStateEnum.IDLE && state.preset == null;
     }
 
 }

@@ -22,10 +22,7 @@ public class SynthRipperConfiguration {
     public static SynthRipperConfiguration loadConfig(File configFile) {
         Yaml yaml = new Yaml(new Constructor(SynthRipperConfiguration.class, new LoaderOptions()));
         try (FileInputStream inputStream = new FileInputStream(configFile)) {
-            SynthRipperConfiguration cfg = yaml.load(inputStream);
-            cfg.getMidi()
-                    .buildFilesNames();
-            return cfg;
+            return yaml.load(inputStream);
         } catch (IOException e) {
             throw new AudioError(e);
         }

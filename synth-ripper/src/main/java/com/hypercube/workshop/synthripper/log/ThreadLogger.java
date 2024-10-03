@@ -1,17 +1,20 @@
-package com.hypercube.workshop.synthripper;
+package com.hypercube.workshop.synthripper.log;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+/**
+ * This class allow us to log in a slow priority thread to no slow down the recording thread
+ */
 @Slf4j
 public class ThreadLogger {
     private Thread thread;
     private Queue<String> messages = new ConcurrentLinkedDeque<>();
     private boolean running;
 
-    void start() {
+    public void start() {
         thread = new Thread(this::threadLoop);
         thread.setPriority(Thread.MIN_PRIORITY);
         running = true;
