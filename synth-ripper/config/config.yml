@@ -30,11 +30,17 @@ midi:
   #
   # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
   #
+  # lowest preset included
   lowestPreset: 100
+  # highest preset included
   highestPreset: 110
+  # lowest note included
   lowestNote: C3
-  highestNote: C3
+  # highest note included
+  highestNote: C4
+  # how many note to record per octave
   notesPerOctave: 1
+  # how many velocity layer to record per note
   velocityPerNote: 1
   #
   # presets order is important due to lowestPreset and highestPreset
@@ -147,7 +153,7 @@ midi:
     - 105 Sitar
     - 106 Banjo
     - 107 Shamisen
-    - 0000-108 Koto
+    - 0-108 Koto
     - 8-108 Taisho Koto
     - 109 Kalimba
     - 110 Bag Pipe

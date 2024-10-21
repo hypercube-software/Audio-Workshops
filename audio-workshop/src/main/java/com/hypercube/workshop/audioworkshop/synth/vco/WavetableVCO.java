@@ -40,7 +40,7 @@ public class WavetableVCO extends VCO {
     @Override
     public byte[] generateSignal(double freq) {
 
-        // Compute the buffer each time a new frequency is asked
+        // Compute the samples each time a new frequency is asked
         if (freq != lastFreq) {
             output = ByteBuffer.allocate(wavetable.length * getBytesPerSamples());
             output.order(byteOrder);
@@ -54,7 +54,7 @@ public class WavetableVCO extends VCO {
             // convert the sample to Signed 16 bits
             short sample = (short) (vca.getCurrentGain() * nextSample() * 0x7FFF);
 
-            // write the sample into the buffer
+            // write the sample into the samples
             output.putShort(sample);
         }
 

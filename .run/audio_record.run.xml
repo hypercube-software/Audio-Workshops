@@ -2,7 +2,8 @@
   <configuration default="false" name="audio:record" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.audioworkshop.AudioWorkshopApplication" />
     <module name="audio-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="record-wav -i &quot;Mixage stéréo (Realtek High Definition Audio)&quot; -f toto.wav" />
+    <option name="PROGRAM_PARAMETERS" value="record-wav -i &quot;Microphone (Realtek High Definition Audio)&quot; -f &quot;target/toto.wav&quot;" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.audioworkshop.*" />

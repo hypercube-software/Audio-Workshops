@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.filter.dc;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 
 public class DCOffsetRemover implements SampleBufferConsumer {
@@ -20,10 +21,10 @@ public class DCOffsetRemover implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
+    public void onBuffer(SampleBuffer buffer) {
         for (int c = 0; c < nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                samples[c][s] -= dcOffset[c];
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                buffer.setSample(c, s, buffer.sample(c, s) - dcOffset[c]);
             }
         }
     }

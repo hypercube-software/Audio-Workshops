@@ -3,11 +3,10 @@ package com.hypercube.workshop.synthripper.model;
 
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 
+import static com.hypercube.workshop.synthripper.SynthRipper.NOISE_FLOOR_CAPTURE_DURATION_IN_SEC;
+
 public class SynthRipperState {
     public int nbChannels;
-    public double[] loudnessPerChannel;
-    public float loudness;
-    public float noiseFloor = -1;
     public double[] noiseFloorFrequencies;
     public double[] signalFrequencies;
     public long noiseSamplesRead = 0;
@@ -29,18 +28,9 @@ public class SynthRipperState {
     public int veloIncrement;
     public int upperBoundVelocity;
 
-    public SynthRipperStateEnum state = SynthRipperStateEnum.GET_NOISE_FLOOR;
-
-    public int getLoudnessDb() {
-        return (int) (20 * Math.log10(loudness));
-    }
-
-    public int getNoiseFloorDb() {
-        return (int) (20 * Math.log10(noiseFloor));
-    }
+    public SynthRipperStateEnum state = SynthRipperStateEnum.INIT;
 
     public boolean isSilentBuffer() {
-        //return loudness <= noiseFloor;
         for (int i = 0; i < noiseFloorFrequencies.length; i++) {
             if (signalFrequencies[i] > noiseFloorFrequencies[i] * 2) {
                 return false;
@@ -58,5 +48,43 @@ public class SynthRipperState {
         for (int i = 0; i < noiseFloorFrequencies.length; i++) {
             noiseFloorFrequencies[i] = 0;
         }
+    }
+
+    public void changeState(SynthRipperStateEnum newState) {
+        state = newState;
+        durationInSec = 0;
+        durationInSamples = 0;
+    }
+
+    public boolean endOfNoteOff() {
+        return state == SynthRipperStateEnum.NOTE_OFF && (durationInSec > maxNoteReleaseDurationSec || isSilentBuffer());
+    }
+
+    public boolean endOfNoteOn() {
+        return state == SynthRipperStateEnum.NOTE_ON_START && (durationInSec > maxNoteDurationSec || isSilentBuffer());
+    }
+
+    public boolean soundDetected() {
+        return state == SynthRipperStateEnum.NOTE_ON_SEND && !isSilentBuffer();
+    }
+
+    public boolean endOfIdle() {
+        return state == SynthRipperStateEnum.IDLE && durationInSec > 1;
+    }
+
+    public boolean endOfInit() {
+        return state == SynthRipperStateEnum.INIT && durationInSec > 1;
+    }
+
+    public boolean acquireNoiseFloor() {
+        return state == SynthRipperStateEnum.ACQUIRE_NOISE_FLOOR;
+    }
+
+    public boolean endOfAcquireNoiseFloor() {
+        return state == SynthRipperStateEnum.ACQUIRE_NOISE_FLOOR && durationInSec > NOISE_FLOOR_CAPTURE_DURATION_IN_SEC;
+    }
+
+    public boolean endOfNoteRecord() {
+        return state == SynthRipperStateEnum.NOTE_OFF_DONE;
     }
 }

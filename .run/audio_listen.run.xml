@@ -2,7 +2,8 @@
   <configuration default="false" name="audio:listen" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.audioworkshop.AudioWorkshopApplication" />
     <module name="audio-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="listen -i &quot;Microphone (Realtek High Definition Audio)&quot; -o &quot;Haut-parleurs (Realtek High Definition Audio)&quot; -f &quot;output.wav&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="listen -i &quot;Microphone (Realtek High Definition Audio)&quot; -o &quot;Haut-parleurs (Realtek High Definition Audio)&quot; -f &quot;target/output.wav&quot;" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.audioworkshop.*" />

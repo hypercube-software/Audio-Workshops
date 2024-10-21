@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
 
 
 /**
- * This VCO reuse its buffer instead of creating one on every calls
+ * This VCO reuse its samples instead of creating one on every calls
  * The anglePos does not restart from 0 on each call
  * The anglePos stay inside the period to avoid big values of IEEE754
  */
@@ -24,7 +24,7 @@ public class CorrectVCO extends VCO {
 
     @Override
     public byte[] generateSignal(double freq) {
-        // Compute the buffer each time a new frequency is asked
+        // Compute the samples each time a new frequency is asked
         if (freq != lastFreq) {
             double periodDurationInSamples = sampleRate / freq;
             angleIncrementInRadians = (SIN_PERIOD_2PI / periodDurationInSamples);
@@ -38,7 +38,7 @@ public class CorrectVCO extends VCO {
             // convert the sample to Signed 16 bits
             short sample = (short) (vca.getCurrentGain() * Math.sin(anglePos) * 0x7FFF);
 
-            // write the sample into the buffer
+            // write the sample into the samples
             output.putShort(sample);
 
             // Rule N°2: Avoid big numbers width IEEE754

@@ -7,9 +7,9 @@ import java.nio.ByteOrder;
 
 
 /**
- * This naive VCO try to generate multiple periods of sine in one buffer
+ * This naive VCO try to generate multiple periods of sine in one samples
  * The goal is to reduce the number of calls but on the other hand we
- * reallocate a buffer on each call
+ * reallocate a samples on each call
  * But there is one mistake about periodDurationInSamples calculation...
  */
 public class NaiveVCO extends VCO {
@@ -30,7 +30,7 @@ public class NaiveVCO extends VCO {
         double angleIncrementInRadians = (SIN_PERIOD_2PI / periodDurationInSamples);
         int nbPeriodsToGenerate = (int) Math.max(1, bufferSizeRequestedInMs / periodDurationInMs);
 
-        // allocate the buffer
+        // allocate the samples
         int samples = (int) (periodDurationInSamples * nbPeriodsToGenerate);
         var output = ByteBuffer.allocate(samples * getBytesPerSamples());
         output.order(byteOrder);
@@ -41,7 +41,7 @@ public class NaiveVCO extends VCO {
             // convert the sample to Signed 16 bits
             short sample = (short) (vca.getCurrentGain() * Math.sin(anglePos) * 0x7FFF);
 
-            // write the sample into the buffer
+            // write the sample into the samples
             output.putShort(sample);
         }
 

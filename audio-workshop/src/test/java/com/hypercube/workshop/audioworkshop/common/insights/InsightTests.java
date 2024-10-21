@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumerChain;
 import com.hypercube.workshop.audioworkshop.common.consumer.WindowedSampleBufferConsumer;
@@ -141,13 +142,13 @@ public class InsightTests {
                 long signalEnd = 0;
 
                 @Override
-                public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
+                public void onBuffer(SampleBuffer buffer) {
                     rmsCalculator.reset();
-                    rmsCalculator.onBuffer(samples, nbSamples, nbChannels);
+                    rmsCalculator.onBuffer(buffer);
                     peakCalculator.reset();
-                    peakCalculator.onBuffer(samples, nbSamples, nbChannels);
+                    peakCalculator.onBuffer(buffer);
                     long cutPoint = positionInSamples + peakCalculator.getFirstZeroCrossingPosInSample();
-                    positionInSamples += nbSamples;
+                    positionInSamples += buffer.nbSamples();
                     double rmsDb = rmsCalculator.getRMSDb(RMSReference.SINE_WAVE_AES_17, 2);
                     boolean cross = (rmsDb < -42);
                     if (cross) {

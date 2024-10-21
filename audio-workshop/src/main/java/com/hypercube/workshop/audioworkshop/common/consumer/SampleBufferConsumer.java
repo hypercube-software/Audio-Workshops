@@ -19,5 +19,5 @@ public interface SampleBufferConsumer {
         return Math.ceil(value * p) / p;
     }
 
-    void onBuffer(double[][] samples, int nbSamples, int nbChannels);
+    void onBuffer(SampleBuffer buffer);
 }

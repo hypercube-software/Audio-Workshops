@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.common.consumer;
 
 /**
- * Transform a stream of buffers with given size in another stream with different buffer size
+ * Transform a stream of buffers with given size in another stream with different samples size
  * <p>sampleIncrement != windowSizeInSamples can be used to reuse previous samples (very usefull for FFT)</p>
  */
 public class WindowedSampleBufferConsumer implements SampleBufferConsumer {
@@ -51,14 +51,14 @@ public class WindowedSampleBufferConsumer implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] inputSamples, int nbSamples, int nbChannels) {
-        for (int s = 0; s < nbSamples; s++) {
+    public void onBuffer(SampleBuffer buffer) {
+        for (int s = 0; s < buffer.nbSamples(); s++) {
             for (int ch = 0; ch < nbChannels; ch++) {
-                samples[ch][nbSamplesRead] = inputSamples[ch][s];
+                samples[ch][nbSamplesRead] = buffer.sample(ch, s);
             }
             nbSamplesRead++;
             if (nbSamplesRead == windowSizeInSamples) {
-                consumer.onBuffer(samples, windowSizeInSamples, nbChannels);
+                consumer.onBuffer(new SampleBuffer(samples, 0, windowSizeInSamples, buffer.nbChannels()));
                 reset();
             }
         }

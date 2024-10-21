@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.rms;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import lombok.Getter;
@@ -27,11 +28,11 @@ public class RMSCalculator implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        totalSamples += nbSamples;
+    public void onBuffer(SampleBuffer buffer) {
+        totalSamples += buffer.nbSamples();
         for (int c = 0; c < nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                var sample = samples[c][s];
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                var sample = buffer.sample(c, s);
                 power[c] += sample * sample;
             }
             rms[c] = Math.sqrt(power[c] / totalSamples);

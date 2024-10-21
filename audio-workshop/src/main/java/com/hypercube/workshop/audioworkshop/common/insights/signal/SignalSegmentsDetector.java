@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.signal;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.WindowedSampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.common.insights.peak.PeakCalculator;
@@ -28,14 +29,14 @@ public class SignalSegmentsDetector extends WindowedSampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
+    public void onBuffer(SampleBuffer buffer) {
         peakCalculator.reset();
-        peakCalculator.onBuffer(samples, nbSamples, nbChannels);
+        peakCalculator.onBuffer(buffer);
         long cutPoint = positionInSamples + peakCalculator.getFirstZeroCrossingPosInSample();
         double rmsDb = peakCalculator.getSamplePeakDb(2);
         SignalSegmentType type = rmsDb > noiseFloor ? SignalSegmentType.SIGNAL : SignalSegmentType.SILENT;
-        SignalSegment signalSegment = new SignalSegment(positionInSamples, positionInSamples + nbSamples, type);
-        positionInSamples += nbSamples;
+        SignalSegment signalSegment = new SignalSegment(positionInSamples, positionInSamples + buffer.nbSamples(), type);
+        positionInSamples += buffer.nbSamples();
         if (lastSegment == null) {
             firstSegment = lastSegment = signalSegment;
         } else {

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.dft.fast;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.common.insights.dft.DFTCalculator;
 import com.hypercube.workshop.audioworkshop.common.insights.dft.DFTResult;
@@ -79,25 +80,25 @@ public class FFTCalculator implements DFTCalculator, AutoCloseable {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        for (int ch = 0; ch < nbChannels; ch++) {
-            for (int s = 0; s < nbSamples; s++) {
-                double sample = samples[ch][s] * window[s];
+    public void onBuffer(SampleBuffer buffer) {
+        for (int ch = 0; ch < buffer.nbChannels(); ch++) {
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                double sample = buffer.sample(ch, s) * window[s];
                 doubleInput[ch][s] = sample;
             }
             signal[ch].put(doubleInput[ch]);
             fftw_execute(plan[ch]);
             fft[ch].get(doubleResult[ch]);
 
-            DFTResult r = new DFTResult(nbSamples / 2);
+            DFTResult r = new DFTResult(buffer.nbSamples() / 2);
             double scale = 1.0;
-            for (int freqBin = 0; freqBin < nbSamples / 2; freqBin++) {
+            for (int freqBin = 0; freqBin < buffer.nbSamples() / 2; freqBin++) {
                 double realPart = doubleResult[ch][COMPLEX_SAMPLE_SIZE * freqBin + REAL] * scale;
                 double imgPart = doubleResult[ch][COMPLEX_SAMPLE_SIZE * freqBin + IMAG] * scale;
                 double magnitude = Math.sqrt(realPart * realPart + imgPart * imgPart);
                 // toDB
                 magnitude = ((double) 20) * Math.log10(magnitude + Double.MIN_VALUE);
-                double freq = freqBin * (double) format.getSampleRate() / nbSamples;
+                double freq = freqBin * (double) format.getSampleRate() / buffer.nbSamples();
                 //if (freq >= 420 && freq <= 450) {
                 //    System.out.println("Bin %d %.03fHz Magnitude: %.03f dB %f, ".formatted(freqBin, freq, magnitude, magnitude));
                 // }

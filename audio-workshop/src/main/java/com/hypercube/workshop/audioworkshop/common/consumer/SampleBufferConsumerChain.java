@@ -14,7 +14,7 @@ public class SampleBufferConsumerChain implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        chain.forEach(sc -> sc.onBuffer(samples, nbSamples, nbChannels));
+    public void onBuffer(SampleBuffer buffer) {
+        chain.forEach(sc -> sc.onBuffer(buffer));
     }
 }

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.signal;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.WindowedSampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.common.insights.peak.PeakCalculator;
@@ -21,11 +22,11 @@ public class SignalStartDetector extends WindowedSampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
+    public void onBuffer(SampleBuffer buffer) {
         peakCalculator.reset();
-        peakCalculator.onBuffer(samples, nbSamples, nbChannels);
+        peakCalculator.onBuffer(buffer);
         long cutPoint = positionInSamples + peakCalculator.getFirstZeroCrossingPosInSample();
-        positionInSamples += nbSamples;
+        positionInSamples += buffer.nbSamples();
         double rmsDb = peakCalculator.getSamplePeakDb(2);
         boolean cross = (rmsDb > -40);
         if (!inSignal && cross) {

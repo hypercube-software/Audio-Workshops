@@ -1,11 +1,12 @@
 package com.hypercube.workshop.audioworkshop.common.record;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
+
 @FunctionalInterface
 public interface RecordListener {
     /**
-     * @param sampleBuffer incoming audio buffer per channel
-     * @param nbSamples    number of samples in each buffer
+     * @param buffer incoming audio samples per channel
      * @return false to stop the recording
      */
-    boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize);
+    boolean onNewBuffer(SampleBuffer buffer, byte[] pcmBuffer, int pcmSize);
 }

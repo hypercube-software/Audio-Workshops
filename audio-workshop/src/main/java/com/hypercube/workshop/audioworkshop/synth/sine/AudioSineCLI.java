@@ -24,7 +24,7 @@ public class AudioSineCLI {
                 .ifPresentOrElse(d -> audioSine.playFile(d, file, loops), () -> log.error("Device not found:" + outputDevice));
     }
 
-    @ShellMethod(value = "Play a sine  in a precalculated buffer")
+    @ShellMethod(value = "Play a sine in a precalculated samples")
     public void sine(@ShellOption(value = "-o") String outputDevice) {
         AudioDeviceManager m = new AudioDeviceManager();
         m.collectDevices();

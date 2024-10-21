@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.peak;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import lombok.Getter;
@@ -22,11 +23,11 @@ public class PeakCalculator implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
+    public void onBuffer(SampleBuffer buffer) {
         firstZeroCrossingPosInSample = 0;
-        for (int s = 0; s < nbSamples; s++) {
-            for (int c = 0; c < nbChannels; c++) {
-                double sample = samples[c][s];
+        for (int s = 0; s < buffer.nbSamples(); s++) {
+            for (int c = 0; c < buffer.nbChannels(); c++) {
+                double sample = buffer.sample(c, s);
                 samplePeak = Math.max(samplePeak, Math.abs(sample));
                 sampleMin = Math.min(sampleMin, sample);
                 sampleMax = Math.max(sampleMax, sample);

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.dc;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import lombok.Getter;
 
@@ -26,11 +27,11 @@ public class DCOffsetCalculator implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        totalSamples += nbSamples;
+    public void onBuffer(SampleBuffer buffer) {
+        totalSamples += buffer.nbSamples();
         for (int c = 0; c < nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                sampleSum[c] += samples[c][s];
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                sampleSum[c] += buffer.sample(c, s);
             }
             globalDcOffset[c] = sampleSum[c] / totalSamples;
         }

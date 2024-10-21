@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.record;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffWriter;
@@ -55,10 +56,10 @@ public class WavRecordListener implements RecordListener, Closeable {
     }
 
     @Override
-    public boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    public boolean onNewBuffer(SampleBuffer buffer, byte[] pcmBuffer, int pcmSize) {
         try {
             out.write(pcmBuffer, pcmSize);
-            currentDurationInSamples += nbSamples;
+            currentDurationInSamples += buffer.nbSamples();
             if (maxDurationInSamples != INFINITE_DURATION) {
                 return currentDurationInSamples < maxDurationInSamples;
             } else {

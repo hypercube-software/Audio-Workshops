@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleConsumer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
@@ -28,14 +29,14 @@ public class EnvelopeFollower implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        for (int s = 0; s < nbSamples; s++) {
-            for (int c = 0; c < nbChannels; c++) {
-                state.onNewSample(samples[c][s], c);
+    public void onBuffer(SampleBuffer buffer) {
+        for (int s = 0; s < buffer.nbSamples(); s++) {
+            for (int c = 0; c < buffer.nbChannels(); c++) {
+                state.onNewSample(buffer.sample(c, s), c);
             }
             state.nextSample();
             double rms = state.getRMS(0);
-            double sample = samples[0][s];
+            double sample = buffer.sample(0, s);
             sampleConsumer.onSample(sample, rms, state.getCorrelation(), 0);
             samplePos++;
             if (samplePos < noiseFloorAcquisitionTimeInSamples) {

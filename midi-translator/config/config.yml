@@ -1,0 +1,6 @@
+devices:
+  inputMidiDevice: "nanoKEY2 1 KEYBOARD"
+  outputMidiDevice: "ToDAW"
+  outputBandwidth: 300
+translations:
+  - 1 => F0 43 12 12 32 vv F7 [-6,10]

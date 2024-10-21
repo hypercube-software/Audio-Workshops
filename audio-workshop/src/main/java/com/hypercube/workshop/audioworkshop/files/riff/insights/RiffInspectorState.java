@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.riff.insights;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
@@ -49,15 +50,15 @@ public class RiffInspectorState implements SampleBufferConsumer {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        for (int s = 0; s < nbSamples; s++) {
-            for (int c = 0; c < nbChannels; c++) {
-                max[c] = Math.max(max[c], Math.abs(samples[c][s]));
+    public void onBuffer(SampleBuffer buffer) {
+        for (int s = 0; s < buffer.nbSamples(); s++) {
+            for (int c = 0; c < buffer.nbChannels(); c++) {
+                max[c] = Math.max(max[c], Math.abs(buffer.sample(c, s)));
             }
             samplePositionInWindow++;
             if (samplePositionInWindow == samplesPerPixel && x < image.getWidth()) {
                 String logMsg = "%d".formatted(x);
-                for (int c = 0; c < nbChannels; c++) {
+                for (int c = 0; c < buffer.nbChannels(); c++) {
                     logMsg += " | %6.6f".formatted(max[c]);
                     double amplitude = max[c] * scale;
                     int middleY = waveHeightInPixel / 2 + waveHeightInPixel * c;

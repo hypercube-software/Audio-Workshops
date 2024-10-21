@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.line;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
@@ -57,7 +58,7 @@ public class AudioInputLine extends AudioLine implements Closeable {
             }
             int nbSampleRead = nbRead / frameSize;
             converter.convert(pcmBuffer, normalizedData, nbSampleRead, nbChannels);
-            if (!listener.onNewBuffer(normalizedData, nbSampleRead, pcmData, nbRead))
+            if (!listener.onNewBuffer(new SampleBuffer(normalizedData, 0, nbSampleRead, nbChannels), pcmData, nbRead))
                 break;
         }
     }

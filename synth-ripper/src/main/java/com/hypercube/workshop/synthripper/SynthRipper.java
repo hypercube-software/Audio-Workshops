@@ -1,5 +1,6 @@
 package com.hypercube.workshop.synthripper;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
@@ -33,7 +34,7 @@ import java.util.Optional;
 
 @Slf4j
 public class SynthRipper {
-    public static final int NOISEFLOOR_CAPUTRE_DURATION_IN_SEC = 4;
+    public static final int NOISE_FLOOR_CAPTURE_DURATION_IN_SEC = 4;
     private final SynthRipperConfiguration conf;
     private final PCMBufferFormat format;
     private final PCMBufferFormat wavFormat;
@@ -79,7 +80,6 @@ public class SynthRipper {
     public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
         createOutputDir();
         state.nbChannels = format.getNbChannels();
-        state.loudnessPerChannel = new double[state.nbChannels];
         state.maxNoteReleaseDurationSec = conf.getMidi()
                 .getMaxNoteReleaseDurationSec();
         state.maxNoteDurationSec = conf.getMidi()
@@ -88,12 +88,12 @@ public class SynthRipper {
         this.midiOutDevice.open();
         this.midiOutDevice.sendAllOff();
         try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
-            try (FFTCalculator shortTermfftCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
+            try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
                 try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
                     try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
                         threadLogger.start();
                         outputLine.start();
-                        inputLine.record((sampleBuffer, nbSamples, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermfftCalculator, sampleBuffer, nbSamples, pcmBuffer, pcmSize), outputLine);
+                        inputLine.record((sampleBuffer, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermFFTCalculator, sampleBuffer, pcmBuffer, pcmSize), outputLine);
                     } finally {
                         threadLogger.stop();
                     }
@@ -116,43 +116,69 @@ public class SynthRipper {
         f.mkdirs();
     }
 
-    private boolean onNewBuffer(FFTCalculator fftCalculator, FFTCalculator shortTermfftCalculator, double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
+    /**
+     * This method is basically a state machine
+     *
+     * @param fftCalculator          Used to grossly detect the beginning of the sound
+     * @param shortTermFFTCalculator Used to detect precisely the beginning of the sound
+     * @param buffer                 Input buffer of samples
+     * @param pcmBuffer              Not Used
+     * @param pcmSize                Not Used
+     * @return false to stop recording
+     */
+    private boolean onNewBuffer(FFTCalculator fftCalculator, FFTCalculator shortTermFFTCalculator, SampleBuffer buffer, byte[] pcmBuffer, int pcmSize) {
+        //
+        // Used to truncate the very first block of samples (where precisely start the sound)
+        //
+        int startPosInsamples = 0;
         //
         // update duration
         //
-        state.durationInSec += (float) nbSamples / format.getSampleRate();
-        state.durationInSamples += nbSamples;
+        state.durationInSec += (float) buffer.nbSamples() / format.getSampleRate();
+        state.durationInSamples += buffer.nbSamples();
         //
-        // inspect incoming buffer and change state accordingly
+        // inspect incoming samples and change state accordingly
         //
-        computeLoudness(sampleBuffer, nbSamples);
         try {
-            if (state.state == SynthRipperStateEnum.GET_NOISE_FLOOR) {
-                onGetNoiseFloorState(fftCalculator, sampleBuffer, nbSamples);
+            if (state.endOfInit()) {
+                threadLogger.info("Capture noise floor...");
+                state.resetNoiseFloorFrequencies();
+                state.changeState(SynthRipperStateEnum.ACQUIRE_NOISE_FLOOR);
+            } else if (state.acquireNoiseFloor()) {
+                acquireNoiseFloor(fftCalculator, buffer);
+                if (state.endOfAcquireNoiseFloor()) {
+                    state.changeState(SynthRipperStateEnum.IDLE);
+                    double max = Arrays.stream(state.noiseFloorFrequencies)
+                            .average()
+                            .orElse(0);
+                    threadLogger.info("Noise floor via FFT: %f dB".formatted(max));
+                }
             } else {
-                updateSignalFrequencies(fftCalculator, sampleBuffer, nbSamples);
+                updateSignalFrequencies(fftCalculator, buffer);
 
-                if (state.state == SynthRipperStateEnum.IDLE && state.durationInSec > 1) {
+                if (state.endOfIdle()) {
                     sendNoteOn();
-                    state.state = SynthRipperStateEnum.NOTE_ON_SEND;
-                    state.durationInSec = 0;
-                } else if (state.state == SynthRipperStateEnum.NOTE_ON_SEND && !state.isSilentBuffer()) {
-                    preciseLookupSignalStart(shortTermfftCalculator, sampleBuffer, nbSamples);
+                    state.changeState(SynthRipperStateEnum.NOTE_ON_SEND);
+                } else if (state.soundDetected()) {
+                    startPosInsamples = preciseLookupSignalStart(shortTermFFTCalculator, buffer);
+                    buffer.split(startPosInsamples, shortTermFFTCalculator.getFormat()
+                                    .getSampleBufferSize())
+                            .fadeIn();
                     threadLogger.info("NOTE_ON_START after " + state.durationInSec + " sec");
-                    state.state = SynthRipperStateEnum.NOTE_ON_START;
-                    state.durationInSec = 0;
-                    state.durationInSamples = 0;
-                } else if (state.state == SynthRipperStateEnum.NOTE_ON_START && (state.durationInSec > state.maxNoteDurationSec || state.isSilentBuffer())) {
-                    sendNoteOff();
+                    state.changeState(SynthRipperStateEnum.NOTE_ON_START);
+                } else if (state.endOfNoteOn()) {
                     state.noteOffSampleMarker = state.durationInSamples;
+                    sendNoteOff();
                     threadLogger.info("NOTE_OFF after " + state.durationInSec + " sec at position " + state.noteOffSampleMarker);
-                    state.state = SynthRipperStateEnum.NOTE_OFF;
-                    state.durationInSec = 0;
-                } else if (state.state == SynthRipperStateEnum.NOTE_OFF && (state.durationInSec > state.maxNoteReleaseDurationSec || state.isSilentBuffer())) {
-                    onNoteOffTerminated();
+                    state.changeState(SynthRipperStateEnum.NOTE_OFF);
+                } else if (state.endOfNoteOff()) {
+                    buffer.split(0, buffer.nbSamples())
+                            .fadeOut();
+                    state.changeState(SynthRipperStateEnum.NOTE_OFF_DONE);
+                } else if (state.endOfNoteRecord()) {
+                    onNoteRecordTerminated();
                     threadLogger.info("IDLE after " + state.durationInSec + " sec");
-                    state.state = SynthRipperStateEnum.IDLE;
-                    state.durationInSec = 0;
+                    state.changeState(SynthRipperStateEnum.IDLE);
                 }
             }
         } catch (InvalidMidiDataException | IOException e) {
@@ -161,22 +187,41 @@ public class SynthRipper {
         //
         // record WAV to disk
         //
-        if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON_START || state.state == SynthRipperStateEnum.NOTE_OFF)) {
-            wavRecorder.write(sampleBuffer, 0, nbSamples, conf.getAudio()
+        if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON_START || state.state == SynthRipperStateEnum.NOTE_OFF || state.state == SynthRipperStateEnum.NOTE_OFF_DONE)) {
+            wavRecorder.write(buffer, startPosInsamples, conf.getAudio()
                     .getChannelMap());
         }
         return !finished();
     }
 
-    private void preciseLookupSignalStart(FFTCalculator shortTermfftCalculator, double[][] sampleBuffer, int nbSamples) {
-        int nbBlocks = nbSamples / shortTermfftCalculator.getFormat()
+    private int preciseLookupSignalStart(FFTCalculator shortTermFFTCalculator, SampleBuffer buffer) {
+        int sampleBufferSize = shortTermFFTCalculator.getFormat()
                 .getSampleBufferSize();
-        threadLogger.info(nbBlocks + " blocks to inspect with shortTermfftCalculator");
-        //shortTermfftCalculator.onBuffer(sampleBuffer);
+        int nbBlocks = buffer.nbSamples() / sampleBufferSize;
+        int scale = state.noiseFloorFrequencies.length / nbBlocks;
+        shortTermFFTCalculator.reset();
+        for (int b = 0; b < nbBlocks; b++) {
+            SampleBuffer blockBuffer = buffer.split(b * sampleBufferSize, sampleBufferSize);
+            shortTermFFTCalculator.onBuffer(blockBuffer);
+        }
+        var magnitudes = shortTermFFTCalculator.getMagnitudes();
+        for (int ch = 0; ch < 1; ch++) {
+            var firstMagnitudes = magnitudes[ch].get(0);
+            for (int b = 0; b < nbBlocks; b++) {
+                var blockMagnitudes = magnitudes[ch].get(b);
+                for (int bin = 0; bin < blockMagnitudes.getNbBin(); bin++) {
+                    if (blockMagnitudes.getMagnitudes()[bin] > state.noiseFloorFrequencies[bin * scale]) {
+                        int startOffset = b * sampleBufferSize;
+                        return startOffset;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
-    private void updateSignalFrequencies(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples) {
-        fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
+    private void updateSignalFrequencies(FFTCalculator fftCalculator, SampleBuffer buffer) {
+        fftCalculator.onBuffer(buffer);
         int ch = 0;
         for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
             state.signalFrequencies[bin] = fftCalculator.getMagnitudes()[ch].getLast()
@@ -184,9 +229,9 @@ public class SynthRipper {
         }
     }
 
-    private void onNoteOffTerminated() throws IOException {
+    private void onNoteRecordTerminated() throws IOException {
         wavRecorder.endWrite();
-        wavRecorder.writeMarkers(List.of(PCMMarker.of("Buffer Size " + format.getBufferDurationMs() + " ms", format.getSampleBufferSize()), PCMMarker.of("Note Off", state.noteOffSampleMarker)));
+        wavRecorder.writeMarkers(List.of(PCMMarker.of("Release", state.noteOffSampleMarker)));
         wavRecorder.close();
         wavRecorder = null;
         state.velocity = state.velocity + state.veloIncrement;
@@ -221,8 +266,8 @@ public class SynthRipper {
             LoopSetting currentLoop = new LoopSetting();
             currentLoop.setNote(state.note);
             currentLoop.setPreset(state.preset);
-            currentLoop.setSampleStart((long) (1.0f * format.getSampleRate()));
-            currentLoop.setSampleEnd((long) (state.durationInSec * format.getSampleRate()));
+            currentLoop.setSampleStart((long) (1.0f * format.getSampleRate())); // TODO: detect loop start instead of 1sec
+            currentLoop.setSampleEnd(state.noteOffSampleMarker);
             loopSettings.add(currentLoop);
         }
     }
@@ -240,45 +285,15 @@ public class SynthRipper {
         midiOutDevice.send(noteOn);
     }
 
-    private void onGetNoiseFloorState(FFTCalculator fftCalculator, double[][] sampleBuffer, int nbSamples) {
-        if (state.durationInSec > 1) {
-            if (state.noiseFloor == -1) {
-                threadLogger.info("Capture noise floor...");
-                state.resetNoiseFloorFrequencies();
-            }
-            fftCalculator.onBuffer(sampleBuffer, nbSamples, format.getNbChannels());
-            int ch = 0;
-            for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
-                state.noiseFloorFrequencies[bin] = Math.max(state.noiseFloorFrequencies[bin], fftCalculator.getMagnitudes()[ch].getLast()
-                        .getMagnitudes()[bin]);
-            }
-            state.noiseSamplesRead += nbSamples;
-            state.noiseFloor = Math.max(state.noiseFloor, state.loudness);
-        }
+    private void acquireNoiseFloor(FFTCalculator fftCalculator, SampleBuffer buffer) {
 
-        if (state.durationInSec > 1 + NOISEFLOOR_CAPUTRE_DURATION_IN_SEC) {
-            state.state = SynthRipperStateEnum.IDLE;
-            threadLogger.info("Noise floor: %d dB".formatted(state.getNoiseFloorDb()));
-            double max = Arrays.stream(state.noiseFloorFrequencies)
-                    .average()
-                    .orElse(0);
-            threadLogger.info("Noise floor via FFT: %f dB".formatted(max));
+        fftCalculator.onBuffer(buffer);
+        int ch = 0;
+        for (int bin = 0; bin < state.noiseFloorFrequencies.length; bin++) {
+            state.noiseFloorFrequencies[bin] = Math.max(state.noiseFloorFrequencies[bin], fftCalculator.getMagnitudes()[ch].getLast()
+                    .getMagnitudes()[bin]);
         }
-    }
-
-    private void computeLoudness(double[][] sampleBuffer, int nbSamples) {
-        for (int c = 0; c < state.nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                double sample = sampleBuffer[c][s] * sampleBuffer[c][s];
-                state.loudnessPerChannel[c] += sample;
-            }
-        }
-        state.loudness = 0;
-        for (int c = 0; c < state.nbChannels; c++) {
-            state.loudnessPerChannel[c] = (float) Math.sqrt(state.loudnessPerChannel[c] / nbSamples);
-            state.loudness += state.loudnessPerChannel[c];
-        }
-        state.loudness = state.loudness / state.nbChannels;
+        state.noiseSamplesRead += buffer.nbSamples();
     }
 
     private void generateSFZ() {
@@ -310,7 +325,7 @@ public class SynthRipper {
                             prevVelo = endVelo;
 
                             out.println("");
-                            int nbRegion = (state.highestNote - state.lowestNote) / state.noteIncrement;
+                            int nbRegion = Math.min(1, state.highestNote + 1 - state.lowestNote / state.noteIncrement);
                             for (int r = 0; r < nbRegion; r++) {
                                 out.println("<region>");
                                 int note = state.lowestNote + r * state.noteIncrement;

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.common.insights.dft.slow;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.common.insights.dft.DFTCalculator;
 import com.hypercube.workshop.audioworkshop.common.insights.dft.DFTResult;
@@ -50,22 +51,24 @@ public class SimpleDFTCalculator implements DFTCalculator {
     }
 
     @Override
-    public void onBuffer(double[][] samples, int nbSamples, int nbChannels) {
-        totalSamples += nbSamples;
-        for (int c = 0; c < nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                double sample = samples[c][s] * window[s];
+    public void onBuffer(SampleBuffer buffer) {
+        totalSamples += buffer.nbSamples();
+        for (int c = 0; c < buffer.nbChannels(); c++) {
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                double sample = buffer.sample(c, s) * window[s];
                 inDftImg[c][s] = 0;
                 inDftReal[c][s] = sample;
             }
             computeDft(inDftReal[c], inDftImg[c], dftReal[c], dftImg[c]);
-            DFTResult r = new DFTResult(nbSamples / 2);
-            for (int s = 0; s < nbSamples / 2; s++) {
+            // Half of the FFT output is usefull, because there are negative frequencies on the second part
+            int nbBins = buffer.nbSamples() / 2;
+            DFTResult r = new DFTResult(nbBins);
+            for (int s = 0; s < nbBins; s++) {
                 double magnitude = Math.sqrt(dftReal[c][s] * dftReal[c][s] + dftImg[c][s] * dftImg[c][s]);
                 // toDB
                 magnitude = ((double) 20) * Math.log10(magnitude + Double.MIN_VALUE);
 
-                double freqBin = s * (double) format.getSampleRate() / nbSamples;
+                double freqBin = s * (double) format.getSampleRate() / buffer.nbSamples();
                 //System.out.println("Bin %d %.03fHz Magnitude: %.03f dB , ".formatted(s, freqBin, magnitude));
                 r.setMagnitude(s, magnitude);
             }

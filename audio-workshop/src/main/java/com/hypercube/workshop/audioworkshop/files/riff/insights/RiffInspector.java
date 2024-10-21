@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.riff.insights;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
@@ -48,7 +49,7 @@ public class RiffInspector {
                 int nbSamples = size / format.getFrameSizeInBytes();
                 checkBufferSize(size, format);
                 pcmConverter.convert(pcmBuffer, samples, nbSamples, nbChannels);
-                sampleConsumer.onBuffer(samples, nbSamples, nbChannels);
+                sampleConsumer.onBuffer(new SampleBuffer(samples, 0, nbSamples, nbChannels));
             });
         } catch (IOException e) {
             throw new AudioError(e);
@@ -75,13 +76,13 @@ public class RiffInspector {
                         .getShortTitle());
             }
             out.println();
-            inspect((samples, nbSamples, nbChannels) -> {
-                for (int s = 0; s < nbSamples; s++) {
-                    for (int c = 0; c < nbChannels; c++) {
+            inspect((buffer) -> {
+                for (int s = 0; s < buffer.nbSamples(); s++) {
+                    for (int c = 0; c < buffer.nbChannels(); c++) {
                         if (c > 0) {
                             out.print(",");
                         }
-                        out.print(String.format(Locale.ENGLISH, "%f", samples[c][s]));
+                        out.print(String.format(Locale.ENGLISH, "%f", buffer.sample(c, s)));
                     }
                     out.println();
                 }
@@ -92,14 +93,14 @@ public class RiffInspector {
     }
 
     /**
-     * Make sure we consume proper buffer size given the frame size
+     * Make sure we consume proper samples size given the frame size
      *
-     * @param size   Size of the incoming buffer in bytes
+     * @param size   Size of the incoming samples in bytes
      * @param format Expected format providing the right frame size
      */
     private void checkBufferSize(int size, PCMFormat format) {
         if (size % format.getFrameSizeInBytes() != 0)
-            throw new IllegalArgumentException("buffer size %d is not a multiple of frame size %d in bytes".formatted(size, format.getFrameSizeInBytes()));
+            throw new IllegalArgumentException("samples size %d is not a multiple of frame size %d in bytes".formatted(size, format.getFrameSizeInBytes()));
     }
 
     /**

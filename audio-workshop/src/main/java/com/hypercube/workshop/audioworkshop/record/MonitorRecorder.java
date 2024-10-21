@@ -1,5 +1,6 @@
 package com.hypercube.workshop.audioworkshop.record;
 
+import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
@@ -40,20 +41,20 @@ public class MonitorRecorder extends WavRecordListener {
     }
 
     @Override
-    public boolean onNewBuffer(double[][] sampleBuffer, int nbSamples, byte[] pcmBuffer, int pcmSize) {
-        computeLoudness(sampleBuffer, nbSamples);
-        return super.onNewBuffer(sampleBuffer, nbSamples, pcmBuffer, pcmSize);
+    public boolean onNewBuffer(SampleBuffer buffer, byte[] pcmBuffer, int pcmSize) {
+        computeLoudness(buffer);
+        return super.onNewBuffer(buffer, pcmBuffer, pcmSize);
     }
 
-    private void computeLoudness(double[][] sampleBuffer, int nbSamples) {
+    private void computeLoudness(SampleBuffer buffer) {
         for (int c = 0; c < nbChannels; c++) {
-            for (int s = 0; s < nbSamples; s++) {
-                double sample = Math.abs(sampleBuffer[c][s]);
+            for (int s = 0; s < buffer.nbSamples(); s++) {
+                double sample = Math.abs(buffer.sample(c, s));
                 loudness[c] += sample;
             }
         }
         for (int c = 0; c < nbChannels; c++) {
-            loudness[c] = loudness[c] / nbSamples;
+            loudness[c] = loudness[c] / buffer.nbSamples();
         }
         logLoudness();
     }
