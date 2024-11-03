@@ -3,6 +3,10 @@
   "includes":[{
     "pattern":"\\QMETA-INF/build-info.properties\\E"
   }, {
+    "pattern":"\\QMETA-INF/maven/org.bytedeco/fftw/pom.properties\\E"
+  }, {
+    "pattern":"\\QMETA-INF/maven/org.bytedeco/javacpp/pom.properties\\E"
+  }, {
     "pattern":"\\QMETA-INF/maven/org.jline/jline-native/pom.properties\\E"
   }, {
     "pattern":"\\QMETA-INF/services/ch.qos.logback.classic.spi.Configurator\\E"
@@ -14,6 +18,8 @@
     "pattern":"\\QMETA-INF/services/jakarta.validation.spi.ValidationProvider\\E"
   }, {
     "pattern":"\\QMETA-INF/services/jakarta.validation.valueextraction.ValueExtractor\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/jakarta.xml.bind.JAXBContextFactory\\E"
   }, {
     "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
   }, {
@@ -71,9 +77,17 @@
   }, {
     "pattern":"\\Qbanner.txt\\E"
   }, {
+    "pattern":"\\Qcom/hypercube/workshop/synthripper/SynthRipper.class\\E"
+  }, {
     "pattern":"\\Qcom/hypercube/workshop/synthripper/SynthRipperCLI.class\\E"
   }, {
     "pattern":"\\Qcom/hypercube/workshop/synthripper/\\E"
+  }, {
+    "pattern":"\\Qcom/hypercube/workshop/synthripper/preset/PresetGenerator.class\\E"
+  }, {
+    "pattern":"\\Qcom/hypercube/workshop/synthripper/preset/decent/DecentSamplerPresetGenerator.class\\E"
+  }, {
+    "pattern":"\\Qcom/hypercube/workshop/synthripper/preset/sfz/SfzPresetGenerator.class\\E"
   }, {
     "pattern":"\\Qconfig/application-default.properties\\E"
   }, {
@@ -106,6 +120,346 @@
     "pattern":"\\Qlogback.xml\\E"
   }, {
     "pattern":"\\Qmessages.properties\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-console-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-console-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-datetime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-debug-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-errorhandling-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-file-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-file-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-file-l2-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-handle-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-interlocked-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-libraryloader-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-localization-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-memory-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-namedpipe-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-processenvironment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-processthreads-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-processthreads-l1-1-1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-profile-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-rtlsupport-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-synch-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-synch-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-sysinfo-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-timezone-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-core-util-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-conio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-convert-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-environment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-filesystem-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-locale-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-math-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-multibyte-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-private-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-process-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-runtime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-stdio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-time-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/api-ms-win-crt-utility-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/concrt140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3f.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3f.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/fftw3f.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/jnifftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/libfftw3-3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/libfftw3f-3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/msvcp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/msvcp140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/ucrtbase.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/vcomp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/vcruntime140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/global/windows-x86_64/vcruntime140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-console-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-console-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-datetime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-debug-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-errorhandling-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-file-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-file-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-file-l2-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-handle-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-interlocked-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-libraryloader-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-localization-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-memory-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-namedpipe-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-processenvironment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-processthreads-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-processthreads-l1-1-1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-profile-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-rtlsupport-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-synch-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-synch-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-sysinfo-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-timezone-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-core-util-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-conio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-convert-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-environment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-filesystem-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-locale-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-math-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-multibyte-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-private-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-process-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-runtime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-stdio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-time-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/api-ms-win-crt-utility-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/concrt140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3f.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3f.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/fftw3f.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/jnifftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/libfftw3-3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/libfftw3f-3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/msvcp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/msvcp140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/ucrtbase.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/vcomp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/vcruntime140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/fftw/windows-x86_64/vcruntime140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/javacpp/properties/windows-x86_64.properties\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/javacpp/windows-x86_64/jnijavacpp.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-console-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-console-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-datetime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-debug-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-errorhandling-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-file-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-file-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-file-l2-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-handle-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-interlocked-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-libraryloader-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-localization-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-memory-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-namedpipe-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-processenvironment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-processthreads-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-processthreads-l1-1-1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-profile-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-rtlsupport-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-synch-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-synch-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-sysinfo-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-timezone-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-core-util-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-conio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-convert-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-environment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-filesystem-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-locale-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-math-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-multibyte-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-private-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-process-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-runtime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-stdio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-time-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/api-ms-win-crt-utility-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/concrt140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3f.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3f.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/fftw3f.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/msvcp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/msvcp140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/ucrtbase.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/vcomp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/vcruntime140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/bytedeco/windows-x86_64/vcruntime140_1.dll\\E"
   }, {
     "pattern":"\\Qorg/jline/nativ/Windows/x86_64/jlinenative.dll\\E"
   }, {
@@ -309,7 +663,223 @@
   }, {
     "pattern":"\\Qorg/springframework/shell/standard/ShellComponent.class\\E"
   }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-console-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-console-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-datetime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-debug-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-errorhandling-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-file-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-file-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-file-l2-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-handle-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-interlocked-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-libraryloader-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-localization-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-memory-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-namedpipe-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-processenvironment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-processthreads-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-processthreads-l1-1-1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-profile-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-rtlsupport-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-synch-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-synch-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-sysinfo-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-timezone-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-core-util-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-conio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-convert-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-environment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-filesystem-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-locale-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-math-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-multibyte-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-private-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-process-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-runtime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-stdio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-time-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/api-ms-win-crt-utility-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/concrt140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3f.3.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3f.dll.3\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/fftw3f.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/msvcp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/msvcp140_1.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/ucrtbase.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/vcomp140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/vcruntime140.dll\\E"
+  }, {
+    "pattern":"\\Qorg/windows-x86_64/vcruntime140_1.dll\\E"
+  }, {
     "pattern":"\\Qspring.properties\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-console-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-console-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-datetime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-debug-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-errorhandling-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-file-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-file-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-file-l2-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-handle-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-interlocked-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-libraryloader-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-localization-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-memory-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-namedpipe-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-processenvironment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-processthreads-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-processthreads-l1-1-1.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-profile-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-rtlsupport-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-synch-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-synch-l1-2-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-sysinfo-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-timezone-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-core-util-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-conio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-convert-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-environment-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-filesystem-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-heap-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-locale-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-math-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-multibyte-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-private-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-process-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-runtime-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-stdio-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-string-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-time-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/api-ms-win-crt-utility-l1-1-0.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/concrt140.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3.3.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3.dll.3\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3f.3.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3f.dll.3\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/fftw3f.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/msvcp140.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/msvcp140_1.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/ucrtbase.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/vcomp140.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/vcruntime140.dll\\E"
+  }, {
+    "pattern":"\\Qwindows-x86_64/vcruntime140_1.dll\\E"
   }]},
   "bundles":[]
 }

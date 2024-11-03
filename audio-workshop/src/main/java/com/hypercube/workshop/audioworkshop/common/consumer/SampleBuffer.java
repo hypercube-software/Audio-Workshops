@@ -53,13 +53,22 @@ public class SampleBuffer {
     }
 
     /**
-     * Give accès to the internal buffer in case we need it
+     * Give access to the internal buffer in case we need it
      *
      * @param channel Audio channel
      * @return buffer of samples which is potentially bigger than the sample window defined by {@link #sampleStart} and {@link #sampleEnd}
      */
     public double[] getRawBuffer(int channel) {
         return samples[channel];
+    }
+
+    /**
+     * Give access to the internal buffers in case we need it
+     *
+     * @return buffer of samples which is potentially bigger than the sample window defined by {@link #sampleStart} and {@link #sampleEnd}
+     */
+    public double[][] getRawBuffers() {
+        return samples;
     }
 
     /**

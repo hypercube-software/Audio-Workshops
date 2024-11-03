@@ -60,7 +60,7 @@ public class PCMFormat {
         return (int) (sampleRate * ms / 1000.0f);
     }
 
-    public double sampleToMs(long sample) {
+    public double samplesToMilliseconds(long sample) {
         return sample * 1000.0f / sampleRate;
     }
 

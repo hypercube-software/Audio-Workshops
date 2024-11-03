@@ -178,12 +178,25 @@ public class RiffWriter implements Closeable {
         endChunk();
     }
 
-    public void write(byte[] data, int nbRead) throws IOException {
-        out.writeBytes(data, nbRead);
+    /**
+     * Write PCM data
+     */
+    public void write(byte[] data, int nbBytes) throws IOException {
+        out.writeBytes(data, nbBytes);
     }
 
-    public void write(byte[] data, int offset, int nbRead) throws IOException {
-        out.writeBytes(data, offset, nbRead);
+    /**
+     * Write PCM data
+     */
+    public void write(byte[] data, int offset, int nbBytes) throws IOException {
+        out.writeBytes(data, offset, nbBytes);
+    }
+
+    /**
+     * Write PCM data
+     */
+    public void write(byte[] pcmData) throws IOException {
+        out.writeBytes(pcmData);
     }
 
     public long getPosition() throws IOException {
@@ -210,7 +223,4 @@ public class RiffWriter implements Closeable {
         out.writeByte(value);
     }
 
-    public void writeBytes(byte[] pcmData) throws IOException {
-        out.writeBytes(pcmData);
-    }
 }

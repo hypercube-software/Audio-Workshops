@@ -4,25 +4,32 @@ devices:
   outputAudioDevice: "Périphérique audio principal"
   outputMidiDevice: "2- MIDISPORT Uno Out"
 audio:
-  bufferDurationMs: 100
+  bufferDurationMs: 250
   nbChannels: 2
-  channelMapping: "1:0"
+  channelMapping: "0:0 1:1"
   bitDepth: 16
   sampleRate: 44100
 midi:
+  # DS: Decent Sampler
+  # SFZ
+  outputFormat: DS
+  # detect looping sounds
   maxNoteDurationSec: 5
   maxNoteReleaseDurationSec: 5
   #
-  # Select the preset format expected by your device:
-  # -------------------------------------------------
+  # Select how to send bank select messages to the device:
+  # ------------------------------------------------------
+  # PRG              : Does not send bank select, send only Program Change
   # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
   # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
   # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
-  # BANK_MSB_PRG1    : Send CC "BANK Select MSB" only, then Program Change -1
-  # BANK_LSB_PRG1    : Send CC "BANK Select LSB" only, then Program Change -1
-  # BANK_MSB_LSB_PRG1: Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change -1
   #
-  presetFormat: BANK_MSB_PRG1
+  presetFormat: BANK_MSB_PRG
+  #
+  # FROM_ONE : preset number start from 1, it will be converted to n-1
+  # FROM_ZERO: preset number will be sent "as is"
+  #
+  presetNumbering: FROM_ONE
   #
   # preset numbers can be in two forms:
   #   <bank number>-<program number>
@@ -31,13 +38,13 @@ midi:
   # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
   #
   # lowest preset included
-  lowestPreset: 100
+  lowestPreset: Pad 5 (bowed)
   # highest preset included
-  highestPreset: 110
+  highestPreset: Pad 5 (bowed)
   # lowest note included
-  lowestNote: C3
+  lowestNote: C2
   # highest note included
-  highestNote: C4
+  highestNote: C2
   # how many note to record per octave
   notesPerOctave: 1
   # how many velocity layer to record per note
@@ -175,3 +182,8 @@ midi:
     - 126 Helicopter
     - 127 Applause
     - 128 Gunshot
+  #
+  # Commands used in presets (TODO)
+  #
+  commands:
+    tempo: F0 43 10 4B 60 00 29 00 vv F7

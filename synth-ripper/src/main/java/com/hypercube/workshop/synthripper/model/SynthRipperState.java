@@ -1,7 +1,8 @@
 package com.hypercube.workshop.synthripper.model;
 
 
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.hypercube.workshop.synthripper.SynthRipper.NOISE_FLOOR_CAPTURE_DURATION_IN_SEC;
 
@@ -18,17 +19,11 @@ public class SynthRipperState {
     public long durationInSamples;
     public long noteOffSampleMarker;
 
-    public int velocity;
-    public int note;
-    public MidiPreset preset;
-    public int presetIndex;
-    public int lowestNote;
-    public int highestNote;
-    public int noteIncrement;
-    public int veloIncrement;
-    public int upperBoundVelocity;
-
     public SynthRipperStateEnum state = SynthRipperStateEnum.INIT;
+
+    public RecordedSynthNote prev;
+    public int currentBatchEntry = 0;
+    public List<RecordedSynthNote> sampleBatch = new ArrayList<>();
 
     public boolean isSilentBuffer() {
         for (int i = 0; i < noiseFloorFrequencies.length; i++) {
@@ -39,8 +34,18 @@ public class SynthRipperState {
         return true;
     }
 
+    public RecordedSynthNote getCurrentRecordedSynthNote() {
+        return currentBatchEntry < sampleBatch.size() ? sampleBatch.get(currentBatchEntry) : null;
+    }
+
+    public void nextRecordedSynthNote() {
+        if (currentBatchEntry < sampleBatch.size()) {
+            currentBatchEntry++;
+        }
+    }
+
     public boolean isFirstVelocity() {
-        return velocity == veloIncrement;
+        return getCurrentRecordedSynthNote().isFirstVelocity();
     }
 
     public void resetNoiseFloorFrequencies() {
@@ -87,4 +92,5 @@ public class SynthRipperState {
     public boolean endOfNoteRecord() {
         return state == SynthRipperStateEnum.NOTE_OFF_DONE;
     }
+
 }

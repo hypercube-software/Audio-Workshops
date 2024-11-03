@@ -28,9 +28,10 @@ public class ThreadLogger {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        drain();
     }
 
-    public void info(String msg) {
+    public void log(String msg) {
         messages.add(msg);
         notifyMessage();
     }
@@ -43,11 +44,19 @@ public class ThreadLogger {
 
     private void threadLoop() {
         while (running) {
+            drain();
+            waitMessage();
+        }
+    }
+
+    private void drain() {
+        for (; ; ) {
             String msg = messages.poll();
             if (msg != null) {
                 log.info(msg);
+            } else {
+                break;
             }
-            waitMessage();
         }
     }
 

@@ -64,7 +64,7 @@ public class MonitorRecorder extends WavRecordListener {
         long elapsed = (now - lastTime) / 1000;
         long recordDuration = (now - startTime) / 1000;
         if (elapsed > 1) {
-            long durationInSec = (long) (currentDurationInSamples / format.getSampleRate());
+            long durationInSec = (long) format.samplesToMilliseconds(currentDurationInSamples) / 1000;
             lastTime = now;
             double dB = 20 * Math.log10(loudness[0]); // look first channel for now
             log.info("{} secs {} sec Volume: {} dB", recordDuration, durationInSec, dB);

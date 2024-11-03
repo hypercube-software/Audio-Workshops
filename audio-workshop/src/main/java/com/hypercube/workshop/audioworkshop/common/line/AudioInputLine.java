@@ -28,19 +28,30 @@ public class AudioInputLine extends AudioLine implements Closeable {
         super(format);
         this.device = device;
         AudioFormat audioFormat = format.getAudioFormat();
-        this.line = AudioSystem.getTargetDataLine(audioFormat, device.getMixerInfo());
+        line = AudioSystem.getTargetDataLine(audioFormat, device.getMixerInfo());
         line.open(audioFormat, format.getByteBufferSize());
     }
 
     @Override
     public void close() throws IOException {
+        line.stop();
         line.close();
     }
 
+    /**
+     * Record without monitoring
+     */
     public void record(RecordListener listener) {
         record(listener, null);
     }
 
+    /**
+     * Convert incoming PCM buffers into a {@link SampleBuffer} and pass them to a {@link RecordListener}
+     * <p>This method record until {@link RecordListener#onNewBuffer} return false</p>
+     *
+     * @param listener   will receive samples
+     * @param outputLine used to monitor what is recorded
+     */
     public void record(RecordListener listener, AudioOutputLine outputLine) {
         int nbChannels = format.getNbChannels();
         int frameSize = format.getBytesPerSamples() * nbChannels;
@@ -57,9 +68,20 @@ public class AudioInputLine extends AudioLine implements Closeable {
                 outputLine.sendBuffer(pcmData, nbRead);
             }
             int nbSampleRead = nbRead / frameSize;
+            double durationInNano = format.samplesToMilliseconds(nbSampleRead) * 1000000L;
             converter.convert(pcmBuffer, normalizedData, nbSampleRead, nbChannels);
-            if (!listener.onNewBuffer(new SampleBuffer(normalizedData, 0, nbSampleRead, nbChannels), pcmData, nbRead))
-                break;
+            if (listener != null) {
+                long start = System.nanoTime();
+                boolean continueRecord = listener.onNewBuffer(new SampleBuffer(normalizedData, 0, nbSampleRead, nbChannels), pcmData, nbRead);
+                double elapsedTime = System.nanoTime() - start;
+                if (elapsedTime > durationInNano) {
+                    log.error("ERROR: listener take too much time to process the buffer");
+                    continueRecord = false;
+                }
+                if (!continueRecord) {
+                    break;
+                }
+            }
         }
     }
 

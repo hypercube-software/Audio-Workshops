@@ -40,7 +40,7 @@ public class SignalStartDetector extends WindowedSampleBufferConsumer {
     }
 
     private String getMsg(long cutPoint, double rmsDb) {
-        long positionInMs = (long) (cutPoint * 1000 / format.getSampleRate());
+        long positionInMs = (long) format.samplesToMilliseconds(cutPoint);
         long positionInSeconds = positionInMs / 1000;
         int hours = (int) (positionInSeconds / 3600);
         int minutes = (int) ((positionInSeconds % 3600) / 60);

@@ -18,40 +18,43 @@ import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
 import com.hypercube.workshop.synthripper.model.LoopSetting;
+import com.hypercube.workshop.synthripper.model.RecordedSynthNote;
 import com.hypercube.workshop.synthripper.model.SynthRipperState;
 import com.hypercube.workshop.synthripper.model.SynthRipperStateEnum;
+import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import javax.sound.sampled.LineUnavailableException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
+@Service
 public class SynthRipper {
     public static final int NOISE_FLOOR_CAPTURE_DURATION_IN_SEC = 4;
-    private final SynthRipperConfiguration conf;
-    private final PCMBufferFormat format;
-    private final PCMBufferFormat wavFormat;
+    private SynthRipperConfiguration conf;
+    private PCMBufferFormat format;
+    private PCMBufferFormat wavFormat;
     private MidiOutDevice midiOutDevice;
     private final ThreadLogger threadLogger;
     private final SynthRipperState state = new SynthRipperState();
-    private final List<LoopSetting> loopSettings = new ArrayList<>();
-
+    private final List<PresetGenerator> presetGenerators;
     private WavRecorder wavRecorder;
 
-    private File getOutputFile(MidiPreset preset, int note, int velocity) {
-        var midiNote = MidiNote.fromValue(note);
-        return new File("%s/%01d-%03d %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), preset.bank(), preset.program(), preset.title(), midiNote.name(), Math.min(127, velocity)));
+
+    public SynthRipper(List<PresetGenerator> presetGenerators) {
+        this.threadLogger = new ThreadLogger();
+        this.presetGenerators = presetGenerators;
     }
 
-    public SynthRipper(SynthRipperConfiguration config) {
-        this.threadLogger = new ThreadLogger();
+    public void init(SynthRipperConfiguration config) {
         this.conf = config;
         this.format = config.getAudio()
                 .getAudioFormat();
@@ -62,18 +65,64 @@ public class SynthRipper {
 
     private void initState(SynthRipperConfiguration config) {
         MidiSettings midiSettings = config.getMidi();
-        state.presetIndex = 0;
-        state.lowestNote = midiSettings.getLowestNoteInt();
-        state.highestNote = midiSettings.getHighestNoteInt();
-        state.noteIncrement = 12 / midiSettings.getNotesPerOctave();
-        state.veloIncrement = (int) Math.ceil(127.f / midiSettings.getVelocityPerNote());
-        state.note = state.lowestNote;
-        state.velocity = state.veloIncrement;
-        state.upperBoundVelocity = state.veloIncrement * (midiSettings.getVelocityPerNote() + 1);
         state.noiseFloorFrequencies = new double[format.getSampleBufferSize() / 2];
         state.signalFrequencies = new double[format.getSampleBufferSize() / 2];
         state.resetNoiseFloorFrequencies();
-        updateCurrentPreset();
+        state.prev = null;
+        state.currentBatchEntry = 0;
+        state.sampleBatch = generateBatch(config);
+    }
+
+    private int boundValue(int value) {
+        return Math.max(Math.min(127, value), 0);
+    }
+
+    private List<RecordedSynthNote> generateBatch(SynthRipperConfiguration config) {
+        MidiSettings midiSettings = config.getMidi();
+        int veloIncrement = (int) Math.ceil(127.f / midiSettings
+                .getVelocityPerNote());
+        int upperBoundVelocity = veloIncrement * (midiSettings.getVelocityPerNote() + 1);
+        int lowestNote = midiSettings.getLowestNoteInt();
+        int highestNote = midiSettings.getHighestNoteInt();
+        int noteIncrement = 12 / midiSettings.getNotesPerOctave();
+        return conf.getMidi()
+                .getSelectedPresets()
+                .stream()
+                .flatMap(preset -> {
+                    List<RecordedSynthNote> samples = new ArrayList<>();
+                    for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
+                        for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
+                            RecordedSynthNote rs = new RecordedSynthNote();
+                            rs.setFile(getOutputFile(preset, note, velocity));
+                            if (note == lowestNote) {
+                                rs.setLowNote(0);
+                            } else {
+                                rs.setLowNote(boundValue(Math.max(0, note - noteIncrement + 1)));
+                            }
+                            if (note == highestNote) {
+                                rs.setHighNote(127);
+                            } else {
+                                rs.setHighNote(boundValue(note));
+                            }
+                            rs.setNote(boundValue(note));
+                            rs.setFirstNote(note == lowestNote);
+
+                            rs.setLowVelocity(boundValue(velocity - veloIncrement + 1));
+                            rs.setHighVelocity(boundValue(velocity));
+                            rs.setVelocity(boundValue(velocity));
+                            rs.setFirstVelocity(velocity == veloIncrement);
+
+                            rs.setPreset(preset);
+
+                            samples.add(rs);
+
+                            log.info("[%d,%d,%d] [%d,%d,%d] %s".formatted(rs.getLowNote(), rs.getNote(), rs.getHighNote(), rs.getLowVelocity(), rs.getVelocity(), rs.getHighVelocity(), rs.getFile()
+                                    .getName()));
+                        }
+                    }
+                    return samples.stream();
+                })
+                .toList();
     }
 
 
@@ -86,11 +135,11 @@ public class SynthRipper {
                 .getMaxNoteDurationSec();
         this.midiOutDevice = midiDevice;
         this.midiOutDevice.open();
-        this.midiOutDevice.sendAllOff();
         try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
             try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
                 try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
                     try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
+                        midiDevice.sendAllOff();
                         threadLogger.start();
                         outputLine.start();
                         inputLine.record((sampleBuffer, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermFFTCalculator, sampleBuffer, pcmBuffer, pcmSize), outputLine);
@@ -103,12 +152,13 @@ public class SynthRipper {
             throw new AudioError(e);
         } finally {
             try {
+                midiDevice.sendAllOff();
                 midiDevice.close();
             } catch (IOException e) {
                 throw new MidiError(e);
             }
         }
-        generateSFZ();
+        savePresets();
     }
 
     private void createOutputDir() {
@@ -134,24 +184,34 @@ public class SynthRipper {
         //
         // update duration
         //
-        state.durationInSec += (float) buffer.nbSamples() / format.getSampleRate();
+        state.durationInSec += format.samplesToMilliseconds(buffer.nbSamples()) / 1000;
         state.durationInSamples += buffer.nbSamples();
         //
         // inspect incoming samples and change state accordingly
         //
         try {
             if (state.endOfInit()) {
-                threadLogger.info("Capture noise floor...");
+                threadLogger.log("======================================================");
+                threadLogger.log("Capture noise floor...");
                 state.resetNoiseFloorFrequencies();
                 state.changeState(SynthRipperStateEnum.ACQUIRE_NOISE_FLOOR);
             } else if (state.acquireNoiseFloor()) {
                 acquireNoiseFloor(fftCalculator, buffer);
                 if (state.endOfAcquireNoiseFloor()) {
                     state.changeState(SynthRipperStateEnum.IDLE);
-                    double max = Arrays.stream(state.noiseFloorFrequencies)
+                    double max = 0;
+                    for (int ch = 0; ch < buffer.nbChannels(); ch++) {
+                        for (int s = 0; s < buffer.nbSamples(); s++) {
+                            max = Math.max(max, buffer.sample(ch, s));
+                        }
+                    }
+                    double noiseFloor = Arrays.stream(state.noiseFloorFrequencies)
                             .average()
                             .orElse(0);
-                    threadLogger.info("Noise floor via FFT: %f dB".formatted(max));
+                    threadLogger.log("Noise floor via FFT: avg %f dB, max %f dB".formatted(noiseFloor, max));
+                    if (max == 0) {
+                        throw new AudioError("No sound recorded, check your sound card settings");
+                    }
                 }
             } else {
                 updateSignalFrequencies(fftCalculator, buffer);
@@ -164,20 +224,24 @@ public class SynthRipper {
                     buffer.split(startPosInsamples, shortTermFFTCalculator.getFormat()
                                     .getSampleBufferSize())
                             .fadeIn();
-                    threadLogger.info("NOTE_ON_START after " + state.durationInSec + " sec");
+                    threadLogger.log("NOTE_ON_START after " + state.durationInSec + " sec");
                     state.changeState(SynthRipperStateEnum.NOTE_ON_START);
                 } else if (state.endOfNoteOn()) {
                     state.noteOffSampleMarker = state.durationInSamples;
                     sendNoteOff();
-                    threadLogger.info("NOTE_OFF after " + state.durationInSec + " sec at position " + state.noteOffSampleMarker);
+                    threadLogger.log("NOTE_OFF after " + state.durationInSec + " sec at position " + state.noteOffSampleMarker);
                     state.changeState(SynthRipperStateEnum.NOTE_OFF);
                 } else if (state.endOfNoteOff()) {
                     buffer.split(0, buffer.nbSamples())
                             .fadeOut();
+                    threadLogger.log("Release time is " + state.durationInSec + " sec");
+                    state.getCurrentRecordedSynthNote()
+                            .setReleaseTimeInSec(state.durationInSec);
+                    midiOutDevice.sendAllOff();
                     state.changeState(SynthRipperStateEnum.NOTE_OFF_DONE);
                 } else if (state.endOfNoteRecord()) {
                     onNoteRecordTerminated();
-                    threadLogger.info("IDLE after " + state.durationInSec + " sec");
+                    threadLogger.log("IDLE after " + state.durationInSec + " sec");
                     state.changeState(SynthRipperStateEnum.IDLE);
                 }
             }
@@ -187,7 +251,10 @@ public class SynthRipper {
         //
         // record WAV to disk
         //
-        if (wavRecorder != null && (state.state == SynthRipperStateEnum.NOTE_ON_START || state.state == SynthRipperStateEnum.NOTE_OFF || state.state == SynthRipperStateEnum.NOTE_OFF_DONE)) {
+        if (wavRecorder != null &&
+                (state.state == SynthRipperStateEnum.NOTE_ON_START ||
+                        state.state == SynthRipperStateEnum.NOTE_OFF ||
+                        state.state == SynthRipperStateEnum.NOTE_OFF_DONE)) {
             wavRecorder.write(buffer, startPosInsamples, conf.getAudio()
                     .getChannelMap());
         }
@@ -234,54 +301,45 @@ public class SynthRipper {
         wavRecorder.writeMarkers(List.of(PCMMarker.of("Release", state.noteOffSampleMarker)));
         wavRecorder.close();
         wavRecorder = null;
-        state.velocity = state.velocity + state.veloIncrement;
-        if (state.velocity >= state.upperBoundVelocity) {
-            // all velocities are recorded, jump to the next note
-            state.velocity = state.veloIncrement;
-            state.note += state.noteIncrement;
-            if (state.note > state.highestNote) {
-                state.note = state.lowestNote;
-                state.presetIndex++;
-                updateCurrentPreset();
-            }
-        }
-    }
-
-    private void updateCurrentPreset() {
-        List<MidiPreset> selectedPresets = conf.getMidi()
-                .getSelectedPresets();
-        if (state.presetIndex < selectedPresets.size()) {
-            state.preset = selectedPresets.get(state.presetIndex);
-        } else {
-            state.preset = null;
-        }
+        state.nextRecordedSynthNote();
     }
 
     private void sendNoteOff() throws InvalidMidiDataException {
-        MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, state.note, 0), 0);
+        MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, state.getCurrentRecordedSynthNote()
+                .getNote(), 0), 0);
         midiOutDevice.send(noteOff);
 
         if (!state.isSilentBuffer()) {
-            threadLogger.info("Looping sound detected");
-            LoopSetting currentLoop = new LoopSetting();
-            currentLoop.setNote(state.note);
-            currentLoop.setPreset(state.preset);
-            currentLoop.setSampleStart((long) (1.0f * format.getSampleRate())); // TODO: detect loop start instead of 1sec
-            currentLoop.setSampleEnd(state.noteOffSampleMarker);
-            loopSettings.add(currentLoop);
+            threadLogger.log("Looping sound detected");
+            LoopSetting loopSetting = new LoopSetting();
+            // TODO: detect loop start instead of nsec before end
+            loopSetting.setSampleStart(state.noteOffSampleMarker - (long) (3.0f * format.getSampleRate()));
+            loopSetting.setSampleEnd(state.noteOffSampleMarker);
+            state.getCurrentRecordedSynthNote()
+                    .setLoopSetting(loopSetting);
         }
     }
 
+    private File getOutputFile(MidiPreset preset, int note, int velocity) {
+        var midiNote = MidiNote.fromValue(note);
+        return new File("%s/%s %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), preset.getId(), preset.title(), midiNote.name(), Math.min(127, velocity)));
+    }
+
     private void sendNoteOn() throws InvalidMidiDataException, IOException {
-        if (state.note == state.lowestNote && state.isFirstVelocity()) {
-            threadLogger.info("Preset Change %d-%03d".formatted(state.preset.bank(), state.preset.program()));
-            midiOutDevice.sendPresetChange(state.preset);
+        RecordedSynthNote currentRecordedSynthNote = state.getCurrentRecordedSynthNote();
+        if (currentRecordedSynthNote
+                .isFirstNote() && currentRecordedSynthNote
+                .isFirstVelocity()) {
+            threadLogger.log("======================================================");
+            threadLogger.log("Preset Change \"%s\"".formatted(currentRecordedSynthNote.getPreset()
+                    .title()));
+            midiOutDevice.sendPresetChange(currentRecordedSynthNote.getPreset());
         }
-        File outputFile = getOutputFile(state.preset, state.note, state.velocity);
-        threadLogger.info("Record %s".formatted(outputFile.getParentFile()
+        File outputFile = getOutputFile(currentRecordedSynthNote.getPreset(), currentRecordedSynthNote.getNote(), currentRecordedSynthNote.getVelocity());
+        threadLogger.log("Record %s".formatted(outputFile.getParentFile()
                 .getName() + "/" + outputFile.getName()));
-        wavRecorder = new WavRecorder(outputFile, wavFormat);
-        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, state.note, Math.min(127, state.velocity)), 0);
+        wavRecorder = new WavRecorder(outputFile, wavFormat, threadLogger);
+        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, currentRecordedSynthNote.getNote(), currentRecordedSynthNote.getVelocity()), 0);
         midiOutDevice.send(noteOn);
     }
 
@@ -296,81 +354,21 @@ public class SynthRipper {
         state.noiseSamplesRead += buffer.nbSamples();
     }
 
-    private void generateSFZ() {
-        conf.getMidi()
-                .getSelectedPresets()
-                .forEach(p -> {
-                    File sfzFile = new File("%s/%01d-%03d %s.sfz".formatted(conf.getOutputDir(), p.bank(), p.program(), p.title()));
-                    try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
-                        final String SEPARATOR = "----------------------------------------------------------";
-                        out.println(SEPARATOR);
-                        out.println("%s".formatted(p.title()));
-                        out.println(SEPARATOR);
-                        out.println("<control>");
-                        out.println("default_path=.");
-                        out.println("<global>");
-                        int prevVelo = -1;
-                        int nbVelocityPerNote = conf.getMidi()
-                                .getVelocityPerNote();
-                        int velocityOffset = (int) Math.ceil(127.f / nbVelocityPerNote);
-                        for (int group = 1; group <= nbVelocityPerNote; group++) {
-                            int startVelo = prevVelo + 1;
-                            int endVelo = Math.min(127, velocityOffset * group);
-                            out.println(SEPARATOR);
-                            out.println(" Velocity layer %03d".formatted(endVelo));
-                            out.println(SEPARATOR);
-                            out.println("<group>");
-                            out.println("lovel=" + startVelo);
-                            out.println("hivel=" + endVelo);
-                            prevVelo = endVelo;
-
-                            out.println("");
-                            int nbRegion = Math.min(1, state.highestNote + 1 - state.lowestNote / state.noteIncrement);
-                            for (int r = 0; r < nbRegion; r++) {
-                                out.println("<region>");
-                                int note = state.lowestNote + r * state.noteIncrement;
-                                int begin = note;
-                                int end = note + state.noteIncrement - 1;
-                                if (r == 0) {
-                                    begin = 0;
-                                }
-                                if (r == nbRegion - 1) {
-                                    end = 127;
-                                }
-                                String path = sfzFile.getParentFile()
-                                        .toPath()
-                                        .relativize(getOutputFile(p, note, endVelo).toPath())
-                                        .toString()
-                                        .replace("\\", "/");
-
-                                getLoop(p, note).ifPresentOrElse(l -> {
-                                    out.println("loop_mode=loop_sustain");
-                                    out.println("loop_start=" + l.getSampleStart());
-                                    out.println("loop_end=" + l.getSampleEnd());
-                                }, () -> out.println("loop_mode=no_loop"));
-
-                                out.println("sample=" + path);
-                                out.println("lokey=" + begin);
-                                out.println("pitch_keycenter=" + note);
-                                out.println("hikey=" + end);
-                                out.println("");
-                            }
-                        }
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
-    private Optional<LoopSetting> getLoop(MidiPreset preset, int note) {
-        return loopSettings.stream()
-                .filter(l -> l.getPreset()
-                        .equals(preset) && l.getNote() == note)
-                .findFirst();
+    private void savePresets() {
+        String outputFormat = conf.getMidi()
+                .getOutputFormat();
+        presetGenerators.stream()
+                .filter(pg -> pg.getAlias()
+                        .equals(outputFormat))
+                .findFirst()
+                .ifPresentOrElse(pg ->
+                {
+                    pg.generate(conf, state.sampleBatch);
+                }, () -> log.error("Unknown output format: " + outputFormat));
     }
 
     private boolean finished() {
-        return state.state == SynthRipperStateEnum.IDLE && state.preset == null;
+        return state.state == SynthRipperStateEnum.IDLE && state.getCurrentRecordedSynthNote() == null;
     }
 
 }

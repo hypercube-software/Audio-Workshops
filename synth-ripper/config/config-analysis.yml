@@ -2,23 +2,56 @@ projectName: "BOSS-DS330"
 devices:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Périphérique audio principal"
-  outputMidiDevice: "4- MIDISPORT Uno Out"
+  outputMidiDevice: "2- MIDISPORT Uno Out"
 audio:
   bufferDurationMs: 250
   nbChannels: 2
-  channelMapping: "1:0"
+  channelMapping: "0:0 1:1"
   bitDepth: 16
   sampleRate: 44100
 midi:
-  maxNoteDurationSec: 3
-  maxNoteReleaseDurationSec: 1
-  lowestCC: 48
-  highestCC: 48
-  lowestNote: "C3"
-  highestNote: "C3"
+  # DS: Decent Sampler
+  # SFZ
+  outputFormat: DS
+  # detect looping sounds
+  maxNoteDurationSec: 5
+  maxNoteReleaseDurationSec: 5
+  #
+  # Select how to send bank select messages to the device:
+  # ------------------------------------------------------
+  # PRG              : Does not send bank select, send only Program Change
+  # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+  # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+  # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+  #
+  presetFormat: BANK_MSB_PRG
+  #
+  # FROM_ONE : preset number start from 1, it will be converted to n-1
+  # FROM_ZERO: preset number will be sent "as is"
+  #
+  presetNumbering: FROM_ONE
+  #
+  # preset numbers can be in two forms:
+  #   <bank number>-<program number>
+  #   <program number> only, in this case bank will be 0
+  #
+  # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
+  #
+  # lowest preset included
+  lowestPreset: Pad 5 (bowed)
+  # highest preset included
+  highestPreset: Pad 5 (bowed)
+  # lowest note included
+  lowestNote: C2
+  # highest note included
+  highestNote: C2
+  # how many note to record per octave
   notesPerOctave: 1
+  # how many velocity layer to record per note
   velocityPerNote: 1
-  presetOffset: 1
+  #
+  # presets order is important due to lowestPreset and highestPreset
+  #
   presets:
     - 1 Acoustic Grand Piano
     - 2 Bright Acoustic Piano
@@ -127,7 +160,8 @@ midi:
     - 105 Sitar
     - 106 Banjo
     - 107 Shamisen
-    - 108 Koto
+    - 0-108 Koto
+    - 8-108 Taisho Koto
     - 109 Kalimba
     - 110 Bag Pipe
     - 111 Fiddle
@@ -148,3 +182,8 @@ midi:
     - 126 Helicopter
     - 127 Applause
     - 128 Gunshot
+  #
+  # Commands used in presets (TODO)
+  #
+  commands:
+    tempo: F0 43 10 4B 60 00 29 00 vv F7

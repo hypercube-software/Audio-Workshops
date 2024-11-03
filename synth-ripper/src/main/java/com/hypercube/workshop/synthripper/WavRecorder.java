@@ -12,8 +12,8 @@ import com.hypercube.workshop.audioworkshop.files.riff.chunks.Chunks;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
 import com.hypercube.workshop.synthripper.config.ChannelMap;
 import com.hypercube.workshop.synthripper.config.ChannelMapping;
+import com.hypercube.workshop.synthripper.log.ThreadLogger;
 import lombok.RequiredArgsConstructor;
-import org.jline.utils.Log;
 
 import java.io.Closeable;
 import java.io.File;
@@ -30,17 +30,19 @@ public class WavRecorder implements Closeable {
     private final SampleToPCMFunction converter;
     protected long currentDurationInSamples = 0;
     protected final PCMFormat format;
-    private final double[][] outSampleBuffer;
+    private final double[][] reorderedSampleBuffer;
     private final byte[] pcmBuffer;
     private final ByteBuffer pcmByteBuffer;
     private boolean dataChunkClosed;
+    private ThreadLogger threadLogger;
 
-    public WavRecorder(File output, PCMBufferFormat format) throws IOException {
+    public WavRecorder(File output, PCMBufferFormat format, ThreadLogger threadLogger) throws IOException {
+        this.threadLogger = threadLogger;
         this.format = checkFormat(format);
         this.out = new RiffWriter(output);
         this.dataChunk = new RiffChunk(null, Chunks.DATA, (int) out.getPosition(), 0);
         this.maxDurationInSamples = INFINITE_DURATION;
-        this.outSampleBuffer = format.allocateSampleBuffer();
+        this.reorderedSampleBuffer = format.allocateSampleBuffer();
         this.pcmBuffer = format.allocatePcmBuffer();
         this.pcmByteBuffer = format.wrapPCMBuffer(this.pcmBuffer);
         this.converter = PCMConverter.getSampleToPCMFunction(format);
@@ -56,6 +58,7 @@ public class WavRecorder implements Closeable {
         out.writeMarkers(pcmMarkers);
     }
 
+
     private PCMFormat checkFormat(PCMFormat format) {
         if (format.isBigEndian()) {
             throw new AudioError("BigEndian is not supported by WAV format");
@@ -63,24 +66,35 @@ public class WavRecorder implements Closeable {
         return format;
     }
 
+    public void write(byte[] pcmBuffer, int pcmSize) {
+        try {
+            out.write(pcmBuffer, 0, pcmSize);
+        } catch (IOException e) {
+            throw new AudioError(e);
+        }
+    }
+
     public boolean write(SampleBuffer buffer, int startPosInSamples, ChannelMap channelMap) {
         try {
-            for (int c = 0; c < buffer.nbChannels(); c++) {
-                ChannelMapping dstChannel = channelMap.get(c);
-                if (dstChannel != null && dstChannel.dst() < format.getNbChannels()) {
-                    outSampleBuffer[dstChannel.dst()] = buffer.getRawBuffer(c);
-                }
+            reorderChannels(buffer, channelMap);
+            //
+            // convert to PCM samples and write to disk
+            //
+            int pcmSize = buffer.nbSamples() * format.getFrameSizeInBytes();
+            int pcmOffset = startPosInSamples * format.getFrameSizeInBytes();
+            int nbSamplesToWrite = buffer.nbSamples() - startPosInSamples;
+            int nbPcmToWrite = pcmSize - pcmOffset;
+            if (pcmOffset != 0) {
+                threadLogger.log("Write " + nbSamplesToWrite + " samples, skiping " + startPosInSamples + " samples (" + pcmOffset + " bytes) in buffer " + buffer.nbSamples() + " samples (" + pcmSize + " bytes)");
             }
-            for (int c = 0; c < format.getNbChannels(); c++) {
-                int pcmSize = buffer.nbSamples() * format.getBytesPerSamples();
-                converter.convert(outSampleBuffer, pcmByteBuffer, buffer.nbSamples(), format.getNbChannels());
-                int offset = startPosInSamples * format.getBytesPerSamples() * format.getNbChannels();
-                if (offset != 0) {
-                    Log.info("Skip " + startPosInSamples + " samples , " + offset + " bytes");
-                }
-                out.write(pcmBuffer, offset, pcmSize - offset);
+            if (nbPcmToWrite > 0) {
+                converter.convert(reorderedSampleBuffer, pcmByteBuffer, buffer.nbSamples(), format.getNbChannels());
+                out.write(pcmBuffer, pcmOffset, nbPcmToWrite);
+
+            } else {
+                threadLogger.log("Skip buffer");
             }
-            currentDurationInSamples += buffer.nbSamples() - startPosInSamples;
+            currentDurationInSamples += nbSamplesToWrite;
             if (maxDurationInSamples != INFINITE_DURATION) {
                 return currentDurationInSamples < maxDurationInSamples;
             } else {
@@ -88,6 +102,21 @@ public class WavRecorder implements Closeable {
             }
         } catch (IOException e) {
             throw new AudioError(e);
+        }
+    }
+
+    /**
+     * Convert input channels to output channels (potentially drop some of them)
+     *
+     * @param buffer     input buffer
+     * @param channelMap map used to set {@link #reorderedSampleBuffer}
+     */
+    private void reorderChannels(SampleBuffer buffer, ChannelMap channelMap) {
+        for (int c = 0; c < buffer.nbChannels(); c++) {
+            ChannelMapping dstChannel = channelMap.get(c);
+            if (dstChannel != null && dstChannel.dst() < format.getNbChannels()) {
+                reorderedSampleBuffer[dstChannel.dst()] = buffer.getRawBuffer(c);
+            }
         }
     }
 

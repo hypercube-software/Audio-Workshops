@@ -120,6 +120,13 @@
   "name":"com.hazelcast.core.HazelcastInstance"
 },
 {
+  "name":"com.hypercube.workshop.synthripper.SynthRipper",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.util.List"] }]
+},
+{
   "name":"com.hypercube.workshop.synthripper.SynthRipperApplication",
   "allDeclaredFields":true,
   "allDeclaredClasses":true,
@@ -140,7 +147,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"info","parameterTypes":["boolean"] }, {"name":"rip","parameterTypes":["java.io.File"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["com.hypercube.workshop.synthripper.SynthRipper"] }, {"name":"info","parameterTypes":["boolean"] }, {"name":"rip","parameterTypes":["java.io.File"] }]
 },
 {
   "name":"com.hypercube.workshop.synthripper.config.AudioSettings",
@@ -170,7 +177,7 @@
   "name":"com.hypercube.workshop.synthripper.config.MidiSettings",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setHighestCC","parameterTypes":["int"] }, {"name":"setHighestNote","parameterTypes":["java.lang.String"] }, {"name":"setLowestCC","parameterTypes":["int"] }, {"name":"setLowestNote","parameterTypes":["java.lang.String"] }, {"name":"setMaxNoteDurationSec","parameterTypes":["float"] }, {"name":"setMaxNoteReleaseDurationSec","parameterTypes":["float"] }, {"name":"setNotesPerOctave","parameterTypes":["int"] }, {"name":"setPresetOffset","parameterTypes":["int"] }, {"name":"setPresets","parameterTypes":["java.util.List"] }, {"name":"setVelocityPerNote","parameterTypes":["int"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setHighestCC","parameterTypes":["int"] }, {"name":"setHighestNote","parameterTypes":["java.lang.String"] }, {"name":"setHighestPreset","parameterTypes":["java.lang.String"] }, {"name":"setLowestCC","parameterTypes":["int"] }, {"name":"setLowestNote","parameterTypes":["java.lang.String"] }, {"name":"setLowestPreset","parameterTypes":["java.lang.String"] }, {"name":"setMaxNoteDurationSec","parameterTypes":["float"] }, {"name":"setMaxNoteReleaseDurationSec","parameterTypes":["float"] }, {"name":"setNotesPerOctave","parameterTypes":["int"] }, {"name":"setOutputFormat","parameterTypes":["java.lang.String"] }, {"name":"setPresetFormat","parameterTypes":["com.hypercube.workshop.midiworkshop.common.presets.MidiPresetFormat"] }, {"name":"setPresetOffset","parameterTypes":["int"] }, {"name":"setPresets","parameterTypes":["java.util.List"] }, {"name":"setVelocityPerNote","parameterTypes":["int"] }]
 },
 {
   "name":"com.hypercube.workshop.synthripper.config.MidiSettingsBeanInfo"
@@ -189,6 +196,47 @@
 },
 {
   "name":"com.hypercube.workshop.synthripper.config.SynthRipperConfigurationCustomizer"
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.PresetGenerator",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.DecentSamplerPresetGenerator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"generate","parameterTypes":["com.hypercube.workshop.synthripper.config.SynthRipperConfiguration","java.util.List"] }, {"name":"getAlias","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.jaxb.TriggerModeAdapter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.DecentSampler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.Group",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.Sample",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.sfz.SfzPresetGenerator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"generate","parameterTypes":["com.hypercube.workshop.synthripper.config.SynthRipperConfiguration","java.util.List"] }, {"name":"getAlias","parameterTypes":[] }]
 },
 {
   "name":"com.mongodb.client.MongoClient"
@@ -282,6 +330,9 @@
   "name":"jakarta.json.bind.Jsonb"
 },
 {
+  "name":"jakarta.mail.internet.MimeMessage"
+},
+{
   "name":"jakarta.persistence.EntityManager"
 },
 {
@@ -321,6 +372,25 @@
 },
 {
   "name":"jakarta.validation.executable.ExecutableValidator"
+},
+{
+  "name":"jakarta.xml.bind.annotation.XmlAccessType"
+},
+{
+  "name":"jakarta.xml.bind.annotation.XmlAccessorType",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"jakarta.xml.bind.annotation.XmlElement",
+  "methods":[{"name":"type","parameterTypes":[] }]
+},
+{
+  "name":"jakarta.xml.bind.annotation.XmlRootElement",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter",
+  "methods":[{"name":"type","parameterTypes":[] }, {"name":"value","parameterTypes":[] }]
 },
 {
   "name":"java.beans.PropertyVetoException"
@@ -371,11 +441,15 @@
   "methods":[{"name":"isNamed","parameterTypes":[] }]
 },
 {
+  "name":"java.lang.NullPointerException"
+},
+{
   "name":"java.lang.Object",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"getEnd","parameterTypes":[] }, {"name":"getGroups","parameterTypes":[] }, {"name":"getHiNote","parameterTypes":[] }, {"name":"getHiVel","parameterTypes":[] }, {"name":"getLoVel","parameterTypes":[] }, {"name":"getLoopCrossfade","parameterTypes":[] }, {"name":"getLoopEnabled","parameterTypes":[] }, {"name":"getLoopEnd","parameterTypes":[] }, {"name":"getLoopStart","parameterTypes":[] }, {"name":"getLowNote","parameterTypes":[] }, {"name":"getPath","parameterTypes":[] }, {"name":"getRootNote","parameterTypes":[] }, {"name":"getSamples","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"getTrigger","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ObjectBeanInfo"
@@ -409,6 +483,9 @@
 {
   "name":"java.lang.ThreadBuilders$VirtualThreadBuilder",
   "methods":[{"name":"factory","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.UnsatisfiedLinkError"
 },
 {
   "name":"java.lang.annotation.Documented",
@@ -447,6 +524,12 @@
 {
   "name":"java.net.URLPermission",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]
+},
+{
+  "name":"java.nio.Buffer"
+},
+{
+  "name":"java.nio.charset.Charset"
 },
 {
   "name":"java.security.AllPermission"
@@ -560,6 +643,97 @@
   "name":"org.aspectj.weaver.Advice"
 },
 {
+  "name":"org.bytedeco.fftw.global.fftw3"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Parallel_loop_Work_ByteBuffer_ByteBuffer_long_int_Pointer"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Parallel_loop_Work_BytePointer_BytePointer_long_int_Pointer"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Parallel_loop_Work_byte___byte___long_int_Pointer"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Work_ByteBuffer"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Work_BytePointer"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$Work_byte__"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftw_iodim"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftw_iodim64"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftw_plan"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftw_read_char_func_do_not_use_me"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftw_write_char_func_do_not_use_me"
+},
+{
+  "name":"org.bytedeco.fftw.global.fftw3$fftwf_plan"
+},
+{
+  "name":"org.bytedeco.javacpp.BoolPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.BooleanPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.BytePointer"
+},
+{
+  "name":"org.bytedeco.javacpp.CLongPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.CharPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.DoublePointer"
+},
+{
+  "name":"org.bytedeco.javacpp.FloatPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.IntPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.Loader"
+},
+{
+  "name":"org.bytedeco.javacpp.Loader$Helper"
+},
+{
+  "name":"org.bytedeco.javacpp.LongPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.Pointer"
+},
+{
+  "name":"org.bytedeco.javacpp.Pointer$NativeDeallocator"
+},
+{
+  "name":"org.bytedeco.javacpp.PointerPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.ShortPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.SizeTPointer"
+},
+{
+  "name":"org.bytedeco.javacpp.presets.javacpp",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.cache2k.Cache2kBuilder"
 },
 {
@@ -573,6 +747,39 @@
 },
 {
   "name":"org.flywaydb.core.Flyway"
+},
+{
+  "name":"org.glassfish.jaxb.core.v2.model.nav.ReflectionNavigator",
+  "methods":[{"name":"getInstance","parameterTypes":[] }]
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.ArrayElementLeafProperty",
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.ArrayElementNodeProperty",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.glassfish.jaxb.runtime.v2.runtime.JAXBContextImpl","org.glassfish.jaxb.runtime.v2.model.runtime.RuntimeElementPropertyInfo"] }]
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.ArrayReferenceNodeProperty",
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleElementLeafProperty",
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleElementNodeProperty",
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleMapNodeProperty",
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleReferenceNodeProperty",
+  "queryAllPublicConstructors":true
 },
 {
   "name":"org.h2.server.web.JakartaWebServlet"
@@ -2254,7 +2461,14 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getInteractive","parameterTypes":[] }, {"name":"setInteractive","parameterTypes":["org.springframework.shell.boot.SpringShellProperties$Interactive"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getHistory","parameterTypes":[] }, {"name":"getInteractive","parameterTypes":[] }, {"name":"setHistory","parameterTypes":["org.springframework.shell.boot.SpringShellProperties$History"] }, {"name":"setInteractive","parameterTypes":["org.springframework.shell.boot.SpringShellProperties$Interactive"] }]
+},
+{
+  "name":"org.springframework.shell.boot.SpringShellProperties$History",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"setEnabled","parameterTypes":["boolean"] }]
 },
 {
   "name":"org.springframework.shell.boot.SpringShellProperties$Interactive",
@@ -2608,6 +2822,10 @@
 },
 {
   "name":"org.springframework.stereotype.Indexed",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.stereotype.Service",
   "queryAllDeclaredMethods":true
 },
 {

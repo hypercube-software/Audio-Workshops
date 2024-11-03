@@ -2,17 +2,25 @@ package com.hypercube.workshop.synthripper.config;
 
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetFormat;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
+import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
+import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 @Setter
 @Getter
 public class MidiSettings {
+    /**
+     * Output format for presets, shound match {@link PresetGenerator#getAlias()}
+     */
+    private String outputFormat;
     /**
      * Max Duration of NoteOn message before sending Note Off
      */
@@ -22,9 +30,13 @@ public class MidiSettings {
      */
     private float maxNoteReleaseDurationSec;
     /**
-     * How preset numbers must be parsed
+     * Which kinf of bank select must be used
      */
-    private MidiPresetFormat presetFormat;
+    private MidiBankFormat presetFormat;
+    /**
+     * Preset numbers start from 0 or 1 ?
+     */
+    private MidiPresetNumbering presetNumbering;
     /**
      * Lower bound (included)
      */
@@ -50,13 +62,17 @@ public class MidiSettings {
      */
     private int velocityPerNote;
     /**
-     * Presets names for each CC value
+     * Presets definitions
      */
-    private List<String> presets;
+    private List<IConfigMidiPreset> presets;
     /**
      * Presets to record
      */
     private List<MidiPreset> selectedPresets;
+    /**
+     * Command templates
+     */
+    private Map<String, String> commands;
 
     public int getLowestNoteInt() {
         return getNoteNumber(lowestNote);
@@ -68,28 +84,22 @@ public class MidiSettings {
 
     public List<MidiPreset> getSelectedPresets() {
         if (selectedPresets == null) {
-            String lowestPresetPrefix = lowestPreset + " ";
-            String highestPresetPrefix = highestPreset + " ";
             int startIdx = IntStream.range(0, presets.size())
                     .filter(idx -> presets.get(idx)
-                            .startsWith(lowestPresetPrefix))
+                            .getTitle()
+                            .equals(lowestPreset))
                     .findFirst()
                     .orElseThrow(() -> new MidiError("Lowest preset not found:" + lowestPreset));
             int endIdx = IntStream.range(0, presets.size())
                     .filter(idx -> presets.get(idx)
-                            .startsWith(highestPresetPrefix))
+                            .getTitle()
+                            .equals(highestPreset))
                     .findFirst()
                     .orElseThrow(() -> new MidiError("Highest preset not found:" + highestPreset));
             selectedPresets = IntStream.rangeClosed(startIdx, endIdx)
                     .boxed()
-                    .map(idx -> {
-                        String definition = presets.get(idx);
-                        MidiPreset preset = MidiPreset.fromString(presetFormat, definition);
-                        if (preset.title() == null) {
-                            throw new MidiError("Preset without name: " + definition);
-                        }
-                        return preset;
-                    })
+                    .map(idx -> presets.get(idx)
+                            .forgeMidiPreset(presetFormat, presetNumbering))
                     .toList();
         }
         return selectedPresets;

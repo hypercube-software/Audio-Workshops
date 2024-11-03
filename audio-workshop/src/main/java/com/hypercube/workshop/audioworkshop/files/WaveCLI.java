@@ -43,8 +43,8 @@ public class WaveCLI {
                     RiffInspector waveformConverter = new RiffInspector(riffReader, riffFileInfo);
                     waveformConverter.inspect(envelopeFollower);
                     log.info("Noise floor  : %f %f dB".formatted(envelopeFollower.getNoiseFloor(), pcmFormat.toDb(envelopeFollower.getNoiseFloor())));
-                    log.info("sample start : %010d %05.1f ms".formatted(envelopeFollower.getSampleStart(), pcmFormat.sampleToMs(envelopeFollower.getSampleStart())));
-                    log.info("sample end   : %010d %05.1f ms".formatted(envelopeFollower.getSampleEnd(), pcmFormat.sampleToMs(envelopeFollower.getSampleEnd())));
+                    log.info("sample start : %010d %05.1f ms".formatted(envelopeFollower.getSampleStart(), pcmFormat.samplesToMilliseconds(envelopeFollower.getSampleStart())));
+                    log.info("sample end   : %010d %05.1f ms".formatted(envelopeFollower.getSampleEnd(), pcmFormat.samplesToMilliseconds(envelopeFollower.getSampleEnd())));
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }

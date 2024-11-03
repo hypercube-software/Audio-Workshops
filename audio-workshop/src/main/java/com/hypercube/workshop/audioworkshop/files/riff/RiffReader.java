@@ -1311,7 +1311,7 @@ public class RiffReader implements AutoCloseable {
                         .getContentSize()];
                 in.readFully(pcm);
                 rw.beginChunk(Chunks.DATA);
-                rw.writeBytes(pcm);
+                rw.write(pcm);
                 rw.endChunk();
             }
         }

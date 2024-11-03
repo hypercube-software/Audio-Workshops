@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @ShellComponent
 @AllArgsConstructor
 public class RecordCLI {
-    public static final int BUFFER_DURATION_MS = 80;
+    public static final int BUFFER_DURATION_MS = 250;
 
     @ShellMethod(value = "Record audio input")
     public void recordWAV(@ShellOption(value = "-i") String inputDevice, @ShellOption(value = "-f") File wavFile) {
@@ -28,7 +28,7 @@ public class RecordCLI {
         m.collectDevices();
         m.getInputs()
                 .forEach(d -> d.logFormats());
-        PCMBufferFormat format = new PCMBufferFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
+        PCMBufferFormat format = new PCMBufferFormat(BUFFER_DURATION_MS, 44100, BitDepth.BIT_DEPTH_16, 2, PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
         var in = m.getInput(inputDevice)
                 .orElseThrow(() -> new AudioError("Device not found:" + inputDevice));
         log.info("Record 4 seconds of audio into {}", wavFile);

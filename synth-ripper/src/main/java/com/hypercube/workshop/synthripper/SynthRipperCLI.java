@@ -20,6 +20,7 @@ import java.io.IOException;
 public class SynthRipperCLI {
 
     public static final String DEVICE_NOT_FOUND = "Device not found:";
+    private final SynthRipper synthRipper;
 
     @ShellMethod(value = "Get device infos")
     public void info(@ShellOption(value = "-v", defaultValue = "false") boolean verbose) {
@@ -53,7 +54,8 @@ public class SynthRipperCLI {
     public void rip(@ShellOption(value = "-c") File configFile) {
 
         SynthRipperConfiguration cfg = SynthRipperConfiguration.loadConfig(configFile);
-
+        cfg.getMidi()
+                .getSelectedPresets();
         MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
         midiDeviceManager.collectDevices();
 
@@ -72,11 +74,11 @@ public class SynthRipperCLI {
                         .getOutputMidiDevice())
                 .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getOutputMidiDevice()));
-        SynthRipper synthRecorder = null;
         try {
-            synthRecorder = new SynthRipper(cfg);
-            synthRecorder.recordSynth(audioInputDevice, audioOutputDevice, midiOutDevice);
+            synthRipper.init(cfg);
+            synthRipper.recordSynth(audioInputDevice, audioOutputDevice, midiOutDevice);
         } catch (IOException e) {
+            midiOutDevice.sendAllOff();
             throw new AudioError(e);
         }
 

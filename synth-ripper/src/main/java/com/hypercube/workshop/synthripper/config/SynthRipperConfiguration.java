@@ -1,14 +1,15 @@
 package com.hypercube.workshop.synthripper.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPresetDeserializer;
+import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
 import lombok.Getter;
 import lombok.Setter;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 @Setter
@@ -20,9 +21,13 @@ public class SynthRipperConfiguration {
     private AudioSettings audio;
 
     public static SynthRipperConfiguration loadConfig(File configFile) {
-        Yaml yaml = new Yaml(new Constructor(SynthRipperConfiguration.class, new LoaderOptions()));
-        try (FileInputStream inputStream = new FileInputStream(configFile)) {
-            return yaml.load(inputStream);
+        try {
+            var mapper = new ObjectMapper(new YAMLFactory());
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(IConfigMidiPreset.class, new ConfigMidiPresetDeserializer());
+            mapper.registerModule(module);
+
+            return mapper.readValue(configFile, SynthRipperConfiguration.class);
         } catch (IOException e) {
             throw new AudioError(e);
         }
