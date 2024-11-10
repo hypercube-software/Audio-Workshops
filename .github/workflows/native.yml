@@ -39,6 +39,8 @@ jobs:
         run: mvn clean install --file pom.xml -DskipTests
       - name: Native Build with Maven
         run: mvn -Pnative native:compile --file synth-ripper/pom.xml -DskipTests
+      - name: Native Build with Maven
+        run: mvn -Pnative native:compile --file midi-translator/pom.xml -DskipTests
       - uses: actions/upload-artifact@v4
         with:
           name: synth-ripper-osx
@@ -49,4 +51,24 @@ jobs:
           name: synth-ripper-x64
           path: |
             synth-ripper/target/synth-ripper.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synth-ripper.jar
+          path: |
+            synth-ripper/target/synth-ripper*.jar            
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synth-ripper-osx
+          path: |
+            midi-translator/target/midi-translator
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synth-ripper-x64
+          path: |
+            midi-translator/target/midi-translator.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: midi-translator.jar
+          path: |
+            midi-translator/target/midi-translator*.jar
   
