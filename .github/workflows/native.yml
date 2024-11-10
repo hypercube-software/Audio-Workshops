@@ -29,7 +29,7 @@ jobs:
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
-          distribution: 'graalvm'
+          distribution: 'graalvm-community'
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -37,36 +37,42 @@ jobs:
           node-version: 20
       - name: Jar Build with Maven
         run: mvn clean install --file pom.xml -DskipTests
-      - name: Native Build with Maven
+      - name: Native Build Synth-ripper with Maven
         run: mvn -Pnative native:compile --file synth-ripper/pom.xml -DskipTests
-      - name: Native Build with Maven
+      - name: Native Build Midi-Translator with Maven
         run: mvn -Pnative native:compile --file midi-translator/pom.xml -DskipTests
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
         with:
           name: synth-ripper-osx
           path: |
             synth-ripper/target/synth-ripper
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
         with:
-          name: synth-ripper-x64
+          name: synth-ripper-x64.exe
           path: |
             synth-ripper/target/synth-ripper.exe
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
         with:
           name: synth-ripper.jar
           path: |
             synth-ripper/target/synth-ripper*.jar            
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
         with:
-          name: synth-ripper-osx
+          name: midi-translator-osx
           path: |
             midi-translator/target/midi-translator
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
         with:
-          name: synth-ripper-x64
+          name: midi-translator-x64.exe
           path: |
             midi-translator/target/midi-translator.exe
       - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
         with:
           name: midi-translator.jar
           path: |
