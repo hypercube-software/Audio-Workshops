@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SynthRipperApplication {
 
     public static void main(String[] args) {
+        if (args.length == 0) {
+            args = new String[]{"help"};
+        }
         SpringApplication.run(SynthRipperApplication.class, args);
     }
 

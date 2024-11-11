@@ -2,7 +2,6 @@
   <configuration default="false" name="SynthRipper (usage)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.synthripper.SynthRipperApplication" />
     <module name="synth-ripper" />
-    <option name="PROGRAM_PARAMETERS" value="help rip" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/synth-ripper" />
     <extension name="coverage">
       <pattern>

@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MidiTranslatorApplication {
 
     public static void main(String[] args) {
+        if (args.length == 0) {
+            args = new String[]{"help"};
+        }
         SpringApplication.run(MidiTranslatorApplication.class, args);
     }
 
