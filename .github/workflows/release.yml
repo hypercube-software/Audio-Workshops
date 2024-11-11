@@ -54,6 +54,7 @@ jobs:
           name: midi-translator-x64.zip
           path: |
             midi-translator/target/midi-translator.exe
+            midi-translator/target/jsound.dll
             midi-translator/target/config
             midi-translator/target/readme.txt
       - uses: actions/upload-artifact@v4
@@ -77,6 +78,7 @@ jobs:
       #
       - name: Prepare synth-ripper distrib
         run: |
+          ls -la synth-ripper/target
           cp synth-ripper/doc/readme.txt synth-ripper/target
           cp -R synth-ripper/config synth-ripper/target
       - uses: actions/upload-artifact@v4
@@ -85,6 +87,7 @@ jobs:
           name: synth-ripper-x64.zip
           path: |
             synth-ripper/target/synth-ripper.exe
+            synth-ripper/target/jsound.dll
             synth-ripper/target/config
             synth-ripper/target/readme.txt
       - uses: actions/upload-artifact@v4
