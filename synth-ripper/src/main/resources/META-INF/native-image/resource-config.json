@@ -533,6 +533,20 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/info/ProjectInfoAutoConfiguration.class\\E"
   }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$Jackson2ObjectMapperBuilderCustomizerConfiguration.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$JacksonAutoConfigurationRuntimeHints.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$JacksonMixinConfiguration.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$JacksonObjectMapperBuilderConfiguration.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$JacksonObjectMapperConfiguration.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration$ParameterNamesModuleConfiguration.class\\E"
+  }, {
+    "pattern":"\\Qorg/springframework/boot/autoconfigure/jackson/JacksonAutoConfiguration.class\\E"
+  }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/orm/jpa/EntityManagerFactoryDependsOnPostProcessor.class\\E"

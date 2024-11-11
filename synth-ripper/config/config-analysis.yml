@@ -2,7 +2,7 @@ projectName: "BOSS-DS330"
 devices:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Périphérique audio principal"
-  outputMidiDevice: "2- MIDISPORT Uno Out"
+  outputMidiDevice: "loopMIDI Port"
 audio:
   bufferDurationMs: 250
   nbChannels: 2

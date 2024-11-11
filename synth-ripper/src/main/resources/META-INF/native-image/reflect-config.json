@@ -1,5 +1,11 @@
 [
 {
+  "name":"[B"
+},
+{
+  "name":"[Lcom.fasterxml.jackson.databind.deser.Deserializers;"
+},
+{
   "name":"[Ljava.lang.Class;"
 },
 {
@@ -7,6 +13,9 @@
 },
 {
   "name":"[Ljava.lang.annotation.Annotation;"
+},
+{
+  "name":"[Ljava.util.HashMap$Node;"
 },
 {
   "name":"[Lorg.springframework.core.annotation.AnnotationAttributes;"
@@ -108,7 +117,28 @@
   "name":"com.datastax.oss.driver.api.core.CqlSession"
 },
 {
+  "name":"com.fasterxml.jackson.core.Versioned",
+  "queryAllPublicMethods":true
+},
+{
+  "name":"com.fasterxml.jackson.databind.Module",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"com.fasterxml.jackson.databind.ObjectMapper"
+},
+{
+  "name":"com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.fasterxml.jackson.databind.module.SimpleModule",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.fasterxml.jackson.module.paramnames.ParameterNamesModule"
 },
 {
   "name":"com.github.benmanes.caffeine.cache.Caffeine"
@@ -118,6 +148,22 @@
 },
 {
   "name":"com.hazelcast.core.HazelcastInstance"
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.presets.MidiPreset",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"com.hypercube.workshop.synthripper.SynthRipper",
@@ -152,7 +198,9 @@
 {
   "name":"com.hypercube.workshop.synthripper.config.AudioSettings",
   "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBitDepth","parameterTypes":["int"] }, {"name":"setBufferDurationMs","parameterTypes":["int"] }, {"name":"setChannelMapping","parameterTypes":["java.lang.String"] }, {"name":"setNbChannels","parameterTypes":["int"] }, {"name":"setSampleRate","parameterTypes":["int"] }]
 },
 {
@@ -162,9 +210,23 @@
   "name":"com.hypercube.workshop.synthripper.config.AudioSettingsCustomizer"
 },
 {
+  "name":"com.hypercube.workshop.synthripper.config.ChannelMap",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.hypercube.workshop.synthripper.config.ChannelMapping",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"com.hypercube.workshop.synthripper.config.DevicesSettings",
   "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setInputAudioDevice","parameterTypes":["java.lang.String"] }, {"name":"setOutputAudioDevice","parameterTypes":["java.lang.String"] }, {"name":"setOutputMidiDevice","parameterTypes":["java.lang.String"] }]
 },
 {
@@ -176,8 +238,10 @@
 {
   "name":"com.hypercube.workshop.synthripper.config.MidiSettings",
   "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setHighestCC","parameterTypes":["int"] }, {"name":"setHighestNote","parameterTypes":["java.lang.String"] }, {"name":"setHighestPreset","parameterTypes":["java.lang.String"] }, {"name":"setLowestCC","parameterTypes":["int"] }, {"name":"setLowestNote","parameterTypes":["java.lang.String"] }, {"name":"setLowestPreset","parameterTypes":["java.lang.String"] }, {"name":"setMaxNoteDurationSec","parameterTypes":["float"] }, {"name":"setMaxNoteReleaseDurationSec","parameterTypes":["float"] }, {"name":"setNotesPerOctave","parameterTypes":["int"] }, {"name":"setOutputFormat","parameterTypes":["java.lang.String"] }, {"name":"setPresetFormat","parameterTypes":["com.hypercube.workshop.midiworkshop.common.presets.MidiPresetFormat"] }, {"name":"setPresetOffset","parameterTypes":["int"] }, {"name":"setPresets","parameterTypes":["java.util.List"] }, {"name":"setVelocityPerNote","parameterTypes":["int"] }]
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setCommands","parameterTypes":["java.util.Map"] }, {"name":"setHighestCC","parameterTypes":["int"] }, {"name":"setHighestNote","parameterTypes":["java.lang.String"] }, {"name":"setHighestPreset","parameterTypes":["java.lang.String"] }, {"name":"setLowestCC","parameterTypes":["int"] }, {"name":"setLowestNote","parameterTypes":["java.lang.String"] }, {"name":"setLowestPreset","parameterTypes":["java.lang.String"] }, {"name":"setMaxNoteDurationSec","parameterTypes":["float"] }, {"name":"setMaxNoteReleaseDurationSec","parameterTypes":["float"] }, {"name":"setNotesPerOctave","parameterTypes":["int"] }, {"name":"setOutputFormat","parameterTypes":["java.lang.String"] }, {"name":"setPresetFormat","parameterTypes":["com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat"] }, {"name":"setPresetFormat","parameterTypes":["com.hypercube.workshop.midiworkshop.common.presets.MidiPresetFormat"] }, {"name":"setPresetNumbering","parameterTypes":["com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering"] }, {"name":"setPresetOffset","parameterTypes":["int"] }, {"name":"setPresets","parameterTypes":["java.util.List"] }, {"name":"setVelocityPerNote","parameterTypes":["int"] }]
 },
 {
   "name":"com.hypercube.workshop.synthripper.config.MidiSettingsBeanInfo"
@@ -188,7 +252,9 @@
 {
   "name":"com.hypercube.workshop.synthripper.config.SynthRipperConfiguration",
   "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAudio","parameterTypes":["com.hypercube.workshop.synthripper.config.AudioSettings"] }, {"name":"setDevices","parameterTypes":["com.hypercube.workshop.synthripper.config.DevicesSettings"] }, {"name":"setMidi","parameterTypes":["com.hypercube.workshop.synthripper.config.MidiSettings"] }, {"name":"setProjectName","parameterTypes":["java.lang.String"] }]
 },
 {
@@ -410,6 +476,7 @@
 },
 {
   "name":"java.io.Serializable",
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
 {
@@ -424,11 +491,15 @@
 {
   "name":"java.lang.Class",
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getModule","parameterTypes":[] }]
+  "methods":[{"name":"getModule","parameterTypes":[] }, {"name":"getRecordComponents","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ClassLoader",
   "methods":[{"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int","java.security.ProtectionDomain"] }]
+},
+{
+  "name":"java.lang.Cloneable",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.Iterable",
@@ -449,7 +520,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"getEnd","parameterTypes":[] }, {"name":"getGroups","parameterTypes":[] }, {"name":"getHiNote","parameterTypes":[] }, {"name":"getHiVel","parameterTypes":[] }, {"name":"getLoVel","parameterTypes":[] }, {"name":"getLoopCrossfade","parameterTypes":[] }, {"name":"getLoopEnabled","parameterTypes":[] }, {"name":"getLoopEnd","parameterTypes":[] }, {"name":"getLoopStart","parameterTypes":[] }, {"name":"getLowNote","parameterTypes":[] }, {"name":"getPath","parameterTypes":[] }, {"name":"getRootNote","parameterTypes":[] }, {"name":"getSamples","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"getTrigger","parameterTypes":[] }]
+  "methods":[{"name":"getEnd","parameterTypes":[] }, {"name":"getGroups","parameterTypes":[] }, {"name":"getHiNote","parameterTypes":[] }, {"name":"getHiVel","parameterTypes":[] }, {"name":"getLoVel","parameterTypes":[] }, {"name":"getLoopCrossfade","parameterTypes":[] }, {"name":"getLoopEnabled","parameterTypes":[] }, {"name":"getLoopEnd","parameterTypes":[] }, {"name":"getLoopStart","parameterTypes":[] }, {"name":"getLowNote","parameterTypes":[] }, {"name":"getPath","parameterTypes":[] }, {"name":"getReleaseTimeInSec","parameterTypes":[] }, {"name":"getRootNote","parameterTypes":[] }, {"name":"getSamples","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"getTrigger","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ObjectBeanInfo"
@@ -468,6 +539,11 @@
 {
   "name":"java.lang.ProcessHandle$Info",
   "methods":[{"name":"command","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.Record",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.RuntimePermission"
@@ -512,6 +588,10 @@
   "methods":[{"name":"getActualTypeArguments","parameterTypes":[] }, {"name":"getRawType","parameterTypes":[] }]
 },
 {
+  "name":"java.lang.reflect.RecordComponent",
+  "methods":[{"name":"getName","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+},
+{
   "name":"java.lang.reflect.WildcardType",
   "methods":[{"name":"getLowerBounds","parameterTypes":[] }, {"name":"getUpperBounds","parameterTypes":[] }]
 },
@@ -545,6 +625,20 @@
 },
 {
   "name":"java.sql.Timestamp"
+},
+{
+  "name":"java.util.AbstractMap",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.HashMap",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.util.Map",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.util.PropertyPermission"
@@ -602,6 +696,12 @@
 },
 {
   "name":"javax.smartcardio.CardPermission"
+},
+{
+  "name":"javax.sound.midi.MidiMessage",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"javax.sql.DataSource"
@@ -1314,6 +1414,20 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"jsonComponentModule","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration$JacksonMixinConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"jsonMixinModule","parameterTypes":["org.springframework.context.ApplicationContext","org.springframework.boot.jackson.JsonMixinModuleEntries"] }, {"name":"jsonMixinModuleEntries","parameterTypes":["org.springframework.context.ApplicationContext"] }]
+},
+{
   "name":"org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer",
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
@@ -1792,6 +1906,24 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.boot.jackson.JsonComponentModule",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.jackson.JsonMixinModule",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.jackson.JsonMixinModuleEntries",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"close","parameterTypes":[] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector",
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
@@ -2166,6 +2298,9 @@
 },
 {
   "name":"org.springframework.http.converter.HttpMessageConverter"
+},
+{
+  "name":"org.springframework.http.converter.json.Jackson2ObjectMapperBuilder"
 },
 {
   "name":"org.springframework.http.server.reactive.HttpHandler"
