@@ -4,7 +4,7 @@
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%-2level %msg%n</pattern>
+            <pattern>%ex{2} %msg%n</pattern>
         </encoder>
     </appender>
 

@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Native build
+name: Release build
 
 on:
   workflow_dispatch:
@@ -41,40 +41,65 @@ jobs:
         run: mvn -Pnative native:compile --file synth-ripper/pom.xml -DskipTests
       - name: Native Build Midi-Translator with Maven
         run: mvn -Pnative native:compile --file midi-translator/pom.xml -DskipTests
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'macOS' }}
-        with:
-          name: synth-ripper-osx
-          path: |
-            synth-ripper/target/synth-ripper
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          name: synth-ripper-x64.exe
-          path: |
-            synth-ripper/target/synth-ripper.exe
+      #
+      # midi-translator
+      #
+      - name: Prepare midi-translator distrib
+        run: |
+          cp midi-translator/doc/readme.txt midi-translator/target
+          cp -R midi-translator/config midi-translator/target
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: synth-ripper.jar
-          path: |
-            synth-ripper/target/synth-ripper*.jar            
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'macOS' }}
-        with:
-          name: midi-translator-osx
-          path: |
-            midi-translator/target/midi-translator
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          name: midi-translator-x64.exe
+          name: midi-translator-x64.zip
           path: |
             midi-translator/target/midi-translator.exe
+            midi-translator/target/config
+            midi-translator/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          name: midi-translator-osx.zip
+          path: |
+            midi-translator/target/midi-translator
+            midi-translator/target/config
+            midi-translator/target/readme.txt
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: midi-translator.jar
+          name: midi-translator-jvm.zip
           path: |
             midi-translator/target/midi-translator*.jar
-  
+            midi-translator/target/config
+            midi-translator/target/readme.txt
+      #
+      # synth-ripper
+      #
+      - name: Prepare synth-ripper distrib
+        run: |
+          cp synth-ripper/doc/readme.txt synth-ripper/target
+          cp -R synth-ripper/config synth-ripper/target
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: synth-ripper-x64.zip
+          path: |
+            synth-ripper/target/synth-ripper.exe
+            synth-ripper/target/config
+            synth-ripper/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          name: synth-ripper-osx.zip
+          path: |
+            synth-ripper/target/synth-ripper
+            synth-ripper/target/config
+            synth-ripper/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: synth-ripper-jdk.zip
+          path: |
+            synth-ripper/target/synth-ripper*.jar
+            synth-ripper/target/config
+            synth-ripper/target/readme.txt            

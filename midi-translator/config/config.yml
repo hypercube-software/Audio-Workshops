@@ -1,6 +1,9 @@
 devices:
   inputMidiDevice: "nanoKEY2 1 KEYBOARD"
-  outputMidiDevice: "ToDAW"
-  outputBandwidth: 300
+  outputMidiDevice: "Tx81z"
+  outputBandwidth: 300 # The Tx81z typically can't go beyond 300 bytes/sec
+# Translation rules:
+# use vv to inject the control cahnge value inside the SYSEX
+# use [low,high] to rescale the input value
 translations:
-  - 1 => F0 43 12 12 32 vv F7 [-6,10]
+  - 7 => F0 43 12 12 32 vv F7 [-6,10] # convert CC Volume (7) in the range [0-127] to some TX81z parameters in the range [-6,10]
