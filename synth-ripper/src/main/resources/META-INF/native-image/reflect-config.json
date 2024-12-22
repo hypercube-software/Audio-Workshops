@@ -68,6 +68,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"ch.qos.logback.classic.pattern.ThrowableProxyConverter",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"ch.qos.logback.classic.util.DefaultJoranConfigurator",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -280,6 +284,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.Binding",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.hypercube.workshop.synthripper.preset.decent.model.DecentSampler",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -287,6 +297,30 @@
 },
 {
   "name":"com.hypercube.workshop.synthripper.preset.decent.model.Group",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.Groups",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.Midi",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.MidiControlChange",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.synthripper.preset.decent.model.RoundRobinGroup",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -520,7 +554,7 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"getEnd","parameterTypes":[] }, {"name":"getGroups","parameterTypes":[] }, {"name":"getHiNote","parameterTypes":[] }, {"name":"getHiVel","parameterTypes":[] }, {"name":"getLoVel","parameterTypes":[] }, {"name":"getLoopCrossfade","parameterTypes":[] }, {"name":"getLoopEnabled","parameterTypes":[] }, {"name":"getLoopEnd","parameterTypes":[] }, {"name":"getLoopStart","parameterTypes":[] }, {"name":"getLowNote","parameterTypes":[] }, {"name":"getPath","parameterTypes":[] }, {"name":"getReleaseTimeInSec","parameterTypes":[] }, {"name":"getRootNote","parameterTypes":[] }, {"name":"getSamples","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"getTrigger","parameterTypes":[] }]
+  "methods":[{"name":"getBindings","parameterTypes":[] }, {"name":"getEnd","parameterTypes":[] }, {"name":"getGroups","parameterTypes":[] }, {"name":"getHiNote","parameterTypes":[] }, {"name":"getHiVel","parameterTypes":[] }, {"name":"getLevel","parameterTypes":[] }, {"name":"getLoVel","parameterTypes":[] }, {"name":"getLoopCrossfade","parameterTypes":[] }, {"name":"getLoopEnabled","parameterTypes":[] }, {"name":"getLoopEnd","parameterTypes":[] }, {"name":"getLoopStart","parameterTypes":[] }, {"name":"getLowNote","parameterTypes":[] }, {"name":"getMidi","parameterTypes":[] }, {"name":"getMidiControlChangeList","parameterTypes":[] }, {"name":"getModVolume","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getNumber","parameterTypes":[] }, {"name":"getParameter","parameterTypes":[] }, {"name":"getPath","parameterTypes":[] }, {"name":"getPosition","parameterTypes":[] }, {"name":"getReleaseTimeInSec","parameterTypes":[] }, {"name":"getRootNote","parameterTypes":[] }, {"name":"getRoundRobinGroups","parameterTypes":[] }, {"name":"getSampleControlChanges","parameterTypes":[] }, {"name":"getSamples","parameterTypes":[] }, {"name":"getStart","parameterTypes":[] }, {"name":"getTags","parameterTypes":[] }, {"name":"getTranslation","parameterTypes":[] }, {"name":"getTranslationTable","parameterTypes":[] }, {"name":"getTrigger","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ObjectBeanInfo"
@@ -871,7 +905,8 @@
 },
 {
   "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleElementNodeProperty",
-  "queryAllPublicConstructors":true
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["org.glassfish.jaxb.runtime.v2.runtime.JAXBContextImpl","org.glassfish.jaxb.runtime.v2.model.runtime.RuntimeElementPropertyInfo"] }]
 },
 {
   "name":"org.glassfish.jaxb.runtime.v2.runtime.property.SingleMapNodeProperty",

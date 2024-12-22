@@ -5,18 +5,20 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 @Setter
 @Getter
 public class MidiSettings {
+    public static final int DEFAULT_MIDI_CHANNEL = 1;
+    public static final int USE_DEFAULT_MIDI_CHANNEL = -1;
     /**
      * Output format for presets, shound match {@link PresetGenerator#getAlias()}
      */
@@ -37,6 +39,10 @@ public class MidiSettings {
      * Preset numbers start from 0 or 1 ?
      */
     private MidiPresetNumbering presetNumbering;
+    /**
+     * Defautl MIDI channel to use
+     */
+    private int channel = DEFAULT_MIDI_CHANNEL;
     /**
      * Lower bound (included)
      */
@@ -62,6 +68,10 @@ public class MidiSettings {
      */
     private int velocityPerNote;
     /**
+     * How many cc to record (max is 127)
+     */
+    private int ccPerNote;
+    /**
      * Presets definitions
      */
     private List<IConfigMidiPreset> presets;
@@ -72,7 +82,7 @@ public class MidiSettings {
     /**
      * Command templates
      */
-    private Map<String, String> commands;
+    private List<CommandMacro> commands;
 
     public int getLowestNoteInt() {
         return getNoteNumber(lowestNote);
@@ -99,7 +109,7 @@ public class MidiSettings {
             selectedPresets = IntStream.rangeClosed(startIdx, endIdx)
                     .boxed()
                     .map(idx -> presets.get(idx)
-                            .forgeMidiPreset(presetFormat, presetNumbering))
+                            .forgeMidiPreset(this))
                     .toList();
         }
         return selectedPresets;

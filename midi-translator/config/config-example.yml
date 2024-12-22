@@ -1,0 +1,108 @@
+devices:
+  - name: "MPK-261"
+    enabled: false
+    outputMidiDevice: "MIDIOUT4 (MPK261)"
+    inputMidiDevice: "MIDIIN4 (MPK261)"
+    dumpRequests:
+      - "readSomething()"
+
+  - name: "TX-81z"
+    enabled: false
+    outputMidiDevice: "M8U eX 15"
+    inputMidiDevice: "M8U eX 16"
+    dumpRequests:
+      - "VMEM()"
+      - "PMEM()"
+      - "SCED()"
+      - "PCED()"
+      - "System Data()"
+      - "Program Change Table()"
+      - "Effect Data()"
+      - "Micro Tune Octave()"
+      - "Micro Tune Full Keyboard()"
+
+  - name: "TG-500"
+    enabled: false
+    dumpRequests:
+      - "System Setup()"
+      - "AllMulti()"
+      - "AllVoiceInternal1()"
+      - "AllVoiceInternal2()"
+      - "AllVoiceEditBuffer()"
+      - "AllPerformances()"
+
+  - name: "AN-1x"
+    enabled: false
+    outputMidiDevice: "M8U eX 3"
+    inputMidiDevice: "M8U eX 4"
+    dumpRequests:
+      - "System Data()"
+      - "All User Voices()"
+      - "All User Patterns()"
+      - "Voice Common Edit Buffer()"
+      - "Voice Scene 1 Edit Buffer ()"
+      - "Voice Scene 2 Edit Buffer()"
+      - "Voice Scene 2 Ctrl Buffer()"
+      - "Current Pattern Edit Buffer()"
+
+  - name: "TG-33"
+    enabled: false
+    outputMidiDevice: "M8U eX 7"
+    inputMidiDevice: "M8U eX 8"
+    dumpRequests:
+      - "System Data()"
+      - "Multi Internal()"
+      - "Multi Edit Buffer()"
+      - "Voice Internal()"
+      - "Voice Edit Buffer()"
+
+  - name: "JV-880"
+    enabled: false
+    outputMidiDevice: "M8U eX 9"
+    inputMidiDevice: "M8U eX 10"
+    dumpRequests:
+      - System Common()
+      - Temp Performance()
+      - Temp Rhythm Setup()
+      - Temp Patch()
+      - Performances()
+      - Internal Patches()
+      - Internal Rhythm()
+
+  - name: "Tr-rack"
+    enabled: false
+    outputMidiDevice: "M8U eX 11"
+    inputMidiDevice: "M8U eX 12"
+    dumpRequests:
+      - "GLOBAL DATA()"
+      - "MODE DATA()"
+      - "MULTI DATA()"
+      - "CURRENT PROGRAM PARAMETER()"
+      - "CURRENT COMBINATION PARAMETER()"
+      - "ALL DRUMKITS DATA()"
+      - "ALL PROGRAM PARAMETER()"
+      - "ALL COMBINATIONS PARAMETER()"
+      - "ALL DATA()"
+
+  - name: "CS1x"
+    enabled: false
+    outputMidiDevice: "M8U eX 5"
+    inputMidiDevice: "M8U eX 6"
+    dumpRequests:
+      - "SYSTEM()"
+      - "Cur Perf Common()"
+      - "Cur Perf Layers()"
+      - "User Perfs Common()"
+      - "User Perfs Layer1()"
+      - "User Perfs Layer2()"
+      - "User Perfs Layer3()"
+      - "User Perfs Layer4()"
+
+translate:
+  fromMidiDevice: "4- MIDISPORT Uno In"
+  toDevice: "Tx81z"
+# Translation rules:
+# use vv to inject the control change value inside the SYSEX
+# use [low,high] to rescale the input value
+translations:
+  - 7 => F0 43 12 12 32 vv F7 [-6,10] # convert CC Volume (7) in the range [0-127] to some TX81z parameters in the range [-6,10]

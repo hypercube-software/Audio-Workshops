@@ -1,0 +1,84 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+T8 Kik2
+T8 Kik2
+T8 Kik3
+T8 SN1
+T8 SN3
+T8 SN4
+T8 SN5
+T8 Conga HI1
+T8 Cowbell
+T8 Conga HI1
+T8 Marracas
+T8 Conga HI1
+T8 Conga HI1
+T8 Rim
+T8 CLAVE
+T8 CLAP
+
+T8 Tom
+T8 HH CL1
+T8 Tom
+T8 HH CL2
+T8 Tom
+T8 HH OP1
+T8 Tom
+T8 Cymbal
+
+
+T9 Kik1
+T9 Kik3n
+BD Jungle4
+T9 HH OP2
+T9 SN1
+T9 SN2
+T9 SN1
+T9 SN3
+T9 SN1
+T9 SN4
+T9 Rim
+T9 SN4
+T9 CLAP1
+T9 SN4
+T9 Tom HI2
+T9 HH CL1
+T9 Tom HI2
+T9 HH CL2
+T9 Tom HI2
+T9 HH OP2
+T9 Tom HI2
+T9 Crash1
+T9 Ride1
+T9 Crash1
+T8 Kik2
+T8 SN
+T8 SN3
+T8 HH CL
+T8 Cowbell
+T8 Marracas
+T8 Tamb
+T8 HH Op
+T8 Guiro
+T8 Metal

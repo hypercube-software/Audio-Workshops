@@ -1,0 +1,257 @@
+1 Dr um Trax1 1 On Basement Flanger1 2Band EQ ArpgTempo LFOAMod LFOFMod o f f o f f
+2 Sq Sin*Arp 2 On Hall1 Chorus4 Delay LCR ArpgTempo AEGDcyTime FEGDcyTime o f f o f f
+3 Sq Kirmes 3 On Tunnel Celeste4 CrossDelay VariCntrl FEGDcyTime FEGDcyTime FEGDcyTime o f f
+4 Sq Classic 2 On Hall1 Chorus1 Delay LR ChorusSend FEGAtkTime FEGAtkTime o f f o f f
+5 Sq Sequenza 1 On Hall1 Chorus1 3Band EQ ArpgTempo ChorusSend AEGDcyTime AEGSusLvl FEGSusLvl
+6 Sq RytField 2 On Hall1 Chorus1 Delay LR ChorusSend FEGDcyTime Pitch LFOSpeed LFOFMod
+7 Sq B-Luvva 2 On Hall1 Chorus1 Auto Wah ChorusSend FEGSusLvl ChorusSend FEGDcyTime AEGDcyTime
+8 Sq Obie Seq 2 On Hall1 Chorus1 Symphonic AEGDcyTime ChorusSend ChorusSend o f f o f f
+9 Sq Strobe 2 On Hall1 Chorus1 Delay LCR AEGDcyTime Volume Volume o f f o f f
+10 Sq Fly 1 On Hall1 Chorus1 Delay LR ChorusSend FEGAtkTime o f f o f f o f f
+11 Sq Vivaldi 2 On Hall1 Chorus1 3Band EQ AEGDcyTime ChorusSend ChorusSend o f f o f f
+12 Sq Dorian 2 On Hall1 Chorus1 2Band EQ ChorusSend AEGDcyTime AEGDcyTime o f f o f f
+13 Sc Rezline 4 O f f Hall1 Chorus1 2Band EQ FEGDcyTime ChorusSend ChorusSend ChorusSend ChorusSend
+14 Sc Todd 2 Off/Sprit Basement Chorus4 Symphonic AEGDcyTime NoteShift off off off
+15 Sc Thick 1 O f f Hall1 Celeste1 2Band EQ ChoToRev FEGAtkTime o f f o f f o f f
+16 Sc Thin 4 O f f Hall1 Chorus1 2Band EQ ChorusSend AEGDcyTime AEGDcyTime ChorusSend ChorusSend
+17 Sc CutGlass 2 O f f Hall1 Chorus1 Symphonic RevChoSend Volume Volume o f f o f f
+18 Sc Universe 1 O f f Hall1 Chorus1 2Band EQ FEGDcyTime ChorusSend o f f o f f o f f
+19 Sc Crispy 2 Off/Sprit Basement Flanger1 Rvrse Gate FEGDcyTime NoteShift off off off
+20 Sc Fat Anne 1 O f f Hall1 Chorus1 Chorus4 RevChoSend Pan o f f o f f o f f
+21 Sc Brassy 1 O f f Hall1 Chorus1 Delay LR ChorusSend FEGAtkTime o f f o f f o f f
+22 Sc TheWerks 2 Off/Sprit Effect Off Celeste2 Flanger2 ChorusSend AEGDcyTime AEGDcyTime FEGSusLvl FEGSusLvl
+23 Sc PulsMoD6 4 O f f WhiteRoom Flanger2 2Band EQ FEGDcyTime FEGSusLvl FEGSusLvl FEGSusLvl FEGSusLvl
+24 Sc Minora 3 O f f Hall1 Chorus1 2Band EQ AEGDcyTime Volume Volume Volume o f f
+25 Sc Noble 'Q 3 O f f Hall1 Chorus1 Hall1 Pan FEGDcyTime FEGDcyTime FEGAtkTime o f f
+26 Sc Tex Sass 4 O f f Hall1 Chorus4 Delay LCR VariCntrl FEGDcyTime FEGDcyTime FEGDcyTime FEGDcyTime
+27 Sc Quadra 2 O f f Hall1 Chorus1 2Band EQ PortaTime AEGDcyTime AEGDcyTime o f f o f f
+28 Sc DistArp 2 O f f Hall1 Chorus1 Distortion PortaTime ChorusSend ChorusSend o f f o f f
+29 Sc Digitz 2 O f f Hall1 Chorus1 Phaser1 AEGDcyTime ChorusSend ChorusSend o f f o f f
+30 Sc Odyssey 4 O f f Hall1 Celeste1 2Band EQ FEGDcyTime ChorusSend ChorusSend ChorusSend ChorusSend
+31 Sc Doves 1 O f f Hall1 Chorus1 Delay LR VariCntrl FEGAtkTime o f f o f f o f f
+32 Fx Airy 4 O f f Hall1 Chorus1 Hall1 ChorusSend Volume Volume Volume Volume
+33 Fx Paradise 3 O f f Hall1 Chorus1 Hall1 ChorusSend Volume Volume Volume o f f
+34 Fx Indies 2 O f f Hall1 Chorus1 Flanger3 ChorusSend Volume Volume o f f o f f
+35 Fx CSpace 3 O f f Hall1 Chorus1 Hall1 ChorusSend o f f Volume o f f o f f
+36 Fx Eerie 2 O f f Plate Chorus1 Celeste1 RevChoSend FEGDcyTime FEGDcyTime FEGAtkTime FEGAtkTime
+37 Fx Ambient 1 O f f Hall1 Chorus1 Flanger3 RevChoSend FEGAtkTime FEGDcyTime o f f o f f
+38 Fx Morning 2 O f f Hall1 Chorus1 Celeste1 ChorusSend Volume Volume o f f o f f
+39 Fx CSphere 3 O f f Hall1 Chorus1 Celeste1 ChorusSend Volume Volume Volume o f f
+40 Fx MagicPad 4 O f f Hall1 Chorus1 Hall1 ChorusSend Volume Volume Volume Volume
+41 Fx Tintopia 2 Off/Sprit Hall1 Chorus4 Delay LR RevChoSend Volume Volume o f f o f f
+42 Fx FlowrArp 1 On Hall1 Celeste2 Delay LR ArpgTempo ChorusSend o f f o f f o f f
+43 Fx K.Scope 3 On Hall1 Chorus1 Auto Wah ArpgTempo NoteShift off off off
+44 Fx Orient 2 O f f Hall1 Flanger1 Phaser1 LFOSpeed LFOAMod LFOAMod o f f o f f
+45 Fx Omnivor 4 O f f Hall1 Chorus1 Phaser1 RevChoSend Volume Volume Volume Volume
+46 Fx Wheeleez 3 O f f Hall1 Chorus1 Flanger1 ChorusSend Volume Volume Volume o f f
+47 Ba Bassline 1 O f f Hall1 Celeste2 2Band EQ FEGDcyTime ChorusSend o f f o f f o f f
+48 Ba Basslin2 2 O f f Hall1 Celeste1 2Band EQ PortaTime FEGAtkTime AEGDcyTime o f f o f f
+49 Ba Super 2 O f f Hall1 Chorus1 2Band EQ RevChoSend FEGDcyTime FEGSusLvl FEGDcyTime FEGSusLvl
+50 Ba Unison 3 Off/Sprit Room1 Chorus1 Celeste1 FEGDcyTime FEGAtkTime FEGAtkTime o f f o f f
+51 Ba SQ-Bass 2 O f f Room1 Celeste1 2Band EQ FEGDcyTime FEGAtkTime o f f o f f o f f
+52 Ba 80sSynBs 4 O f f Room1 Chorus4 2Band EQ FEGDcyTime FEGSusLvl FEGSusLvl FEGSusLvl FEGSusLvl
+53 Ba Pulsbass 2 O f f Hall1 Chorus1 3Band EQ FEGDcyTime o f f Volume o f f o f f
+54 Ba Saw Bass 2 O f f Hall1 Chorus1 3Band EQ FEGDcyTime o f f Volume o f f o f f
+55 Ba Fish 303 1 O f f Hall1 Chorus1 2Band EQ ChorusSend FEGAtkTime o f f o f f o f f
+56 Ba SawnOff 2 O f f Hall1 Chorus4 3Band EQ ChorusSend FEGDcyTime FEGDcyTime FEGSusLvl FEGSusLvl
+57 Ba CS 01 2 O f f Hall1 Celeste3 2Band EQ ChorusSend FEGAtkTime FEGAtkTime FEGSusLvl FEGSusLvl
+58 Ba Mogue 2 O f f Plate Chorus1 2Band EQ RevChoSend FEGDcyTime FEGDcyTime FEGSusLvl FEGSusLvl
+59 Ba LeeDa 3 O f f Effect Off Celeste2 Symphonic ChorusSend FEGSusLvl AEGDcyTime FEGSusLvl Volume
+60 Ba Howler 3 O f f Effect Off Celeste2 Rotary SP ChorusSend AEGAtkTime FEGSusLvl FEGAtkTime AEGDcyTime
+61 Ba KickBass 3 O f f Room1 Chorus1 2Band EQ FEGDcyTime FEGSusLvl FEGSusLvl o f f o f f
+62 Ba Sub 2 O f f Hall1 Chorus1 2Band EQ PortaTime FEGDcyTime FEGDcyTime o f f o f f
+63 Ld Wasp 2 Off/Sprit Effect Off Flanger1 Auto Wah FEGDcyTime ChorusSend FEGSusLvl FEGSusLvl o f f
+64 Ld E - n o 2 O f f Hall1 Chorus1 Flanger1 RevChoSend Volume Volume AEGDcyTime FEGAtkTime
+65 Ld Fifths 2 Off/Sprit Hall1 Chorus1 Echo PortaTime FEGDcyTime FEGDcyTime o f f o f f
+66 Ld TalkBox 3 Off/Sprit Hall1 Chorus4 Phaser1 RevChoSend FEGAtkTime FEGAtkTime FEGAtkTime o f f
+67 Ld Microdot 1 Off/Sprit Hall1 Chorus1 Phaser1 ReverbSend FEGSusLvl FEGDcyTime AEGDcyTime AEGSusLvl
+68 Ld Old Mini 2 Off/Sprit Hall1 Celeste4 CrossDelay FEGDcyTime FEGAtkTime FEGAtkTime o f f o f f
+69 Ld NuSync 2 O f f Hall1 Flanger1 2Band EQ ReverbSend FEGAtkTime FEGAtkTime o f f o f f
+70 Ld Clanger 2 Off/Sprit Hall1 Chorus1 CrossDelay PortaTime FEGDcyTime FEGDcyTime o f f o f f
+71 Ld Old Reso 2 Off/Sprit Hall1 Celeste4 Delay LR FEGDcyTime FEGAtkTime FEGAtkTime o f f o f f
+72 Ld Sync 1 Off/Sprit Hall1 Flanger1 CrossDelay VariCntrl Pitch off off off
+73 Ld Croma 2 Off/Sprit Stage1 Celeste4 Flanger1 ChorusSend Volume Volume o f f o f f
+74 Ld Big'm Up 4 O f f Hall1 Chorus1 Thru ChorusSend ReverbSend ReverbSend ReverbSend ReverbSend
+75 Ld Human 2 O f f Hall1 Chorus1 Phaser1 ChorusSend Pan Pan o f f o f f
+76 Ld Big Bob 2 O f f Hall1 Celeste4 Flanger1 PortaTime FEGSusLvl FEGSusLvl AEGSusLvl AEGSusLvl
+77 Gt Firestar 2 Off/Sprit Hall1 Flanger1 G.Amp Sim ChorusSend Pitch AEGDcyTime Pitch off
+78 G t Sevilla 2 O f f Hall1 Chorus1 2Band EQ ReverbSend AEGDcyTime AEGSusLvl FEGDcyTime AEGSusLvl
+79 P f CP80 1 O f f Room1 Chorus4 3Band EQ ReverbSend FEGAtkTime FEGDcyTime FEGSusLvl ChorusSend
+80 P f Woolitz1 2 Off/Sprit WhiteRoom Flanger1 3Band EQ LFOAMod Volume Volume o f f o f f
+81 P f Tina 2 Off/Sprit Stage1 Celeste4 2Band EQ LFOFMod o f f Volume o f f o f f
+82 P f DX-Class 1 Off/Sprit Hall1 Chorus1 3Band EQ ChorusSend AEGDcyTime o f f o f f o f f
+83 P f AmbiEp 2 O f f Hall1 Chorus1 Celeste1 ReverbSend FEGSusLvl FEGSusLvl FEGDcyTime FEGDcyTime
+84 P f HipRodes 3 Off/Sprit Hall1 Chorus1 Auto Pan ReverbSend Detune o f f Detune o f f
+85 P f Hard 2 O f f Hall1 Celeste1 2Band EQ ReverbSend AEGDcyTime AEGDcyTime FEGDcyTime FEGSusLvl
+86 Cp Bell End 4 O f f Hall1 Chorus1 Symphonic RevChoSend Volume Volume Volume Volume
+87 Or Compact 2 O f f Hall1 Chorus1 Rotary SP ReverbSend Volume Volume o f f o f f
+88 Or Ensemble 2 O f f Hall1 Chorus1 Symphonic ReverbSend Volume Volume o f f o f f
+89 Or Gospel 2 O f f Hall1 Chorus1 Rotary SP ReverbSend Volume Volume o f f o f f
+90 Or Drawbars 4 O f f Hall1 Chorus1 Rotary SP VariCntrl Volume Volume Volume Volume
+91 Or MissU 2 O f f Hall1 Chorus1 Flanger2 ChorusSend Volume Volume o f f o f f
+92 Or GlasOrgn 3 O f f Hall1 Celeste4 Rotary SP Pan Volume Volume Volume o f f
+93 Pd Angel St 3 Off/Sprit Hall1 Celeste4 2Band EQ ChorusSend Volume Volume o f f o f f
+94 Pd IceField 3 Off/Sprit Hall1 Chorus4 Delay LR RevChoSend Cutoff off off off
+95 Pd Memory 3 O f f Hall1 Chorus1 Symphonic AEGDcyTime o f f FEGRelTime FEGRelTime FEGRelTime
+96 Pd SickWave 3 O f f Hall1 Chorus1 Flanger2 RevChoSend Pitch AEGDcyTime FEGSusLvl o f f
+97 Pd Sprite 3 Off/Sprit Hall1 Chorus1 Phaser1 VariCntrl Volume Volume ChorusSend ReverbSend
+98 Pd Trance 2 O f f Hall1 Chorus1 Phaser1 ChorusSend Volume Volume o f f o f f
+99 Pd White 2 Off/Sprit Hall1 Celeste1 CrossDelay RevChoSend FEGAtkTime FEGDcyTime o f f o f f
+100 Pd AirClass 2 Off/Sprit Stage1 Celeste4 Flanger1 LFOAMod Volume Volume o f f o f f
+101 Pd Carpet 3 Off/Sprit Hall1 Effect Off Delay LCR FEGSusLvl Detune Detune AEGAtkTime o f f
+102 S t Detroit 2 O f f Hall1 Flanger3 Delay LCR VariCntrl ChorusSend ChorusSend o f f o f f
+103 S t Baroque 3 Off/Sprit Room3 Chorus1 2Band EQ ReverbSend Detune Detune Volume ReverbSend
+104 S t Octavia 3 O f f Hall1 Chorus1 Early Ref1 ChorusSend Volume Volume Volume o f f
+105 S t Jupiter 4 O f f Hall1 Chorus1 2Band EQ ChorusSend LFOPMod LFOPMod LFOPMod LFOPMod
+106 S t Strawman 2 O f f Hall1 Chorus1 Symphonic ChorusSend NoteShift off off off
+107 S t Strynx 3 O f f Hall1 Chorus1 Chorus4 ChorusSend Volume Volume Volume o f f
+108 B r Jump 2 O f f Hall1 Chorus1 Delay LCR VariCntrl NoteShift off off off
+109 B r Bronze 2 O f f Hall1 Chorus1 3Band EQ ChorusSend FEGAtkTime FEGAtkTime o f f o f f
+110 B r Xpander 2 O f f Hall1 Chorus1 2Band EQ ChorusSend FEGAtkTime FEGAtkTime o f f o f f
+111 B r HansUp 4 Off/Sprit Hall2 Chorus4 Delay LR VariCntrl ReverbSend ReverbSend ReverbSend ReverbSend
+112 B r Prophy 4 O f f Hall1 Chorus1 2Band EQ ReverbSend ChorusSend ChorusSend ChorusSend ChorusSend
+113 B r Matrix 4 O f f Hall1 Chorus1 2Band EQ ReverbSend ChorusSend ChorusSend ChorusSend ChorusSend
+114 Se Union 1 On Hall1 Chorus1 Celeste2 PortaTime AEGDcyTime AEGSusLvl FEGDcyTime FEGSusLvl
+115 Se Vulcan 2 On Hall1 Chorus1 Auto Wah VariCntrl ReverbSend ReverbSend ChorusSend ChorusSend
+116 Se WStation 3 O f f Tunnel Chorus4 Delay LCR Pan Volume Volume Cutoff off
+117 Se Ghost 4 O f f Tunnel Celeste2 Symphonic Pitch PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+118 Vo Choir 2 O f f Hall1 Chorus1 Hall1 ChorusSend Volume Volume o f f o f f
+119 Vo Fragile 2 O f f Basement Chorus4 2Band EQ RevChoSend FEGDcyTime FEGDcyTime FEGSusLvl FEGSusLvl
+120 Co Haendel 3 O f f Hall1 Chorus1 Hall1 ChorusSend Volume Volume Volume o f f
+121 Co WishUhea 4 Off/Sprit Tunnel Effect Off Echo LFOSpeed FEGAtkTime FEGAtkTime Cutoff Cutoff
+122 Co Transit 4 On/Sprit Hall1 Chorus4 Auto Pan ArpgTempo FEGAtkTime FEGAtkTime o f f o f f
+123 D r Kit B900 4 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+124 D r Kit 9o9 4 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+125 D r Kit 8o8 4 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+126 D r HipHop 4 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+127 D r Jungly 4 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl PEGInitLvl
+128 Dr Electric 3 O f f Room1 Chorus1 2Band EQ RevChoSend PEGInitLvl PEGInitLvl PEGInitLvl o f f
+
+1 D r um Trax2 1 On Basement Flanger1 2Band EQ ArpgTempo LFOFMod LFOAMod o f f o f f
+2 Sq Pan Seq 2 On Hall1 Chorus1 Auto Wah FEGDcyTime Volume Volume o f f o f f
+3 Sq MC-Line1 1 On Basement Flanger2 CrossDelay ArpgTempo LFOFMod LFOAMod o f f o f f
+4 Sq MC-Line2 2 On WhiteRoom Chorus2 Delay LR ArpgTempo Volume Volume o f f o f f
+5 Sq Superarp 4 On Hall1 Chorus1 Delay LCR AEGDcyTime ChorusSend ChorusSend ChorusSend ChorusSend
+6 Sq uidgy 1 1 On Room2 Chorus1 2Band EQ ArpgType Pitch Resonance Cutoff LFOSpeed
+7 Sq uidgy 2 1 On Room2 Chorus1 2Band EQ PortaTime Pitch Resonance Cutoff LFOSpeed
+8 Sq HardOn 4 On Hall1 Chorus1 Auto Wah AEGDcyTime Volume Volume Volume Volume
+9 Sq Platypus 2 On Plate Celeste2 Delay LR AEGDcyTime ChorusSend Pitch off off
+10 Sq Cyborg 2 O f f Hall1 Chorus1 Delay LR VariCntrl LFOFMod LFOFMod FEGDcyTime FEGDcyTime
+11 Sq uelchy 2 On Hall1 Celeste2 Delay LR ArpgType ChorusSend Pitch AEGDcyTime AEGDcyTime
+12 Sq uenza 1 1 On Hall1 Chorus1 Auto Pan FEGDcyTime ChorusSend o f f o f f o f f
+13 Sq uenza 2 2 On Hall1 Chorus1 3Band EQ ChorusSend FEGDcyTime FEGDcyTime o f f o f f
+14 Sq Erased 2 On Hall1 Chorus1 Flanger1 ChorusSend o f f AEGDcyTime AEGDcyTime o f f
+15 Sq uare Dig 2 On Hall1 Chorus1 Phaser1 FEGAtkTime Volume Volume o f f o f f
+16 Sq Pulse 1 On Hall1 Chorus1 Symphonic FEGDcyTime ChorusSend o f f o f f o f f
+17 Co Ethno 4 On Room1 Chorus1 2Band EQ ArpgTempo LFOSpeed LFOAMod NoteShift NoteShift
+18 Fx CofiFilt 1 Off/Sprit Hall1 Chorus1 Flanger2 LFOSpeed FEGAtkTime ChorusSend o f f o f f
+19 Sq SparkRun 2 On Stage1 Flanger1 CrossDelay VariCntrl Volume Volume o f f o f f
+20 Fx SinCrony 4 O f f Effect Off Flanger1 Delay LR LFOSpeed FEGDcyTime FEGDcyTime FEGDcyTime FEGDcyTime
+21 Fx SweepRun 2 On Effect Off Flanger1 CrossDelay VariCntrl LFOAMod LFOAMod LFOFMod LFOFMod
+22 Fx Break It 2 On Hall1 Chorus2 Phaser1 ArpgTempo LFOAMod LFOAMod LFOFMod LFOFMod
+23 Sc Syndiem 3 On Hall1 Chorus1 Celeste1 ChorusSend o f f Volume o f f o f f
+24 Sc TranCS 4 O f f Hall1 Celeste1 Phaser1 FEGDcyTime Volume Volume Volume Volume
+25 Sc Source 4 O f f Hall1 Chorus1 3Band EQ FEGAtkTime Volume Volume Volume Volume
+26 Sc ary 4 O f f Hall1 Chorus1 Thru ChorusSend ReverbSend ReverbSend ReverbSend ReverbSend
+27 Sc EurRail 2 O f f Hall1 Chorus1 Flanger2 ReverbSend FEGAtkTime Volume o f f o f f
+28 Sc Owa Owa 2 O f f Hall1 Chorus1 Phaser1 RevChoSend FEGDcyTime Resonance AEGDcyTime AEGSusLvl
+29 Sc Xrayz 2 O f f Hall1 Chorus1 Auto Wah VariCntrl Volume AEGDcyTime LFOSpeed o f f
+30 Pd ResoCat 1 Off/Sprit Hall1 Celeste4 Delay LR FEGAtkTime LFOFMod o f f o f f o f f
+31 Sc Glassy 3 On Hall1 Chorus1 Celeste1 AEGDcyTime Volume Volume Volume o f f
+32 Sc Synchord 4 O f f Hall1 Chorus1 CrossDelay AEGDcyTime Volume Volume Volume Volume
+33 Sc C-Hook 2 O f f Hall1 Chorus1 2Band EQ PortaTime ChorusSend ChorusSend o f f o f f
+34 Sc raper 1 O f f Hall1 Chorus1 3Band EQ RevChoSend PEGAtkTime o f f o f f o f f
+35 Sc Stab 2 O f f Hall1 Chorus1 3Band EQ Pan ChorusSend ChorusSend o f f o f f
+36 Sc MoonBass 2 O f f Hall1 Celeste3 Auto Wah VariCntrl LFOSpeed o f f o f f o f f
+37 Ld UniLead 2 Off/Sprit Hall1 Chorus1 Celeste2 PortaTime Volume Volume AEGDcyTime o f f
+38 Ld 4Poles 3 O f f Effect Off Celeste2 Flanger1 ChorusSend Pitch FEGSusLvl o f f o f f
+39 Ld Cream 1 O f f Hall1 Chorus1 Delay LR VariCntrl ChorusSend FEGAtkTime o f f o f f
+40 Ld Zap Lead 2 Off/Sprit Basement Flanger1 G.Amp Sim ChorusSend Volume Volume o f f o f f
+41 Ld The Hook 3 O f f Hall1 Chorus1 Delay LR VariCntrl Volume Volume Volume Volume
+42 Ld Triangle 2 On Hall1 Chorus1 CrossDelay PortaTime FEGSusLvl FEGSusLvl o f f o f f
+43 Ld Fuji 3 O f f Hall1 Chorus1 Delay LCR VariCntrl FEGDcyTime FEGDcyTime FEGSusLvl FEGSusLvl
+44 Ld MegaHook 4 O f f Hall1 Chorus1 CrossDelay VariCntrl FEGSusLvl FEGSusLvl FEGSusLvl FEGSusLvl
+45 Ld Mondo 2 Off/Sprit Hall1 Chorus1 Flanger3 ChorusSend FEGDcyTime FEGDcyTime FEGSusLvl FEGSusLvl
+46 Ld Marion 3 Off/Sprit Hall1 Chorus1 Phaser1 ChorusSend FEGSusLvl FEGDcyTime FEGDcyTime Pitch
+47 Ld Seminal 3 Off/Sprit Hall1 Chorus1 Auto Wah ChoToRev Pitch AEGDcyTime Pan o f f
+48 Ld Pure Sin 2 O f f Hall1 Chorus1 Delay LCR VariCntrl ReverbSend ReverbSend o f f o f f
+49 Ld Vollfett 2 Off Hall1 Chorus1 Delay LR ChorusSend Volume Volume o f f o f f
+50 Ld Empha 1 Off/Sprit Hall1 Celeste3 Delay LR Pitch LFOFMod LFOAMod o f f o f f
+51 Ba Fashions 2 O f f Hall1 Chorus1 Flanger2 ChorusSend Detune ReverbSend PEGInitLvl FEGAtkTime
+52 Ba Relaxer 1 O f f Hall1 Chorus1 Rotary SP FEGDcyTime AEGDcyTime ChorusSend o f f o f f
+53 Ba ss Wire 2 O f f Effect Off Celeste2 Phaser1 ChorusSend FEGAtkTime FEGSusLvl AEGDcyTime o f f
+54 Ba Wound 1 Off/Sprit Basement Chorus4 Flanger1 PortaTime LFOFMod o f f o f f o f f
+55 Ba Fridge 2 O n Basement Flanger1 Delay LR RevChoSend LFOAMod LFOAMod LFOFMod LFOFMod
+56 Ba ss Sine 2 O f f WhiteRoom Flanger1 2Band EQ ReverbSend LFOAMod LFOAMod o f f o f f
+57 Ba Saw 1 1 Off/Sprit Hall1 Chorus1 3Band EQ PortaTime FEGDcyTime FEGSusLvl o f f o f f
+58 Ba Saw 2 1 Off/Sprit Hall1 Chorus1 2Band EQ RevChoSend FEGDcyTime FEGSusLvl AEGSusLvl AEGDcyTime
+59 Ba Pulse25 1 O f f Hall1 Chorus1 3Band EQ RevChoSend FEGSusLvl FEGDcyTime AEGDcyTime AEGSusLvl
+60 Ba Fuzzline 1 O f f Hall1 Celeste1 Distortion VariCntrl ChorusSend o f f o f f o f f
+61 Ba llistic 2 O f f Hall1 Chorus1 3Band EQ ChorusSend Volume Volume Volume Volume
+62 Ba 303 Wave 1 O f f Hall1 Chorus1 2Band EQ ChorusSend FEGSusLvl o f f o f f o f f
+63 Ba Howitzer 1 O f f Hall1 Chorus1 G.Amp Sim ChorusSend FEGDcyTime FEGSusLvl PEGAtkLvl AEGDcyTime
+64 Ba Polarize 2 O f f Effect Off Flanger1 Flanger3 ChorusSend AEGDcyTime AEGAtkTime Pitch FEGSusLvl
+65 P f 70'sClav 2 O f f Room3 Chorus1 3Band EQ ChorusSend VelSnsDpth Resonance o f f o f f
+66 P f Woolitz2 2 Off/Sprit Stage1 Flanger1 G.Amp Sim LFOAMod Volume Volume o f f o f f
+67 P f DynaRose 3 O f f Hall1 Celeste1 Thru ChorusSend LFOAMod LFOAMod LFOAMod Volume
+68 P f Major 7 4 Off/Sprit Hall1 Chorus1 2Band EQ AEGDcyTime Volume Volume Volume Volume
+69 P f SweetFen 3 Off/Sprit Hall1 Chorus1 2Band EQ ChorusSend AEGDcyTime AEGDcyTime AEGDcyTime o f f
+70 Cp Xylodyne 2 Off/Sprit Hall1 Chorus1 Delay LCR VariCntrl Volume Volume o f f o f f
+71 Or ganMetal 4 O f f Room1 Chorus4 Rotary SP ReverbSend FEGSusLvl FEGSusLvl FEGSusLvl FEGSusLvl
+72 Or YC45D 2 Off/Sprit Room1 Chorus1 G.Amp Sim ChorusSend Volume Volume o f f o f f
+73 Or Door 2 O f f Hall1 Chorus1 2Band EQ ReverbSend Volume Volume Cutoff off
+74 Or gan Perc 4 O f f Hall1 Chorus1 Rotary SP VariCntrl Volume Volume Volume o f f
+75 Or gan Rave 3 O f f Hall1 Chorus1 3Band EQ ChorusSend Volume Volume Volume o f f
+76 Or Celluli 2 O f f Plate Chorus1 Rotary SP ReverbSend Volume Volume ChorusSend ChorusSend
+77 G t Tele 2 O f f Hall1 Chorus1 G.Amp Sim ReverbSend Volume Volume o f f o f f
+78 G t EzaGeeza 2 O f f Hall1 Chorus1 G.Amp Sim ChorusSend Pitch ReverbSend AEGDcyTime o f f
+79 B r Obie 1 O f f Hall1 Celeste3 Chorus4 ReverbSend FEGSusLvl FEGDcyTime o f f o f f
+80 B r Cross 4 Off/Sprit Hall1 Chorus1 Delay LCR VariCntrl Pitch ChorusSend ChorusSend ChorusSend
+81 B r ass Tek 2 Off/Sprit Hall1 Chorus1 2Band EQ RevChoSend FEGSusLvl FEGSusLvl o f f o f f
+82 B r assHouse 3 O f f Hall1 Chorus1 2Band EQ RevChoSend Volume Volume Volume o f f
+83 B r ass Fase 2 Off/Sprit Hall1 Chorus4 Phaser1 FEGDcyTime FEGAtkTime FEGAtkTime o f f o f f
+84 S t Sweepstr 3 Off Hall1 Chorus1 Symphonic ChorusSend Cutoff Volume Cutoff Resonance
+85 S t Vintage 1 O f f Hall1 Chorus1 Chorus3 ChorusSend Pan o f f o f f o f f
+86 S t Strngpad 2 Off Hall1 Chorus1 2Band EQ RevChoSend NoteShift off off off
+87 S t Bartok 2 O f f Hall1 Chorus1 Early Ref1 ChorusSend ReverbSend ReverbSend o f f o f f
+88 S t Vienna 2 O f f Hall1 Chorus1 Stage2 RevChoSend Detune Detune o f f o f f
+89 S t Filta Fe 1 O f f Hall1 Chorus1 Symphonic RevChoSend Resonance FEGAtkTime AEGAtkTime FEGDcyTime
+90 Pd MilkyWay 3 Off/Sprit Hall1 Chorus1 Hall1 ChorusSend Volume Volume Volume o f f
+91 Pd SlvrThaw 2 Off/Sprit Hall1 Chorus1 Symphonic LFOAMod Volume Volume o f f o f f
+92 Pd Solinal 3 O f f Hall1 Chorus1 Phaser1 VariCntrl Pitch Pitch Volume Volume
+93 Pd Spooks 2 Off/Sprit Hall1 Chorus1 Phaser2 RevChoSend AEGDcyTime Pitch off off
+94 Pd Swell 2 O f f Hall1 Chorus1 Chorus1 ChorusSend FEGAtkTime FEGAtkTime o f f o f f
+95 Pd VS-Pad 2 O f f Hall1 Chorus1 Symphonic ChorusSend Volume Volume o f f o f f
+96 Pd Amber 1 Off/Sprit Hall1 Celeste2 Delay LR RevChoSend FEGAtkTime FEGSusLvl FEGRelTime o f f
+97 Pd Aurora 3 O f f Hall1 Chorus1 Phaser1 RevChoSend Volume Volume Volume Detune
+98 Pd Crystal 3 O f f Hall1 Chorus1 Delay LR RevChoSend Volume Volume Volume AEGDcyTime
+99 Pd Haze 2 O f f Hall1 Flanger3 Delay LR ChorusSend LFOFMod LFOFMod Detune Detune
+100 Pd FSOTokyo 2 O f f Hall1 Chorus1 Celeste3 RevChoSend FEGDcyTime FEGSusLvl FEGRelTime Volume
+101 Fx Tribal 3 O f f Hall1 Chorus1 Over Drive FEGDcyTime Volume Volume o f f o f f
+102 Fx Plankton 1 O f f Hall1 Chorus1 Auto Wah VariCntrl ChorusSend o f f o f f o f f
+103 Fx Ryza 3 O f f Hall1 Chorus1 Celeste2 RevChoSend ChorusSend AEGAtkTime FEGSusLvl Resonance
+104 Fx Gaia '99 4 O f f Tunnel Chorus4 3Band EQ RevChoSend Pitch Volume Resonance Volume
+105 Fx Lights 3 O f f Hall1 Chorus1 Delay LR VariCntrl Volume o f f o f f o f f
+106 Fx M o r f 3 O f f Hall1 Chorus1 CrossDelay RevChoSend Volume AEGAtkTime AEGAtkTime o f f
+107 Fx QSpaces 4 O f f Hall1 Chorus1 Hall1 ChorusSend o f f o f f o f f o f f
+108 Fx WatrToy 3 Off/Sprit Stage2 Celeste1 Auto Pan RevChoSend Volume Volume LFOAMod o f f
+109 Fx Galaxy 2 O f f Hall1 Chorus4 Delay LR RevChoSend Volume Volume o f f o f f
+110 Fx Trigger 1 O f f Hall1 Chorus1 3Band EQ Pitch ChorusSend LFOFMod o f f o f f
+111 Fx Resolve 2 Off/Sprit Hall1 Chorus1 CrossDelay RevChoSend FEGAtkTime FEGAtkTime FEGDcyTime FEGDcyTime
+112 E t Santur 3 O f f Hall1 Chorus1 2Band EQ RevChoSend Volume Volume Volume o f f
+113 Se Plasma 2 On WhiteRoom Flanger2 CrossDelay Pitch LFOAMod LFOAMod o f f o f f
+114 Se Lunar 4 Off/Sprit Tunnel Chorus4 CrossDelay Pan Volume Volume Volume Volume
+115 Se ArpDrops 2 On Tunnel Chorus4 Delay LCR ArpgTempo NoteShift off off off
+116 Se HybriFlt 3 O f f Hall1 Celeste4 Delay LR FEGDcyTime FEGAtkTime FEGAtkTime FEGAtkTime o f f
+117 Se BeatPhil 2 On WhiteRoom Flanger2 2Band EQ ArpgType ReverbSend ReverbSend ChorusSend ChorusSend
+118 Se Organix 3 O f f Hall1 Chorus1 Delay LCR VariCntrl off Volume Volume Volume
+119 Se Variant 2 Off/Sprit Hall1 Chorus1 Flanger2 LFOFMod LFOSpeed LFOSpeed AEGDcyTime AEGDcyTime
+120 Se SkyDemon 2 Off/Sprit Hall1 Flanger3 Delay LR LFOSpeed Volume Volume o f f o f f
+121 Vo oo Dooo 4 Off/Sprit Hall1 Chorus1 2Band EQ ReverbSend Volume Volume Pitch ChorusSend
+122 Vo xo Mono 4 O f f Hall1 Chorus1 Delay LR VariCntrl ReverbSend ReverbSend ReverbSend ReverbSend
+123 Vo Tehillim 2 On Plate Chorus4 Delay LR VariCntrl FEGDcyTime FEGDcyTime o f f o f f
+124 Co EthnoSpl 4 On/Sprit Tunnel Chorus4 CrossDelay ArpgTempo o f f o f f AEGAtkTime AEGAtkTime
+125 Co ld Hitz 4 Off/Sprit Hall1 Flanger1 Room1 ChorusSend o f f Pitch Pitch Pitch
+126 Co ShamSitr 4 O f f Hall1 Chorus1 CrossDelay RevChoSend LFOSpeed LFOSpeed LFOSpeed Volume
+127 Co Dist Kik 3 O f f Hall1 Chorus1 Distortion VariCntrl Resonance Cutoff FEGSusLvl FEGDcyTime
+128 Co EuroKit 4 O f f Hall1 Chorus1 2Band EQ ChoToRev o f f Cutoff FEGDcyTime Volume

@@ -462,6 +462,132 @@ F0         : SysEx START
 ...
 ```
 
+# Yamaha
+
+## Jargon
+
+| Name                              | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
+| **Voice** Mode or **Single** Mode | Monotimbral mode. you can play only one preset               |
+| **Performance** Mode              | Multi-timbral mode where you can play multiple presets in stack/layer or in keyboard split for a single midi channel |
+| **Multi** Mode                    | Multi-timbral mode where 1 preset is assign to a specific midi channel |
+
+Sometimes, the multi mode and the performance mode are the same:
+
+- The TX-81z for instance, use Performance mode to talk about Multi mode
+- The TG-33 talk about Multi-mode only
+
+## Overview
+
+Yamaha bulk requests are typed with ASCII identifiers like  `LM  0066SY`, `LM  0065VC` or `LM  0065DR`
+
+- `LM` stands for "load memory" (apparently).
+- Unlike Roland, memory locations are not pointed by addresses but by a tuple `<identifier,memory type,memory number>`
+- Unlike Roland, there is no checksum in the request
+
+Overall format is:
+
+```
+F0 43 2c 20 7A <IDENTIFIER> 0000000000000000000000000000 <MEMORY TYPE> <MEMORY NUMBER> F7
+43: Yamaha
+ c: receive channel typically 0x0
+```
+
+## TG-500
+
+| Bulk request type | Identifier   | memory type       | memory number |
+| ----------------- | ------------ | ----------------- | ------------- |
+| Normal Voice      | `LM  0065VC` | 0x00: internal 1  | 0-62          |
+|                   |              | 0x03: internal 2  | 0-62          |
+|                   |              | 0x7F: edit buffer | 0-62          |
+| Drum Voice        | `LM  0065DR` | 0x00: internal 1  | 63            |
+|                   |              | 0x03: internal 2  | 63            |
+|                   |              | 0x7F: edit buffer | 63            |
+| Performance       | `LM  0065PF` | 0x00              | 0-63          |
+| Multi             | `LM  0065MU` | 0x00              | 0-9           |
+| System setup      | `LM  0066SY` | 0x00              | 0             |
+| Sample            | `LM  0040SA` | 0x00              | 0-63          |
+
+Payload Example:
+
+```
+F0 43 20 7A <IDENTIFIER>         0000000000000000000000000000 <MEMORY TYPE> <MEMORY NUMBER> F7
+F0 43 20 7A 4C4D2020303036355643 0000000000000000000000000000 03            04              F7
+F0 43 20 7A LM  0065VC           0000000000000000000000000000 03            04              F7
+=> Request a Bulk Dump for device 0x20 of the "Normal Voice" from "Internal 2", "number 4"
+```
+
+## TG-33
+
+| Bulk request type | Identifier   |
+| ----------------- | ------------ |
+| Voice             | `LM  0012VC` |
+| Voice Edit Buffer | `LM  0012VE` |
+| Multi             | `LM  0012MU` |
+| System            | `LM  0012SY` |
+
+Payload Example:
+
+```
+F0 43 20 7A <IDENTIFIER>         0000000000000000000000000000 <MEMORY TYPE> <MEMORY NUMBER> F7
+F0 43 20 7A 4C4D2020303036355643 0000000000000000000000000000 03            04              F7
+F0 43 20 7A LM  0065VC           0000000000000000000000000000 03            04              F7
+=> Request a Bulk Dump for device 0x20 of the "Normal Voice" from "Internal 2", "number 4"
+```
+
+## TX-81z
+
+TX-81z follow a different scheme:
+
+```1
+F0 43 2c 20 <BULK TYPE> <IDENTIFIER> F7
+43: Yamaha
+ c: receive channel typically 0x0
+BULK TYPE : 0x03, 0x04 or 0x7E
+IDENTIFIER: no always required
+```
+
+This device is compatible with Yamaha DX-21/27/100 model so the memory is divided in two parts:
+
+- **VCED** (Voice Edit): is common to all models
+- **ACED** ( Additional Voice Edit): is specific to the TX-81z
+
+The **presets** memory is divided in 6 sections:
+
+| Memory                      | Number of presets | Note                            |
+| --------------------------- | ----------------- | ------------------------------- |
+| Edit Buffer                 | 1                 | RAM: Lost when power down       |
+| I (user memory, "initials") | 32                | EEPROM: Lost if battery is dead |
+| A1                          | 32                | ROM                             |
+| A2                          | 32                | ROM                             |
+| A3                          | 32                | ROM                             |
+| A4                          | 32                | ROM                             |
+| **TOTAL**                   | **160**           |                                 |
+
+Bulk requests:
+
+| Bulk request type                                            | Bulk Type | Identifier   |
+| ------------------------------------------------------------ | --------- | ------------ |
+| **VCED**:  Vocie Edit Buffer (for backward compatibility, does not include ACED) | 0x03      | N/A          |
+| **VMEM**: Voice Memory Bulk (ACED+VCED for 32 presets "I")   | 0x04      | N/A          |
+| **SCED**: ACED + VCED Edit buffer                            | 0x7E      | `LM  8976AE` |
+| **PCED**: Performance Edit Buffer                            | 0x7E      | `LM  8976PE` |
+| **PMEM**: 32 Performance Bulk (24 internals + 8 initials)    | 0x7E      | `LM  8976PM` |
+| **SYS:** System Data                                         | 0x7E      | `LM  8976S0` |
+| **SYS: **Program Change Table                                | 0x7E      | `LM  8976S1` |
+| **SYS: **Effect Data                                         | 0x7E      | `LM  8976S2` |
+| **Micro Tune**: Octave                                       | 0x7E      | `LM  MCRTE0` |
+| **Micro Tune**: Full Keyboard                                | 0x7E      | `LM  MCRTE1` |
+
+Payload Example:
+
+```
+F0 43 20 7E <IDENTIFIER>         F7
+F0 43 20 7E 4C4D2020383937364145 F7
+F0 43 20 7E LM  8976AE           F7
+=> Request a Bulk Dump for device 0x20 of the "SCED"
+```
+
 # Code
 
 ## Overview

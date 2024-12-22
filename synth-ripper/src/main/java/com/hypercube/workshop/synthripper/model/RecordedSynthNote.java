@@ -1,24 +1,24 @@
 package com.hypercube.workshop.synthripper.model;
 
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.File;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RecordedSynthNote {
+    private String name;
     private LoopSetting loopSetting;
-    private int lowVelocity;
-    private int highVelocity;
-    private int velocity;
-    private int lowNote;
-    private int highNote;
-    private int note;
+    private int channel;
+    private MidiZone velocity;
+    private MidiZone ccValue;
+    private MidiZone note;
+    private int controlChange = MidiPreset.NO_CC;
     private float releaseTimeInSec;
-    private boolean isFirstVelocity;
-    private boolean isFirstNote;
     private MidiPreset preset;
     private File file;
 }

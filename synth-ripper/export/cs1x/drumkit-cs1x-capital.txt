@@ -1,0 +1,84 @@
+13 C# -1 Surdo Mute
+14 D -1 Surdo Open
+15 D# -1 Hi Q
+16 E -1 Whip Slap
+17 F -1 Scratch Push
+18 F# -1 Scratch Pull
+19 G -1 Finger Snap
+20 G# -1 Click Noise
+21 A -1 Metronome Cli
+22 A# -1 Metronome Be
+23 B -1 Seq Click L
+24 C 0 Seq Click H
+25 C# 0 Brush Tap
+26 D 0 Brush Swirl L
+27 D# 0 Brush Slap
+28 E 0 Brush Swirl H
+29 F 0 Snare Roll
+30 F# 0 Castanet
+31 G 0 Snare L
+32 G# 0 Sticks
+33 A 0 Bass Drum L
+34 A# 0 Open Rim Sho
+35 B 0 Bass Drum M
+36 C 1 Bass Drum H
+37 C# 1 Side Stick
+38 D 1 Snare M
+39 D# 1 Hand Clap
+40 E 1 Snare H
+41 F 1 Floor Tom L
+42 F# 1 Hi-Hat Closed
+43 G 1 Floor Tom H
+44 G# 1 Hi-Hat Pedal
+45 A 1 Low Tom
+46 A# 1 Hi-Hat Open
+47 B 1 Mid Tom L
+48 C 2 Mid Tom H
+49 C# 2 Crash Cymbal
+50 D 2 High Tom
+51 D# 2 Ride Cymbal 1
+52 E 2 Chinese Cymb
+53 F 2 Ride Cymbal C
+54 F# 2 Tambourine
+55 G 2 Splash Cymbal
+56 G# 2 Cowbell
+57 A 2 Crash Cymbal
+58 A# 2 Vibraslap
+59 B 2 Ride Cymbal 2
+60 C 3 Bongo H
+61 C# 3 Bongo L
+62 D 3 Conga H Mute
+63 D# 3 Conga H Open
+64 E 3 Conga L
+65 F 3 Timbale H
+66 F# 3 Timbale L
+67 G 3 Agogo H
+68 G# 3 Agogo L
+69 A 3 Cabasa
+70 A# 3 Maracas
+71 B 3 Samba Whistle
+72 C 4 Samba Whistle
+73 C# 4 Guiro Short
+74 D 4 Guiro Long
+75 D# 4 Claves
+76 E 4 Wood Block H
+77 F 4 Wood Block L
+78 F# 4 Cuica Mute
+79 G 4 Cuica Open
+80 G# 4 Triangle Mute
+81 A 4 Triangle Open
+82 A# 4 Shaker
+83 B 4 Jingle Bell
+84 C 5 Bell Tree
+85 C# 5 Bell Tree
+86 D 5 Bell Tree
+87 D# 5 Bell Tree
+88 E 5 Bell Tree
+89 F 5 Bell Tree
+90 F# 5 Bell Tree
+91 G 5 Bell Tree
+92 G# 5 Bell Tree
+93 A 5 Bell Tree
+94 A# 5 Bell Tree
+95 B 5 Bell Tree
+96 C 6 Bell Tree

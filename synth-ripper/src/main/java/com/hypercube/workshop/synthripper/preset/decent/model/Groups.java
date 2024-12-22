@@ -13,13 +13,9 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Group {
+public class Groups {
     @XmlAttribute
-    private int loVel;
-    @XmlAttribute
-    private int hiVel;
-    @XmlAttribute(name = "release")
-    private float releaseTimeInSec;
-    @XmlElement(name = "sample")
-    private List<Sample> samples = new ArrayList<>();
+    private String tags;
+    @XmlElement(name = "group")
+    List<RoundRobinGroup> roundRobinGroups = new ArrayList<>();
 }

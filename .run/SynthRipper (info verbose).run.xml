@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="SynthRipper (info)" type="Application" factoryName="Application">
+  <configuration default="false" name="SynthRipper (info verbose)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.synthripper.SynthRipperApplication" />
     <module name="synth-ripper" />
     <option name="PROGRAM_PARAMETERS" value="info -v" />

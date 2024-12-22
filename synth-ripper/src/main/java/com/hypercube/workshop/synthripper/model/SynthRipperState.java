@@ -34,6 +34,11 @@ public class SynthRipperState {
         return true;
     }
 
+    public RecordedSynthNote getPreviousRecordedSynthNote() {
+        int previousBatchEntry = currentBatchEntry - 1;
+        return previousBatchEntry >= 0 && previousBatchEntry < sampleBatch.size() ? sampleBatch.get(previousBatchEntry) : null;
+    }
+
     public RecordedSynthNote getCurrentRecordedSynthNote() {
         return currentBatchEntry < sampleBatch.size() ? sampleBatch.get(currentBatchEntry) : null;
     }
@@ -42,10 +47,6 @@ public class SynthRipperState {
         if (currentBatchEntry < sampleBatch.size()) {
             currentBatchEntry++;
         }
-    }
-
-    public boolean isFirstVelocity() {
-        return getCurrentRecordedSynthNote().isFirstVelocity();
     }
 
     public void resetNoiseFloorFrequencies() {
@@ -73,6 +74,10 @@ public class SynthRipperState {
         return state == SynthRipperStateEnum.NOTE_ON_SEND && !isSilentBuffer();
     }
 
+    public boolean hearNothing() {
+        return state == SynthRipperStateEnum.NOTE_ON_SEND && isSilentBuffer() && durationInSec > 4;
+    }
+
     public boolean endOfIdle() {
         return state == SynthRipperStateEnum.IDLE && durationInSec > 1;
     }
@@ -92,5 +97,6 @@ public class SynthRipperState {
     public boolean endOfNoteRecord() {
         return state == SynthRipperStateEnum.NOTE_OFF_DONE;
     }
+
 
 }

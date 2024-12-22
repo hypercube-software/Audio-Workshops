@@ -13,14 +13,12 @@ import com.hypercube.workshop.audioworkshop.common.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
-import com.hypercube.workshop.synthripper.model.LoopSetting;
-import com.hypercube.workshop.synthripper.model.RecordedSynthNote;
-import com.hypercube.workshop.synthripper.model.SynthRipperState;
-import com.hypercube.workshop.synthripper.model.SynthRipperStateEnum;
+import com.hypercube.workshop.synthripper.model.*;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,13 +31,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
 public class SynthRipper {
     public static final int NOISE_FLOOR_CAPTURE_DURATION_IN_SEC = 4;
-    private SynthRipperConfiguration conf;
+    SynthRipperConfiguration conf;
     private PCMBufferFormat format;
     private PCMBufferFormat wavFormat;
     private MidiOutDevice midiOutDevice;
@@ -60,69 +60,151 @@ public class SynthRipper {
                 .getAudioFormat();
         this.wavFormat = config.getAudio()
                 .getWavFormat();
-        initState(config);
+        initState();
     }
 
-    private void initState(SynthRipperConfiguration config) {
-        MidiSettings midiSettings = config.getMidi();
+    private void initState() {
+        MidiSettings midiSettings = conf.getMidi();
         state.noiseFloorFrequencies = new double[format.getSampleBufferSize() / 2];
         state.signalFrequencies = new double[format.getSampleBufferSize() / 2];
         state.resetNoiseFloorFrequencies();
         state.prev = null;
         state.currentBatchEntry = 0;
-        state.sampleBatch = generateBatch(config);
+        state.sampleBatch = generateBatch();
     }
 
     private int boundValue(int value) {
         return Math.max(Math.min(127, value), 0);
     }
 
-    private List<RecordedSynthNote> generateBatch(SynthRipperConfiguration config) {
-        MidiSettings midiSettings = config.getMidi();
-        int veloIncrement = (int) Math.ceil(127.f / midiSettings
+    List<RecordedSynthNote> generateBatch() {
+        MidiSettings midiSettings = conf.getMidi();
+        int veloIncrement = (int) Math.ceil(128f / midiSettings
                 .getVelocityPerNote());
         int upperBoundVelocity = veloIncrement * (midiSettings.getVelocityPerNote() + 1);
-        int lowestNote = midiSettings.getLowestNoteInt();
-        int highestNote = midiSettings.getHighestNoteInt();
-        int noteIncrement = 12 / midiSettings.getNotesPerOctave();
+
+        int defaultLowestNote = midiSettings.getLowestNoteInt();
+        int defaultHighestNote = midiSettings.getHighestNoteInt();
+        int defaultNoteIncrement = 12 / midiSettings.getNotesPerOctave();
+        int ccIncrement = (int) Math.ceil(128f / midiSettings
+                .getCcPerNote());
+        int upperBoundCC = ccIncrement * (midiSettings.getCcPerNote() + 1);
         return conf.getMidi()
                 .getSelectedPresets()
                 .stream()
                 .flatMap(preset -> {
+                    log.info("=========== {} ===========", preset.title());
+                    List<Integer> controlChanges = preset.controlChanges();
                     List<RecordedSynthNote> samples = new ArrayList<>();
-                    for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
-                        for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
-                            RecordedSynthNote rs = new RecordedSynthNote();
-                            rs.setFile(getOutputFile(preset, note, velocity));
-                            if (note == lowestNote) {
-                                rs.setLowNote(0);
-                            } else {
-                                rs.setLowNote(boundValue(Math.max(0, note - noteIncrement + 1)));
+                    int prevCcValue = 0;
+                    for (int cc : controlChanges) {
+                        if (cc == MidiPreset.NO_CC) {
+                            log.info("Without CC:");
+                        } else {
+                            log.info("With CC " + cc + ":");
+                        }
+                        for (int ccValue = 1; ccValue < upperBoundCC; ccValue += ccIncrement) {
+                            int lowestNote = getLowestNote(defaultLowestNote, preset);
+                            int highestNote = getHighestNote(defaultHighestNote, preset);
+                            int noteIncrement = getNoteIncrement(defaultNoteIncrement, preset);
+                            for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
+                                for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
+                                    RecordedSynthNote rs = new RecordedSynthNote();
+                                    rs.setChannel(preset.channel() - 1);
+                                    rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
+
+                                    rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
+
+                                    if (cc == MidiPreset.NO_CC) {
+                                        // normal sample without any CC
+                                        rs.setControlChange(MidiPreset.NO_CC);
+                                        rs.setCcValue(null);
+                                        prevCcValue = 0;
+                                    } else {
+                                        // apply a CC to the sound
+                                        rs.setControlChange(cc);
+                                        rs.setCcValue(computeControlChangeMidiZone(prevCcValue, ccValue));
+                                    }
+                                    rs.setName(getNoteName(preset, note));
+                                    rs.setPreset(preset);
+                                    rs.setFile(getOutputFile(rs));
+                                    samples.add(rs);
+
+                                    log.info("%s %s = %s".formatted(rs.getNote(), rs.getVelocity(), rs.getFile()
+                                            .getName()));
+                                }
                             }
-                            if (note == highestNote) {
-                                rs.setHighNote(127);
+                            if (cc == MidiPreset.NO_CC) {
+                                break;
                             } else {
-                                rs.setHighNote(boundValue(note));
+                                prevCcValue = ccValue + 1;
                             }
-                            rs.setNote(boundValue(note));
-                            rs.setFirstNote(note == lowestNote);
-
-                            rs.setLowVelocity(boundValue(velocity - veloIncrement + 1));
-                            rs.setHighVelocity(boundValue(velocity));
-                            rs.setVelocity(boundValue(velocity));
-                            rs.setFirstVelocity(velocity == veloIncrement);
-
-                            rs.setPreset(preset);
-
-                            samples.add(rs);
-
-                            log.info("[%d,%d,%d] [%d,%d,%d] %s".formatted(rs.getLowNote(), rs.getNote(), rs.getHighNote(), rs.getLowVelocity(), rs.getVelocity(), rs.getHighVelocity(), rs.getFile()
-                                    .getName()));
                         }
                     }
                     return samples.stream();
                 })
                 .toList();
+    }
+
+    private String getNoteName(MidiPreset preset, int note) {
+        String noteName = MidiNote.fromValue(note)
+                .name();
+        return preset.drumKitNotes()
+                .stream()
+                .filter(n -> n.note() == note)
+                .map(dn -> "%03d %s %s".formatted(note, noteName, dn.title()))
+                .findFirst()
+                .orElse("%03d %s".formatted(note, noteName));
+    }
+
+    private int getNoteIncrement(int defaultNoteIncrement, MidiPreset preset) {
+        return preset.drumKitNotes()
+                .isEmpty() ? defaultNoteIncrement : 1;
+    }
+
+    private int getHighestNote(int defaultHighestNote, MidiPreset preset) {
+        return preset.drumKitNotes()
+                .stream()
+                .map(DrumKitNote::note)
+                .sorted(Comparator.reverseOrder())
+                .findFirst()
+                .orElse(defaultHighestNote);
+
+    }
+
+    private int getLowestNote(int defaultLowestNote, MidiPreset preset) {
+        return preset.drumKitNotes()
+                .stream()
+                .map(DrumKitNote::note)
+                .sorted()
+                .findFirst()
+                .orElse(defaultLowestNote);
+    }
+
+    private MidiZone computeControlChangeMidiZone(int prevCC, int ccValue) {
+        return new MidiZone(prevCC, boundValue(ccValue), boundValue(ccValue));
+    }
+
+    private MidiZone computeVelocityMidiZone(int velocity, int veloIncrement) {
+        return new MidiZone(boundValue(velocity - veloIncrement + 1), boundValue(velocity), boundValue(velocity));
+    }
+
+    private MidiZone computeNoteMidiZone(int lowestNote, int highestNote, int noteIncrement, int note) {
+        Supplier<Integer> low = () -> {
+            if (note == lowestNote) {
+                return 0;
+            } else {
+                return boundValue(Math.max(0, note - noteIncrement + 1));
+            }
+        };
+        Supplier<Integer> high = () -> {
+            if (note == highestNote) {
+                return 127;
+            } else {
+                return boundValue(note);
+            }
+        };
+        return new MidiZone(low.get(), high.get(), boundValue(note));
     }
 
 
@@ -219,6 +301,12 @@ public class SynthRipper {
                 if (state.endOfIdle()) {
                     sendNoteOn();
                     state.changeState(SynthRipperStateEnum.NOTE_ON_SEND);
+                } else if (state.hearNothing()) {
+                    threadLogger.log("**** ERROR **** NOTE_ON_START timeout after " + state.durationInSec + " sec");
+                    state.noteOffSampleMarker = state.durationInSamples;
+                    sendNoteOff();
+                    threadLogger.log("NOTE_OFF after " + state.durationInSec + " sec at position " + state.noteOffSampleMarker);
+                    state.changeState(SynthRipperStateEnum.NOTE_OFF);
                 } else if (state.soundDetected()) {
                     startPosInsamples = preciseLookupSignalStart(shortTermFFTCalculator, buffer);
                     buffer.split(startPosInsamples, shortTermFFTCalculator.getFormat()
@@ -305,8 +393,10 @@ public class SynthRipper {
     }
 
     private void sendNoteOff() throws InvalidMidiDataException {
-        MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, state.getCurrentRecordedSynthNote()
-                .getNote(), 0), 0);
+        RecordedSynthNote currentRecordedSynthNote = state.getCurrentRecordedSynthNote();
+        MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote
+                .getNote()
+                .value(), 0), 0);
         midiOutDevice.send(noteOff);
 
         if (!state.isSilentBuffer()) {
@@ -315,31 +405,63 @@ public class SynthRipper {
             // TODO: detect loop start instead of nsec before end
             loopSetting.setSampleStart(state.noteOffSampleMarker - (long) (3.0f * format.getSampleRate()));
             loopSetting.setSampleEnd(state.noteOffSampleMarker);
-            state.getCurrentRecordedSynthNote()
+            currentRecordedSynthNote
                     .setLoopSetting(loopSetting);
         }
     }
 
-    private File getOutputFile(MidiPreset preset, int note, int velocity) {
+    private File getOutputFile(RecordedSynthNote recordedSynthNote) {
+        MidiPreset preset = recordedSynthNote.getPreset();
+        int note = recordedSynthNote.getNote()
+                .value();
+        int velocity = recordedSynthNote.getVelocity()
+                .value();
         var midiNote = MidiNote.fromValue(note);
-        return new File("%s/%s %s/Note %s - Velo %03d.wav".formatted(conf.getOutputDir(), preset.getId(), preset.title(), midiNote.name(), Math.min(127, velocity)));
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.title()));
+        sb.append("%s - Velo %03d".formatted(recordedSynthNote.getName(), Math.min(127, velocity)));
+        if (recordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
+            sb.append(" CC%d[%d]".formatted(recordedSynthNote.getControlChange(), recordedSynthNote.getCcValue()
+                    .value()));
+        }
+        sb.append(".wav");
+        return new File(sb.toString());
     }
 
     private void sendNoteOn() throws InvalidMidiDataException, IOException {
         RecordedSynthNote currentRecordedSynthNote = state.getCurrentRecordedSynthNote();
-        if (currentRecordedSynthNote
-                .isFirstNote() && currentRecordedSynthNote
-                .isFirstVelocity()) {
+        RecordedSynthNote previousRecordedSynthNote = state.getPreviousRecordedSynthNote();
+        if (previousRecordedSynthNote == null || !currentRecordedSynthNote.getPreset()
+                .title()
+                .equals(previousRecordedSynthNote.getPreset()
+                        .title())) {
             threadLogger.log("======================================================");
             threadLogger.log("Preset Change \"%s\"".formatted(currentRecordedSynthNote.getPreset()
                     .title()));
             midiOutDevice.sendPresetChange(currentRecordedSynthNote.getPreset());
         }
-        File outputFile = getOutputFile(currentRecordedSynthNote.getPreset(), currentRecordedSynthNote.getNote(), currentRecordedSynthNote.getVelocity());
+        if (previousRecordedSynthNote != null && currentRecordedSynthNote.getControlChange() != previousRecordedSynthNote.getControlChange()) {
+            threadLogger.log("--------------------");
+            threadLogger.log("Control Change " + currentRecordedSynthNote.getControlChange());
+        }
+        File outputFile = getOutputFile(currentRecordedSynthNote);
         threadLogger.log("Record %s".formatted(outputFile.getParentFile()
                 .getName() + "/" + outputFile.getName()));
         wavRecorder = new WavRecorder(outputFile, wavFormat, threadLogger);
-        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, currentRecordedSynthNote.getNote(), currentRecordedSynthNote.getVelocity()), 0);
+        if (currentRecordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
+            MidiEvent controlChangeEvent = new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote.getControlChange(), currentRecordedSynthNote.getCcValue()
+                    .value()), 0);
+            threadLogger.log("Send Control Change " + currentRecordedSynthNote.getControlChange() + " with value " + currentRecordedSynthNote.getCcValue()
+                    .value() + " on channel " + currentRecordedSynthNote.getChannel());
+            midiOutDevice.send(controlChangeEvent);
+        } else {
+            threadLogger.log("Reset all controllers on channel " + currentRecordedSynthNote.getChannel());
+            midiOutDevice.sendAllcontrollersOff(currentRecordedSynthNote.getChannel());
+        }
+        MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote.getNote()
+                .value(), currentRecordedSynthNote.getVelocity()
+                .value()), 0);
         midiOutDevice.send(noteOn);
     }
 
