@@ -1,0 +1,34 @@
+# this synth have many compatibility modes: QS300, TG300B, XG, GM
+deviceName: "CS1x"
+brand: "Yamaha"
+outputMidiDevice: "M8U eX 5"
+inputMidiDevice: "M8U eX 6"
+macros:
+    - "XG Mode()              : -- : F0 43 11 4C 00 00 7E 00 F7"
+    - "GM Mode()              : -- : F0 7E 7F 09 01 F7"
+    # Native Dump Request
+    - "SYSTEM()               : 23 : F043204B 500000 F7"
+    - "Cur Perf Common()      : 39 : F043204B 60 00 00 F7"
+    - "Cur Perf Layer(layer)  : 34 : F043204B 60 layer 00 F7"
+    - "User Perf Common(perf) : 39 : F043204B 70 perf 00 F7"
+    - "User Perf Layer1(perf) : 34 : F043204B 71 perf 00 F7"
+    - "User Perf Layer2(perf) : 34 : F043204B 72 perf 00 F7"
+    - "User Perf Layer3(perf) : 34 : F043204B 73 perf 00 F7"
+    - "User Perf Layer4(perf) : 34 : F043204B 74 perf 00 F7"
+    - "Cur Perf Layers()   : Cur Perf Layer([01-04])"
+    - "User Perfs Common() : User Perf Common([00-127])"
+    - "User Perfs Layer1() : User Perf Layer1([00-127])"
+    - "User Perfs Layer2() : User Perf Layer2([00-127])"
+    - "User Perfs Layer3() : User Perf Layer3([00-127])"
+    - "User Perfs Layer4() : User Perf Layer4([00-127])"
+        
+    # XG Dump Request (must be in MULTI mode)
+    - "XG SYSTEM()          : 034 : F043204C 080000 F7"
+    - "XG MULTI EFFECT()    : 019 : F043204C 020100 F7"
+    - "XG MULTI PART(part)  : 034 : F043204C 08 part 00 F7"
+    - "XG DRUM Setup 1(kit) : 01B : F043204C 30 kit 00 F7"
+    - "XG DRUM Setup 2(kit) : 01B : F043204C 31 kit 00 F7" 
+    - "XG MULTI PARTS()     : XG MULTI PART([00-15])"
+    - "XG DRUM Setups 1()   : XG DRUM Setup 1([24-84])"
+    - "XG DRUM Setups 2()   : XG DRUM Setup 2([24-84])"
+  

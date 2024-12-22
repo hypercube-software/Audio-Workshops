@@ -1,0 +1,13 @@
+deviceName: "JV-880"
+brand: "Roland"
+outputMidiDevice: "M8U eX 9"
+inputMidiDevice: "M8U eX 10"
+macros:
+    - "System Common()      : 009B : F041104611 00000000 00000110 CK8 F7" 
+    - "Temp Performance()   : 03C3 : F041104611 00001000 00010000 CK8 F7"
+    - "Temp Rhythm Setup()  : 0C8D : F041104611 00074000 00003300 CK8 F7"
+    - "Temp Patch()         : 0229 : F041104611 00082000 00010000 CK8 F7"        
+    - "Performances()       : 19A0 : F041104611 01001000 00150000 CK8 F7"           
+    - "Internal Patches()   : 9943 : F041104611 01402000 00400000 CK8 F7"
+    - "Internal Rhythm()    : 0C8D : F041104611 017F4000 00003300 CK8 F7"
+  
