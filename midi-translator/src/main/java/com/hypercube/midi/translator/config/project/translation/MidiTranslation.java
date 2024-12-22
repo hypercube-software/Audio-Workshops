@@ -1,4 +1,4 @@
-package com.hypercube.midi.translator.config;
+package com.hypercube.midi.translator.config.project.translation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

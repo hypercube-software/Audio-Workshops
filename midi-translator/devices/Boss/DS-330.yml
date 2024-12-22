@@ -1,0 +1,7 @@
+deviceName: "DS-330"
+brand: "Boss"
+inputMidiDevice: "4- MIDISPORT Uno In"
+outputMidiDevice: "4- MIDISPORT Uno Out"
+macros:
+  - "Bulk System+Patches() : FBC   : F0 41 00 42 11 480000 001D10 CK6 F7"
+  - "Bulk Drum()           :       : F0 41 00 42 11 490000 000200 CK6 F7"

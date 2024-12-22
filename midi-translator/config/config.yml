@@ -1,9 +1,38 @@
 devices:
-  inputMidiDevice: "nanoKEY2 1 KEYBOARD"
-  outputMidiDevice: "Tx81z"
-  outputBandwidth: 300 # The Tx81z typically can't go beyond 300 bytes/sec
+  # Optional fields:
+  #  inactivityTimeoutMs: how to know the end of reception when size is not specified
+  #  sysExPauseMs       : wait few ms before sending another message to the device
+  #  enabled            : by default it is true
+  # Required fields (override those defined in "devices" folder
+  #  inputMidiDevice: "4- MIDISPORT Uno In"
+  #  outputMidiDevice: "4- MIDISPORT Uno Out"
+  - name: "DS-330"
+    #
+    # dumpRequests accept 2 formats:
+    #   "TITLE : SIZE : PAYLOAD TEMPLATE"
+    #   "MACRO(param1,param2,...)"
+    # where:
+    #    TITLE             : anything you want
+    #    SIZE              : is optional and must be in hexadecimal
+    #    PAYLOAD TEMPLATE  : a list of bytes in 2 hexadecimal digits
+    #    MACRO             : a macro defined in the devices sub folders
+    # The payload template can:
+    #    include optional spaces to be more readable
+    #    Include one range like [12-127] to generate many variations of 1 byte
+    #                                 Note that the range is always in decimal.
+    #    Use a checksum like CK6 meaning: compute the checksum with the 6 previous bytes
+    #
+    # Note: specifying the size make the backup faster otherwise we rely on 'inactivityTimeoutMs'
+    #
+    dumpRequests:
+      - "Bulk System+Patches()"
+      - "Bulk Drum()"
+
+translate:
+  fromMidiDevice: "4- MIDISPORT Uno In"
+  toDevice: "Tx81z"
 # Translation rules:
-# use vv to inject the control cahnge value inside the SYSEX
+# use vv to inject the control change value inside the SYSEX
 # use [low,high] to rescale the input value
 translations:
   - 7 => F0 43 12 12 32 vv F7 [-6,10] # convert CC Volume (7) in the range [0-127] to some TX81z parameters in the range [-6,10]

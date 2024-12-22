@@ -23,8 +23,9 @@ class MidiPresetTest {
     @ParameterizedTest
     @MethodSource
     void parseMSBLSBBank(TestParam testParam) {
-        MidiPreset preset = MidiPreset.of(testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(testParam.input()));
+        MidiPreset preset = MidiPreset.of(1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
         assertEquals("title", preset.title());
+        assertEquals(1, preset.channel());
     }
 
 }

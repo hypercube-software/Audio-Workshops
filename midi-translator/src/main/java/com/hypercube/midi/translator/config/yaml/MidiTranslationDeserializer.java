@@ -1,9 +1,9 @@
-package com.hypercube.midi.translator.config;
+package com.hypercube.midi.translator.config.yaml;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.error.ConfigError;
 
 import java.io.IOException;
@@ -14,19 +14,15 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation> {
-    private static final Pattern translationRegExp = Pattern.compile("(?<cc>[0-9]+)\\s*=>(?<payload>(\\s*([vA-F0-9]{2}))+)(\\s+\\[(?<lowerBound>[+-01234567899]+),(?<upperBound>[+-01234567899]+)\\])?");
+    private static final Pattern translationRegExp = Pattern.compile("(?<cc>[0-9]+)\\s*=>(?<payload>(\\s*([vA-F0-9]{2}))+)(\\s+\\[(?<lowerBound>[+-0123456789]+),(?<upperBound>[+-0123456789]+)\\])?");
     private static final Pattern translationPayloadRegExp = Pattern.compile("\\s*([vA-F0-9]{2})");
 
     public MidiTranslationDeserializer() {
-        this(null);
-    }
-
-    public MidiTranslationDeserializer(Class<?> vc) {
-        super(vc);
+        super((Class<?>) null);
     }
 
     @Override
-    public MidiTranslation deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+    public MidiTranslation deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String value = jsonParser.getText();
         var translationMatcher = translationRegExp.matcher(value);
         if (translationMatcher.find()) {
@@ -55,7 +51,7 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
             }
             byte[] payload = new byte[list.size()];
             IntStream.range(0, list.size())
-                    .forEach(i -> payload[i] = (byte) list.get(i));
+                    .forEach(i -> payload[i] = list.get(i));
             return new MidiTranslation(cc, valueIndex, payload, lowerBound, upperBound);
         } else {
             throw new ConfigError("Unexpected Translation definition: " + value);

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,8 @@ public class MidiDeviceManager {
                 log.error("Port " + info.getDescription() + " is not available");
             }
         }
+        inputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
+        outputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
     }
 
     public Optional<MidiInDevice> getInput(String name) {

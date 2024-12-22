@@ -1,5 +1,6 @@
 package com.hypercube.midi.translator.config;
 
+import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

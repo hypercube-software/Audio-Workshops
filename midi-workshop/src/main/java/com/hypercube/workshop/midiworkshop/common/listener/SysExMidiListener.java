@@ -8,8 +8,7 @@ import javax.sound.midi.SysexMessage;
 public record SysExMidiListener(MidiListener listener) implements MidiListener {
     @Override
     public void onEvent(MidiInDevice device, CustomMidiEvent event) {
-        if (event.getMessage()
-                .getStatus() == SysexMessage.SYSTEM_EXCLUSIVE) {
+        if (event.getMessage() instanceof SysexMessage) {
             listener.onEvent(device, event);
         }
     }

@@ -1,9 +1,10 @@
 package com.hypercube.midi.translator;
 
-import com.hypercube.midi.translator.config.MidiTranslatorConfiguration;
+import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Component
 @RequiredArgsConstructor
 public class MidiTranslator {
-    private final MidiTranslatorConfiguration conf;
+    private final ProjectConfiguration conf;
     private MidiInDevice midiInDevice;
     private MidiOutDevice midiOutDevice;
     private int bandwidth;
@@ -52,7 +53,7 @@ public class MidiTranslator {
             try {
                 consumer.join();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new MidiError(e);
             }
         }
     }
@@ -82,7 +83,6 @@ public class MidiTranslator {
                         midiOutDevice.send(event);
                         prevSend = now;
                         prevSize = payloadSize;
-                        ;
                     } else {
                         lastDropped = event;
                         //log.info("Dropped!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
@@ -117,7 +117,7 @@ public class MidiTranslator {
                     CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(payload, payload.length), -1);
                     eventQueue.add(evt);
                 } catch (InvalidMidiDataException e) {
-                    throw new RuntimeException(e);
+                    throw new MidiError(e);
                 }
             } else {
                 eventQueue.add(customMidiEvent);

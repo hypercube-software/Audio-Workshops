@@ -175,7 +175,14 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.MidiTranslator","com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }, {"name":"translate","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.MidiTranslator","com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }, {"name":"backup","parameterTypes":[] }, {"name":"list","parameterTypes":[] }, {"name":"restore","parameterTypes":[] }, {"name":"translate","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.DeviceSetting",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDumpRequest","parameterTypes":["java.lang.String"] }, {"name":"setDumpRequest","parameterTypes":["java.util.List"] }, {"name":"setDumpRequests","parameterTypes":["java.util.List"] }, {"name":"setInputMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setOutputBandwidth","parameterTypes":["int"] }, {"name":"setOutputMidiDevice","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.hypercube.midi.translator.config.DevicesSettings",
@@ -189,7 +196,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"close","parameterTypes":[] }, {"name":"setDevices","parameterTypes":["com.hypercube.midi.translator.config.DevicesSettings"] }, {"name":"setTranslations","parameterTypes":["java.util.List"] }, {"name":"shutdown","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"close","parameterTypes":[] }, {"name":"setDevices","parameterTypes":["com.hypercube.midi.translator.config.DevicesSettings"] }, {"name":"setDevices","parameterTypes":["java.util.List"] }, {"name":"setTranslate","parameterTypes":["com.hypercube.midi.translator.config.TranslateSetting"] }, {"name":"setTranslations","parameterTypes":["java.util.List"] }, {"name":"shutdown","parameterTypes":[] }]
 },
 {
   "name":"com.hypercube.midi.translator.config.MidiTranslatorConfigurationFactory",
@@ -197,6 +204,13 @@
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"loadConfig","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.TranslateSetting",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFromMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setToDevice","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.mongodb.client.MongoClient"
@@ -750,6 +764,10 @@
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.aot.generate.Generated",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.aot.hint.annotation.Reflective",
@@ -1629,6 +1647,9 @@
 {
   "name":"org.springframework.boot.loader.launch.LaunchedClassLoader",
   "methods":[{"name":"clearCache","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.logging.LogLevelEditor"
 },
 {
   "name":"org.springframework.boot.logging.java.JavaLoggingSystem$Factory",

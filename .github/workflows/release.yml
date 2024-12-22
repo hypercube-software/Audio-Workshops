@@ -47,7 +47,8 @@ jobs:
       - name: Prepare midi-translator distrib
         run: |
           cp midi-translator/doc/readme.txt midi-translator/target
-          cp -R midi-translator/config midi-translator/target
+          cp -R midi-translator/config/config.yml midi-translator/target/config-example.yml
+          cp -R midi-translator/devices midi-translator/target
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
@@ -55,7 +56,8 @@ jobs:
           path: |
             midi-translator/target/midi-translator.exe
             midi-translator/target/jsound.dll
-            midi-translator/target/config
+            midi-translator/target/config-example.yml
+            midi-translator/target/devices
             midi-translator/target/readme.txt
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'macOS' }}
@@ -63,7 +65,8 @@ jobs:
           name: midi-translator-osx.zip
           path: |
             midi-translator/target/midi-translator
-            midi-translator/target/config
+            midi-translator/target/config-example.yml
+            midi-translator/target/devices
             midi-translator/target/readme.txt
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
@@ -71,7 +74,8 @@ jobs:
           name: midi-translator-jvm.zip
           path: |
             midi-translator/target/midi-translator*.jar
-            midi-translator/target/config
+            midi-translator/target/config-example.yml
+            midi-translator/target/devices
             midi-translator/target/readme.txt
       #
       # synth-ripper
