@@ -18,8 +18,14 @@ public class MidiTranslatorApplication {
             SpringApplication.run(MidiTranslatorApplication.class, args);
         } catch (Exception e) {
             Throwable ourException = resolveException(e);
-            log.error("Unexpected error", Optional.ofNullable(ourException)
-                    .orElse(e));
+            if (ourException != null && ourException.getClass()
+                    .getPackageName()
+                    .startsWith("com.hypercube")) {
+                log.error("Unexpected error", Optional.ofNullable(ourException)
+                        .orElse(e));
+            } else {
+                throw e; // Spring AOP internally catches exceptions to obtain the application context
+            }
         }
     }
 

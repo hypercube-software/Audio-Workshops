@@ -61,7 +61,8 @@ public class MidiDeviceLibrary {
                         .replace("nested:", "")
                         .replaceAll("\\.jar.*", "");
                 File f = new File(path);
-                return f.getParentFile();
+                return f.getParentFile()
+                        .getParentFile();
             }
             throw new ConfigError("Unexpected location: " + uri.toString());
         } catch (URISyntaxException e) {
@@ -81,7 +82,7 @@ public class MidiDeviceLibrary {
                     .forEach(m -> midiDevicesLibrary.put(m.getDeviceName(), m));
 
         } catch (IOException e) {
-            throw new MidiError("Unable to read macro folder:" + libraryFolder.toString());
+            throw new MidiError("Unable to read library folder:" + libraryFolder.toString());
         }
     }
 

@@ -77,6 +77,12 @@
   }, {
     "pattern":"\\Qcom/hypercube/midi/translator/config/MidiTranslatorConfigurationFactory.class\\E"
   }, {
+    "pattern":"\\Qcom/hypercube/midi/translator/config/lib/MidiDeviceLibrary.class\\E"
+  }, {
+    "pattern":"\\Qcom/hypercube/midi/translator/config/project/ProjectConfigurationFactory.class\\E"
+  }, {
+    "pattern":"\\Qconfig.yml\\E"
+  }, {
     "pattern":"\\Qconfig/application-default.properties\\E"
   }, {
     "pattern":"\\Qconfig/application-default.xml\\E"
@@ -92,6 +98,8 @@
     "pattern":"\\Qconfig/application.yaml\\E"
   }, {
     "pattern":"\\Qconfig/application.yml\\E"
+  }, {
+    "pattern":"\\Qconfig/config-analysis.yml\\E"
   }, {
     "pattern":"\\Qgit.properties\\E"
   }, {

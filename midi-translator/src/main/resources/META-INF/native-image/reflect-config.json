@@ -152,7 +152,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }]
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }, {"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.project.ProjectConfiguration"] }]
 },
 {
   "name":"com.hypercube.midi.translator.MidiTranslatorApplication",
@@ -175,7 +175,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.MidiTranslator","com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }, {"name":"backup","parameterTypes":[] }, {"name":"list","parameterTypes":[] }, {"name":"restore","parameterTypes":[] }, {"name":"translate","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.MidiTranslator","com.hypercube.midi.translator.config.MidiTranslatorConfiguration"] }, {"name":"<init>","parameterTypes":["com.hypercube.midi.translator.MidiTranslator","com.hypercube.midi.translator.config.project.ProjectConfiguration"] }, {"name":"backup","parameterTypes":[] }, {"name":"list","parameterTypes":[] }, {"name":"restore","parameterTypes":[] }, {"name":"translate","parameterTypes":[] }]
 },
 {
   "name":"com.hypercube.midi.translator.config.DeviceSetting",
@@ -207,6 +207,48 @@
 },
 {
   "name":"com.hypercube.midi.translator.config.TranslateSetting",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFromMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setToDevice","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.lib.MidiDeviceDefinition",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBrand","parameterTypes":["java.lang.String"] }, {"name":"setDeviceName","parameterTypes":["java.lang.String"] }, {"name":"setInputMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setMacros","parameterTypes":["java.util.List"] }, {"name":"setOutputMidiDevice","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.lib.MidiDeviceLibrary",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.project.ProjectConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"close","parameterTypes":[] }, {"name":"setDevices","parameterTypes":["java.util.List"] }, {"name":"setTranslate","parameterTypes":["com.hypercube.midi.translator.config.project.translation.TranslationSetting"] }, {"name":"setTranslations","parameterTypes":["java.util.List"] }, {"name":"shutdown","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.project.ProjectConfigurationFactory",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.lib.MidiDeviceLibrary"] }, {"name":"loadConfig","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.project.device.ProjectDevice",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDumpRequests","parameterTypes":["java.util.List"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.project.translation.TranslationSetting",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
@@ -373,7 +415,7 @@
 {
   "name":"java.lang.Class",
   "queryAllDeclaredMethods":true,
-  "methods":[{"name":"getModule","parameterTypes":[] }]
+  "methods":[{"name":"getModule","parameterTypes":[] }, {"name":"getRecordComponents","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ClassLoader",
@@ -445,6 +487,10 @@
 {
   "name":"java.lang.reflect.ParameterizedType",
   "methods":[{"name":"getActualTypeArguments","parameterTypes":[] }, {"name":"getRawType","parameterTypes":[] }]
+},
+{
+  "name":"java.lang.reflect.RecordComponent",
+  "methods":[{"name":"getName","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
 },
 {
   "name":"java.lang.reflect.WildcardType",
@@ -2664,6 +2710,10 @@
 },
 {
   "name":"org.springframework.stereotype.Indexed",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.stereotype.Service",
   "queryAllDeclaredMethods":true
 },
 {
