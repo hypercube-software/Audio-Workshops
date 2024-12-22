@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 public record CommandCall(String name, List<String> parameters) {
-    private static Pattern commandCall = Pattern.compile("(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_LABEL_REGEXP));
+    private static Pattern commandCall = Pattern.compile("(^|[\\s:])(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_LABEL_REGEXP));
 
     public static CommandCall parse(String definition) {
         var m = commandCall.matcher(definition);
@@ -22,7 +22,7 @@ public record CommandCall(String name, List<String> parameters) {
                     .orElse(List.of());
             return new CommandCall(name, paramArray);
         } else {
-            throw new MidiError("Invalid command definition: " + definition);
+            throw new MidiError("Invalid command call definition: " + definition);
         }
     }
 }

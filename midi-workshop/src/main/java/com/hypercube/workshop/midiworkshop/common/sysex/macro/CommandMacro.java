@@ -2,18 +2,21 @@ package com.hypercube.workshop.midiworkshop.common.sysex.macro;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public record CommandMacro(
+        Path definitionFile,
         String name,
         List<String> parameters, String body) {
     public static final String COMMAND_LABEL_REGEXP = "[A-Z_ \\+\\-a-z0-9]+";
-    private static Pattern commandDefinition = Pattern.compile("(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_LABEL_REGEXP));
+    private static Pattern commandDefinition = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_LABEL_REGEXP));
 
-    public static CommandMacro parse(String definition) {
+    public static CommandMacro parse(Path definitionFile, String definition) {
         var m = commandDefinition.matcher(definition);
         if (m.find()) {
             String name = m.group("name");
@@ -24,9 +27,9 @@ public record CommandMacro(
                             .map(String::trim)
                             .toList())
                     .orElse(List.of());
-            return new CommandMacro(name, paramArray, body);
+            return new CommandMacro(definitionFile, name, paramArray, body);
         } else {
-            throw new MidiError("Invalid command definition: \"%s\"".formatted(definition));
+            throw new MidiError("Invalid command definition: \"%s\" in file %s".formatted(definition, definitionFile.toString()));
         }
     }
 
@@ -46,6 +49,16 @@ public record CommandMacro(
         return result;
     }
 
+    @Override
+    public String toString() {
+        String params = parameters.stream()
+                .collect(Collectors.joining(","));
+        String file = Optional.ofNullable(definitionFile)
+                .map(p -> p.toString() + ": ")
+                .orElse("");
+        return "%s%s(%s) => %s".formatted(file, name, params, body);
+    }
+
     private String expandValue(String paramValue) {
         if (paramValue.startsWith("0x")) {
             return "%02X".formatted(Integer.parseInt(paramValue.substring(2), 16));
@@ -59,10 +72,14 @@ public record CommandMacro(
     }
 
     public boolean match(String commandCall) {
-        Pattern p = Pattern.compile(name.replace("+", "\\+")
-                .replace("-", "\\-") + "\\s*\\([^)]*\\)");
-        var m = p.matcher(commandCall);
+        Pattern commandCallExp = Pattern.compile("(^|[\\s:])%s\\s*\\([^)]*\\)".formatted(nameToRegExp()));
+        var m = commandCallExp.matcher(commandCall);
         var matches = m.find();
         return matches;
+    }
+
+    private String nameToRegExp() {
+        return name.replace("+", "\\+")
+                .replace("-", "\\-");
     }
 }
