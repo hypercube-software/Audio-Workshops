@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -113,7 +114,10 @@ public class MidiDeviceLibrary {
                     .expand(call);
             return expand(deviceName, "%s : %s".formatted(call.name(), expanded));
         } else if (matches.size() > 1) {
-            throw new ConfigError("Ambiguous macro call, multiple name are available:" + commandCall);
+            String msg = matches.stream()
+                    .map(CommandMacro::toString)
+                    .collect(Collectors.joining("\n"));
+            throw new ConfigError("Ambiguous macro call, multiple name are available in" + commandCall + "\n" + msg);
         } else {
             return commandCall;
         }
@@ -127,7 +131,7 @@ public class MidiDeviceLibrary {
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
-            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer());
+            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(macroFile));
             mapper.registerModule(module);
             MidiDeviceDefinition macro = mapper.readValue(macroFile.toFile(), MidiDeviceDefinition.class);
             // cleanup: remove null elements

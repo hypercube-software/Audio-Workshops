@@ -33,5 +33,7 @@
     <logger name="ch.qos.logback" level="info" additivity="false">
         <appender-ref ref="FILE"/>
     </logger>
-
+    <logger name="org" level="info" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
 </configuration>

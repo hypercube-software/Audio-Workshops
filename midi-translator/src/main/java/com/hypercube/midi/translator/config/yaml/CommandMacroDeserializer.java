@@ -6,15 +6,19 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class CommandMacroDeserializer extends StdDeserializer<CommandMacro> {
-    public CommandMacroDeserializer() {
+    private final Path macroFile;
+
+    public CommandMacroDeserializer(Path macroFile) {
         super((Class<?>) null);
+        this.macroFile = macroFile;
     }
 
     @Override
     public CommandMacro deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String value = jsonParser.getText();
-        return CommandMacro.parse(value);
+        return CommandMacro.parse(macroFile, value);
     }
 }

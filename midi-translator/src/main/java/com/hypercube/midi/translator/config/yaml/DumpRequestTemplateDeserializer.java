@@ -35,7 +35,7 @@ public class DumpRequestTemplateDeserializer extends StdDeserializer<DumpRequest
         // the final string should be "<command name> : <size> : <bytes>"
         String[] values = text.split(":");
         if (values.length != 3) {
-            throw new ConfigError("Unexpected Translation definition: " + text);
+            throw new ConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(text));
         } else {
             Integer size = parseOptionalSize(values);
             String name = values[0];
