@@ -75,8 +75,8 @@ public class AudioInputLine extends AudioLine implements Closeable {
                 boolean continueRecord = listener.onNewBuffer(new SampleBuffer(normalizedData, 0, nbSampleRead, nbChannels), pcmData, nbRead);
                 double elapsedTime = System.nanoTime() - start;
                 if (elapsedTime > durationInNano) {
-                    log.error("ERROR: listener take too much time to process the buffer");
-                    continueRecord = false;
+                    log.error("ERROR: listener take too much time to process the buffer: " + (elapsedTime / 1000000f) + " ms");
+                    //continueRecord = false;
                 }
                 if (!continueRecord) {
                     break;

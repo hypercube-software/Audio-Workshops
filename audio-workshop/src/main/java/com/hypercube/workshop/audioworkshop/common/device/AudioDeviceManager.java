@@ -6,10 +6,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 public class AudioDeviceManager {
@@ -41,6 +38,8 @@ public class AudioDeviceManager {
                 }
             }
         }
+        inputs.sort(Comparator.comparing(AbstractAudioDevice::getName));
+        outputs.sort(Comparator.comparing(AbstractAudioDevice::getName));
     }
 
     public Optional<AudioInputDevice> getInput(String deviceName) {
