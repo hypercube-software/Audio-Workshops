@@ -47,7 +47,7 @@ jobs:
       - name: Prepare midi-translator distrib
         run: |
           cp midi-translator/doc/readme.txt midi-translator/target
-          cp -R midi-translator/config/config.yml midi-translator/target/config-example.yml
+          cp -R midi-translator/config/config-example.yml midi-translator/target/config-example.yml
           cp -R midi-translator/devices midi-translator/target
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
