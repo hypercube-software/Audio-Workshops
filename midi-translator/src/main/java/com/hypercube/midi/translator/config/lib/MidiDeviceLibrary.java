@@ -9,6 +9,7 @@ import com.hypercube.midi.translator.error.ConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
  * The Midi device library store all known settings for a given device. This make project settings small and not redundant
  */
 @Service
+@Slf4j
 public class MidiDeviceLibrary {
     private Map<String, MidiDeviceDefinition> midiDevicesLibrary;
 
@@ -60,9 +62,9 @@ public class MidiDeviceLibrary {
                 String path = uri.getRawSchemeSpecificPart()
                         .replace("nested:", "")
                         .replaceAll("\\.jar.*", "");
+                //log.info(path);
                 File f = new File(path);
-                return f.getParentFile()
-                        .getParentFile();
+                return f.getParentFile();
             }
             throw new ConfigError("Unexpected location: " + uri.toString());
         } catch (URISyntaxException e) {
@@ -73,16 +75,21 @@ public class MidiDeviceLibrary {
     public void load() {
         midiDevicesLibrary = new HashMap<>();
         Path libraryFolder = Path.of(getConfigFolder().getAbsolutePath() + "/devices/");
-        try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder)
-                .filter(p -> p.getFileName()
-                        .toString()
-                        .endsWith(".yml"))
-                .map(this::loadDeviceMacro)) {
-            midiDeviceDefinitionStream
-                    .forEach(m -> midiDevicesLibrary.put(m.getDeviceName(), m));
+        if (libraryFolder.toFile()
+                .exists()) {
+            try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder)
+                    .filter(p -> p.getFileName()
+                            .toString()
+                            .endsWith(".yml"))
+                    .map(this::loadDeviceMacro)) {
+                midiDeviceDefinitionStream
+                        .forEach(m -> midiDevicesLibrary.put(m.getDeviceName(), m));
 
-        } catch (IOException e) {
-            throw new MidiError("Unable to read library folder:" + libraryFolder.toString());
+            } catch (IOException e) {
+                throw new MidiError("Unable to read library folder:" + libraryFolder.toString());
+            }
+        } else {
+            log.warn("The library path does not exists:" + libraryFolder.toString());
         }
     }
 
@@ -127,6 +134,16 @@ public class MidiDeviceLibrary {
     public Optional<MidiDeviceDefinition> getDevice(String deviceName) {
         return Optional.ofNullable(midiDevicesLibrary.get(deviceName));
     }
+
+    public Optional<MidiDeviceDefinition> getDeviceFromMidiPort(String midiPort) {
+        return midiDevicesLibrary.values()
+                .stream()
+                .filter(def -> def.getOutputMidiDevice()
+                        .equals(midiPort) || def.getInputMidiDevice()
+                        .equals(midiPort))
+                .findFirst();
+    }
+
 
     private MidiDeviceDefinition loadDeviceMacro(Path macroFile) {
         var mapper = new ObjectMapper(new YAMLFactory());

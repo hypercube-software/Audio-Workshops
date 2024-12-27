@@ -3,6 +3,7 @@ package com.hypercube.midi.translator.config.project;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.hypercube.midi.translator.config.lib.MidiDeviceDefinition;
 import com.hypercube.midi.translator.config.lib.MidiDeviceLibrary;
 import com.hypercube.midi.translator.config.project.device.DumpRequestTemplate;
 import com.hypercube.midi.translator.config.project.device.ProjectDevice;
@@ -11,12 +12,14 @@ import com.hypercube.midi.translator.config.yaml.DumpRequestTemplateDeserializer
 import com.hypercube.midi.translator.config.yaml.MidiTranslationDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
 import lombok.RequiredArgsConstructor;
+import org.jline.utils.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,21 +32,26 @@ public class ProjectConfigurationFactory {
     @Bean
     public ProjectConfiguration loadConfig() {
         midiDeviceLibrary.load();
-        var mapper = new ObjectMapper(new YAMLFactory());
-        try {
-            SimpleModule module = new SimpleModule();
-            module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer());
-            module.addDeserializer(DumpRequestTemplate.class, new DumpRequestTemplateDeserializer(midiDeviceLibrary));
-            mapper.registerModule(module);
-            ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
-            config.getDevices()
-                    .forEach(this::setDefaultDeviceSettings);
-            config.getTranslations()
-                    .forEach(t -> config.getTranslationsMap()
-                            .put(t.getCc(), t));
-            return config;
-        } catch (IOException e) {
-            throw new ConfigError(e);
+        if (configFile.exists()) {
+            var mapper = new ObjectMapper(new YAMLFactory());
+            try {
+                SimpleModule module = new SimpleModule();
+                module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer());
+                module.addDeserializer(DumpRequestTemplate.class, new DumpRequestTemplateDeserializer(midiDeviceLibrary));
+                mapper.registerModule(module);
+                ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
+                config.getDevices()
+                        .forEach(this::setDefaultDeviceSettings);
+                config.getTranslations()
+                        .forEach(t -> config.getTranslationsMap()
+                                .put(t.getCc(), t));
+                return config;
+            } catch (IOException e) {
+                throw new ConfigError(e);
+            }
+        } else {
+            Log.warn("The project config does not exists:" + configFile.getAbsolutePath());
+            return new ProjectConfiguration();
         }
     }
 
@@ -71,5 +79,11 @@ public class ProjectConfigurationFactory {
                         device.setOutputMidiDevice(def.getOutputMidiDevice());
                     }
                 });
+    }
+
+    public Optional<MidiDeviceDefinition> getDeviceFromMidiPort(String midiPort) {
+        return Optional.ofNullable(midiDeviceLibrary)
+                .map(l -> l.getDeviceFromMidiPort(midiPort))
+                .orElse(null);
     }
 }

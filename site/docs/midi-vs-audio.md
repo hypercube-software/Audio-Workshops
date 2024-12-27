@@ -90,7 +90,7 @@ A VST is nothing more than a DLL which can be loaded into an application called 
 
 Created by Dave Smith in 1981, the MIDI is pretty impressive in the sense it is still relevant today.
 
-Imagine that, Hans Zimmer (multi awarded composer of many blockbusters soundtracks), use MIDI during his mega-concerts:
+Imagine that, Hans Zimmer (multi awarded composer of many blockbusters soundtracks), still use MIDI during his mega-concerts:
 
 ![image-20230312110646083](./assets/image-20230312110646083.png)
 

@@ -1,12 +1,10 @@
 package com.hypercube.midi.translator;
 
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
+import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
 import com.hypercube.midi.translator.config.project.device.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
-import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.*;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +18,13 @@ import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.util.List;
 
-@ShellComponent
+@ShellComponent("MidiTranslator")
 @Slf4j
 @AllArgsConstructor
 public class MidiTranslatorShell {
     private final MidiTranslator midiTranslator;
     private final ProjectConfiguration configuration;
+    private final ProjectConfigurationFactory projectConfigurationFactory;
 
     @ShellMethod(value = "Read MIDI input and send to another MIDI output limiting the throughput")
     public void translate() throws IOException {
@@ -182,9 +181,16 @@ public class MidiTranslatorShell {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
         m.getInputs()
-                .forEach(d -> log.info(String.format("INPUT Device \"%s\"", d.getName())));
+                .forEach(d -> log.info(String.format("MIDI INPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
         m.getOutputs()
-                .forEach(d -> log.info(String.format("OUTPUT Device \"%s\"", d.getName())));
+                .forEach(d -> log.info(String.format("MIDI OUTPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
+    }
+
+    private String getDeviceAlias(AbstractMidiDevice midiDevice) {
+        return projectConfigurationFactory.getDeviceFromMidiPort(midiDevice
+                        .getName())
+                .map(def -> " => bound to library device \"%s\"".formatted(def.getDeviceName()))
+                .orElse("");
     }
 
 }
