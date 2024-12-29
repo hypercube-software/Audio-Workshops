@@ -39,44 +39,44 @@ jobs:
         run: mvn clean install --file pom.xml -DskipTests
       - name: Native Build Synth-ripper with Maven
         run: mvn -Pnative native:compile --file synth-ripper/pom.xml -DskipTests
-      - name: Native Build Midi-Translator with Maven
-        run: mvn -Pnative native:compile --file midi-translator/pom.xml -DskipTests
+      - name: Native Build midi-backup-translator with Maven
+        run: mvn -Pnative native:compile --file midi-backup-translator/pom.xml -DskipTests
       #
-      # midi-translator
+      # midi-backup-translator
       #
-      - name: Prepare midi-translator distrib
+      - name: Prepare midi-backup-translator distrib
         run: |
-          cp midi-translator/doc/readme.pdf midi-translator/target
-          cp -R midi-translator/config/config-example.yml midi-translator/target/config-example.yml
-          cp -R midi-translator/devices midi-translator/target
+          cp midi-backup-translator/doc/readme.pdf midi-backup-translator/target
+          cp -R midi-backup-translator/config/config-example.yml midi-backup-translator/target/config-example.yml
+          cp -R midi-backup-translator/devices midi-backup-translator/target
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: midi-translator-x64.zip
+          name: midi-backup-translator-x64
           path: |
-            midi-translator/target/midi-translator.exe
-            midi-translator/target/jsound.dll
-            midi-translator/target/config-example.yml
-            midi-translator/target/devices
-            midi-translator/target/readme.pdf
+            midi-backup-translator/target/midi-backup-translator.exe
+            midi-backup-translator/target/jsound.dll
+            midi-backup-translator/target/config-example.yml
+            midi-backup-translator/target/devices
+            midi-backup-translator/target/readme.pdf
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'macOS' }}
         with:
-          name: midi-translator-osx.zip
+          name: midi-backup-translator-osx
           path: |
-            midi-translator/target/midi-translator
-            midi-translator/target/config-example.yml
-            midi-translator/target/devices
-            midi-translator/target/readme.pdf
+            midi-backup-translator/target/midi-backup-translator
+            midi-backup-translator/target/config-example.yml
+            midi-backup-translator/target/devices
+            midi-backup-translator/target/readme.pdf
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: midi-translator-jvm.zip
+          name: midi-backup-translator-jvm
           path: |
-            midi-translator/target/midi-translator*.jar
-            midi-translator/target/config-example.yml
-            midi-translator/target/devices
-            midi-translator/target/readme.pdf
+            midi-backup-translator/target/midi-backup-translator*.jar
+            midi-backup-translator/target/config-example.yml
+            midi-backup-translator/target/devices
+            midi-backup-translator/target/readme.pdf
       #
       # synth-ripper
       #
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: synth-ripper-x64.zip
+          name: synth-ripper-x64
           path: |
             synth-ripper/target/synth-ripper.exe
             synth-ripper/target/jsound.dll
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'macOS' }}
         with:
-          name: synth-ripper-osx.zip
+          name: synth-ripper-osx
           path: |
             synth-ripper/target/synth-ripper
             synth-ripper/target/config
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
-          name: synth-ripper-jdk.zip
+          name: synth-ripper-jdk
           path: |
             synth-ripper/target/synth-ripper*.jar
             synth-ripper/target/config

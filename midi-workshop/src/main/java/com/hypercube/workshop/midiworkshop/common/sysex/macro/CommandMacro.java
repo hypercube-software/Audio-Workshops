@@ -61,9 +61,9 @@ public record CommandMacro(
 
     private String expandValue(String paramValue) {
         if (paramValue.startsWith("0x")) {
-            return "%02X".formatted(Integer.parseInt(paramValue.substring(2), 16));
+            return paramValue.substring(2);
         } else if (paramValue.startsWith("$")) {
-            return "%02X".formatted(Integer.parseInt(paramValue.substring(1), 16));
+            return paramValue.substring(1);
         } else if (paramValue.startsWith("[") && paramValue.endsWith("]")) {
             return paramValue; // range like [12-45]
         } else {

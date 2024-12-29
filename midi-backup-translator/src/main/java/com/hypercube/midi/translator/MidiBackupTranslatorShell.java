@@ -18,11 +18,11 @@ import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.util.List;
 
-@ShellComponent("MidiTranslator")
+@ShellComponent("MidiBackupTranslator")
 @Slf4j
 @AllArgsConstructor
-public class MidiTranslatorShell {
-    private final MidiTranslator midiTranslator;
+public class MidiBackupTranslatorShell {
+    private final MidiBackupTranslator midiBackupTranslator;
     private final ProjectConfiguration configuration;
     private final ProjectConfigurationFactory projectConfigurationFactory;
 
@@ -60,7 +60,7 @@ public class MidiTranslatorShell {
         }
         try (var in = m.openInput(inputMidiDevice)) {
             try (var out = m.openOutput(outputDevice.getOutputMidiDevice())) {
-                midiTranslator.translate(in, out, outputDevice.getOutputBandWidth());
+                midiBackupTranslator.translate(in, out, outputDevice.getOutputBandWidth());
             }
         }
     }

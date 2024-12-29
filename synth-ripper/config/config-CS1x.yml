@@ -1,0 +1,429 @@
+projectName: "Yamaha-CS1x"
+devices:
+  inputAudioDevice: VBMatrix Out 1 (VB-Audio Matrix VAIO)
+  outputAudioDevice: OUT 01-02 (BEHRINGER UMC 1820)
+  outputMidiDevice: M8U eX 5
+audio:
+  bufferDurationMs: 250
+  nbChannels: 2
+  # format src channle:dest channel, for instance
+  # 1:0 0:1 will invert the channel
+  # 0:0 1:1 does not change anything
+  # 0:0 drop the second channel
+  # 1:0 drop the first channel
+  channelMapping: "0:0 1:1"
+  bitDepth: 16
+  sampleRate: 48000
+midi:
+  # DS: Decent Sampler
+  # SFZ
+  outputFormat: DS
+  # detect looping sounds
+  maxNoteDurationSec: 6
+  maxNoteReleaseDurationSec: 10
+  #
+  # Select how to send bank select messages to the device:
+  # ------------------------------------------------------
+  # PRG              : Does not send bank select, send only Program Change
+  # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+  # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+  # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+  #
+  presetFormat: BANK_MSB_LSB_PRG
+  #
+  # FROM_ONE : preset number start from 1, it will be converted to n-1
+  # FROM_ZERO: preset number will be sent "as is"
+  #
+  presetNumbering: FROM_ONE
+  #
+  # preset numbers can be in two forms:
+  #   <bank number>-<program number>
+  #   <program number> only, in this case bank will be 0
+  #
+  # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
+  # CS1X MSB:
+  #  0   : XG NORMAL,
+  #  63  : USER/PRESET PERFORMANCE,
+  #  64  : SFX NORMAL,
+  #  126 : XG SFX KIT,
+  #  127 : XG DRUM
+  #  3F 40 / 63/64 : PRESET
+  #  3F 41 / 63/65 : USER
+  # lowest preset included
+  lowestPreset: Capital Drumkit
+  # highest preset included
+  highestPreset: Capital Drumkit
+  # lowest note included
+  lowestNote: C1
+  # highest note included
+  highestNote: C2
+  # how many note to record per octave
+  notesPerOctave: 1
+  # how many velocity layer to record per note
+  velocityPerNote: 2
+  # how many CC layer to record per note
+  ccPerNote: 1
+  #
+  # presets order is important due to lowestPreset and highestPreset
+  #
+  presets:
+    - 63-64-1 Drum Trax1
+    - title: SqSin-Arp 110BPM
+      commands:
+        - 63-64-2
+        - F0 43 10 4B 60 00 29 00 47 F7
+    - title: SqSin-Arp 90BPM
+      commands:
+        - 63-64-2
+        - F0 43 10 4B 60 00 29 00 33 F7
+    - 63-64-3 SqKirmes
+    - 63-64-4 SqClassic
+    - 63-64-5 SqSequenza
+    - 63-64-6 SqRytField
+    - 63-64-7 SqB-Luvva
+    - 63-64-8 SqObie Seq
+    - 63-64-9 SqStrobe
+    - 63-64-10 SqFly
+    - 63-64-11 SqVivaldi
+    - title: SqDorian 90BPM
+      commands:
+        - 63-64-12
+        - F0 43 10 4B 60 00 29 00 33 F7
+    - 63-64-13 ScRezline
+    - 63-64-14 ScTodd
+    - 63-64-15 ScThick
+    - 63-64-16 ScThin
+    - 63-64-17 ScCutGlass
+    - 63-64-18 ScUniverse
+    - 63-64-19 ScCrispy
+    - 63-64-20 ScFat Anne
+    - 63-64-21 ScBrassy
+    - 63-64-22 ScTheWerks
+    - 63-64-23 ScPulsMoD6
+    - 63-64-24 ScMinora
+    - 63-64-25 ScNoble 'Q
+    - 63-64-26 ScTex Sass
+    - 63-64-27 ScQuadra
+    - 63-64-28 ScDistArp
+    - 63-64-29 ScDigitz
+    - 63-64-30 ScOdyssey
+    - 63-64-31 ScDoves
+    - 63-64-32 FxAiry
+    - 63-64-33 FxParadise
+    - 63-64-34 FxIndies
+    - 63-64-35 FxCSpace
+    - 63-64-36 FxEerie
+    - 63-64-37 FxAmbient
+    - 63-64-38 FxMorning
+    - 63-64-39 FxCSphere
+    - 63-64-40 FxMagicPad
+    - 63-64-41 FxTintopia
+    - 63-64-42 FxFlowrArp
+    - 63-64-43 FxK.Scope
+    - 63-64-44 FxOrient
+    - 63-64-45 FxOmnivor
+    - 63-64-46 FxWheeleez
+    - 63-64-47 BaBassline
+    - 63-64-48 BaBasslin2
+    - 63-64-49 BaSuper
+    - 63-64-50 BaUnison
+    - 63-64-51 BaSQ-Bass
+    - 63-64-52 Ba80sSynBs
+    - 63-64-53 BaPulsbass
+    - 63-64-54 BaSaw Bass
+    - 63-64-55 BaFish 303
+    - 63-64-56 BaSawnOff
+    - 63-64-57 BaCS 01
+    - 63-64-58 BaMogue
+    - 63-64-59 BaLeeDa
+    - 63-64-60 BaHowler
+    - 63-64-61 BaKickBass
+    - 63-64-62 BaSub
+    - 63-64-63 LdWasp
+    - 63-64-64 LdE - n o
+    - 63-64-65 LdFifths
+    - 63-64-66 LdTalkBox
+    - 63-64-67 LdMicrodot
+    - 63-64-68 LdOld Mini
+    - 63-64-69 LdNuSync
+    - 63-64-70 LdClanger
+    - 63-64-71 LdOld Reso
+    - 63-64-72 LdSync
+    - 63-64-73 LdCroma
+    - 63-64-74 LdBig'm Up
+    - 63-64-75 LdHuman
+    - 63-64-76 LdBig Bob
+    - 63-64-77 GtFirestar
+    - 63-64-78 GtSevilla
+    - 63-64-79 PfCP80
+    - 63-64-80 PfWoolitz1
+    - 63-64-81 PfTina
+    - 63-64-82 PfDX-Class
+    - 63-64-83 PfAmbiEp
+    - 63-64-84 PfHipRodes
+    - 63-64-85 PfHard
+    - 63-64-86 CpBell End
+    - 63-64-87 OrCompact
+    - 63-64-88 OrEnsemble
+    - 63-64-89 OrGospel
+    - 63-64-90 OrDrawbars
+    - 63-64-91 OrMissU
+    - 63-64-92 OrGlasOrgn
+    - 63-64-93 CC(74) PdAngel St
+    - 63-64-94 PdIceField
+    - 63-64-95 PdMemory
+    - 63-64-96 PdSickWave
+    - 63-64-97 PdSprite
+    - 63-64-98 PdTrance
+    - 63-64-99 PdWhite
+    - 63-64-100 PdAirClass
+    - 63-64-101 PdCarpet
+    - 63-64-102 StDetroit
+    - 63-64-103 StBaroque
+    - 63-64-104 StOctavia
+    - 63-64-105 StJupiter
+    - 63-64-106 StStrawman
+    - 63-64-107 StStrynx
+    - 63-64-108 BrJump
+    - 63-64-109 BrBronze
+    - 63-64-110 BrXpander
+    - 63-64-111 BrHansUp
+    - 63-64-112 BrProphy
+    - 63-64-113 BrMatrix
+    - 63-64-114 SeUnion
+    - 63-64-115 SeVulcan
+    - 63-64-116 SeWStation
+    - 63-64-117 SeGhost
+    - 63-64-118 VoChoir
+    - 63-64-119 VoFragile
+    - 63-64-120 CoHaendel
+    - 63-64-121 CoWishUhea
+    - 63-64-122 CoTransit
+    - 63-64-123 DrKit B900
+    - 63-64-124 DrKit 9o9
+    - 63-64-125 DrKit 8o8
+    - 63-64-126 DrHipHop
+    - 63-64-127 DrJungly
+    - 63-64-128 DrElectric
+    - 63-65-1 Drum Trax2
+    - 63-65-2 SqPan Seq
+    - 63-65-3 SqMC-Line1
+    - 63-65-4 SqMC-Line2
+    - 63-65-5 SqSuperarp
+    - 63-65-6 Squidgy 1
+    - 63-65-7 Squidgy 2
+    - 63-65-8 SqHardOn
+    - 63-65-9 SqPlatypus
+    - 63-65-10 SqCyborg
+    - 63-65-11 Squelchy
+    - 63-65-12 Squenza 1
+    - 63-65-13 Squenza 2
+    - 63-65-14 SqErased
+    - 63-65-15 Square Dig
+    - 63-65-16 SqPulse
+    - 63-65-17 CoEthno
+    - 63-65-18 FxCofiFilt
+    - 63-65-19 SqSparkRun
+    - 63-65-20 FxSinCrony
+    - 63-65-21 FxSweepRun
+    - 63-65-22 FxBreak It
+    - 63-65-23 ScSyndiem
+    - 63-65-24 ScTranCS
+    - 63-65-25 ScSource
+    - 63-65-26 Scary
+    - 63-65-27 ScEurRail
+    - 63-65-28 ScOwa Owa
+    - 63-65-29 ScXrayz
+    - 63-65-30 PdResoCat
+    - 63-65-31 ScGlassy
+    - 63-65-32 ScSynchord
+    - 63-65-33 ScC-Hook
+    - 63-65-34 Scraper
+    - 63-65-35 ScStab
+    - 63-65-36 ScMoonBass
+    - 63-65-37 LdUniLead
+    - 63-65-38 Ld4Poles
+    - 63-65-39 LdCream
+    - 63-65-40 LdZap Lead
+    - 63-65-41 LdThe Hook
+    - 63-65-42 LdTriangle
+    - 63-65-43 LdFuji
+    - 63-65-44 LdMegaHook
+    - 63-65-45 LdMondo
+    - 63-65-46 LdMarion
+    - 63-65-47 LdSeminal
+    - 63-65-48 LdPure Sin
+    - 63-65-49 LdVollfett
+    - 63-65-50 LdEmpha
+    - 63-65-51 BaFashions
+    - 63-65-52 BaRelaxer
+    - 63-65-53 Bass Wire
+    - 63-65-54 BaWound
+    - 63-65-55 BaFridge
+    - 63-65-56 Bass Sine
+    - 63-65-57 BaSaw 1
+    - 63-65-58 BaSaw 2
+    - 63-65-59 BaPulse25
+    - 63-65-60 BaFuzzline
+    - 63-65-61 Ballistic
+    - 63-65-62 Ba303 Wave
+    - 63-65-63 BaHowitzer
+    - 63-65-64 BaPolarize
+    - 63-65-65 Pf70'sClav
+    - 63-65-66 PfWoolitz2
+    - 63-65-67 PfDynaRose
+    - 63-65-68 PfMajor 7
+    - 63-65-69 PfSweetFen
+    - 63-65-70 CpXylodyne
+    - 63-65-71 OrganMetal
+    - 63-65-72 OrYC45D
+    - 63-65-73 OrDoor
+    - 63-65-74 Organ Perc
+    - 63-65-75 Organ Rave
+    - 63-65-76 OrCelluli
+    - 63-65-77 GtTele
+    - 63-65-78 GtEzaGeeza
+    - 63-65-79 BrObie
+    - 63-65-80 BrCross
+    - 63-65-81 Brass Tek
+    - 63-65-82 BrassHouse
+    - 63-65-83 Brass Fase
+    - 63-65-84 StSweepstr
+    - 63-65-85 StVintage
+    - 63-65-86 StStrngpad
+    - 63-65-87 StBartok
+    - 63-65-88 StVienna
+    - 63-65-89 StFilta Fe
+    - 63-65-90 PdMilkyWay
+    - 63-65-91 PdSlvrThaw
+    - 63-65-92 PdSolinal
+    - 63-65-93 PdSpooks
+    - 63-65-94 PdSwell
+    - 63-65-95 PdVS-Pad
+    - 63-65-96 PdAmber
+    - 63-65-97 PdAurora
+    - 63-65-98 PdCrystal
+    - 63-65-99 PdHaze
+    - 63-65-100 PdFSOTokyo
+    - 63-65-101 FxTribal
+    - 63-65-102 FxPlankton
+    - 63-65-103 FxRyza
+    - 63-65-104 FxGaia '99
+    - 63-65-105 FxLights
+    - 63-65-106 FxM o r f
+    - 63-65-107 FxQSpaces
+    - 63-65-108 FxWatrToy
+    - 63-65-109 FxGalaxy
+    - 63-65-110 FxTrigger
+    - 63-65-111 FxResolve
+    - 63-65-112 Et Santur
+    - 63-65-113 SePlasma
+    - 63-65-114 SeLunar
+    - 63-65-115 SeArpDrops
+    - 63-65-116 SeHybriFlt
+    - 63-65-117 SeBeatPhil
+    - 63-65-118 SeOrganix
+    - 63-65-119 SeVariant
+    - 63-65-120 SeSkyDemon
+    - 63-65-121 Vooo Dooo
+    - 63-65-122 Voxo Mono
+    - 63-65-123 VoTehillim
+    - 63-65-124 CoEthnoSpl
+    - 63-65-125 Cold Hitz
+    - 63-65-126 CoShamSitr
+    - 63-65-127 CoDist Kik
+    - 63-65-128 CoEuroKit
+    - title: Capital Drumkit
+      channel: 10
+      commands:
+        - 63-12-1
+      drumkitNotes:
+        - 13 Surdo Mute
+        - 14 Surdo Open
+        - 15 Hi Q
+        - 16 Whip Slap
+        - 17 Scratch Push
+        - 18 Scratch Pull
+        - 19 Finger Snap
+        - 20 Click Noise
+        - 21 Metronome Click
+        - 22 Metronome Bell
+        - 23 Seq Click Low
+        - 24 Seq Click High
+        - 25 Brush Tap
+        - 26 Brush Swirl Low
+        - 27 Brush Slap
+        - 28 Brush Swirl High
+        - 29 Snare Roll
+        - 30 Castanet
+        - 31 Snare Low
+        - 32 Sticks
+        - 33 Bass Drum Low
+        - 34 Open Rim Shot
+        - 35 Bass Drum Middle
+        - 36 Bass Drum High
+        - 37 Side Stick
+        - 38 Snare Middle
+        - 39 Hand Clap
+        - 40 Snare High
+        - 41 Floor Tom Low
+        - 42 Hi-Hat Closed
+        - 43 Floor Tom High
+        - 44 Hi-Hat Pedal
+        - 45 Low Tom
+        - 46 Hi-Hat Open
+        - 47 Mid Tom Low
+        - 48 Mid Tom High
+        - 49 Crash Cymbal
+        - 50 High Tom
+        - 51 Ride Cymbal 1
+        - 52 Chinese Cymbal
+        - 53 Ride Cymbal C
+        - 54 Tambourine
+        - 55 Splash Cymbal
+        - 56 Cowbell
+        - 57 Crash Cymbal
+        - 58 Vibraslap
+        - 59 Ride Cymbal 2
+        - 60 Bongo High
+        - 61 Bongo Low
+        - 62 Conga High Mute
+        - 63 Conga High Open
+        - 64 Conga Low
+        - 65 Timbale High
+        - 66 Timbale Low
+        - 67 Agogo High
+        - 68 Agogo Low
+        - 69 Cabasa
+        - 70 Maracas
+        - 71 Samba Whistle
+        - 72 Samba Whistle
+        - 73 Guiro Short
+        - 74 Guiro Long
+        - 75 Claves
+        - 76 Wood Block High
+        - 77 Wood Block Low
+        - 78 Cuica Mute
+        - 79 Cuica Open
+        - 80 Triangle Mute
+        - 81 Triangle Open
+        - 82 Shaker
+        - 83 Jingle Bell
+        - 84 Bell Tree
+        - 85 Bell Tree
+        - 86 Bell Tree
+        - 87 Bell Tree
+        - 88 Bell Tree
+        - 89 Bell Tree
+        - 90 Bell Tree
+        - 91 Bell Tree
+        - 92 Bell Tree
+        - 93 Bell Tree
+        - 94 Bell Tree
+        - 95 Bell Tree
+        - 96 Bell Tree
+  #
+  # Commands used in presets (TODO)
+  #
+  commands:
+    - "tempo(vv): F0 43 10 4B 60 00 29 00 vv F7"

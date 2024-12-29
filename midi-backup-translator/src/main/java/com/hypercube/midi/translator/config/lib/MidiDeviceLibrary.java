@@ -3,7 +3,7 @@ package com.hypercube.midi.translator.config.lib;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.midi.translator.MidiTranslator;
+import com.hypercube.midi.translator.MidiBackupTranslator;
 import com.hypercube.midi.translator.config.yaml.CommandMacroDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
@@ -40,7 +40,7 @@ public class MidiDeviceLibrary {
      */
     public File getConfigFolder() {
         try {
-            URI uri = MidiTranslator.class
+            URI uri = MidiBackupTranslator.class
                     .getProtectionDomain()
                     .getCodeSource()
                     .getLocation()

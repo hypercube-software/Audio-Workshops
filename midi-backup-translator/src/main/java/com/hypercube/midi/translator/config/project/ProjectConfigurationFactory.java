@@ -26,7 +26,7 @@ import java.util.Optional;
 public class ProjectConfigurationFactory {
     private final MidiDeviceLibrary midiDeviceLibrary;
 
-    @Value("${midi-translator-config:./config.yml}")
+    @Value("${mbt-config:./config.yml}")
     private File configFile;
 
     @Bean

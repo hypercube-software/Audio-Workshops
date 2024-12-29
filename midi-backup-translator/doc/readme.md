@@ -1,4 +1,4 @@
-# Midi-Translator
+# MBT: Midi-Backup-Translator
 
 [TOC]
 
@@ -6,8 +6,8 @@
 
 This little tool allow you:
 
-- To convert any CC to SYSEX in realtime.
 - Backup and restore the settings of all your synths in one shot
+- To convert any CC to SYSEX in realtime.
 
 Special feature:
 
@@ -106,6 +106,7 @@ It is located in the distribution of the tool, in the folder `devices`
 
 - It contains common settings and MIDI SYSEX for various synths
 - In this way you don't have to write the same settings on each project in the `config.yml`
+- There is no constrains on the organisation of sub folders, the tool scan everything. 
 
 ## Example
 
@@ -169,7 +170,7 @@ Values format can be:
 - Hexadecimal: `$12` or `0x12`. You can force a n byte value with `0` like this; `$0012` or `0x0012`
 - Decimal range: `[0-127]`
 
-So `Multi([0-15]` mean we call the macro 16 times with value 0 to 15. This will generate multiple Bulk Requests.
+So `Multi([0-15])` mean we call the macro 16 times with value 0 to 15. This will generate multiple MIDI Requests for various memory locations.
 
 ## Recursion
 
@@ -180,7 +181,7 @@ You can call a macro inside a payload macro:
 - "User Perfs Common() : User Perf Common([00-127])"
 ```
 
-This mean using `User Perfs Common()` in your `config.yml` will generate 128 MID requests.
+This mean using `User Perfs Common()` in your `config.yml` will generate 128 MIDI requests for various memory locations.
 
 ## Limitation
 
@@ -190,7 +191,9 @@ Only one range can be used in a payload.
 
 ## Example
 
-Let say you work on a project using a `Yamaha TX-81z` and a `Yamaha TG-500`. You will create a `config.yml` at the root of your project folder:
+Let say you work on a project using a `Yamaha TX-81z` and a `Yamaha TG-500`. 
+- Create a folder `/SysEx` at the root of your project folder. MIDI Dumps will be saved here.
+- You will create a file `/SysEx/config.yml`:
 
 ```yaml
 devices:
@@ -225,7 +228,7 @@ translations:
 
 ```
 
-You can now restore and backup your devices running the tool in the same directory.
+You can now restore and backup your devices running the tool in the directory `/SysEx`.
 
 ## Fields
 
@@ -259,3 +262,8 @@ This convert CC Volume (7) in the range [0-127] to some TX81z parameters in the 
 - The CC on the left is in decimal
 - The payload is in hexadecimal
 - The target range is in decimal
+
+## mbt-config
+
+You can change the default path of the `config.yml` with `-Dmbt-config=/somewhere/config.yml`
+

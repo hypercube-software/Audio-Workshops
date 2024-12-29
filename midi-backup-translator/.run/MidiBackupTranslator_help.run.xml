@@ -1,10 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="MidiTranslator:help" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.hypercube.midi.translator.MidiTranslatorApplication" />
-    <module name="midi-translator" />
+  <configuration default="false" name="MidiBackupTranslator:help" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.hypercube.midi.translator.MidiBackupTranslatorApplication" />
+    <module name="midi-backup-translator" />
     <option name="PROGRAM_PARAMETERS" value="help" />
-    <option name="VM_PARAMETERS" value="-Dmidi-translator-config=config/config.yml" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <option name="VM_PARAMETERS" value="-Dmbt-config=config/config.yml" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

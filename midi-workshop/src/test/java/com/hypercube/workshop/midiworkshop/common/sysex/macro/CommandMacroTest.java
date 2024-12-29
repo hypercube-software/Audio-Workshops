@@ -21,11 +21,19 @@ class CommandMacroTest {
     }
 
     @Test
-    void expand() {
+    void expandByte() {
         CommandMacro macro = CommandMacro.parse(null, "name(p1,p2,p3) : FF F8 p1 000000 p2 p3 F7");
         CommandCall actual = CommandCall.parse("name(12,0xFE,45)");
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 FE 2D F7", result);
+    }
+
+    @Test
+    void expandWord() {
+        CommandMacro macro = CommandMacro.parse(null, "name(p1,p2,p3) : FF F8 p1 000000 p2 p3 F7");
+        CommandCall actual = CommandCall.parse("name(12,0x0000FE,$0045)");
+        String result = macro.expand(actual);
+        assertEquals("FF F8 0C 000000 0000FE 0045 F7", result);
     }
 
     @Test

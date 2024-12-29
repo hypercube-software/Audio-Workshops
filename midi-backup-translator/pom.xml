@@ -8,9 +8,9 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>midi-translator</artifactId>
+    <artifactId>midi-backup-translator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>midi-translator</name>
+    <name>midi-backup-translator</name>
     <description>Convert CC to Sysex, backup/restore devices</description>
     <properties>
         <java.version>21</java.version>

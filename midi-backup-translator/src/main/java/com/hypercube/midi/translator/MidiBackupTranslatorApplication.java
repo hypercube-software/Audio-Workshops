@@ -8,14 +8,14 @@ import java.util.Optional;
 
 @SpringBootApplication
 @Slf4j
-public class MidiTranslatorApplication {
+public class MidiBackupTranslatorApplication {
 
     public static void main(String[] args) {
         if (args.length == 0) {
             args = new String[]{"help"};
         }
         try {
-            SpringApplication.run(MidiTranslatorApplication.class, args);
+            SpringApplication.run(MidiBackupTranslatorApplication.class, args);
         } catch (Exception e) {
             Throwable ourException = resolveException(e);
             if (ourException != null && ourException.getClass()

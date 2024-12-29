@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MidiTranslator {
+public class MidiBackupTranslator {
     private final ProjectConfiguration conf;
     private MidiInDevice midiInDevice;
     private MidiOutDevice midiOutDevice;
