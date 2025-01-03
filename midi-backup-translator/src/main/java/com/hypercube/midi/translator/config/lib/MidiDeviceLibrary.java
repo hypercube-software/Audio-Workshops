@@ -6,9 +6,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.midi.translator.MidiBackupTranslator;
 import com.hypercube.midi.translator.config.yaml.CommandMacroDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +28,9 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class MidiDeviceLibrary {
-    private Map<String, MidiDeviceDefinition> midiDevicesLibrary;
+    private Map<String, MidiDeviceDefinition> devices;
+    @Getter
+    private boolean loaded;
 
     /**
      * This method give us the location of the CLI no matter what is the current directory
@@ -51,7 +50,7 @@ public class MidiDeviceLibrary {
                 String path = uri.getPath();
                 File f = new File(path);
                 if (path.endsWith("/target/classes/")) {
-                    // The application run in debug inside an IDE
+                    // The application run in inside an IDE
                     f = f.getParentFile();
                 } else {
                     // The application run as native EXE
@@ -62,9 +61,14 @@ public class MidiDeviceLibrary {
                 String path = uri.getRawSchemeSpecificPart()
                         .replace("nested:", "")
                         .replaceAll("\\.jar.*", "");
-                //log.info(path);
                 File f = new File(path);
-                return f.getParentFile();
+                if (path.contains("/target/")) {
+                    // The application run in debug inside an IDE
+                    return f.getParentFile()
+                            .getParentFile();
+                } else {
+                    return f.getParentFile();
+                }
             }
             throw new ConfigError("Unexpected location: " + uri.toString());
         } catch (URISyntaxException e) {
@@ -73,24 +77,84 @@ public class MidiDeviceLibrary {
     }
 
     public void load() {
-        midiDevicesLibrary = new HashMap<>();
+        devices = new HashMap<>();
         Path libraryFolder = Path.of(getConfigFolder().getAbsolutePath() + "/devices/");
         if (libraryFolder.toFile()
                 .exists()) {
+            log.info("Loading midi device library from %s...".formatted(libraryFolder.toString()));
             try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder)
                     .filter(p -> p.getFileName()
                             .toString()
                             .endsWith(".yml"))
+                    .sorted(Comparator.comparing(Path::getFileName)
+                            .reversed())
+                    .map(Path::toFile)
                     .map(this::loadDeviceMacro)) {
                 midiDeviceDefinitionStream
-                        .forEach(m -> midiDevicesLibrary.put(m.getDeviceName(), m));
+                        .forEach(m -> {
+                            var d = devices.get(m.getDeviceName());
+                            if (d != null) {
+                                d = mergeDevices(d, m);
+                            } else {
+                                d = m;
+                            }
+                            devices.put(m.getDeviceName(), d);
+                        });
 
             } catch (IOException e) {
-                throw new MidiError("Unable to read library folder:" + libraryFolder.toString());
+                throw new ConfigError("Unable to read library folder:" + libraryFolder.toString());
             }
+            log.info("%d devices defined: %s".formatted(devices.size(), getDevicesNames()));
+
+            loaded = true;
         } else {
-            log.warn("The library path does not exists:" + libraryFolder.toString());
+            throw new ConfigError("The library path does not exists: " + libraryFolder.toString());
         }
+    }
+
+    private String getDevicesNames() {
+
+        return devices.size() == 0 ? "empty" : devices.keySet()
+                .stream()
+                .sorted()
+                .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Merge the user settings with the initial ones
+     *
+     * @param org  original settings chipped with the tool
+     * @param user custom settings defined by the end user
+     * @return merged setting
+     */
+    private MidiDeviceDefinition mergeDevices(MidiDeviceDefinition org, MidiDeviceDefinition user) {
+        if (user.getInputMidiDevice() != null) {
+            org.setInputMidiDevice(user.getInputMidiDevice());
+        }
+        if (user.getOutputMidiDevice() != null) {
+            org.setOutputMidiDevice(user.getOutputMidiDevice());
+        }
+        if (user.getInactivityTimeoutMs() != null) {
+            org.setInactivityTimeoutMs(user.getInactivityTimeoutMs());
+        }
+        if (user.getOutputBandWidth() != null) {
+            org.setOutputBandWidth(user.getOutputBandWidth());
+        }
+        if (user.getSysExPauseMs() != null) {
+            org.setSysExPauseMs(user.getSysExPauseMs());
+        }
+        var notOverridedMacros = org.getMacros()
+                .stream()
+                .filter(m -> user.getMacros()
+                        .stream()
+                        .filter(um -> um.name()
+                                .equals(m.name()))
+                        .findFirst()
+                        .isEmpty());
+        org.setMacros(Stream.concat(notOverridedMacros, user.getMacros()
+                        .stream())
+                .toList());
+        return org;
     }
 
     /**
@@ -100,27 +164,23 @@ public class MidiDeviceLibrary {
      * @param commandCall command to expand
      * @return expanded command
      */
-    public String expand(String deviceName, String commandCall) {
-        var matches = Optional.ofNullable(midiDevicesLibrary.get(deviceName))
+    public String expand(File configFile, String deviceName, String commandCall) {
+        checkLoaded();
+        var matches = Optional.ofNullable(devices.get(deviceName))
                 .map(d -> d.getMacros()
                         .stream()
                         .filter(m -> m.match(commandCall))
                         .toList())
-                .orElse(List.of());
+                .orElseThrow(() -> new ConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
 
-        if (matches.isEmpty()) {
-            matches = midiDevicesLibrary.values()
-                    .stream()
-                    .flatMap(mdm -> mdm.getMacros()
-                            .stream())
-                    .filter(m -> m.match(commandCall))
-                    .toList();
+        if (matches.isEmpty() && commandCall.contains("(")) {
+            throw new ConfigError("Undefined macro for device %s: %s".formatted(deviceName, commandCall));
         }
         if (matches.size() == 1) {
-            CommandCall call = CommandCall.parse(commandCall);
+            CommandCall call = CommandCall.parse(configFile, commandCall);
             String expanded = matches.get(0)
                     .expand(call);
-            return expand(deviceName, "%s : %s".formatted(call.name(), expanded));
+            return expand(configFile, deviceName, "%s : %s".formatted(call.name(), expanded));
         } else if (matches.size() > 1) {
             String msg = matches.stream()
                     .map(CommandMacro::toString)
@@ -132,11 +192,13 @@ public class MidiDeviceLibrary {
     }
 
     public Optional<MidiDeviceDefinition> getDevice(String deviceName) {
-        return Optional.ofNullable(midiDevicesLibrary.get(deviceName));
+        checkLoaded();
+        return Optional.ofNullable(devices.get(deviceName));
     }
 
     public Optional<MidiDeviceDefinition> getDeviceFromMidiPort(String midiPort) {
-        return midiDevicesLibrary.values()
+        checkLoaded();
+        return devices.values()
                 .stream()
                 .filter(def -> def.getOutputMidiDevice()
                         .equals(midiPort) || def.getInputMidiDevice()
@@ -144,19 +206,28 @@ public class MidiDeviceLibrary {
                 .findFirst();
     }
 
+    private void checkLoaded() {
+        if (!loaded) {
+            throw new ConfigError("MidiDeviceLibrary not loaded");
+        }
+    }
 
-    private MidiDeviceDefinition loadDeviceMacro(Path macroFile) {
+
+    private MidiDeviceDefinition loadDeviceMacro(File macroFile) {
+        log.debug("Load " + macroFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
             module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(macroFile));
             mapper.registerModule(module);
-            MidiDeviceDefinition macro = mapper.readValue(macroFile.toFile(), MidiDeviceDefinition.class);
+            MidiDeviceDefinition macro = mapper.readValue(macroFile, MidiDeviceDefinition.class);
             // cleanup: remove null elements
-            macro.setMacros(macro.getMacros()
-                    .stream()
-                    .filter(m -> m != null)
-                    .toList());
+            macro.setMacros(Optional.ofNullable(macro.getMacros())
+                    .map(macros -> macros
+                            .stream()
+                            .filter(m -> m != null)
+                            .toList())
+                    .orElse(List.of()));
             return macro;
         } catch (IOException e) {
             throw new ConfigError("Unable to load " + macroFile.toString(), e);

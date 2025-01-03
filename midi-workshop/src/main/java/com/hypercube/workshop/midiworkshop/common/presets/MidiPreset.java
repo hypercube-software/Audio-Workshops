@@ -9,6 +9,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -98,9 +99,9 @@ public final class MidiPreset {
                 .orElse(0);
     }
 
-    public static MidiPreset of(int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
+    public static MidiPreset of(File configFile, int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
         return new MidiPreset(title, channel, commands.stream()
-                .flatMap(cmd -> parseCommand(channel, midiBankFormat, presetNumbering, macros, cmd))
+                .flatMap(cmd -> parseCommand(configFile, channel, midiBankFormat, presetNumbering, macros, cmd))
                 .toList(), controlChanges, drumKitNotes);
     }
 
@@ -115,13 +116,13 @@ public final class MidiPreset {
      * @param definition      Textual definition of the command template
      * @return
      */
-    private static Stream<MidiMessage> parseCommand(int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, List<CommandMacro> macros, String definition) {
+    private static Stream<MidiMessage> parseCommand(File configFile, int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, List<CommandMacro> macros, String definition) {
         try {
             String expandedDefinition = macros.stream()
                     .filter(m -> m.match(definition))
                     .findFirst()
                     .map(m -> {
-                        return m.expand(CommandCall.parse(definition));
+                        return m.expand(CommandCall.parse(configFile, definition));
                     })
                     .orElse(definition);
             if (expandedDefinition.startsWith("F0")) {

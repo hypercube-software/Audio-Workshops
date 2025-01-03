@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class CommandMacroDeserializer extends StdDeserializer<CommandMacro> {
-    private final Path macroFile;
+    private final File macroFile;
 
-    public CommandMacroDeserializer(Path macroFile) {
+    public CommandMacroDeserializer(File macroFile) {
         super((Class<?>) null);
         this.macroFile = macroFile;
     }

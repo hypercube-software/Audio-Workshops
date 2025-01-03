@@ -66,8 +66,7 @@ class SynthRipperTest {
         log.info(toXML(model));
 
         // THEN
-        assertEquals(2, conf.getMidi()
-                .getSelectedPresets()
+        assertEquals(2, conf.getSelectedPresets()
                 .size());
         assertEquals(1, model.getMidi()
                 .getMidiControlChangeList()

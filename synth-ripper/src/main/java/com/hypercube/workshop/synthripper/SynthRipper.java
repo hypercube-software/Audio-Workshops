@@ -89,8 +89,7 @@ public class SynthRipper {
         int ccIncrement = (int) Math.ceil(128f / midiSettings
                 .getCcPerNote());
         int upperBoundCC = ccIncrement * (midiSettings.getCcPerNote() + 1);
-        return conf.getMidi()
-                .getSelectedPresets()
+        return conf.getSelectedPresets()
                 .stream()
                 .flatMap(preset -> {
                     log.info("=========== {} ===========", preset.title());

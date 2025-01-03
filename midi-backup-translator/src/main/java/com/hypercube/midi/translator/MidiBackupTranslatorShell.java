@@ -17,58 +17,73 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @ShellComponent("MidiBackupTranslator")
 @Slf4j
 @AllArgsConstructor
 public class MidiBackupTranslatorShell {
-    private final MidiBackupTranslator midiBackupTranslator;
-    private final ProjectConfiguration configuration;
     private final ProjectConfigurationFactory projectConfigurationFactory;
 
     @ShellMethod(value = "Read MIDI input and send to another MIDI output limiting the throughput")
     public void translate() throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        final MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
+        final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
+        final MidiBackupTranslator midiBackupTranslator = new MidiBackupTranslator(configuration);
 
-        String inputMidiDevice = configuration.getTranslate()
-                .getFromMidiDevice();
-        String translateToDevice = configuration.getTranslate()
-                .getToDevice();
-        ProjectDevice outputDevice = configuration.getDevices()
-                .stream()
-                .filter(d -> d.getName()
-                        .equals(translateToDevice))
-                .findFirst()
-                .orElse(null);
-        if (outputDevice == null) {
-            log.error("Output device not found in device list:" + translateToDevice);
-            list();
-            return;
-        }
-        if (m.getInput(inputMidiDevice)
-                .isEmpty()) {
-            log.error("Input device not found:" + inputMidiDevice);
-            list();
-            return;
-        }
-        if (m.getOutput(translateToDevice)
-                .isEmpty()) {
-            log.error("Output device not found:" + translateToDevice);
-            list();
-            return;
-        }
-        try (var in = m.openInput(inputMidiDevice)) {
-            try (var out = m.openOutput(outputDevice.getOutputMidiDevice())) {
-                midiBackupTranslator.translate(in, out, outputDevice.getOutputBandWidth());
+        if (Optional.ofNullable(configuration.getTranslations())
+                .filter(l -> !l.isEmpty())
+                .isPresent()) {
+
+            String inputMidiDevice = configuration.getTranslate()
+                    .getFromMidiDevice();
+            if (m.getInput(inputMidiDevice)
+                    .isEmpty()) {
+                log.error("Input device '%s' not found for translation".formatted(inputMidiDevice));
+                list();
+                return;
             }
+
+            String translateToDevice = configuration.getTranslate()
+                    .getToDevice();
+            ProjectDevice outputDevice = configuration.getDevices()
+                    .stream()
+                    .filter(d -> d.getName()
+                            .equals(translateToDevice))
+                    .findFirst()
+                    .orElse(projectConfigurationFactory.getDefaultProjectDevice(translateToDevice)
+                            .orElse(null));
+            if (outputDevice == null) {
+                log.error("Output device not found in device list: " + translateToDevice);
+                list();
+                return;
+            }
+
+            String outputMidiDevice = outputDevice.getOutputMidiDevice();
+            if (m.getOutput(outputMidiDevice)
+                    .isEmpty()) {
+                log.error("Output device '%s' not found".formatted(translateToDevice));
+                list();
+                return;
+            }
+            
+            try (var in = m.openInput(inputMidiDevice)) {
+                try (var out = m.openOutput(outputMidiDevice)) {
+                    midiBackupTranslator.translate(in, out, outputDevice.getOutputBandWidth());
+                }
+            }
+        } else {
+            log.error("No translations in configuration file");
         }
     }
 
     @ShellMethod(value = "Restore devices with Sysex")
     public void restore() throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        final MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
+        final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
+
         for (var deviceSetting : configuration.getDevices()) {
             DeviceInstance device = new DeviceInstance(deviceSetting);
             if (device.getBackupFile()
@@ -93,9 +108,13 @@ public class MidiBackupTranslatorShell {
     public void backup() throws IOException, InvalidMidiDataException, MidiUnavailableException, InterruptedException {
         MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
+        final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
+
+        int nbEnabled = 0;
         for (var deviceSetting : configuration.getDevices()) {
             DeviceInstance device = new DeviceInstance(deviceSetting);
             if (device.isEnabled()) {
+                nbEnabled++;
                 log.info("-------------------------------------------------------");
                 log.info("Backup device: " + deviceSetting.getName() + "...");
                 log.info("inactivityTimeoutMs : " + device.getInactivityTimeoutMs());
@@ -118,6 +137,9 @@ public class MidiBackupTranslatorShell {
                 }
             }
         }
+        if (nbEnabled == 0) {
+            log.warn("No devices enabled for backup. Nothing to do.");
+        }
     }
 
     private static void wakeUpDevice(MidiOutDevice out, DeviceInstance device) {
@@ -139,7 +161,7 @@ public class MidiBackupTranslatorShell {
             List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
             for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                 var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                log.info("Request {}/{} {}: {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
+                log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
                 device.sendAndWaitResponse(out, customMidiEvent);
 
                 if (request.getSize() != null && device.getCurrentResponseSize() != request.getSize()) {
@@ -187,7 +209,7 @@ public class MidiBackupTranslatorShell {
     }
 
     private String getDeviceAlias(AbstractMidiDevice midiDevice) {
-        return projectConfigurationFactory.getDeviceFromMidiPort(midiDevice
+        return projectConfigurationFactory.getLibraryDeviceFromMidiPort(midiDevice
                         .getName())
                 .map(def -> " => bound to library device \"%s\"".formatted(def.getDeviceName()))
                 .orElse("");

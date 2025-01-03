@@ -92,7 +92,7 @@ public class MidiSettings {
         return getNoteNumber(highestNote);
     }
 
-    public List<MidiPreset> getSelectedPresets() {
+    public List<MidiPreset> getSelectedPresets(SynthRipperConfiguration synthRipperConfiguration) {
         if (selectedPresets == null) {
             int startIdx = IntStream.range(0, presets.size())
                     .filter(idx -> presets.get(idx)
@@ -109,7 +109,7 @@ public class MidiSettings {
             selectedPresets = IntStream.rangeClosed(startIdx, endIdx)
                     .boxed()
                     .map(idx -> presets.get(idx)
-                            .forgeMidiPreset(this))
+                            .forgeMidiPreset(synthRipperConfiguration.getConfigFile(), this))
                     .toList();
         }
         return selectedPresets;

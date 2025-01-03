@@ -30,9 +30,9 @@ devices:
 
 translate:
   fromMidiDevice: "4- MIDISPORT Uno In"
-  toDevice: "Tx81z"
+  toDevice: "TX-81z"
 # Translation rules:
 # use vv to inject the control change value inside the SYSEX
 # use [low,high] to rescale the input value
 translations:
-  - 7 => F0 43 12 12 32 vv F7 [-6,10] # convert CC Volume (7) in the range [0-127] to some TX81z parameters in the range [-6,10]
+  - 7 => OP1_FREQ(vv) [0,63] # convert CC Volume (7) in the range [0-127] to some TX81z parameters in the range [0,63]

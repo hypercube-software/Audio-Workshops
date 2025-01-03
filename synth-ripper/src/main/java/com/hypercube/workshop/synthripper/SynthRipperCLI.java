@@ -54,8 +54,7 @@ public class SynthRipperCLI {
     public void rip(@ShellOption(value = "-c") File configFile) {
 
         SynthRipperConfiguration cfg = SynthRipperConfiguration.loadConfig(configFile);
-        cfg.getMidi()
-                .getSelectedPresets();
+        cfg.getSelectedPresets();
         MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
         midiDeviceManager.collectDevices();
 

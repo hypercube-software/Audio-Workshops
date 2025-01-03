@@ -12,9 +12,8 @@ import com.hypercube.midi.translator.config.yaml.DumpRequestTemplateDeserializer
 import com.hypercube.midi.translator.config.yaml.MidiTranslationDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
 import lombok.RequiredArgsConstructor;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,21 +22,22 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectConfigurationFactory {
-    private final MidiDeviceLibrary midiDeviceLibrary;
+    private final MidiDeviceLibrary midiDeviceLibrary = new MidiDeviceLibrary();
 
     @Value("${mbt-config:./config.yml}")
     private File configFile;
 
-    @Bean
     public ProjectConfiguration loadConfig() {
         midiDeviceLibrary.load();
         if (configFile.exists()) {
+            log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
             var mapper = new ObjectMapper(new YAMLFactory());
             try {
                 SimpleModule module = new SimpleModule();
-                module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer());
-                module.addDeserializer(DumpRequestTemplate.class, new DumpRequestTemplateDeserializer(midiDeviceLibrary));
+                module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer(midiDeviceLibrary, configFile));
+                module.addDeserializer(DumpRequestTemplate.class, new DumpRequestTemplateDeserializer(midiDeviceLibrary, configFile));
                 mapper.registerModule(module);
                 ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
                 config.getDevices()
@@ -50,7 +50,7 @@ public class ProjectConfigurationFactory {
                 throw new ConfigError(e);
             }
         } else {
-            Log.warn("The project config does not exists:" + configFile.getAbsolutePath());
+            log.warn("The project config does not exists: " + configFile.getAbsolutePath());
             return new ProjectConfiguration();
         }
     }
@@ -81,9 +81,29 @@ public class ProjectConfigurationFactory {
                 });
     }
 
-    public Optional<MidiDeviceDefinition> getDeviceFromMidiPort(String midiPort) {
-        return Optional.ofNullable(midiDeviceLibrary)
-                .map(l -> l.getDeviceFromMidiPort(midiPort))
-                .orElse(null);
+    public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {
+        if (!midiDeviceLibrary.isLoaded()) {
+            midiDeviceLibrary.load();
+        }
+        return midiDeviceLibrary.getDeviceFromMidiPort(midiPort);
+    }
+
+    public Optional<ProjectDevice> getDefaultProjectDevice(String deviceName) {
+        if (!midiDeviceLibrary.isLoaded()) {
+            midiDeviceLibrary.load();
+        }
+        return midiDeviceLibrary.getDevice(deviceName)
+                .map(this::forgeDefaultProjectDevice);
+    }
+
+    private ProjectDevice forgeDefaultProjectDevice(MidiDeviceDefinition midiDeviceDefinition) {
+        ProjectDevice pd = new ProjectDevice();
+        pd.setName(midiDeviceDefinition.getDeviceName());
+        pd.setOutputBandWidth(midiDeviceDefinition.getOutputBandWidth());
+        pd.setInputMidiDevice(midiDeviceDefinition.getInputMidiDevice());
+        pd.setOutputMidiDevice(midiDeviceDefinition.getOutputMidiDevice());
+        pd.setSysExPauseMs(midiDeviceDefinition.getSysExPauseMs());
+        pd.setInactivityTimeoutMs(midiDeviceDefinition.getInactivityTimeoutMs());
+        return pd;
     }
 }

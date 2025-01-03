@@ -22,7 +22,7 @@ class SynthRipperConfigurationTest {
         cfg.getMidi()
                 .getPresets()
                 .forEach(p -> {
-                    var mp = p.forgeMidiPreset(cfg.getMidi());
+                    var mp = p.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
                     assertNotNull(mp.commands());
                     assertNotNull(mp.controlChanges());
                     assertNotNull(mp.drumKitNotes());
@@ -33,7 +33,7 @@ class SynthRipperConfigurationTest {
         IConfigMidiPreset secondPreset = cfg.getMidi()
                 .getPresets()
                 .get(1);
-        var preset2 = secondPreset.forgeMidiPreset(cfg.getMidi());
+        var preset2 = secondPreset.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
         var msg = preset2.commands()
                 .get(0);
         assertEquals(110, msg.getMessage()[msg.getLength() - 2]); // expected tempo
@@ -48,7 +48,7 @@ class SynthRipperConfigurationTest {
         assertEquals("Capital Drumkit", lastPreset
                 .getTitle());
 
-        var preset = lastPreset.forgeMidiPreset(cfg.getMidi());
+        var preset = lastPreset.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
 
         assertEquals("Capital Drumkit", preset.title());
         assertEquals(84, preset.drumKitNotes()

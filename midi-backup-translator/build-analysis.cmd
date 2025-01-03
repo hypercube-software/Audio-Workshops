@@ -3,7 +3,7 @@
 set JAVA_HOME=C:\Java\graalvm-jdk-21.0.2+13.1
 
 @rem get the complete jar filename
-FOR %%A in (target\midi-translator*.jar) do (set "JAR_PATH=%%A")
+FOR %%A in (target\midi-backup-translator*.jar) do (set "JAR_PATH=%%A")
 
 @rem We run the application and instruct graalvm to analyze on the fly and update the configuration
 set GRAAL_ANALYSIS_FOLDER=./src/main/resources/META-INF/native-image/

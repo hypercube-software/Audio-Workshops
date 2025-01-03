@@ -104,9 +104,12 @@ MIDI OUTPUT Port "taurus"
 
 It is located in the distribution of the tool, in the folder `devices`
 
-- It contains common settings and MIDI SYSEX for various synths
+- It contains common settings and MIDI SYSEX for various synths in a file `<device-name>.yml`
+- It also contains YOUR custom settings in `<device-name>-user.yml` file
 - In this way you don't have to write the same settings on each project in the `config.yml`
-- There is no constrains on the organisation of sub folders, the tool scan everything. 
+- There is no constrains on the organization of sub folders, the tool scan everything. 
+- The file `<device-name>-user.yml` is loaded **after** the file `<device-name>.yml` in order to override settings of your choice. Typically MIDI IN/OUT ports
+- On each release of the tool you can unzip it without taking the risk to loose your custom settings in `*-user.yml`  files.
 
 ## Example
 
@@ -128,6 +131,17 @@ macros:
   - "ALL COMBINATIONS PARAMETER()    : 376E6 : F042303B 1D 00 00 00 F7"
   - "ALL DATA()                      : 80481 : F042303B 0F 00 F7"
 ```
+
+On your system you can override the MIDI IN/OUT devices, creating the file `Tr-rack-user.yml`
+
+```yaml
+deviceName: "Tr-rack"
+brand: "Korg"
+outputMidiDevice: "midi-port-2"
+inputMidiDevice: "midi-port-3"
+```
+
+The following fields are provided:
 
 | Field                 | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |

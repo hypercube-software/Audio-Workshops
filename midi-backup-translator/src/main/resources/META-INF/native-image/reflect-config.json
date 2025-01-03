@@ -148,6 +148,34 @@
   "name":"com.hazelcast.core.HazelcastInstance"
 },
 {
+  "name":"com.hypercube.midi.translator.MidiBackupTranslator",
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.hypercube.midi.translator.MidiBackupTranslatorApplication",
+  "allDeclaredFields":true,
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"main","parameterTypes":["java.lang.String[]"] }, {"name":"setBeanFactory","parameterTypes":["org.springframework.beans.factory.BeanFactory"] }]
+},
+{
+  "name":"com.hypercube.midi.translator.MidiBackupTranslatorApplication$$SpringCGLIB$$0",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }]
+},
+{
+  "name":"com.hypercube.midi.translator.MidiBackupTranslatorShell",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.project.ProjectConfigurationFactory"] }, {"name":"list","parameterTypes":[] }]
+},
+{
   "name":"com.hypercube.midi.translator.MidiTranslator",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -238,7 +266,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.lib.MidiDeviceLibrary"] }, {"name":"loadConfig","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.lib.MidiDeviceLibrary"] }, {"name":"loadConfig","parameterTypes":[] }]
 },
 {
   "name":"com.hypercube.midi.translator.config.project.device.ProjectDevice",

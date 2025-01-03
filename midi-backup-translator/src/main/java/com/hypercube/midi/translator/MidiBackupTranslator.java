@@ -7,19 +7,18 @@ import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Decimate messages to fit a certain bandwidth for CC and SysEx
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class MidiBackupTranslator {
     private final ProjectConfiguration conf;
@@ -37,11 +36,13 @@ public class MidiBackupTranslator {
         }
     }
 
-    void translate(MidiInDevice in, MidiOutDevice out, int bandwidth) {
+    void translate(MidiInDevice in, MidiOutDevice out, Integer bandwidth) {
         try {
             this.midiInDevice = in;
             this.midiOutDevice = out;
-            this.bandwidth = bandwidth;
+            // Midi throughtput 3125 bytes / sec
+            this.bandwidth = Optional.ofNullable(bandwidth)
+                    .orElse(3125);
             consumer = new Thread(this::consumerLoop);
             consumer.setPriority(Thread.MAX_PRIORITY);
             consumer.start();
@@ -62,7 +63,6 @@ public class MidiBackupTranslator {
         stop = false;
         long prevSend = -1;
         long prevSize = -1;
-        // Midi throughtput 3125 bytes / sec
         double maxBytesPerSec = bandwidth;
         log.info("maxBytesPerSec: " + maxBytesPerSec);
         while (!stop) {
@@ -76,10 +76,11 @@ public class MidiBackupTranslator {
                 int status = event.getMessage()
                         .getStatus();
                 boolean requireThrottlings = status == ShortMessage.CONTROL_CHANGE || status == SysexMessage.SYSTEM_EXCLUSIVE;
+                int payloadSize = event.getMessage()
+                        .getLength();
                 if (requireThrottlings) {
-                    int payloadSize = event.getMessage()
-                            .getLength();
                     if (prevSend == -1 || !requireThrottlings || currentBandwidth < maxBytesPerSec) {
+                        log.info("Sent!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
                         midiOutDevice.send(event);
                         prevSend = now;
                         prevSize = payloadSize;
@@ -88,6 +89,7 @@ public class MidiBackupTranslator {
                         //log.info("Dropped!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
                     }
                 } else {
+                    //log.info("Unthrottled Sent!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
                     midiOutDevice.send(event);
                 }
             } else if (lastDropped != null && currentBandwidth < maxBytesPerSec) {

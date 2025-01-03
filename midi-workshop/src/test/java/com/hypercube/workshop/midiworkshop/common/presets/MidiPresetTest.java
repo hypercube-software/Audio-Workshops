@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.common.presets;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -23,7 +24,7 @@ class MidiPresetTest {
     @ParameterizedTest
     @MethodSource
     void parseMSBLSBBank(TestParam testParam) {
-        MidiPreset preset = MidiPreset.of(1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
+        MidiPreset preset = MidiPreset.of(new File("config.yml"), 1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
         assertEquals("title", preset.title());
         assertEquals(1, preset.channel());
     }

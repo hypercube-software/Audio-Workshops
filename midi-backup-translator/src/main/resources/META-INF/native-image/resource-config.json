@@ -69,6 +69,10 @@
   }, {
     "pattern":"\\Qbanner.txt\\E"
   }, {
+    "pattern":"\\Qcom/hypercube/midi/translator/MidiBackupTranslator.class\\E"
+  }, {
+    "pattern":"\\Qcom/hypercube/midi/translator/MidiBackupTranslatorShell.class\\E"
+  }, {
     "pattern":"\\Qcom/hypercube/midi/translator/MidiTranslator.class\\E"
   }, {
     "pattern":"\\Qcom/hypercube/midi/translator/MidiTranslatorShell.class\\E"

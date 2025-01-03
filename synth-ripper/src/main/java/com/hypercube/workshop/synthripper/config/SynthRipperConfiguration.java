@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPresetDeserializer;
 import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
@@ -22,16 +23,19 @@ public class SynthRipperConfiguration {
     private DevicesSettings devices;
     private MidiSettings midi;
     private AudioSettings audio;
+    private File configFile; // loaded config file corresponding to this class
 
     public static SynthRipperConfiguration loadConfig(File configFile) {
         try {
             var mapper = new ObjectMapper(new YAMLFactory());
             SimpleModule module = new SimpleModule();
             module.addDeserializer(IConfigMidiPreset.class, new ConfigMidiPresetDeserializer());
-            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(configFile.toPath()));
+            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(configFile));
             mapper.registerModule(module);
 
-            return mapper.readValue(configFile, SynthRipperConfiguration.class);
+            SynthRipperConfiguration conf = mapper.readValue(configFile, SynthRipperConfiguration.class);
+            conf.configFile = configFile;
+            return conf;
         } catch (IOException e) {
             throw new AudioError(e);
         }
@@ -47,5 +51,9 @@ public class SynthRipperConfiguration {
         int octave = (input - 12) / 12;
         int offset = input % 12;
         return notes.get(offset) + octave;
+    }
+
+    public List<MidiPreset> getSelectedPresets() {
+        return midi.getSelectedPresets(this);
     }
 }

@@ -4,6 +4,7 @@
     <module name="midi-backup-translator" />
     <option name="PROGRAM_PARAMETERS" value="translate" />
     <option name="VM_PARAMETERS" value="-Dmbt-config=config/config.yml" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

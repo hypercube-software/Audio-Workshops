@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
     }
 
     @Override
-    public MidiPreset forgeMidiPreset(MidiSettings midiSettings) {
-        return MidiPreset.of(channel == USE_DEFAULT_MIDI_CHANNEL ? midiSettings.getChannel() : channel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, midiSettings.getCommands(), commands, controlChanges, drumkitNotes.stream()
+    public MidiPreset forgeMidiPreset(File configFile, MidiSettings midiSettings) {
+        return MidiPreset.of(configFile, channel == USE_DEFAULT_MIDI_CHANNEL ? midiSettings.getChannel() : channel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, midiSettings.getCommands(), commands, controlChanges, drumkitNotes.stream()
                 .map(this::forgeDrumKitNote)
                 .toList());
     }

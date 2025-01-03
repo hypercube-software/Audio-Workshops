@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.macro;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -10,18 +10,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public record CommandMacro(
-        Path definitionFile,
+        File definitionFile,
         String name,
         List<String> parameters, String body) {
-    public static final String COMMAND_LABEL_REGEXP = "[A-Z_ \\+\\-a-z0-9]+";
-    private static Pattern commandDefinition = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_LABEL_REGEXP));
+    public static final String COMMAND_NAME_REGEXP = "[A-Z_ \\+\\-a-z0-9]+";
+    private static Pattern commandDefinition = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_NAME_REGEXP));
+    private static Pattern decimalNumber = Pattern.compile("[0-9]+");
 
-    public static CommandMacro parse(Path definitionFile, String definition) {
+    /**
+     * Parse the definition of a macro, found in YAML conf files
+     *
+     * @param definitionFile YAML file
+     * @param definition     macro definition, something like "name(params) : body"
+     * @return
+     */
+    public static CommandMacro parse(File definitionFile, String definition) {
         var m = commandDefinition.matcher(definition);
         if (m.find()) {
             String name = m.group("name");
             String params = m.group("params");
-            String body = m.group("body");
+            String body = m.group("body"); // body is " size : payload"
             List<String> paramArray = Optional.ofNullable(params)
                     .map(p -> Arrays.stream(p.split(","))
                             .map(String::trim)
@@ -41,10 +49,11 @@ public record CommandMacro(
         }
         String result = body;
         for (int idx = 0; idx < parameters.size(); idx++) {
-            String paramName = parameters.get(idx);
+            String paramName = " %s ".formatted(parameters.get(idx));
             String paramValue = call.parameters()
                     .get(idx);
-            result = result.replaceAll(paramName, expandValue(paramValue));
+            String replacement = " %s ".formatted(expandValue(paramValue));
+            result = result.replaceAll(paramName, replacement);
         }
         return result;
     }
@@ -64,15 +73,29 @@ public record CommandMacro(
             return paramValue.substring(2);
         } else if (paramValue.startsWith("$")) {
             return paramValue.substring(1);
-        } else if (paramValue.startsWith("[") && paramValue.endsWith("]")) {
-            return paramValue; // range like [12-45]
         } else {
-            return "%02X".formatted(Integer.parseInt(paramValue, 10));
+            var m = decimalNumber.matcher(paramValue);
+            if (m.matches()) {
+                return "%02X".formatted(Integer.parseInt(paramValue, 10));
+            } else {
+                // range like [12-45]
+                // string like range like 'LM  8101VC'
+                // varaible name
+                return paramValue;
+            }
         }
     }
 
+    /**
+     * Tell if a string contains a command call to this macro
+     *
+     * @param commandCall
+     * @return true if found
+     */
     public boolean match(String commandCall) {
-        Pattern commandCallExp = Pattern.compile("(^|[\\s:])%s\\s*\\([^)]*\\)".formatted(nameToRegExp()));
+        // look for <macro name>(...) making sure we catch exactly the macro name because some macro can have the same prefix
+        String pattern = "(^|[\\s:])%s\\s*\\([^)]*\\)".formatted(nameToRegExp());
+        Pattern commandCallExp = Pattern.compile(pattern);
         var m = commandCallExp.matcher(commandCall);
         var matches = m.find();
         return matches;

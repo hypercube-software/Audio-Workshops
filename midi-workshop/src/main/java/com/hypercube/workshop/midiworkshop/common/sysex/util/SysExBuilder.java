@@ -110,7 +110,7 @@ public class SysExBuilder {
                         }
                     } else {
                         if (chunk.length() % 2 != 0) {
-                            throw new MidiError("Malformed dump request: should contain a list of hexa bytes like 00 or FE ...");
+                            throw new MidiError("Malformed dump request: should contain a list of hexa bytes like 00 or FE: " + rawString);
                         }
 
                         for (int i = 0; i < chunk.length(); i += 2) {
