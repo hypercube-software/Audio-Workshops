@@ -10,6 +10,7 @@ import com.hypercube.midi.translator.error.ConfigError;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,9 +96,10 @@ public class ProjectConfigurationFactory {
     private void forgeMidiRequestsSequence(ProjectDevice device) {
         device.setDumpRequestTemplates(device.getDumpRequests()
                 .stream()
-                .map(requestDefinition ->
-                        midiDeviceLibrary.forgeMidiRequestsSequence(configFile, device.getName(), requestDefinition)
-                )
+                .map(rawRequestDefinition -> {
+                    CommandMacro requestDefinition = CommandMacro.parse(configFile, rawRequestDefinition);
+                    return midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(), requestDefinition);
+                })
                 .toList());
     }
 

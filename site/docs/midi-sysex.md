@@ -588,9 +588,49 @@ F0 43 20 7E LM  8976AE           F7
 => Request a Bulk Dump for device 0x20 of the "SCED"
 ```
 
-# Code
+# Midi Library
+
+Since dealing with SysEx is very painfull, we provide two Java classes to help:
+
+- `SysExBuilder` is able to parse strings containing complex payloads, including ranges, strings and macro. It produces real MidiEvents ready to be sent.
+- `MidiLibrary` is able to provide a library of queries for various midi devices. 
+
+Both works together to let you query various midi devices without too much pain.
+
+We made an separate maven project called **MBT (Midi-Backup-Translator)** based on those two classes to give you an example of what you can do.
+
+Here an typical definition of a Midi device in the library for the `Yamaha TG-500`:
+
+```yaml
+deviceName: "TG-500"
+brand: "Yamaha"
+macros:
+  - "System Setup()           : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00      F7"
+  - "Voice Internal 1(voice)  : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 00 voice   F7"
+  - "Voice Internal 2(voice)  : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 03 voice   F7"
+  - "Voice Edit Buffer(voice) : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 7F voice   F7"
+  - "Drum voice Internal 1()  : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 00 3F      F7"
+  - "Drum voice Internal 2()  : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 03 3F      F7"
+  - "Drum voice Edit Buffer() : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 7F 3F      F7"
+  - "Performance(perf)        : 122 : F0 43 20 7A 'LM  0065PF' 0000000000000000000000000000 00 perf    F7"
+  - "Multi(channel)           : 120 : F0 43 20 7A 'LM  0065MU' 0000000000000000000000000000 00 channel F7"
+  - "AllMulti()               : Multi([0-15])"
+  - "AllVoiceInternal1()      : Voice Internal 1([0-62])"
+  - "AllVoiceInternal2()      : Voice Internal 2([0-62])"
+  - "AllVoiceEditBuffer()     : Voice Edit Buffer([0-62])"
+  - "AllPerformances()        : Performance([0-63])"
+  
+```
+
+👉 Take a look on the MBT manual to learn more.
+
+# Synth internals
 
 ## Overview
+
+Our Midi Library is fine if you plan to do Backup and Restore queries, but when it comes to make a real synth editor, you need to understand every bit of the SysEx response. This is where you need a real memory map of the synth given a SysEx.
+
+👉 Actually the Midi Library is independent of the following API, but things will change in the future.
 
 We need many things to handle SysEx:
 
@@ -823,7 +863,9 @@ The Dump display addresses in **normal** and **packed** format, followed by the 
 
 👉Given this dump, you can easily compare what you read with what the device manual tells you.
 
-# CLI
+# SysEx parser
+
+As an example, we provide a SysEx parser in the CLI with the command "parse".
 
 ## FORCE_DEVICE
 

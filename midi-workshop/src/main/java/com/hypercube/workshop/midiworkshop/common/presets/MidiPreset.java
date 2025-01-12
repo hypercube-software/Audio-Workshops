@@ -119,7 +119,7 @@ public final class MidiPreset {
     private static Stream<MidiMessage> parseCommand(File configFile, int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, List<CommandMacro> macros, String definition) {
         try {
             String expandedDefinition = macros.stream()
-                    .filter(m -> m.match(definition))
+                    .filter(m -> m.matches(definition))
                     .findFirst()
                     .map(m -> {
                         return m.expand(CommandCall.parse(configFile, definition));

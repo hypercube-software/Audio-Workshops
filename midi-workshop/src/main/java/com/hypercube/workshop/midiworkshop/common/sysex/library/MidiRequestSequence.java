@@ -7,7 +7,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-public class MidiRequestsSequence {
+public class MidiRequestSequence {
     private final String name;
     private final List<MidiRequest> midiRequests;
 }

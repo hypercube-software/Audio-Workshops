@@ -23,6 +23,10 @@ import java.util.stream.Stream;
 
 /**
  * The Midi device library store all known settings for a given device. This make project settings small and not redundant
+ * <lu>
+ * <li>By default, it is located in the same folder as the JAR or the EXE</li>
+ * <li>You can override this using the environment variable MDL_FOLDER</li>
+ * </lu>
  */
 @Service
 @Slf4j
@@ -126,7 +130,7 @@ public class MidiDeviceLibrary {
     /**
      * Resolve recursively all macro calls in the command call. This mean we can do macros calling macros
      *
-     * @param deviceName  resolve in priority macros for this device (in case of duplicate names for multiple devices)
+     * @param deviceName  in which device we have to look for in the library
      * @param commandCall command to expand
      * @return expanded command
      */
@@ -135,7 +139,7 @@ public class MidiDeviceLibrary {
         var matches = Optional.ofNullable(devices.get(deviceName))
                 .map(d -> d.getMacros()
                         .stream()
-                        .filter(m -> m.match(commandCall))
+                        .filter(m -> m.matches(commandCall))
                         .toList())
                 .orElseThrow(() -> new MidiConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
 
@@ -180,15 +184,20 @@ public class MidiDeviceLibrary {
         }
     }
 
-
-    private MidiDeviceDefinition loadDeviceMacro(File macroFile) {
-        log.debug("Load " + macroFile.toString());
+    /**
+     * Load the YAML file dedicated to a specific midi device in the library
+     *
+     * @param midiDeviceFile Configuration file for the device (in YAML)
+     * @return the definition including macros
+     */
+    private MidiDeviceDefinition loadDeviceMacro(File midiDeviceFile) {
+        log.debug("Load " + midiDeviceFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
-            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(macroFile));
+            module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(midiDeviceFile));
             mapper.registerModule(module);
-            MidiDeviceDefinition macro = mapper.readValue(macroFile, MidiDeviceDefinition.class);
+            MidiDeviceDefinition macro = mapper.readValue(midiDeviceFile, MidiDeviceDefinition.class);
             // cleanup: remove null elements
             macro.setMacros(Optional.ofNullable(macro.getMacros())
                     .map(macros -> macros
@@ -198,32 +207,41 @@ public class MidiDeviceLibrary {
                     .orElse(List.of()));
             return macro;
         } catch (IOException e) {
-            throw new MidiConfigError("Unable to load " + macroFile.toString(), e);
+            throw new MidiConfigError("Unable to load " + midiDeviceFile.toString(), e);
         }
     }
 
-    public MidiRequestsSequence forgeMidiRequestsSequence(File configFile, String deviceName, String rawTextSequence) {
-        CommandMacro requestDefinition = CommandMacro.parse(configFile, rawTextSequence);
-        String requestName = requestDefinition.name();
-        var result = Arrays.stream(requestDefinition.body()
+    /**
+     * Given a CommandMacro without parameters, expand it to get the list of MIDI messages
+     *
+     * @param configFile   Where this macro is defined (used to display user-friendly error messages)
+     * @param deviceName   If the macro contains macro calls, in which device we have to look for in the library
+     * @param commandMacro typically something like "getAll() : --- : A();B();C()"
+     * @return The list of MIDI messages payloads
+     */
+    public MidiRequestSequence forgeMidiRequestSequence(File configFile, String deviceName, CommandMacro commandMacro) {
+        String requestName = commandMacro.name();
+        if (commandMacro.parameters()
+                .size() != 0) {
+            throw new MidiConfigError("Can't expand a macro with parameters");
+        }
+        var result = Arrays.stream(commandMacro.body()
                         .split(";"))
                 .flatMap(
-                        rawText -> expandRequestDefinition(configFile, deviceName, rawText)
+                        rawText -> expandRequestDefinition(configFile, deviceName, requestName, rawText)
                 )
                 .toList();
-        return new MidiRequestsSequence(requestName, result);
+        return new MidiRequestSequence(requestName, result);
     }
 
-    private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String rawText) {
-        // expand the macro if there is one
+    private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String requestName, String rawText) {
+        // expand the macros calls if there are any
         List<String> expandedTexts = expand(configFile, deviceName, rawText);
         // the final string should be "<command name> : <size> : <bytes>"
         return expandedTexts.stream()
                 .map(expandedText -> {
                     String[] values = expandedText.split(":");
-                    if (values.length != 3) {
-                        throw new MidiConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(expandedText));
-                    } else {
+                    if (values.length == 3) {
                         Integer size = parseOptionalSize(values);
                         String name = values[0];
                         String value = values.length == 3 ? values[2] : values[1];
@@ -231,10 +249,26 @@ public class MidiDeviceLibrary {
                         return new MidiRequest(name
                                 .trim(), value
                                 .trim(), size);
+                    } else if (values.length == 2) {
+                        Integer size = parseOptionalSize(values);
+                        String name = requestName;
+                        String value = values.length == 3 ? values[2] : values[1];
+
+                        return new MidiRequest(name
+                                .trim(), value
+                                .trim(), size);
+                    } else {
+                        throw new MidiConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(expandedText));
                     }
                 });
     }
 
+    /**
+     * Size in macro definitions are always in hexadecimal and optional
+     *
+     * @param values a hexadecimal number or something else like "---"
+     * @return null if the size is not an hexadecimal number
+     */
     private Integer parseOptionalSize(String[] values) {
         Integer size = null;
         Matcher m = REGEXP_HEXA_NUMBER.matcher(values[1]);
