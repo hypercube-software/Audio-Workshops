@@ -3,10 +3,11 @@ package com.hypercube.midi.translator.config.yaml;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.hypercube.midi.translator.config.lib.MidiDeviceLibrary;
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
+import com.hypercube.midi.translator.config.project.translation.MidiTranslationPayload;
 import com.hypercube.midi.translator.error.ConfigError;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +50,9 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
             ProjectConfiguration projectConfiguration = (ProjectConfiguration) jsonParser.getParsingContext()
                     .getParent()
                     .getCurrentValue();
-            String expandedText = midiDeviceLibrary.expand(configFile, projectConfiguration.getTranslate()
+            List<String> expandedTexts = midiDeviceLibrary.expand(configFile, projectConfiguration.getTranslate()
                     .getToDevice(), rawPayload);
-
-            return forgeMidiTranslation(translationDefinition, cc, lowerBound, upperBound, expandedText);
+            return forgeMidiTranslation(translationDefinition, cc, lowerBound, upperBound, expandedTexts);
         } else {
             throw new ConfigError("Unexpected Translation definition: " + translationDefinition);
         }
@@ -61,28 +61,33 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
     /**
      * Given a translation payload, properly expanded without any macro call, generate a {@link MidiTranslation}
      */
-    private static MidiTranslation forgeMidiTranslation(String translationDefinition, int cc, int lowerBound, int upperBound, String rawPayload) {
-        var payloadMatcher = translationPayloadRegExp.matcher(rawPayload);
-        // we need to convert the payload string in a list of bytes
-        // "vv" will be repplaced by 0, and we store its position in valueIndex
-        int valueIndex = -1;
-        List<Byte> list = new ArrayList<>();
-        while (payloadMatcher.find()) {
-            String byteValue = payloadMatcher.group(1);
-            if (byteValue.equals("vv")) {
-                valueIndex = list.size();
-                list.add((byte) 0);
-            } else {
-                try {
-                    list.add((byte) Integer.parseInt(byteValue, 16));
-                } catch (NumberFormatException e) {
-                    throw new ConfigError("Unexpected Translation definition: '" + translationDefinition + "' for value '" + byteValue + "'");
-                }
-            }
-        }
-        byte[] payload = new byte[list.size()];
-        IntStream.range(0, list.size())
-                .forEach(i -> payload[i] = list.get(i));
-        return new MidiTranslation(cc, valueIndex, payload, lowerBound, upperBound);
+    private static MidiTranslation forgeMidiTranslation(String translationDefinition, int cc, int lowerBound, int upperBound, List<String> rawPayloads) {
+        var payloads = rawPayloads.stream()
+                .map(rawPayload -> {
+                    var payloadMatcher = translationPayloadRegExp.matcher(rawPayload);
+                    // we need to convert the payload string in a list of bytes
+                    // "vv" will be repplaced by 0, and we store its position in valueIndex
+                    int valueIndex = -1;
+                    List<Byte> list = new ArrayList<>();
+                    while (payloadMatcher.find()) {
+                        String byteValue = payloadMatcher.group(1);
+                        if (byteValue.equals("vv")) {
+                            valueIndex = list.size();
+                            list.add((byte) 0);
+                        } else {
+                            try {
+                                list.add((byte) Integer.parseInt(byteValue, 16));
+                            } catch (NumberFormatException e) {
+                                throw new ConfigError("Unexpected Translation definition: '" + translationDefinition + "' for value '" + byteValue + "'");
+                            }
+                        }
+                    }
+                    byte[] payload = new byte[list.size()];
+                    IntStream.range(0, list.size())
+                            .forEach(i -> payload[i] = list.get(i));
+                    return new MidiTranslationPayload(valueIndex, payload);
+                })
+                .toList();
+        return new MidiTranslation(cc, lowerBound, upperBound, payloads);
     }
 }

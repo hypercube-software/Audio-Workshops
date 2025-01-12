@@ -3,14 +3,13 @@ package com.hypercube.midi.translator.config.project;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.midi.translator.config.lib.MidiDeviceDefinition;
-import com.hypercube.midi.translator.config.lib.MidiDeviceLibrary;
-import com.hypercube.midi.translator.config.project.device.DumpRequestTemplate;
-import com.hypercube.midi.translator.config.project.device.ProjectDevice;
+import com.hypercube.midi.translator.MidiBackupTranslator;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
-import com.hypercube.midi.translator.config.yaml.DumpRequestTemplateDeserializer;
 import com.hypercube.midi.translator.config.yaml.MidiTranslationDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
+import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,24 +23,30 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class ProjectConfigurationFactory {
-    private final MidiDeviceLibrary midiDeviceLibrary = new MidiDeviceLibrary();
+    private final MidiDeviceLibrary midiDeviceLibrary;
 
     @Value("${mbt-config:./config.yml}")
     private File configFile;
 
+    public void forge() {
+
+    }
+
     public ProjectConfiguration loadConfig() {
-        midiDeviceLibrary.load();
+        loadLibary();
         if (configFile.exists()) {
             log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
             var mapper = new ObjectMapper(new YAMLFactory());
             try {
                 SimpleModule module = new SimpleModule();
                 module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer(midiDeviceLibrary, configFile));
-                module.addDeserializer(DumpRequestTemplate.class, new DumpRequestTemplateDeserializer(midiDeviceLibrary, configFile));
                 mapper.registerModule(module);
                 ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
                 config.getDevices()
-                        .forEach(this::setDefaultDeviceSettings);
+                        .forEach(projectDevice -> {
+                            setDefaultDeviceSettings(projectDevice);
+                            forgeMidiRequestsSequence(projectDevice);
+                        });
                 config.getTranslations()
                         .forEach(t -> config.getTranslationsMap()
                                 .put(t.getCc(), t));
@@ -52,6 +57,12 @@ public class ProjectConfigurationFactory {
         } else {
             log.warn("The project config does not exists: " + configFile.getAbsolutePath());
             return new ProjectConfiguration();
+        }
+    }
+
+    private void loadLibary() {
+        if (!midiDeviceLibrary.isLoaded()) {
+            midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiBackupTranslator.class));
         }
     }
 
@@ -81,17 +92,22 @@ public class ProjectConfigurationFactory {
                 });
     }
 
+    private void forgeMidiRequestsSequence(ProjectDevice device) {
+        device.setDumpRequestTemplates(device.getDumpRequests()
+                .stream()
+                .map(requestDefinition ->
+                        midiDeviceLibrary.forgeMidiRequestsSequence(configFile, device.getName(), requestDefinition)
+                )
+                .toList());
+    }
+
     public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {
-        if (!midiDeviceLibrary.isLoaded()) {
-            midiDeviceLibrary.load();
-        }
+        loadLibary();
         return midiDeviceLibrary.getDeviceFromMidiPort(midiPort);
     }
 
     public Optional<ProjectDevice> getDefaultProjectDevice(String deviceName) {
-        if (!midiDeviceLibrary.isLoaded()) {
-            midiDeviceLibrary.load();
-        }
+        loadLibary();
         return midiDeviceLibrary.getDevice(deviceName)
                 .map(this::forgeDefaultProjectDevice);
     }

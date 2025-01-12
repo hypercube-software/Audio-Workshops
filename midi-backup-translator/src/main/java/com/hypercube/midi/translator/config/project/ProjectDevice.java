@@ -1,5 +1,7 @@
-package com.hypercube.midi.translator.config.project.device;
+package com.hypercube.midi.translator.config.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestsSequence;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,5 +17,8 @@ public class ProjectDevice {
     private Integer outputBandWidth;
     private Integer sysExPauseMs;
     private Integer inactivityTimeoutMs;
-    private List<DumpRequestTemplate> dumpRequests;
+    private List<String> dumpRequests;
+    @JsonIgnore
+    private List<MidiRequestsSequence> dumpRequestTemplates;
+
 }

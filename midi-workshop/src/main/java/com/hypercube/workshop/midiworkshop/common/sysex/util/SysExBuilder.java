@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Utility class to construct a SysEx ith fluent API style
@@ -76,27 +77,31 @@ public class SysExBuilder {
         }
     }
 
-    public static List<CustomMidiEvent> parse(String definition) throws InvalidMidiDataException {
-        List<CustomMidiEvent> result = new ArrayList<>();
-        String rawString = resolveASCIIStrings(definition);
-        List<SysExRange> ranges = collectRanges(rawString);
-        if (ranges.size() > 1) {
-            throw new MidiError("SysEx template does not support more than one range for now");
-        }
-        if (ranges.size() > 0) {
-            for (SysExRange range : ranges) {
-                for (int i = range.from(); i <= range.to(); i++) {
-                    String currentString = rawString.replace(range.value(), "%02X".formatted(i));
-                    result.add(forgeMidiEvent(currentString));
-                }
-            }
-            return result;
-        } else {
-            return List.of(forgeMidiEvent(rawString));
-        }
+    public static List<CustomMidiEvent> parse(String definitions) throws InvalidMidiDataException {
+        return Arrays.stream(definitions.split(";"))
+                .flatMap(definition -> {
+                    List<CustomMidiEvent> result = new ArrayList<>();
+                    String rawString = resolveASCIIStrings(definition);
+                    List<SysExRange> ranges = collectRanges(rawString);
+                    if (ranges.size() > 1) {
+                        throw new MidiError("SysEx template does not support more than one range for now");
+                    }
+                    if (ranges.size() > 0) {
+                        for (SysExRange range : ranges) {
+                            for (int i = range.from(); i <= range.to(); i++) {
+                                String currentString = rawString.replace(range.value(), "%02X".formatted(i));
+                                result.add(forgeMidiEvent(currentString));
+                            }
+                        }
+                        return result.stream();
+                    } else {
+                        return Stream.of(forgeMidiEvent(rawString));
+                    }
+                })
+                .toList();
     }
 
-    private static CustomMidiEvent forgeMidiEvent(String rawString) throws InvalidMidiDataException {
+    private static CustomMidiEvent forgeMidiEvent(String rawString) {
         CheckSumDef checksum = new CheckSumDef();
         List<Integer> data = new ArrayList<>();
         Arrays.stream(rawString.split(" "))
@@ -129,7 +134,11 @@ public class SysExBuilder {
             sb.write(data.get(i));
         }
         byte[] result = sb.buildBuffer();
-        return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+        try {
+            return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
     }
 
     private static List<SysExRange> collectRanges(String payload) {

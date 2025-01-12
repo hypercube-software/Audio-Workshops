@@ -1,4 +1,4 @@
-package com.hypercube.midi.translator.config.yaml;
+package com.hypercube.workshop.midiworkshop.common.sysex.yaml;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

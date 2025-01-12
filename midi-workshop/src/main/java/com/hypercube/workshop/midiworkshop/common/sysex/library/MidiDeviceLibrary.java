@@ -1,24 +1,23 @@
-package com.hypercube.midi.translator.config.lib;
+package com.hypercube.workshop.midiworkshop.common.sysex.library;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.midi.translator.MidiBackupTranslator;
-import com.hypercube.midi.translator.config.yaml.CommandMacroDeserializer;
-import com.hypercube.midi.translator.error.ConfigError;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.CommandMacroDeserializer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,61 +27,28 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class MidiDeviceLibrary {
+    public static final String DEVICES_LIBRARY_FOLDER = "/devices-library/";
+    public static final String ENV_MDL_FOLDER = "MDL_FOLDER";
+    private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
+
     private Map<String, MidiDeviceDefinition> devices;
     @Getter
     private boolean loaded;
 
-    /**
-     * This method give us the location of the CLI no matter what is the current directory
-     *
-     * @return
-     */
-    public File getConfigFolder() {
-        try {
-            URI uri = MidiBackupTranslator.class
-                    .getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI();
-            String scheme = uri.getScheme();
-            if (scheme
-                    .equals("file")) {
-                String path = uri.getPath();
-                File f = new File(path);
-                if (path.endsWith("/target/classes/")) {
-                    // The application run in inside an IDE
-                    f = f.getParentFile();
-                } else {
-                    // The application run as native EXE
-                }
-                return f.getParentFile();
-            } else if (scheme.equals("jar")) {
-                // The application run in command line as an executable JAR
-                String path = uri.getRawSchemeSpecificPart()
-                        .replace("nested:", "")
-                        .replaceAll("\\.jar.*", "");
-                File f = new File(path);
-                if (path.contains("/target/")) {
-                    // The application run in debug inside an IDE
-                    return f.getParentFile()
-                            .getParentFile();
-                } else {
-                    return f.getParentFile();
-                }
-            }
-            throw new ConfigError("Unexpected location: " + uri.toString());
-        } catch (URISyntaxException e) {
-            throw new ConfigError(e);
-        }
-    }
 
-    public void load() {
+    public void load(File applicationFolder) {
         devices = new HashMap<>();
-        Path libraryFolder = Path.of(getConfigFolder().getAbsolutePath() + "/devices/");
-        if (libraryFolder.toFile()
-                .exists()) {
+        File libraryFolder = Optional.ofNullable(System.getenv(ENV_MDL_FOLDER))
+                .map(File::new)
+                .orElse(new File(applicationFolder.getAbsolutePath(), DEVICES_LIBRARY_FOLDER));
+        File libraryFolder2 = new File(applicationFolder.getParentFile()
+                .getAbsolutePath(), DEVICES_LIBRARY_FOLDER);
+        if (!libraryFolder.exists() && libraryFolder2.exists()) {
+            libraryFolder = libraryFolder2;
+        }
+        if (libraryFolder.exists()) {
             log.info("Loading midi device library from %s...".formatted(libraryFolder.toString()));
-            try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder)
+            try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
                     .filter(p -> p.getFileName()
                             .toString()
                             .endsWith(".yml"))
@@ -102,13 +68,13 @@ public class MidiDeviceLibrary {
                         });
 
             } catch (IOException e) {
-                throw new ConfigError("Unable to read library folder:" + libraryFolder.toString());
+                throw new MidiConfigError("Unable to read library folder:" + libraryFolder.toString());
             }
             log.info("%d devices defined: %s".formatted(devices.size(), getDevicesNames()));
 
             loaded = true;
         } else {
-            throw new ConfigError("The library path does not exists: " + libraryFolder.toString());
+            throw new MidiConfigError("The library path does not exists: " + libraryFolder.toString());
         }
     }
 
@@ -164,30 +130,32 @@ public class MidiDeviceLibrary {
      * @param commandCall command to expand
      * @return expanded command
      */
-    public String expand(File configFile, String deviceName, String commandCall) {
+    public List<String> expand(File configFile, String deviceName, String commandCall) {
         checkLoaded();
         var matches = Optional.ofNullable(devices.get(deviceName))
                 .map(d -> d.getMacros()
                         .stream()
                         .filter(m -> m.match(commandCall))
                         .toList())
-                .orElseThrow(() -> new ConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
+                .orElseThrow(() -> new MidiConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
 
         if (matches.isEmpty() && commandCall.contains("(")) {
-            throw new ConfigError("Undefined macro for device %s: %s".formatted(deviceName, commandCall));
+            throw new MidiConfigError("Undefined macro for device %s: %s".formatted(deviceName, commandCall));
         }
         if (matches.size() == 1) {
             CommandCall call = CommandCall.parse(configFile, commandCall);
             String expanded = matches.get(0)
                     .expand(call);
-            return expand(configFile, deviceName, "%s : %s".formatted(call.name(), expanded));
+            return Arrays.stream(expanded.split(";"))
+                    .flatMap(expandedCommand -> expand(configFile, deviceName, "%s : %s".formatted(call.name(), expandedCommand)).stream())
+                    .toList();
         } else if (matches.size() > 1) {
             String msg = matches.stream()
                     .map(CommandMacro::toString)
                     .collect(Collectors.joining("\n"));
-            throw new ConfigError("Ambiguous macro call, multiple name are available in" + commandCall + "\n" + msg);
+            throw new MidiConfigError("Ambiguous macro call, multiple name are available in" + commandCall + "\n" + msg);
         } else {
-            return commandCall;
+            return List.of(commandCall);
         }
     }
 
@@ -208,7 +176,7 @@ public class MidiDeviceLibrary {
 
     private void checkLoaded() {
         if (!loaded) {
-            throw new ConfigError("MidiDeviceLibrary not loaded");
+            throw new MidiConfigError("MidiDeviceLibrary not loaded");
         }
     }
 
@@ -230,7 +198,50 @@ public class MidiDeviceLibrary {
                     .orElse(List.of()));
             return macro;
         } catch (IOException e) {
-            throw new ConfigError("Unable to load " + macroFile.toString(), e);
+            throw new MidiConfigError("Unable to load " + macroFile.toString(), e);
         }
+    }
+
+    public MidiRequestsSequence forgeMidiRequestsSequence(File configFile, String deviceName, String rawTextSequence) {
+        CommandMacro requestDefinition = CommandMacro.parse(configFile, rawTextSequence);
+        String requestName = requestDefinition.name();
+        var result = Arrays.stream(requestDefinition.body()
+                        .split(";"))
+                .flatMap(
+                        rawText -> expandRequestDefinition(configFile, deviceName, rawText)
+                )
+                .toList();
+        return new MidiRequestsSequence(requestName, result);
+    }
+
+    private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String rawText) {
+        // expand the macro if there is one
+        List<String> expandedTexts = expand(configFile, deviceName, rawText);
+        // the final string should be "<command name> : <size> : <bytes>"
+        return expandedTexts.stream()
+                .map(expandedText -> {
+                    String[] values = expandedText.split(":");
+                    if (values.length != 3) {
+                        throw new MidiConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(expandedText));
+                    } else {
+                        Integer size = parseOptionalSize(values);
+                        String name = values[0];
+                        String value = values.length == 3 ? values[2] : values[1];
+
+                        return new MidiRequest(name
+                                .trim(), value
+                                .trim(), size);
+                    }
+                });
+    }
+
+    private Integer parseOptionalSize(String[] values) {
+        Integer size = null;
+        Matcher m = REGEXP_HEXA_NUMBER.matcher(values[1]);
+        if (m.find()) {
+            size = Integer.parseInt(m.group("value")
+                    .trim(), 16);
+        }
+        return size;
     }
 }

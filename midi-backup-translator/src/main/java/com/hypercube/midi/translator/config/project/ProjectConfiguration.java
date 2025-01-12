@@ -1,6 +1,5 @@
 package com.hypercube.midi.translator.config.project;
 
-import com.hypercube.midi.translator.config.project.device.ProjectDevice;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.config.project.translation.TranslationSetting;
 import lombok.Getter;

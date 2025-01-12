@@ -1,9 +1,9 @@
 package com.hypercube.midi.translator.model;
 
-import com.hypercube.midi.translator.config.project.device.DumpRequestTemplate;
-import com.hypercube.midi.translator.config.project.device.ProjectDevice;
+import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -33,7 +33,7 @@ public class DeviceInstance {
     private long lastTimeReceiveMs = 0;
     @Getter
     @Setter
-    private DumpRequestTemplate currentRequest;
+    private MidiRequest currentRequest;
     @Getter
     private long currentResponseSize = 0;
 

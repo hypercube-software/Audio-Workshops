@@ -2,7 +2,7 @@ package com.hypercube.midi.translator;
 
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
-import com.hypercube.midi.translator.config.project.device.ProjectDevice;
+import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
 import com.hypercube.workshop.midiworkshop.common.*;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
@@ -67,7 +67,7 @@ public class MidiBackupTranslatorShell {
                 list();
                 return;
             }
-            
+
             try (var in = m.openInput(inputMidiDevice)) {
                 try (var out = m.openOutput(outputMidiDevice)) {
                     midiBackupTranslator.translate(in, out, outputDevice.getOutputBandWidth());
@@ -155,31 +155,35 @@ public class MidiBackupTranslatorShell {
     private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out) throws InvalidMidiDataException {
         for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
                 .size(); requestIndex++) {
-            var request = projectDevice.getDumpRequests()
+            var requests = projectDevice.getDumpRequestTemplates()
                     .get(requestIndex);
-            device.setCurrentRequest(request);
-            List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
-            for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
-                var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
-                device.sendAndWaitResponse(out, customMidiEvent);
+            for (var request : requests.getMidiRequests()) {
+                device.setCurrentRequest(request);
+                List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
+                for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
+                    var customMidiEvent = requestInstances.get(requestInstanceIndex);
+                    String name = requests.getName()
+                            .equals(request.getName()) ? requests.getName() : "%s/%s".formatted(requests.getName(), request.getName());
+                    log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), name, customMidiEvent.getHexValues());
+                    device.sendAndWaitResponse(out, customMidiEvent);
 
-                if (request.getSize() != null && device.getCurrentResponseSize() != request.getSize()) {
-                    log.error("Unexpected size received (0x%X) given what you specified (0x%X)".formatted(device.getCurrentResponseSize(), request.getSize()));
-                    return;
-                }
+                    if (request.getSize() != null && device.getCurrentResponseSize() != request.getSize()) {
+                        log.error("Unexpected size received (0x%X) given what you specified (0x%X)".formatted(device.getCurrentResponseSize(), request.getSize()));
+                        return;
+                    }
 
-                long receivedBytes = device.getCurrentResponseSize();
-                System.out.println(" 0x%X (%d) bytes".formatted(receivedBytes, receivedBytes));
-                log.debug("Bulk {} {} received: {} bytes", requestIndex + 1, request, receivedBytes);
-                if (receivedBytes == 0) {
-                    log.error("No response from device {}", projectDevice.getName());
-                    log.error("- Check your bulk request syntax");
-                    log.error("- Check your device can receive Sysex");
-                    log.error("- Increase 'inactivityTimeoutMs'");
-                    return;
+                    long receivedBytes = device.getCurrentResponseSize();
+                    System.out.println(" 0x%X (%d) bytes".formatted(receivedBytes, receivedBytes));
+                    log.debug("Bulk {} {} received: {} bytes", requestIndex + 1, request, receivedBytes);
+                    if (receivedBytes == 0) {
+                        log.error("No response from device {}", projectDevice.getName());
+                        log.error("- Check your bulk request syntax");
+                        log.error("- Check your device can receive Sysex");
+                        log.error("- Increase 'inactivityTimeoutMs'");
+                        return;
+                    }
+                    device.sleep(out, device.getSysexPauseMs());
                 }
-                device.sleep(out, device.getSysexPauseMs());
             }
         }
     }

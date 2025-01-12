@@ -9,6 +9,18 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * A macro is function generating multiple MIDI messages (typically SYSEX)
+ * <ul>
+ *     <li>It operates at string level, not bytes, because it is way more convenient</li>
+ *     <li>It is possible to call multiple macros inside a macro with ";"</li>
+ *     <li>It is used like a function with parameters: A(), A(a,b) and parameters are injected in the generated payload</li>
+ * </ul>
+ * Note that:
+ * <lu>
+ *     <li>{@link CommandMacro} define the function</li>
+ *     <li>{@link CommandCall} define a call to that function</li>
+ */
 public record CommandMacro(
         File definitionFile,
         String name,
@@ -41,6 +53,12 @@ public record CommandMacro(
         }
     }
 
+    /**
+     * Given a CommandCall, inject the provided values into the body of this macro
+     *
+     * @param call A call definition to this macro
+     * @return resolved macro, with all parameters replaced by provided values
+     */
     public String expand(CommandCall call) {
         if (call.parameters()
                 .size() != parameters.size()) {

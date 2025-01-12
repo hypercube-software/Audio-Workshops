@@ -48,7 +48,7 @@ jobs:
         run: |
           cp midi-backup-translator/doc/readme.pdf midi-backup-translator/target
           cp -R midi-backup-translator/config/config-example.yml midi-backup-translator/target/config-example.yml
-          cp -R midi-backup-translator/devices midi-backup-translator/target
+          cp -R devices-library midi-backup-translator/target
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
         with:
@@ -57,7 +57,7 @@ jobs:
             midi-backup-translator/target/midi-backup-translator.exe
             midi-backup-translator/target/jsound.dll
             midi-backup-translator/target/config-example.yml
-            midi-backup-translator/target/devices
+            midi-backup-translator/target/devices-library
             midi-backup-translator/target/readme.pdf
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'macOS' }}
@@ -66,7 +66,7 @@ jobs:
           path: |
             midi-backup-translator/target/midi-backup-translator
             midi-backup-translator/target/config-example.yml
-            midi-backup-translator/target/devices
+            midi-backup-translator/target/devices-library
             midi-backup-translator/target/readme.pdf
       - uses: actions/upload-artifact@v4
         if: ${{ runner.os == 'Windows' }}
@@ -75,7 +75,7 @@ jobs:
           path: |
             midi-backup-translator/target/midi-backup-translator*.jar
             midi-backup-translator/target/config-example.yml
-            midi-backup-translator/target/devices
+            midi-backup-translator/target/devices-library
             midi-backup-translator/target/readme.pdf
       #
       # synth-ripper

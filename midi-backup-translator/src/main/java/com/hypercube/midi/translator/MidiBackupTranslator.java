@@ -113,14 +113,17 @@ public class MidiBackupTranslator {
             var translation = conf.getTranslationsMap()
                     .get(cc);
             if (translation != null) {
-                byte[] payload = translation.getPayload();
-                payload[translation.getValueIndex()] = (byte) translation.scaledCC(value);
-                try {
-                    CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(payload, payload.length), -1);
-                    eventQueue.add(evt);
-                } catch (InvalidMidiDataException e) {
-                    throw new MidiError(e);
-                }
+                translation.getPayloads()
+                        .forEach(p -> {
+                            byte[] payload = p.getPayload();
+                            payload[p.getValueIndex()] = (byte) translation.scaledCC(value);
+                            try {
+                                CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(payload, payload.length), -1);
+                                eventQueue.add(evt);
+                            } catch (InvalidMidiDataException e) {
+                                throw new MidiError(e);
+                            }
+                        });
             } else {
                 eventQueue.add(customMidiEvent);
             }

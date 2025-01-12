@@ -35,6 +35,16 @@ class SysExBuilderTest {
                 .getHexValues());
     }
 
+    @Test
+    void parseMultipleDefinitions() throws InvalidMidiDataException {
+        var actual = SysExBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-1] F7;F0 41 00 42 11 480000 001D10 CK3 F7");
+        assertEquals(3, actual.size());
+        assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
+                .getHexValues());
+        assertEquals("0xF041004211480000001D1053F7", actual.getLast()
+                .getHexValues());
+    }
+
     @ParameterizedTest
     @CsvSource({
             "F0 41 00 42 11 480000* 001D10 CK6 F7",

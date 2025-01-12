@@ -25,8 +25,7 @@ devices:
     # Note: specifying the size make the backup faster otherwise we rely on 'inactivityTimeoutMs'
     #
     dumpRequests:
-      - "Bulk System+Patches()"
-      - "Bulk Drum()"
+      - "Everything()"
 
 translate:
   fromMidiDevice: "4- MIDISPORT Uno In"

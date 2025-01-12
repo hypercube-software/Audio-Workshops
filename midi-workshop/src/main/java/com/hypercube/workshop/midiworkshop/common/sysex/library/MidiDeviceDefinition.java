@@ -1,4 +1,4 @@
-package com.hypercube.midi.translator.config.lib;
+package com.hypercube.workshop.midiworkshop.common.sysex.library;
 
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import lombok.Getter;
