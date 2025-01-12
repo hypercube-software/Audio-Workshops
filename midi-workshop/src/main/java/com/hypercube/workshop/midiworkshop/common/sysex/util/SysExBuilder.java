@@ -11,7 +11,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.SysexMessage;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -20,6 +19,10 @@ import java.util.stream.Stream;
  */
 @RequiredArgsConstructor
 public class SysExBuilder {
+    public static final Pattern DECIMAL_OR_HEX_NUMBER = Pattern.compile("((0x|\\$)(?<hexadecimal>[0-9A-F]+))|(?<decimal>[0-9]+)");
+    public static final Pattern nibbles = Pattern.compile("\\s+(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
+
+
     private static class State {
         private boolean updateChecksum;
     }
@@ -89,7 +92,8 @@ public class SysExBuilder {
                     if (ranges.size() > 0) {
                         for (SysExRange range : ranges) {
                             for (int i = range.from(); i <= range.to(); i++) {
-                                String currentString = rawString.replace(range.value(), "%02X".formatted(i));
+                                String hexa = "%0" + range.size() + "X";
+                                String currentString = rawString.replace(range.value(), hexa.formatted(i));
                                 result.add(forgeMidiEvent(currentString));
                             }
                         }
@@ -101,9 +105,10 @@ public class SysExBuilder {
                 .toList();
     }
 
-    private static CustomMidiEvent forgeMidiEvent(String rawString) {
+    private static CustomMidiEvent forgeMidiEvent(String inputRawString) {
         CheckSumDef checksum = new CheckSumDef();
         List<Integer> data = new ArrayList<>();
+        String rawString = aggregateNibbles(inputRawString);
         Arrays.stream(rawString.split(" "))
                 .forEach(chunk -> {
                     if (chunk.startsWith("CK")) {
@@ -141,21 +146,68 @@ public class SysExBuilder {
         }
     }
 
+    /**
+     * We allow nibbles (half byte) in the payload, so we glue them to make a byte
+     *
+     * @param rawString string containing nibbles
+     * @return string without nibbles
+     */
+    private static String aggregateNibbles(String rawString) {
+        for (; ; ) {
+            var m = nibbles.matcher(rawString);
+            if (m.find()) {
+                String low = m.group("low");
+                String high = m.group("high");
+                rawString = rawString.substring(0, m.start()) + " " + low + high + " " + rawString.substring(m.end());
+            } else {
+                break;
+            }
+        }
+        return rawString;
+    }
+
     private static List<SysExRange> collectRanges(String payload) {
         List<SysExRange> result = new ArrayList<>();
-        var ranges = Pattern.compile("\\[(?<from>[0-9]+)-(?<to>[0-9]+)\\]");
+        final String HEXA_OR_DECIMAL = "[0-9A-Fx$]+";
+        var ranges = Pattern.compile("\\[(?<from>%s)-(?<to>%s)\\]".formatted(HEXA_OR_DECIMAL, HEXA_OR_DECIMAL));
         var matcher = ranges.matcher(payload);
         while (matcher.find()) {
-            int from = getFrom(matcher);
-            int to = Integer.parseInt(matcher.group("to"));
-            SysExRange r = new SysExRange(matcher.group(), matcher.start(), from, to);
+            String fromStr = matcher.group("from");
+            String toStr = matcher.group("to");
+            int size = computeRangeSize(fromStr, toStr);
+            int from = getNumber(fromStr);
+            int to = getNumber(toStr);
+            SysExRange r = new SysExRange(matcher.group(), size, matcher.start(), from, to);
             result.add(r);
         }
         return result;
     }
 
-    private static int getFrom(Matcher matcher) {
-        return Integer.parseInt(matcher.group("from"));
+    private static int computeRangeSize(String fromStr, String toStr) {
+        if (fromStr.startsWith("$")) {
+            return fromStr.substring(1)
+                    .length();
+        } else if (fromStr.startsWith("0x")) {
+            return fromStr.substring(2)
+                    .length();
+        } else {
+            return 2;
+        }
+
+    }
+
+    private static int getNumber(String number) {
+        var m = DECIMAL_OR_HEX_NUMBER.matcher(number);
+        if (m.find()) {
+            String hexadecimal = m.group("hexadecimal");
+            String decimal = m.group("decimal");
+            if (hexadecimal != null) {
+                return Integer.parseInt(hexadecimal, 16);
+            } else if (decimal != null) {
+                return Integer.parseInt(decimal, 10);
+            }
+        }
+        throw new MidiError("Expected a number in the form $FF or 0xFF or 00 but got: " + number);
     }
 
     private static String resolveASCIIStrings(String payload) {

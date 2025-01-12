@@ -148,7 +148,7 @@ public class MidiDeviceLibrary {
         }
         if (matches.size() == 1) {
             CommandCall call = CommandCall.parse(configFile, commandCall);
-            String expanded = matches.get(0)
+            String expanded = matches.getFirst()
                     .expand(call);
             return Arrays.stream(expanded.split(";"))
                     .flatMap(expandedCommand -> expand(configFile, deviceName, "%s : %s".formatted(call.name(), expandedCommand)).stream())
@@ -159,6 +159,7 @@ public class MidiDeviceLibrary {
                     .collect(Collectors.joining("\n"));
             throw new MidiConfigError("Ambiguous macro call, multiple name are available in" + commandCall + "\n" + msg);
         } else {
+            // There is no more macro call to resolve we return the string "as is"
             return List.of(commandCall);
         }
     }
@@ -220,7 +221,6 @@ public class MidiDeviceLibrary {
      * @return The list of MIDI messages payloads
      */
     public MidiRequestSequence forgeMidiRequestSequence(File configFile, String deviceName, CommandMacro commandMacro) {
-        String requestName = commandMacro.name();
         if (commandMacro.parameters()
                 .size() != 0) {
             throw new MidiConfigError("Can't expand a macro with parameters");
@@ -228,13 +228,13 @@ public class MidiDeviceLibrary {
         var result = Arrays.stream(commandMacro.body()
                         .split(";"))
                 .flatMap(
-                        rawText -> expandRequestDefinition(configFile, deviceName, requestName, rawText)
+                        rawText -> expandRequestDefinition(configFile, deviceName, rawText)
                 )
                 .toList();
-        return new MidiRequestSequence(requestName, result);
+        return new MidiRequestSequence(result);
     }
 
-    private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String requestName, String rawText) {
+    private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String rawText) {
         // expand the macros calls if there are any
         List<String> expandedTexts = expand(configFile, deviceName, rawText);
         // the final string should be "<command name> : <size> : <bytes>"
@@ -251,7 +251,7 @@ public class MidiDeviceLibrary {
                                 .trim(), size);
                     } else if (values.length == 2) {
                         Integer size = parseOptionalSize(values);
-                        String name = requestName;
+                        String name = "";
                         String value = values.length == 3 ? values[2] : values[1];
 
                         return new MidiRequest(name

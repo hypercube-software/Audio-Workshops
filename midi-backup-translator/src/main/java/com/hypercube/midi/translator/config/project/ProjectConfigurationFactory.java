@@ -97,7 +97,8 @@ public class ProjectConfigurationFactory {
         device.setDumpRequestTemplates(device.getDumpRequests()
                 .stream()
                 .map(rawRequestDefinition -> {
-                    CommandMacro requestDefinition = CommandMacro.parse(configFile, rawRequestDefinition);
+                    String rawMacroDefinition = "noname() : - : %s".formatted(rawRequestDefinition);
+                    CommandMacro requestDefinition = CommandMacro.parse(configFile, rawMacroDefinition);
                     return midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(), requestDefinition);
                 })
                 .toList());

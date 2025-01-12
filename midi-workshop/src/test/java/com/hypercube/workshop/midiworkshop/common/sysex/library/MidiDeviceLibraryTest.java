@@ -37,13 +37,13 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithoutMacro() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "System Setup() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7");
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro);
         // THEN
         assertEquals(1, actual.getMidiRequests()
                 .size());
-        assertEquals("System Setup", actual.getMidiRequests()
+        assertEquals("", actual.getMidiRequests()
                 .get(0)
                 .getName());
     }
@@ -51,11 +51,10 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithSequenceOfMacro() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "getAll() : --- : AllMulti();AllPerformances()");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances()");
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro);
         // THEN
-        assertEquals("getAll", actual.getName());
         assertEquals(2, actual.getMidiRequests()
                 .size());
         MidiRequest firstRequest = actual.getMidiRequests()
@@ -82,11 +81,10 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithSequenceOfMacroAndRawPayload() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "getAll() : --- : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()");
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro);
         // THEN
-        assertEquals("getAll", actual.getName());
         assertEquals(3, actual.getMidiRequests()
                 .size());
         assertEquals(0x142, actual.getMidiRequests()
@@ -103,11 +101,10 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithoutSequence() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "getAll() : --- : AllMulti()");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti()");
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro);
         // THEN
-        assertEquals("getAll", actual.getName());
         assertEquals(1, actual.getMidiRequests()
                 .size());
         MidiRequest firstRequest = actual.getMidiRequests()

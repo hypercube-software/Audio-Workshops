@@ -154,6 +154,14 @@ The following fields are provided:
 | `inactivityTimeoutMs` | When the response size is not specified, we use this parameter to know if something is wrong. |
 | `macros`              | A list of strings containing various macro definitions to build MIDI requests |
 
+## Nibbles
+
+You can generate half bytes, they will be merged to make a byte
+
+```yaml
+- "User Perf Common(perf) : 39 : F043204B 70 perf 0 0 F7" #  "0 0" will becomes "00"
+```
+
 ## Macro definition
 
 The overall definition is:
@@ -181,8 +189,15 @@ macro name(parameters values)
 Values format can be:
 
 - Decimal: `64`
-- Hexadecimal: `$12` or `0x12`. You can force a n byte value with `0` like this; `$0012` or `0x0012`
+- Hexadecimal: `$12` or `0x12`. 
+  - You can force a n byte value with `0` like this: `$0012` or `0x0012`
+  - You can force a nibble value (half byte) with: `$F` or `0xF`
+
 - Decimal range: `[0-127]`
+- Hexadecimal range of nibbles: `[$0-$F]` or `[0x0-0xF]`
+- Hexadecimal range of bytes: `[$00-$7F]` or `[0x00-0x7F]`
+- Hexadecimal range of word: `[$0000-$7F00]` or `[0x0000-0x7F00]`
+- ...
 
 So `Multi([0-15])` mean we call the macro 16 times with value 0 to 15. This will generate multiple MIDI Requests for various memory locations.
 

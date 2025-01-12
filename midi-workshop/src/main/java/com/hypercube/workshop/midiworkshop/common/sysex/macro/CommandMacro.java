@@ -95,6 +95,7 @@ public final class CommandMacro {
             String paramValue = call.parameters()
                     .get(idx);
             String replacement = " %s ".formatted(expandParameterValue(paramValue));
+            replacement = replacement.replace("$", "\\$");
             result = result.replaceAll(paramName, replacement);
         }
         return result;
@@ -131,6 +132,7 @@ public final class CommandMacro {
         } else if (paramValue.startsWith("$")) {
             return paramValue.substring(1);
         } else {
+            // decimal numbers are converted to hexa
             var m = decimalNumber.matcher(paramValue);
             if (m.matches()) {
                 return "%02X".formatted(Integer.parseInt(paramValue, 10));

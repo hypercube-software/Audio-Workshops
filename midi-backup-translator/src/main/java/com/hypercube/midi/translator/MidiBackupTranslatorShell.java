@@ -162,9 +162,7 @@ public class MidiBackupTranslatorShell {
                 List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
                 for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                     var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                    String name = requests.getName()
-                            .equals(request.getName()) ? requests.getName() : "%s/%s".formatted(requests.getName(), request.getName());
-                    log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), name, customMidiEvent.getHexValues());
+                    log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
                     device.sendAndWaitResponse(out, customMidiEvent);
 
                     if (request.getSize() != null && device.getCurrentResponseSize() != request.getSize()) {
