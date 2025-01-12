@@ -3,12 +3,11 @@
 #
 deviceName: "TG-33"
 brand: "Yamaha"
-outputMidiDevice: "M8U eX 7"
-inputMidiDevice: "M8U eX 8"
 macros:
   - "System Data()       : 0001B : F0 43 20 7E 'LM  0012SY' F7"
   - "Multi Internal()    : 00D12 : F0 43 20 7E 'LM  0012MU' F7"
   - "Multi Edit Buffer() : 000E2 : F0 43 20 7E 'LM  0012ME' F7"
   - "Voice Internal()    : 092FF : F0 43 20 7E 'LM  0012VC' F7"
   - "Voice Edit Buffer() : 0025D : F0 43 20 7E 'LM  0012VE' F7"
+  - "Everything()        : System Data();Multi Internal();Multi Edit Buffer();Voice Internal();Voice Edit Buffer()"
   

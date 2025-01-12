@@ -9,8 +9,6 @@
 #
 deviceName: "MPK-261"
 brand: "AKAI"
-outputMidiDevice: "MIDIOUT4 (MPK261)"
-inputMidiDevice: "MIDIIN4 (MPK261)"
 macros:
   - "readBytes(size,addr1,addr2) : -- : F0470025 20 00 03 size addr1 addr2 F7"
   - "readSomething() : readBytes(0x50,0x00,0x18)"

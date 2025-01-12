@@ -3,8 +3,6 @@
 #
 deviceName: "TG-500"
 brand: "Yamaha"
-outputMidiDevice: "M8U eX 13"
-inputMidiDevice: "M8U eX 14"
 macros:
   - "System Setup()           : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00      F7"
   - "Voice Internal 1(voice)  : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 00 voice   F7"
@@ -20,4 +18,5 @@ macros:
   - "AllVoiceInternal2()      : Voice Internal 2([0-62])"
   - "AllVoiceEditBuffer()     : Voice Edit Buffer([0-62])"
   - "AllPerformances()        : Performance([0-63])"
+  - "Everything()             : System Setup();AllVoiceInternal1();AllVoiceInternal2();AllVoiceEditBuffer();AllPerformances();AllMulti()" 
   

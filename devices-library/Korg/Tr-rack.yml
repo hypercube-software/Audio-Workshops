@@ -3,8 +3,6 @@
 #
 deviceName: "Tr-rack"
 brand: "Korg"
-outputMidiDevice: "M8U eX 11"
-inputMidiDevice: "M8U eX 12"
 macros:
   - "GLOBAL DATA()                   : 00543 : F042303B 0E 00 F7"
   - "MODE DATA()                     : 0000B : F042303B 12 F7"
@@ -15,4 +13,6 @@ macros:
   - "ALL PROGRAM PARAMETER()         : 3DDC1 : F042303B 1C 00 00 00 F7"
   - "ALL COMBINATIONS PARAMETER()    : 376E6 : F042303B 1D 00 00 00 F7"
   - "ALL DATA()                      : 80481 : F042303B 0F 00 F7"
+  - "Everything() : GLOBAL DATA();MODE DATA();MULTI DATA();ALL DRUMKITS DATA();ALL PROGRAM PARAMETER();ALL COMBINATIONS PARAMETER();CURRENT PROGRAM PARAMETER();CURRENT COMBINATION PARAMETER()"
+  
   

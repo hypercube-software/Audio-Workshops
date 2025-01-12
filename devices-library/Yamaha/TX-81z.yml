@@ -3,8 +3,6 @@
 #
 deviceName: "TX-81z"
 brand: "Yamaha"
-outputMidiDevice: "M8U eX 15"
-inputMidiDevice: "M8U eX 16"
 macros:
   - "VMEM() : 1008 : F0 43 20 04 F7"                 # Voice Memory Bulk
   - "PMEM() : 0992 : F0 43 20 7E 'LM  8976PM' F7"    # 32 Performance Bulk
@@ -16,5 +14,6 @@ macros:
   - "Effect Data()                     : 0049 : F0 43 20 7E 'LM  8976S2' F7"
   - "Micro Tune Octave()               : 002A : F0 43 20 7E 'LM  MCRTE0' F7"
   - "Micro Tune Full Keyboard()        : 0112 : F0 43 20 7E 'LM  MCRTE1' F7"
+  - "Everything()                      : System Data();Program Change Table();Effect Data();Micro Tune Octave();Micro Tune Full Keyboard();VMEM();PMEM();SCED();PCED()" 
   # VCED params
   - "OP1_FREQ(v) : - :  F0 43 10 12 32 v F7" # CRS, value in the range [0-63]

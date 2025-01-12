@@ -4,8 +4,6 @@
 # this synth have many compatibility modes: QS300, TG300B, XG, GM
 deviceName: "CS1x"
 brand: "Yamaha"
-outputMidiDevice: "M8U eX 5"
-inputMidiDevice: "M8U eX 6"
 macros:
   - "XG Mode()              : -- : F0 43 11 4C 00 00 7E 00 F7"
   - "GM Mode()              : -- : F0 7E 7F 09 01 F7"
@@ -24,7 +22,8 @@ macros:
   - "User Perfs Layer2() : User Perf Layer2([00-127])"
   - "User Perfs Layer3() : User Perf Layer3([00-127])"
   - "User Perfs Layer4() : User Perf Layer4([00-127])"
-
+  - "NativeEverything(): SYSTEM();Cur Perf Common();Cur Perf Layers();User Perfs Common();User Perfs Layer1();User Perfs Layer2();User Perfs Layer3();User Perfs Layer4()"
+  
   # XG Dump Request (must be in MULTI mode)
   - "XG SYSTEM()          : 034 : F043204C 080000 F7"
   - "XG MULTI EFFECT()    : 019 : F043204C 020100 F7"
@@ -34,4 +33,5 @@ macros:
   - "XG MULTI PARTS()     : XG MULTI PART([00-15])"
   - "XG DRUM Setups 1()   : XG DRUM Setup 1([24-84])"
   - "XG DRUM Setups 2()   : XG DRUM Setup 2([24-84])"
+  - "XGEveryting(): XG SYSTEM()();XG MULTI EFFECT();XG MULTI PARTS();XG DRUM Setups 1();XG DRUM Setups 2()"
   
