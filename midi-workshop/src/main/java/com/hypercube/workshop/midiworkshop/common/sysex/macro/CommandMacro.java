@@ -60,9 +60,10 @@ public final class CommandMacro {
      * @return
      */
     public static CommandMacro parse(File definitionFile, String definition) {
-        var m = commandDefinition.matcher(definition);
+        var m = commandDefinition.matcher(definition.trim());
         if (m.find()) {
-            String name = m.group("name");
+            String name = m.group("name")
+                    .trim();
             String params = m.group("params");
             String body = m.group("body"); // body is " size : payload"
             List<String> paramArray = Optional.ofNullable(params)
@@ -91,12 +92,19 @@ public final class CommandMacro {
         }
         String result = body;
         for (int idx = 0; idx < parameters.size(); idx++) {
-            String paramName = " %s ".formatted(parameters.get(idx));
             String paramValue = call.parameters()
                     .get(idx);
-            String replacement = " %s ".formatted(expandParameterValue(paramValue));
+            String replacement = expandParameterValue(paramValue);
             replacement = replacement.replace("$", "\\$");
-            result = result.replaceAll(paramName, replacement);
+            String separator = "[() ,]";
+            String findParameter = "%s(%s)%s".formatted(separator, parameters.get(idx), separator);
+            Pattern p = Pattern.compile(findParameter);
+            var m = p.matcher(result);
+            if (m.find()) {
+                int start = m.start(1);
+                int end = m.end(1);
+                result = result.substring(0, start) + replacement + result.substring(end);
+            }
         }
         return result;
     }

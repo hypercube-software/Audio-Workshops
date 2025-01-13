@@ -132,17 +132,23 @@ public class MidiDeviceLibrary {
      *
      * @param deviceName  in which device we have to look for in the library
      * @param commandCall command to expand
-     * @return expanded command
+     * @return expanded command with its path
      */
-    public List<String> expand(File configFile, String deviceName, String commandCall) {
+    public List<ExpandedRequestDefinition> expand(File configFile, String deviceName, String commandCall) {
         checkLoaded();
+        return expandWithPath(configFile, deviceName, commandCall, "");
+    }
+
+    public List<ExpandedRequestDefinition> expandWithPath(File configFile, String deviceName, String commandCall, String path) {
+        checkLoaded();
+        log.trace("Expand " + commandCall);
         var matches = Optional.ofNullable(devices.get(deviceName))
                 .map(d -> d.getMacros()
                         .stream()
                         .filter(m -> m.matches(commandCall))
                         .toList())
                 .orElseThrow(() -> new MidiConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
-
+        log.trace("Found " + matches.size() + " macros");
         if (matches.isEmpty() && commandCall.contains("(")) {
             throw new MidiConfigError("Undefined macro for device %s: %s".formatted(deviceName, commandCall));
         }
@@ -151,7 +157,7 @@ public class MidiDeviceLibrary {
             String expanded = matches.getFirst()
                     .expand(call);
             return Arrays.stream(expanded.split(";"))
-                    .flatMap(expandedCommand -> expand(configFile, deviceName, "%s : %s".formatted(call.name(), expandedCommand)).stream())
+                    .flatMap(expandedCommand -> expandWithPath(configFile, deviceName, "%s : %s".formatted(call.name(), expandedCommand), path + "/" + call.name()).stream())
                     .toList();
         } else if (matches.size() > 1) {
             String msg = matches.stream()
@@ -159,8 +165,8 @@ public class MidiDeviceLibrary {
                     .collect(Collectors.joining("\n"));
             throw new MidiConfigError("Ambiguous macro call, multiple name are available in" + commandCall + "\n" + msg);
         } else {
-            // There is no more macro call to resolve we return the string "as is"
-            return List.of(commandCall);
+            // There is no more macro call to resolve we return the string "as is" with its path
+            return List.of(new ExpandedRequestDefinition(path, commandCall));
         }
     }
 
@@ -236,17 +242,18 @@ public class MidiDeviceLibrary {
 
     private Stream<MidiRequest> expandRequestDefinition(File configFile, String deviceName, String rawText) {
         // expand the macros calls if there are any
-        List<String> expandedTexts = expand(configFile, deviceName, rawText);
+        List<ExpandedRequestDefinition> expandedTexts = expand(configFile, deviceName, rawText);
         // the final string should be "<command name> : <size> : <bytes>"
         return expandedTexts.stream()
-                .map(expandedText -> {
-                    String[] values = expandedText.split(":");
+                .map(expandedRequestDefinition -> {
+                    String[] values = expandedRequestDefinition.payload()
+                            .split(":");
                     if (values.length == 3) {
                         Integer size = parseOptionalSize(values);
                         String name = values[0];
                         String value = values.length == 3 ? values[2] : values[1];
 
-                        return new MidiRequest(name
+                        return new MidiRequest(expandedRequestDefinition.path()
                                 .trim(), value
                                 .trim(), size);
                     } else if (values.length == 2) {
@@ -254,11 +261,11 @@ public class MidiDeviceLibrary {
                         String name = "";
                         String value = values.length == 3 ? values[2] : values[1];
 
-                        return new MidiRequest(name
+                        return new MidiRequest(expandedRequestDefinition.path()
                                 .trim(), value
                                 .trim(), size);
                     } else {
-                        throw new MidiConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(expandedText));
+                        throw new MidiConfigError("Unexpected Bulk Request definition, should have 3 section <name>:<size>:<payload>: \"%s\"\nMay be a macro is not resolved.".formatted(expandedRequestDefinition.payload()));
                     }
                 });
     }

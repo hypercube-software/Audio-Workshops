@@ -44,7 +44,7 @@ class MidiDeviceLibraryTest {
         assertEquals(1, actual.getMidiRequests()
                 .size());
         assertEquals("", actual.getMidiRequests()
-                .get(0)
+                .getFirst()
                 .getName());
     }
 
@@ -70,11 +70,9 @@ class MidiDeviceLibraryTest {
                 .getValue());
         assertEquals(0x120, firstRequest.getSize());
 
-        // this assert is tricky, AllMulti() is also based on the macro Multi() this is why we get the final macro as name
-        assertEquals("Multi", firstRequest
+        assertEquals("/AllMulti/Multi", firstRequest
                 .getName());
-        // same thing here, AllPerformances() is also based on the macro Performance() this is why we get the final macro as name
-        assertEquals("Performance", secondOne
+        assertEquals("/AllPerformances/Performance", secondOne
                 .getName());
     }
 

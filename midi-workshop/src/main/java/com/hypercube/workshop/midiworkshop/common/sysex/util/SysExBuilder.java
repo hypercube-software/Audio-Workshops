@@ -6,6 +6,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.checksum.DefaultChecksum
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.SysexMessage;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  * Utility class to construct a SysEx ith fluent API style
  */
 @RequiredArgsConstructor
+@Slf4j
 public class SysExBuilder {
     public static final Pattern DECIMAL_OR_HEX_NUMBER = Pattern.compile("((0x|\\$)(?<hexadecimal>[0-9A-F]+))|(?<decimal>[0-9]+)");
     public static final Pattern nibbles = Pattern.compile("\\s+(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
@@ -92,8 +94,9 @@ public class SysExBuilder {
                     if (ranges.size() > 0) {
                         for (SysExRange range : ranges) {
                             for (int i = range.from(); i <= range.to(); i++) {
-                                String hexa = "%0" + range.size() + "X";
-                                String currentString = rawString.replace(range.value(), hexa.formatted(i));
+                                String hexaFormat = "%0" + range.size() + "X";
+                                String hexaValue = hexaFormat.formatted(i);
+                                String currentString = rawString.replace(range.value(), hexaValue);
                                 result.add(forgeMidiEvent(currentString));
                             }
                         }
@@ -158,7 +161,7 @@ public class SysExBuilder {
             if (m.find()) {
                 String low = m.group("low");
                 String high = m.group("high");
-                rawString = rawString.substring(0, m.start()) + " " + low + high + " " + rawString.substring(m.end());
+                rawString = rawString.substring(0, m.start()) + " " + high + low + " " + rawString.substring(m.end());
             } else {
                 break;
             }

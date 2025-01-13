@@ -12,9 +12,10 @@ public record CommandCall(String name, List<String> parameters) {
     private static Pattern commandCall = Pattern.compile("(^|[\\s:])(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_NAME_REGEXP));
 
     public static CommandCall parse(File configFile, String definition) {
-        var m = commandCall.matcher(definition);
+        var m = commandCall.matcher(definition.trim());
         if (m.find()) {
-            String name = m.group("name");
+            String name = m.group("name")
+                    .trim();
             String params = m.group("params");
             List<String> paramArray = Optional.ofNullable(params)
                     .map(p -> Arrays.stream(p.split(","))
