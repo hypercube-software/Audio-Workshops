@@ -100,6 +100,34 @@ MIDI OUTPUT Port "loopMIDI Port"
 MIDI OUTPUT Port "taurus"
 ```
 
+## Backup
+
+```
+>midi-translator.exe backup
+```
+
+You can backup a specific device specifying a known macro:
+
+```
+>midi-translator.exe backup -d "DS-330" -m "Everything()"
+```
+
+The backup filename will be `BulkDump DS-330.syx`
+
+## Restore
+
+```
+>midi-translator.exe restore
+```
+
+You can backup a specific device specifying a known macro:
+
+```
+>midi-translator.exe restore -d "DS-330"
+```
+
+The backup filename has to be `BulkDump DS-330.syx`
+
 # The device Library
 
 It is located in the distribution of the tool, in the folder `devices`

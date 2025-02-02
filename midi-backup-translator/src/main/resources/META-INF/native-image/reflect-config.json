@@ -115,6 +115,14 @@
   "name":"com.datastax.oss.driver.api.core.CqlSession"
 },
 {
+  "name":"com.fasterxml.jackson.annotation.JacksonAnnotation",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.fasterxml.jackson.annotation.JsonIgnore",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"com.fasterxml.jackson.core.Versioned",
   "queryAllPublicMethods":true
 },
@@ -173,7 +181,7 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.project.ProjectConfigurationFactory"] }, {"name":"list","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.project.ProjectConfigurationFactory"] }, {"name":"backup","parameterTypes":["java.lang.String","java.lang.String"] }, {"name":"list","parameterTypes":[] }, {"name":"restore","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.hypercube.midi.translator.MidiTranslator",
@@ -266,7 +274,14 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.lib.MidiDeviceLibrary"] }, {"name":"loadConfig","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["com.hypercube.midi.translator.config.lib.MidiDeviceLibrary"] }, {"name":"<init>","parameterTypes":["com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary"] }, {"name":"loadConfig","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.midi.translator.config.project.ProjectDevice",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDumpRequests","parameterTypes":["java.util.List"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.hypercube.midi.translator.config.project.device.ProjectDevice",
@@ -281,6 +296,27 @@
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFromMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setToDevice","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setBrand","parameterTypes":["java.lang.String"] }, {"name":"setDeviceName","parameterTypes":["java.lang.String"] }, {"name":"setInputMidiDevice","parameterTypes":["java.lang.String"] }, {"name":"setMacros","parameterTypes":["java.util.List"] }, {"name":"setOutputMidiDevice","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.hypercube.workshop.midiworkshop.common.sysex.parser.SysExParser",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.mongodb.client.MongoClient"
@@ -2635,7 +2671,8 @@
 },
 {
   "name":"org.springframework.shell.standard.ShellOption",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"value","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.shell.standard.StandardMethodTargetRegistrar",

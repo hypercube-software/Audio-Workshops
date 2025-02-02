@@ -5,11 +5,14 @@ import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
 import com.hypercube.workshop.midiworkshop.common.*;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequest;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -79,17 +82,18 @@ public class MidiBackupTranslatorShell {
     }
 
     @ShellMethod(value = "Restore devices with Sysex")
-    public void restore() throws IOException {
+    public void restore(@ShellOption(value = "-d", defaultValue = "") String deviceName) throws IOException {
         final MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
 
-        for (var deviceSetting : configuration.getDevices()) {
-            DeviceInstance device = new DeviceInstance(deviceSetting);
+        for (var projectDevice : configuration.getDevices()) {
+            DeviceInstance device = new DeviceInstance(projectDevice);
             if (device.getBackupFile()
-                    .exists() && device.isEnabled()) {
-                log.info("Restore device: " + deviceSetting.getName() + "...");
-                try (var out = m.openOutput(deviceSetting.getOutputMidiDevice())) {
+                    .exists() && device.isEnabled() && (deviceName == null || projectDevice.getName()
+                    .equals(deviceName))) {
+                log.info("Restore device: " + projectDevice.getName() + "...");
+                try (var out = m.openOutput(projectDevice.getOutputMidiDevice())) {
                     var state = device.loadState();
                     log.info("Send {} SysEx events...", state.size());
                     state.forEach(evt -> {
@@ -105,40 +109,71 @@ public class MidiBackupTranslatorShell {
     }
 
     @ShellMethod(value = "Backup devices with Sysex")
-    public void backup() throws IOException, InvalidMidiDataException, MidiUnavailableException, InterruptedException {
-        MidiDeviceManager m = new MidiDeviceManager();
-        m.collectDevices();
+    public void backup(@ShellOption(value = "-d", defaultValue = "") String deviceName, @ShellOption(value = "-m", defaultValue = "") String macro) throws IOException, InvalidMidiDataException, MidiUnavailableException, InterruptedException {
+        MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
+        midiDeviceManager.collectDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
-
-        int nbEnabled = 0;
-        for (var deviceSetting : configuration.getDevices()) {
-            DeviceInstance device = new DeviceInstance(deviceSetting);
-            if (device.isEnabled()) {
-                nbEnabled++;
-                log.info("-------------------------------------------------------");
-                log.info("Backup device: " + deviceSetting.getName() + "...");
-                log.info("inactivityTimeoutMs : " + device.getInactivityTimeoutMs());
-                log.info("sysexPauseMs        : " + device.getSysexPauseMs());
-                log.info("inputMidiDevice     : " + deviceSetting.getInputMidiDevice());
-                log.info("outputMidiDevice    : " + deviceSetting.getOutputMidiDevice());
-                log.info("-------------------------------------------------------");
-                try (var in = m.openInput(deviceSetting.getInputMidiDevice())) {
-                    in.addSysExListener((midiInDevice, sysExEvent) -> onSysEx(device, midiInDevice, sysExEvent));
-                    in.startListening();
-                    try (var out = m.openOutput(deviceSetting.getOutputMidiDevice())) {
-                        wakeUpDevice(out, device);
-                        sendBulkRequests(deviceSetting, device, out);
-                    }
-
-                    in.stopListening();
-                    in.waitNotListening();
-                    device.save();
-                    log.info(deviceSetting.getName() + " saved 0x%X (%d) bytes".formatted(device.getStateSize(), device.getStateSize()));
+        if (deviceName.isBlank() && macro.isBlank()) {
+            int nbEnabled = 0;
+            for (var projectDevice : configuration.getDevices()) {
+                DeviceInstance device = new DeviceInstance(projectDevice);
+                if (device.isEnabled()) {
+                    nbEnabled++;
+                    backupDevice(projectDevice, device, midiDeviceManager, null);
                 }
             }
+            if (nbEnabled == 0) {
+                log.warn("No devices enabled for backup. Nothing to do.");
+            }
+        } else {
+            if (deviceName.isBlank() && !macro.isBlank()) {
+                log.error("You also need to pass a macro name");
+            } else if (!deviceName.isBlank() && macro.isBlank()) {
+                log.error("You also need to pass a device name");
+            }
+            configuration.getDevices()
+                    .stream()
+                    .forEach(projectDevice -> {
+                        DeviceInstance device = new DeviceInstance(projectDevice);
+                        if (device.isEnabled()) {
+                            backupDevice(projectDevice, device, midiDeviceManager, macro);
+                        }
+                    });
         }
-        if (nbEnabled == 0) {
-            log.warn("No devices enabled for backup. Nothing to do.");
+    }
+
+    private void backupDevice(ProjectDevice projectDevice, DeviceInstance deviceInstance, MidiDeviceManager midiDeviceManager, String macro) {
+        log.info("-------------------------------------------------------");
+        log.info("Backup device: " + projectDevice.getName() + "...");
+        log.info("inactivityTimeoutMs : " + deviceInstance.getInactivityTimeoutMs());
+        log.info("sysexPauseMs        : " + deviceInstance.getSysexPauseMs());
+        log.info("inputMidiDevice     : " + projectDevice.getInputMidiDevice());
+        log.info("outputMidiDevice    : " + projectDevice.getOutputMidiDevice());
+        log.info("-------------------------------------------------------");
+        try (var in = midiDeviceManager.openInput(projectDevice.getInputMidiDevice())) {
+            in.addSysExListener((midiInDevice, sysExEvent) -> onSysEx(deviceInstance, midiInDevice, sysExEvent));
+            in.startListening();
+            try (var out = midiDeviceManager.openOutput(projectDevice.getOutputMidiDevice())) {
+                wakeUpDevice(out, deviceInstance);
+                if (macro == null) {
+                    for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
+                            .size(); requestIndex++) {
+                        var requests = projectDevice.getDumpRequestTemplates()
+                                .get(requestIndex);
+                        sendBulkRequests(projectDevice, deviceInstance, out, requests.getMidiRequests());
+                    }
+                } else {
+                    var midiRequestSequence = projectConfigurationFactory.forgeMidiRequestSequence(projectDevice, macro);
+                    sendBulkRequests(projectDevice, deviceInstance, out, midiRequestSequence.getMidiRequests());
+                }
+            }
+
+            in.stopListening();
+            in.waitNotListening();
+            deviceInstance.save();
+            log.info(projectDevice.getName() + " saved 0x%X (%d) bytes".formatted(deviceInstance.getStateSize(), deviceInstance.getStateSize()));
+        } catch (IOException | MidiUnavailableException | InvalidMidiDataException e) {
+            throw new MidiError(e);
         }
     }
 
@@ -152,7 +187,7 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out) throws InvalidMidiDataException {
+    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
         for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
                 .size(); requestIndex++) {
             var requests = projectDevice.getDumpRequestTemplates()
