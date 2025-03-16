@@ -4,8 +4,10 @@ Topics covered:
 
 - How to parse various audio file formats.
 - How to build a simple synthesizer in Java.
-- How to make a native tool to convert an entire MIDI synthesizer into SFZ presets
+- How to make a native tool to convert an entire MIDI synthesizer into SFZ/Decent Sampler presets
 - How to parse proprietary SysEx MIDI messages, especially the Roland ones
+- How to backup and restore hardware synthesizers state using SysEx MIDI
+- How to build a preset manager for any Synthesizer using https://openjfx.io/ and [SpringBoot 3](https://spring.io/projects/spring-boot)
 - How to build a MIDI Editor for any Synthesizer using [Quasar](https://quasar.dev/)/[VueJS](https://vuejs.org/) and [SpringBoot 3](https://spring.io/projects/spring-boot)
 
 | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Documentation%20build/badge.svg) | ![build](https://github.com/hypercube-software/Audio-Workshops/workflows/Maven%20build/badge.svg) |
@@ -15,19 +17,21 @@ Topics covered:
 
 # Status
 
-## MIDI
+## MIDI workshop
 
 - Midi Sequencer with various clock implementations
 - Various Memory maps are provided: **Boss DS-330** (= Sound Canvas), **Roland D-70**
 - SysEx are not finished yet: various devices need to be analyzed, especially **AKAI MPK-261**
 
-## AUDIO
+## AUDIO workshop
+
+#### Topics
 
 Record and Play audio from/to WAV files.
 
 Support audio channel assignation
 
-Supported PCM convertions
+#### Supported PCM convertions
 
 |                             | From [0,1] float | To [0,1] float |
 | --------------------------- | ---------------- | -------------- |
@@ -50,7 +54,7 @@ Supported PCM convertions
 | Unsigned 16 bit Big Endian    |                  | ✔️ |
 | Unsigned 8 bit Big Endian     |                  | ✔️ |
 
-Supported file formats:
+#### Supported file formats
 
 | Format     | PARSER | READ | WRITE | Comment                                           |
 | ---------- | ------ | ---- | ----- | ------------------------------------------------- |
@@ -65,13 +69,23 @@ Supported file formats:
 
 
 
-## Audio synth
+#### Audio synth example
 
 - Filters are not implemented yet
 - ADSR envelopes are still in early stages.
 - The documentation does not cover all the code yet.
 
 Anyway, the VCOs are working and they respond to MIDI. The java synth is working.
+
+## MBT: Midi Backup Translator
+
+A CLI application that will help you to backup and restore the state of your hardware synths in one shot.
+
+## MPM: Midi Preset Manager
+
+A  JavaFX application that will help you to browse and score your favorite synth patches.
+
+We provide a brand new way to use FXML and SceneBuilder together inside Intelliji  without pain.
 
 ## Synth Editor
 
@@ -85,7 +99,7 @@ This tool allow you to edit your synthesizer (typically Roland Sound Canvas) usi
 
 ## Synth Ripper
 
-This little CLI will help you to convert any MIDI synthesizer to SFZ presets which can be played in any sampler supporting this [open format](https://sfzformat.com/). For instance, it works nicely with [TX16Wx](https://www.tx16wx.com/).
+This little CLI will help you to convert any MIDI synthesizer to [SFZ](https://sfzformat.com/) and [Decent Sampler](https://www.decentsamples.com/product/decent-sampler-plugin/) presets (SFZ works nicely with [TX16Wx](https://www.tx16wx.com/) sampler).
 
 - Everything is automatised: program changes, note changes, velocities
 - See YAML configuration files as example
@@ -148,7 +162,7 @@ Then start the rip:
 >synth-ripper.exe rip -c config/config.yml
 ```
 
-SFZ presets will be generated in `output`folder
+Presets will be generated in `output`folder
 
 # Audience
 
