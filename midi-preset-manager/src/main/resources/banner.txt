@@ -1,0 +1,10 @@
+  __  __ _____  __  __
+ |  \/  |  __ \|  \/  |
+ | \  / | |__) | \  / |
+ | |\/| |  ___/| |\/| |
+ | |  | | |    | |  | |
+ |_|  |_|_|    |_|  |_|
+
+
+MPM: Midi Preset Manager ${application.version}
+Powered by Spring Boot ${spring-boot.version} and JavaFX

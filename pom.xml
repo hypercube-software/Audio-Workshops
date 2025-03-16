@@ -24,6 +24,7 @@
     <modules>
         <module>midi-workshop</module>
         <module>midi-backup-translator</module>
+        <module>midi-preset-manager</module>
         <module>audio-workshop</module>
         <module>synth-ripper</module>
         <module>synth-editor</module>
