@@ -1,12 +1,19 @@
 package com.hypercube.midi.translator.config.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSequence;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * A Project device is defined outside the midi device library and can override various settings
+ * <p>Typically it is stored in a "project folder" and you can define many whereas the folder of the device library is unique</p>
+ *
+ * @see MidiDeviceDefinition
+ */
 @Setter
 @Getter
 public class ProjectDevice {
