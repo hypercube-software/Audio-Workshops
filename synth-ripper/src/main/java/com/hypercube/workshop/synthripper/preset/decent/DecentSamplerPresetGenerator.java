@@ -31,7 +31,7 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
         var recordsPerPresets = sampleBatch.stream()
                 .collect(groupingBy(RecordedSynthNote::getPreset));
         recordsPerPresets.forEach((preset, recordedSamples) -> {
-            File sfzFile = new File("%s/%s %s.dspreset".formatted(conf.getOutputDir(), preset.getId(), preset.title()));
+            File sfzFile = new File("%s/%s %s.dspreset".formatted(conf.getOutputDir(), preset.getId(), preset.getTitle()));
             DecentSampler ds = forgeDecentSamplerPreset(conf, sfzFile, recordedSamples);
             try {
                 JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);

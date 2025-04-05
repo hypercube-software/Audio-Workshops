@@ -3,6 +3,7 @@ package com.hypercube.workshop.synthripper.config.presets;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,9 +51,12 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
 
     @Override
     public MidiPreset forgeMidiPreset(File configFile, MidiSettings midiSettings) {
-        return MidiPreset.of(configFile, channel == USE_DEFAULT_MIDI_CHANNEL ? midiSettings.getChannel() : channel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, midiSettings.getCommands(), commands, controlChanges, drumkitNotes.stream()
+        final int midiChannel = channel == USE_DEFAULT_MIDI_CHANNEL ? midiSettings.getChannel() : channel;
+        final List<DrumKitNote> drumKitNotes = drumkitNotes.stream()
                 .map(this::forgeDrumKitNote)
-                .toList());
+                .toList();
+        final List<CommandMacro> macros = midiSettings.getCommands();
+        return MidiPreset.of(configFile, midiChannel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, macros, commands, controlChanges, drumKitNotes);
     }
 
     private DrumKitNote forgeDrumKitNote(String spec) {

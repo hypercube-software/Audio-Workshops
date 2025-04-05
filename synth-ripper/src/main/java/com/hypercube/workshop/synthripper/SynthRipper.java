@@ -92,11 +92,10 @@ public class SynthRipper {
         return conf.getSelectedPresets()
                 .stream()
                 .flatMap(preset -> {
-                    log.info("=========== {} ===========", preset.title());
-                    List<Integer> controlChanges = preset.controlChanges();
+                    log.info("=========== {} ===========", preset.getTitle());
                     List<RecordedSynthNote> samples = new ArrayList<>();
                     int prevCcValue = 0;
-                    for (int cc : controlChanges) {
+                    for (int cc : preset.getControlChanges()) {
                         if (cc == MidiPreset.NO_CC) {
                             log.info("Without CC:");
                         } else {
@@ -109,7 +108,7 @@ public class SynthRipper {
                             for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
                                 for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
                                     RecordedSynthNote rs = new RecordedSynthNote();
-                                    rs.setChannel(preset.channel() - 1);
+                                    rs.setChannel(preset.getChannel() - 1);
                                     rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
 
                                     rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
@@ -148,7 +147,7 @@ public class SynthRipper {
     private String getNoteName(MidiPreset preset, int note) {
         String noteName = MidiNote.fromValue(note)
                 .name();
-        return preset.drumKitNotes()
+        return preset.getDrumKitNotes()
                 .stream()
                 .filter(n -> n.note() == note)
                 .map(dn -> "%03d %s %s".formatted(note, noteName, dn.title()))
@@ -157,12 +156,12 @@ public class SynthRipper {
     }
 
     private int getNoteIncrement(int defaultNoteIncrement, MidiPreset preset) {
-        return preset.drumKitNotes()
+        return preset.getDrumKitNotes()
                 .isEmpty() ? defaultNoteIncrement : 1;
     }
 
     private int getHighestNote(int defaultHighestNote, MidiPreset preset) {
-        return preset.drumKitNotes()
+        return preset.getDrumKitNotes()
                 .stream()
                 .map(DrumKitNote::note)
                 .sorted(Comparator.reverseOrder())
@@ -172,7 +171,7 @@ public class SynthRipper {
     }
 
     private int getLowestNote(int defaultLowestNote, MidiPreset preset) {
-        return preset.drumKitNotes()
+        return preset.getDrumKitNotes()
                 .stream()
                 .map(DrumKitNote::note)
                 .sorted()
@@ -418,7 +417,7 @@ public class SynthRipper {
         var midiNote = MidiNote.fromValue(note);
 
         StringBuffer sb = new StringBuffer();
-        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.title()));
+        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.getTitle()));
         sb.append("%s - Velo %03d".formatted(recordedSynthNote.getName(), Math.min(127, velocity)));
         if (recordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
             sb.append(" CC%d[%d]".formatted(recordedSynthNote.getControlChange(), recordedSynthNote.getCcValue()
@@ -432,12 +431,12 @@ public class SynthRipper {
         RecordedSynthNote currentRecordedSynthNote = state.getCurrentRecordedSynthNote();
         RecordedSynthNote previousRecordedSynthNote = state.getPreviousRecordedSynthNote();
         if (previousRecordedSynthNote == null || !currentRecordedSynthNote.getPreset()
-                .title()
+                .getTitle()
                 .equals(previousRecordedSynthNote.getPreset()
-                        .title())) {
+                        .getTitle())) {
             threadLogger.log("======================================================");
             threadLogger.log("Preset Change \"%s\"".formatted(currentRecordedSynthNote.getPreset()
-                    .title()));
+                    .getTitle()));
             midiOutDevice.sendPresetChange(currentRecordedSynthNote.getPreset());
         }
         if (previousRecordedSynthNote != null && currentRecordedSynthNote.getControlChange() != previousRecordedSynthNote.getControlChange()) {

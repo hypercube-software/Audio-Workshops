@@ -25,11 +25,11 @@ public class SfzPresetGenerator implements PresetGenerator {
     public void generate(SynthRipperConfiguration conf, List<RecordedSynthNote> sampleBatch) {
         sampleBatch.forEach(sample -> {
             MidiPreset preset = sample.getPreset();
-            File sfzFile = new File("%s/%s %s.sfz".formatted(conf.getOutputDir(), preset.getId(), preset.title()));
+            File sfzFile = new File("%s/%s %s.sfz".formatted(conf.getOutputDir(), preset.getId(), preset.getTitle()));
             try (PrintWriter out = new PrintWriter(new FileOutputStream(sfzFile))) {
                 final String SEPARATOR = "----------------------------------------------------------";
                 out.println(SEPARATOR);
-                out.println("%s".formatted(preset.title()));
+                out.println("%s".formatted(preset.getTitle()));
                 out.println(SEPARATOR);
                 out.println("<control>");
                 out.println("default_path=.");

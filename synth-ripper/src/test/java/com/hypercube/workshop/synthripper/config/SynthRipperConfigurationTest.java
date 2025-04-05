@@ -23,9 +23,9 @@ class SynthRipperConfigurationTest {
                 .getPresets()
                 .forEach(p -> {
                     var mp = p.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
-                    assertNotNull(mp.commands());
-                    assertNotNull(mp.controlChanges());
-                    assertNotNull(mp.drumKitNotes());
+                    assertNotNull(mp.getCommands());
+                    assertNotNull(mp.getControlChanges());
+                    assertNotNull(mp.getDrumKitNotes());
                 });
         //
         // test the macro expansion for tempo
@@ -34,7 +34,7 @@ class SynthRipperConfigurationTest {
                 .getPresets()
                 .get(1);
         var preset2 = secondPreset.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
-        var msg = preset2.commands()
+        var msg = preset2.getCommands()
                 .get(0);
         assertEquals(110, msg.getMessage()[msg.getLength() - 2]); // expected tempo
 
@@ -50,8 +50,8 @@ class SynthRipperConfigurationTest {
 
         var preset = lastPreset.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
 
-        assertEquals("Capital Drumkit", preset.title());
-        assertEquals(84, preset.drumKitNotes()
+        assertEquals("Capital Drumkit", preset.getTitle());
+        assertEquals(84, preset.getDrumKitNotes()
                 .size());
 
     }
