@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.yaml.CommandMacroDeserializer;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.MidiPresetDomainDeserializer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,7 @@ public class MidiDeviceLibrary {
                     .sorted(Comparator.comparing(Path::getFileName)
                             .reversed())
                     .map(Path::toFile)
-                    .map(this::loadDeviceMacro)) {
+                    .map(this::loadMidiDeviceDefinition)) {
                 midiDeviceDefinitionStream
                         .forEach(m -> {
                             var d = devices.get(m.getDeviceName());
@@ -81,7 +83,7 @@ public class MidiDeviceLibrary {
             throw new MidiConfigError("The library path does not exists: " + libraryFolder.toString());
         }
     }
-
+    
     private String getDevicesNames() {
 
         return devices.size() == 0 ? "empty" : devices.keySet()
@@ -112,6 +114,18 @@ public class MidiDeviceLibrary {
         }
         if (user.getSysExPauseMs() != null) {
             org.setSysExPauseMs(user.getSysExPauseMs());
+        }
+        if (user.getPresetDomains() != null) {
+            var notOverridedDomains = org.getPresetDomains()
+                    .stream()
+                    .filter(m -> user.getPresetDomains()
+                            .stream()
+                            .filter(um -> um.bank() == m.bank())
+                            .findFirst()
+                            .isEmpty());
+            org.setPresetDomains(Stream.concat(notOverridedDomains, user.getPresetDomains()
+                            .stream())
+                    .toList());
         }
         var notOverridedMacros = org.getMacros()
                 .stream()
@@ -197,22 +211,24 @@ public class MidiDeviceLibrary {
      * @param midiDeviceFile Configuration file for the device (in YAML)
      * @return the definition including macros
      */
-    private MidiDeviceDefinition loadDeviceMacro(File midiDeviceFile) {
+    private MidiDeviceDefinition loadMidiDeviceDefinition(File midiDeviceFile) {
         log.debug("Load " + midiDeviceFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
             module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(midiDeviceFile));
+            module.addDeserializer(MidiPresetDomain.class, new MidiPresetDomainDeserializer(midiDeviceFile));
             mapper.registerModule(module);
-            MidiDeviceDefinition macro = mapper.readValue(midiDeviceFile, MidiDeviceDefinition.class);
+            MidiDeviceDefinition midiDeviceDefinition = mapper.readValue(midiDeviceFile, MidiDeviceDefinition.class);
             // cleanup: remove null elements
-            macro.setMacros(Optional.ofNullable(macro.getMacros())
+            midiDeviceDefinition.setMacros(Optional.ofNullable(midiDeviceDefinition.getMacros())
                     .map(macros -> macros
                             .stream()
                             .filter(m -> m != null)
                             .toList())
                     .orElse(List.of()));
-            return macro;
+            midiDeviceDefinition.setDefinitionFile(midiDeviceFile);
+            return midiDeviceDefinition;
         } catch (IOException e) {
             throw new MidiConfigError("Unable to load " + midiDeviceFile.toString(), e);
         }

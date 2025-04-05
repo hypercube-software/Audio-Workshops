@@ -1,9 +1,12 @@
 package com.hypercube.workshop.midiworkshop.common.presets;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -12,8 +15,6 @@ import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,7 +24,8 @@ import java.util.stream.Stream;
 import static com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering.FROM_ONE;
 
 /**
- * This class describe how to get a specific sound. It can be used very simply with a single program change, but we can do much more, specifying a specific tempo via sysex before selecting a preset
+ * This class describe how to get a specific sound or preset for a device. It can be used very simply with a single program change,
+ * but we can do much more, specifying a specific tempo via sysex, or CC before selecting a preset
  * <p>Supported commands to select a sound:</p>
  * <ul>
  *     <li>bank select message</li>
@@ -31,22 +33,23 @@ import static com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbe
  *     <li>Sysex</li>
  * </ul>
  * {@link #controlChanges} indicate this preset respond to specific control changes
- * {@link #drumKitNotes} if not empty, indicate this preset load a drumkit
+ * {@link #drumKitNotes} if not empty, indicate this preset load a Drumkit
  */
-@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(of = {"title", "commands", "controlChanges", "channel"})
 public final class MidiPreset {
 
     public static final int BANK_SELECT_MSB = 0;
     public static final int BANK_SELECT_LSB = 32;
     public static final int NO_CC = -1;
-    private static Pattern presetRegExp = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
-    private static final Pattern commnadRegExp = Pattern.compile("\\s*([A-F0-9]{2})");
+    private static Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
+    private static final Pattern COMMAND_REGEXP = Pattern.compile("\\s*([A-F0-9]{2})");
     /**
      * Name of the preset
      */
     private final String title;
     /**
-     * Midi channel where we activate this preset
+     * Midi channel where we activate this preset (relevant for drums which are most of the time at channel 10)
      */
     private final int channel;
     /**
@@ -54,55 +57,143 @@ public final class MidiPreset {
      */
     private final List<MidiMessage> commands;
     /**
-     * Which CC must be used during the record of this preset
+     * Which CC are used by this preset
      */
     private final List<Integer> controlChanges;
     /**
      * If the preset is a drumkit, here are the drum kit notes to record
      */
     private final List<DrumKitNote> drumKitNotes;
+    /**
+     * How bank select is used
+     */
+    private final MidiBankFormat midiBankFormat;
+
+    public MidiPreset(String title, int channel, List<MidiMessage> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
+        this.title = title;
+        this.channel = channel;
+        this.commands = commands;
+        this.controlChanges = controlChanges;
+        this.drumKitNotes = drumKitNotes;
+        this.midiBankFormat = midiBankFormat;
+        if (controlChanges == null) {
+            throw new MidiConfigError("ControlChanges cannot be null, use List.of(NO_CC)");
+        }
+    }
+
+    public MidiPreset(String title, int channel, List<MidiMessage> commands, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
+        this.title = title;
+        this.channel = channel;
+        this.commands = commands;
+        this.midiBankFormat = midiBankFormat;
+        this.controlChanges = List.of(NO_CC);
+        this.drumKitNotes = drumKitNotes;
+    }
+
+    public MidiPreset(String title, int channel, List<MidiMessage> commands, MidiBankFormat midiBankFormat) {
+        this.title = title;
+        this.channel = channel;
+        this.commands = commands;
+        this.midiBankFormat = midiBankFormat;
+        this.controlChanges = List.of(NO_CC);
+        this.drumKitNotes = List.of();
+    }
+
+    public int getBank() {
+        return switch (midiBankFormat) {
+            case NO_BANK_PRG -> 0;
+            case BANK_MSB_PRG -> getBankMSB();
+            case BANK_LSB_PRG -> getBankLSB();
+            case BANK_MSB_LSB_PRG -> getBankMSB() << 8 | getBankLSB();
+        };
+    }
 
     /**
-     * Retreive a Mid message by its command number
+     * Retrieve a Midi message by its command number
      *
      * @param command Midi command ({@link ShortMessage#PROGRAM_CHANGE}, {@link ShortMessage#CONTROL_CHANGE}...)
      * @return
      */
-    private Optional<ShortMessage> getCommand(int command) {
+    private Stream<ShortMessage> getCommand(int command) {
         return commands.stream()
                 .filter(cmd -> cmd instanceof ShortMessage)
                 .map(cmd -> (ShortMessage) cmd)
-                .filter(cmd -> cmd.getCommand() == command)
-                .findFirst();
+                .filter(cmd -> cmd.getCommand() == command);
     }
 
     public String getId() {
-        int bank = getBankMSB() << 7 | getBankLSB();
+        int bank = getBankMSB() << 8 | getBankLSB();
         return "%01d-%03d".formatted(bank, getProgram());
     }
 
     public int getProgram() {
         return getCommand(ShortMessage.PROGRAM_CHANGE)
-                .map(cmd -> cmd.getData1())
+                .map(ShortMessage::getData1)
+                .findFirst()
                 .orElse(-1);
     }
 
     public int getBankMSB() {
         return getCommand(ShortMessage.CONTROL_CHANGE).filter(cmd -> cmd.getData1() == BANK_SELECT_MSB)
-                .map(cmd -> cmd.getData1())
+                .map(ShortMessage::getData2)
+                .findFirst()
                 .orElse(0);
     }
 
     public int getBankLSB() {
         return getCommand(ShortMessage.CONTROL_CHANGE).filter(cmd -> cmd.getData1() == BANK_SELECT_LSB)
-                .map(cmd -> cmd.getData1())
+                .map(ShortMessage::getData2)
+                .findFirst()
                 .orElse(0);
     }
 
     public static MidiPreset of(File configFile, int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
-        return new MidiPreset(title, channel, commands.stream()
+        List<MidiMessage> messages = commands.stream()
                 .flatMap(cmd -> parseCommand(configFile, channel, midiBankFormat, presetNumbering, macros, cmd))
-                .toList(), controlChanges, drumKitNotes);
+                .toList();
+        return new MidiPreset(title, channel, messages, controlChanges, drumKitNotes, midiBankFormat);
+    }
+
+    public static MidiPreset of(MidiDeviceDefinition device, int bank, int program) {
+        int channel = getDefaultChannel(device.getPresetNumbering());
+        return new MidiPreset("NoName", channel, forgeCommands(device, bank, program), device.getPresetFormat());
+    }
+
+    public static MidiPreset of(String title, MidiDeviceDefinition device, int bankMSB, int bankLSB, int program) {
+        int channel = getDefaultChannel(device.getPresetNumbering());
+        return new MidiPreset(title, channel, forgeCommands(device, bankMSB, bankLSB, program), List.of(), List.of(), device.getPresetFormat());
+    }
+
+    public static List<MidiMessage> forgeCommands(MidiDeviceDefinition device, int bank, int program) {
+        MidiBankFormat midiBankFormat = device.getPresetFormat();
+        MidiPresetNumbering presetNumbering = device.getPresetNumbering();
+        return switch (midiBankFormat) {
+            case NO_BANK_PRG -> forgeCommands(device, 0, 0, program);
+            case BANK_MSB_PRG -> forgeCommands(device, bank, 0, program);
+            case BANK_LSB_PRG -> forgeCommands(device, 0, bank, program);
+            case BANK_MSB_LSB_PRG -> {
+                int msb = (bank >> 8) & 0x7F;
+                int lsb = (bank >> 0) & 0x7F;
+                yield forgeCommands(device, msb, lsb, program);
+            }
+        };
+    }
+
+    private static List<MidiMessage> forgeCommands(MidiDeviceDefinition device, int msb, int lsb, int program) {
+        int channel = getDefaultChannel(device.getPresetNumbering());
+        String definition = "%d-%d-%d".formatted(msb, lsb, program);
+        try {
+            return parsePresetSelectCommand(channel, device.getPresetFormat(), device.getPresetNumbering(), definition).toList();
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError("Faulty preset definition:" + definition, e);
+        }
+    }
+
+    private static int getDefaultChannel(MidiPresetNumbering presetNumbering) {
+        return switch (presetNumbering) {
+            case FROM_ZERO -> 0;
+            case FROM_ONE -> 1;
+        };
     }
 
     /**
@@ -118,13 +209,7 @@ public final class MidiPreset {
      */
     private static Stream<MidiMessage> parseCommand(File configFile, int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, List<CommandMacro> macros, String definition) {
         try {
-            String expandedDefinition = macros.stream()
-                    .filter(m -> m.matches(definition))
-                    .findFirst()
-                    .map(m -> {
-                        return m.expand(CommandCall.parse(configFile, definition));
-                    })
-                    .orElse(definition);
+            String expandedDefinition = getExpandedDefinition(configFile, macros, definition);
             if (expandedDefinition.startsWith("F0")) {
                 return parseSysExCommand(expandedDefinition);
             }
@@ -134,20 +219,55 @@ public final class MidiPreset {
         }
     }
 
+    /**
+     * Given a command definition, resolve all macro in it
+     *
+     * @param configFile Where this definition is defined (used to log errors)
+     * @param macros     list of known macros
+     * @param definition The definition to parse
+     * @return
+     */
+    private static String getExpandedDefinition(File configFile, List<CommandMacro> macros, String definition) {
+        return macros.stream()
+                .filter(m -> m.matches(definition))
+                .findFirst()
+                .map(m -> {
+                    return m.expand(CommandCall.parse(configFile, definition));
+                })
+                .orElse(definition);
+    }
+
+    /**
+     * Parse a preset definition and generate the right sequence of midi message to select a patch.
+     * <ul>
+     *     <li>A program change message</li>
+     *     <li>A bank select MSB message followed by a program change message</li>
+     *     <li>A bank select LSB message followed by a program change message</li>
+     *     <li>A bank select MSB message followed by a bank select LSB message followed by a program change message</li>
+     * </ul>
+     *
+     * @param channel         which midi channel to use for the midi messages
+     * @param midiBankFormat  which format to generate
+     * @param presetNumbering how numbers are expressed in the definition
+     * @param definition      the definition of the preset
+     * @return a stream of Midi messages to select the patch on the given midi channel
+     * @throws InvalidMidiDataException
+     */
     private static Stream<MidiMessage> parsePresetSelectCommand(int channel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String definition) throws InvalidMidiDataException {
-        Matcher matcher = presetRegExp.matcher(definition);
+        Matcher matcher = PRESET_REGEXP.matcher(definition);
         if (matcher.find()) {
             List<Integer> ids = preparePresetSelectIdentifiers(matcher);
             int zeroBasedProgram = getProgramNumber(presetNumbering, ids);
             int zeroBasedChannel = getZeroBasedNumber("channel", presetNumbering, channel);
             return switch (midiBankFormat) {
-                case NO_BANK -> programChangeOnly(zeroBasedChannel, zeroBasedProgram);
-                case BANK_MSB_PRG -> bankMsbThenProgramChange(zeroBasedChannel, ids, zeroBasedProgram);
-                case BANK_LSB_PRG -> bankLsbThenProgramChange(zeroBasedChannel, ids, zeroBasedProgram);
-                case BANK_MSB_LSB_PRG -> bankMsbLsbThenProgramChange(zeroBasedChannel, ids, zeroBasedProgram);
+                case NO_BANK_PRG -> programChangeOnly(definition, zeroBasedChannel, ids, zeroBasedProgram);
+                case BANK_MSB_PRG -> bankMsbThenProgramChange(definition, zeroBasedChannel, ids, zeroBasedProgram);
+                case BANK_LSB_PRG -> bankLsbThenProgramChange(definition, zeroBasedChannel, ids, zeroBasedProgram);
+                case BANK_MSB_LSB_PRG ->
+                        bankMsbLsbThenProgramChange(definition, zeroBasedChannel, ids, zeroBasedProgram);
             };
         }
-        throw new MidiError("Unexpected preset select command: " + definition);
+        throw new MidiConfigError("Unexpected preset select command: " + definition);
     }
 
     private static int getProgramNumber(MidiPresetNumbering presetNumbering, List<Integer> ids) {
@@ -160,13 +280,16 @@ public final class MidiPreset {
             case FROM_ZERO -> 0;
         };
         if (presetNumbering == FROM_ONE && value == 0) {
-            throw new MidiError("You are using a zero based %s and at the same time %s".formatted(field, FROM_ONE.name()));
+            throw new MidiError("You are using a zero based '%s' and at the same time '%s'".formatted(field, FROM_ONE.name()));
         }
         // MIDI values always from 0 (channels, program numbers...)
         return value - valueOffset;
     }
 
-    private static Stream<MidiMessage> bankMsbLsbThenProgramChange(int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+    private static Stream<MidiMessage> bankMsbLsbThenProgramChange(String definition, int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+        if (ids.size() != 3) {
+            throw new MidiConfigError("Unexpected number of values given %s, should be 3, it is %d: %s".formatted(MidiBankFormat.BANK_MSB_LSB_PRG, ids.size(), definition));
+        }
         int bankMSB = ids.get(0);
         int bankLSB = ids.get(1);
         return Stream.of(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, BANK_SELECT_MSB, bankMSB),
@@ -174,34 +297,43 @@ public final class MidiPreset {
                 new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, program, 0));
     }
 
-    private static Stream<MidiMessage> bankLsbThenProgramChange(int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+    private static Stream<MidiMessage> bankLsbThenProgramChange(String definition, int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+        if (ids.size() != 2) {
+            throw new MidiConfigError("Unexpected number of values given %s, should be 2, it is %d: %s".formatted(MidiBankFormat.BANK_LSB_PRG, ids.size(), definition));
+        }
         int bankLSB = ids.get(0);
         return Stream.of(
                 new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, BANK_SELECT_LSB, bankLSB),
                 new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, program, 0));
     }
 
-    private static Stream<MidiMessage> bankMsbThenProgramChange(int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+    private static Stream<MidiMessage> bankMsbThenProgramChange(String definition, int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+        if (ids.size() != 2) {
+            throw new MidiConfigError("Unexpected number of values given %s, should be 2, it is %d: %s".formatted(MidiBankFormat.BANK_MSB_PRG, ids.size(), definition));
+        }
         int bankMSB = ids.get(0);
         return Stream.of(
                 new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, BANK_SELECT_MSB, bankMSB),
                 new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, program, 0));
     }
 
-    private static Stream<MidiMessage> programChangeOnly(int channel, int program) throws InvalidMidiDataException {
+    private static Stream<MidiMessage> programChangeOnly(String definition, int channel, List<Integer> ids, int program) throws InvalidMidiDataException {
+        if (ids.size() != 1) {
+            throw new MidiConfigError("Unexpected number of values given %s, should be 1, it is %d: %s".formatted(MidiBankFormat.BANK_MSB_PRG, ids.size(), definition));
+        }
         return Stream.of(
                 new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, program, 0));
     }
 
     /**
-     * A preset selector can a maximum of 3 identifiers:
+     * A preset selector can have a maximum of 3 identifiers:
      * <ul>
      *     <li>prg: program change only</li>
      *     <li>lsb,prg: bank select LSB then program change</li>
      *     <li>msb,lsb,prg: bank select MSB,LSB then program change</li>
      * </ul>
      *
-     * @return A list of 3 identifiers, missing ones are 0, the last one is always the program change
+     * @return A list of identifiers, the last one is always the program change
      */
     private static List<Integer> preparePresetSelectIdentifiers(Matcher matcher) {
         String id1 = matcher.group("id1");
@@ -211,14 +343,11 @@ public final class MidiPreset {
                 .filter(id -> id != null)
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
-        while (ids.size() != 3) {
-            ids.add(0, 0);
-        }
         return ids;
     }
 
     private static Stream<MidiMessage> parseSysExCommand(String definition) throws InvalidMidiDataException {
-        Matcher matcher = commnadRegExp.matcher(definition);
+        Matcher matcher = COMMAND_REGEXP.matcher(definition);
         List<Byte> list = new ArrayList<>();
         while (matcher.find()) {
             try {
@@ -232,43 +361,6 @@ public final class MidiPreset {
         IntStream.range(0, list.size())
                 .forEach(i -> payload[i] = (byte) list.get(i));
         return Stream.of(new SysexMessage(payload, payload.length));
-    }
-
-    public String title() {
-        return title;
-    }
-
-    public int channel() {
-        return channel;
-    }
-
-    public List<MidiMessage> commands() {
-        return commands;
-    }
-
-    public List<Integer> controlChanges() {
-        return controlChanges;
-    }
-
-    public List<DrumKitNote> drumKitNotes() {
-        return drumKitNotes;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (MidiPreset) obj;
-        return Objects.equals(this.title, that.title) &&
-                this.channel == that.channel &&
-                Objects.equals(this.commands, that.commands) &&
-                Objects.equals(this.controlChanges, that.controlChanges) &&
-                Objects.equals(this.drumKitNotes, that.drumKitNotes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(title, channel, commands, controlChanges, drumKitNotes);
     }
 
     @Override

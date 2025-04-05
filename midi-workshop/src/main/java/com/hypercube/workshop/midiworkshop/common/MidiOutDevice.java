@@ -62,7 +62,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void sendPresetChange(MidiPreset preset) {
-        preset.commands()
+        preset.getCommands()
                 .stream()
                 .map(cmd -> new CustomMidiEvent(cmd, 0))
                 .forEach(evt -> {

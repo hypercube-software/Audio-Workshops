@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.dump.DeviceMemoryDumper;
@@ -142,6 +143,12 @@ public class SysExCLI {
                 listenerThread.join();
             }
         }
+    }
+
+    @ShellMethod(value = "Use the device library to dump all presets names of a synth")
+    public void dumpPresets(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
+        MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
+        midiPresetCrawler.crawlAllPatches(deviceName);
     }
 
     private void receiveBulkMemory(Device model, MidiOutDevice out) {

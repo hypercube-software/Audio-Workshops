@@ -44,4 +44,26 @@ public class CustomMidiEvent extends MidiEvent {
         }
 
     }
+
+    public byte[] extractBytes(int start, int size) {
+        byte[] originalArray = this.getMessage()
+                .getMessage();
+        int end = start + size - 1;
+        // Index validation
+        if (start < 0 || end >= originalArray.length || start > end) {
+            throw new IllegalArgumentException("Invalid indices.");
+        }
+
+        // Calculate the length of the portion to extract
+        int length = end - start + 1;
+
+        // Create the destination array
+        byte[] extractedArray = new byte[length];
+
+        // Copy the portion from the original array to the extracted array
+        System.arraycopy(originalArray, start, extractedArray, 0, length);
+
+        // Return the extracted array
+        return extractedArray;
+    }
 }

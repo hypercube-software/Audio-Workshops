@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
  */
 public final class CommandMacro {
     public static final String COMMAND_NAME_REGEXP = "[A-Z_ \\+\\-a-z0-9]+";
-    private static Pattern commandDefinition = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_NAME_REGEXP));
-    private static Pattern decimalNumber = Pattern.compile("[0-9]+");
+    private static Pattern COMMAND_DEFINITION_REGEXP = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)\\s*:\\s*(?<body>.+)".formatted(COMMAND_NAME_REGEXP));
+    private static Pattern DECIMAL_NUMBER_REGEXP = Pattern.compile("[0-9]+");
     private final File definitionFile;
     private final String name;
     private final List<String> parameters;
@@ -60,7 +60,7 @@ public final class CommandMacro {
      * @return
      */
     public static CommandMacro parse(File definitionFile, String definition) {
-        var m = commandDefinition.matcher(definition.trim());
+        var m = COMMAND_DEFINITION_REGEXP.matcher(definition.trim());
         if (m.find()) {
             String name = m.group("name")
                     .trim();
@@ -141,7 +141,7 @@ public final class CommandMacro {
             return paramValue.substring(1);
         } else {
             // decimal numbers are converted to hexa
-            var m = decimalNumber.matcher(paramValue);
+            var m = DECIMAL_NUMBER_REGEXP.matcher(paramValue);
             if (m.matches()) {
                 return "%02X".formatted(Integer.parseInt(paramValue, 10));
             } else {

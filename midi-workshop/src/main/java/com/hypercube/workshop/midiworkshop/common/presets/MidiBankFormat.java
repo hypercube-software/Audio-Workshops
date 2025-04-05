@@ -4,7 +4,7 @@ public enum MidiBankFormat {
     /**
      * Send Program Change only
      */
-    NO_BANK,
+    NO_BANK_PRG,
     /**
      * Send CC "BANK Select MSB" only, then Program Change
      */

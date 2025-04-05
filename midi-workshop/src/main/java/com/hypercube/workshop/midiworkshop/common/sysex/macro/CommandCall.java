@@ -11,6 +11,13 @@ import java.util.regex.Pattern;
 public record CommandCall(String name, List<String> parameters) {
     private static Pattern commandCall = Pattern.compile("(^|[\\s:])(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_NAME_REGEXP));
 
+    /**
+     * Parse a command definition
+     *
+     * @param configFile where this definition comes from
+     * @param definition the definition to parse
+     * @return parsed definition
+     */
     public static CommandCall parse(File configFile, String definition) {
         var m = commandCall.matcher(definition.trim());
         if (m.find()) {

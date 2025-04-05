@@ -9,16 +9,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class CommandMacroDeserializer extends StdDeserializer<CommandMacro> {
-    private final File macroFile;
+    private final File definitionFile;
 
-    public CommandMacroDeserializer(File macroFile) {
+    public CommandMacroDeserializer(File definitionFile) {
         super((Class<?>) null);
-        this.macroFile = macroFile;
+        this.definitionFile = definitionFile;
     }
 
     @Override
     public CommandMacro deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String value = jsonParser.getText();
-        return CommandMacro.parse(macroFile, value);
+        return CommandMacro.parse(definitionFile, value);
     }
 }

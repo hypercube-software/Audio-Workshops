@@ -10,6 +10,13 @@ import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstan
 
 @Slf4j
 public class ManufacturerSysExParser {
+    /**
+     * Parse a SysEx buffer and reconstruct the device memory
+     *
+     * @param manufacturer Device's manufacturer
+     * @param buffer       SYSEX buffer
+     * @return the Device with its memory properly set
+     */
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         throw new MidiError("Not Implemented");
     }
