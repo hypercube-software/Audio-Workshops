@@ -23,7 +23,12 @@ macros:
   - "User Perfs Layer3() : User Perf Layer3([00-127])"
   - "User Perfs Layer4() : User Perf Layer4([00-127])"
   - "NativeEverything(): SYSTEM();Cur Perf Common();Cur Perf Layers();User Perfs Common();User Perfs Layer1();User Perfs Layer2();User Perfs Layer3();User Perfs Layer4()"
-  
+  - "PerformanceName() : Cur Perf Common() : PerformanceMapper"
+  # "MIDI Data Table <2-2>" in the manual,Parameter Change CS1x SYSTEM
+  # mode = $03 PFM, mode = $01 XG
+  - "setMode(mode) : F043104B 50 00 06 mode F7"
+  - "setPerformanceMode() : setMode($03)"
+  - "setXGMode() : setMode($01)"
   # XG Dump Request (must be in MULTI mode)
   - "XG SYSTEM()          : 034 : F043204C 080000 F7"
   - "XG MULTI EFFECT()    : 019 : F043204C 020100 F7"
@@ -34,4 +39,214 @@ macros:
   - "XG DRUM Setups 1()   : XG DRUM Setup 1([24-84])"
   - "XG DRUM Setups 2()   : XG DRUM Setup 2([24-84])"
   - "XGEveryting(): XG SYSTEM()();XG MULTI EFFECT();XG MULTI PARTS();XG DRUM Setups 1();XG DRUM Setups 2()"
-  
+  - "XG Multi Part Data(part) : F043204C 08 part 00 F7 : XGPartMapper"
+
+#
+# Banks are listed in manual page 37
+# Categories found in manual page 24
+#
+deviceModes:
+  PerformanceMode:
+    command: setPerformanceMode()
+    queryName: PerformanceName()
+    banks:
+      "Performances":
+        command: $3F40
+        presetDomain: 0-127
+      "User Performance":
+        command: $3F41
+        presetDomain: 0-127
+    categories:
+      - "Not specified"
+      - "Piano"
+      - "Chromatic Percussion"
+      - "Organ"
+      - "Guitar"
+      - "Bass"
+      - "Strings"
+      - "Ensemble"
+      - "Brass"
+      - "Reed"
+      - "Pipe"
+      - "Synth Lead"
+      - "Synth Pad"
+      - "Synth FX"
+      - "Ethnic"
+      - "Percussive"
+      - "Sound FX"
+      - "Drums"
+      - "Synth Comping"
+      - "Vocal"
+      - "Combination"
+      - "Material Wave"
+      - "Sequence"
+  XGMode:
+    command: setMode($01)
+    queryName: XG Multi Part Data($00)
+    banks:
+      "XG 000":
+        command: "$0000"
+      "XG 001 (KSP)":
+        command: "$0001"
+      "XG 003 (Stereo)":
+        command: "$0003"
+      "XG 006 (Single)":
+        command: "$0006"
+      "XG 008 (Slow)":
+        command: "$0008"
+      "XG 012 (Fast Decay)":
+        command: "$000C"
+      "XG 014 (Double Attack)":
+        command: "$000E"
+      "XG 016 (Bright)":
+        command: "$0010"
+      "XG 017":
+        command: "$0011"
+      "XG 018 (Dark)":
+        command: "$0012"
+      "XG 019":
+        command: "$0013"
+      "XG 020 (Resonant)":
+        command: "$0014"
+      "XG 024 (Attack)":
+        command: "$0018"
+      "XG 025 (Release)":
+        command: "$0019"
+      "XG 027 (Rezo Sweep)":
+        command: "$001B"
+      "XG 028 (Muted)":
+        command: "$001C"
+      "XG 032 (Detune 1)":
+        command: "$0020"
+      "XG 033 (Detune 2)":
+        command: "$0021"
+      "XG 034 (Detune 3)":
+        command: "$0022"
+      "XG 035 (Octave 1)":
+        command: "$0023"
+      "XG 036 (Octave 2)":
+        command: "$0024"
+      "XG 037 (5th 1)":
+        command: "$0025"
+      "XG 038 (5th 2)":
+        command: "$0026"
+      "XG 039 (Bend)":
+        command: "$0027"
+      "XG 040 (Tutti)":
+        command: "$0028"
+      "XG 041":
+        command: "$0029"
+      "XG 042":
+        command: "$002A"
+      "XG 043 (Velo-Switch)":
+        command: "$002B"
+      "XG 045 (Velo-Xfade)":
+        command: "$002D"
+      "XG 064 (other wave)":
+        command: "$0040"
+      "XG 065":
+        command: "$0041"
+      "XG 066":
+        command: "$0042"
+      "XG 067":
+        command: "$0043"
+      "XG 068":
+        command: "$0044"
+      "XG 069":
+        command: "$0045"
+      "XG 070":
+        command: "$0046"
+      "XG 071":
+        command: "$0047"
+      "XG 072":
+        command: "$0048"
+      "XG 096":
+        command: "$0060"
+      "XG 097":
+        command: "$0061"
+      "XG 098":
+        command: "$0062"
+      "XG 099":
+        command: "$0063"
+      "XG 100":
+        command: "$0064"
+      "XG 101":
+        command: "$0065"
+      "XG SFX":
+        command: "$4000"
+      "PRE 00":
+        command: "$3F00"
+      "PRE 01":
+        command: "$3F01"
+      "PRE 02":
+        command: "$3F02"
+      "PRE 03":
+        command: "$3F03"
+      "PRE 04":
+        command: "$3F04"
+      "PRE 05":
+        command: "$3F05"
+      "PRE 06":
+        command: "$3F06"
+      "PRE 07":
+        command: "$3F07"
+      "PRE 08":
+        command: "$3F08"
+      "PRE 09":
+        command: "$3F09"
+      "PRE 10":
+        command: "$3F0A"
+      "PRE 11":
+        command: "$3F0B"
+      "PRE 12 (Drum Kits)":
+        command: "$3F0C"
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# PRG              : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+#
+presetFormat: BANK_MSB_LSB_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+#presetNameLocation: 9-8
+#presetCategoryLocation: 17-1
+#
+# Mappers to extract patch names
+#
+mappers:
+  PerformanceMapper:
+    fields:
+      name:
+        type: STRING
+        offset: 9
+        size: 8
+      category:
+        type: CATEGORY
+        offset: 17
+        size: 1
+  # unfortunately there is no way to get the patch name
+  XGPartMapper:
+    fields:
+      bankMSB:
+        type: INTEGER
+        offset: 10
+        size: 1
+      bankLSB:
+        type: INTEGER
+        offset: 11
+        size: 1
+      program:
+        type: INTEGER
+        offset: 12
+        size: 1

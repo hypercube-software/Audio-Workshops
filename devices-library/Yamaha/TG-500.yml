@@ -7,16 +7,147 @@ macros:
   - "System Setup()           : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00      F7"
   - "Voice Internal 1(voice)  : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 00 voice   F7"
   - "Voice Internal 2(voice)  : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 03 voice   F7"
-  - "Voice Edit Buffer(voice) : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 7F voice   F7"
+  - "Voice Edit Buffer()      : 0F0 : F0 43 20 7A 'LM  0065VC' 0000000000000000000000000000 7F 00      F7"
   - "Drum voice Internal 1()  : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 00 3F      F7"
   - "Drum voice Internal 2()  : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 03 3F      F7"
   - "Drum voice Edit Buffer() : 2C5 : F0 43 20 7A 'LM  0065DR' 0000000000000000000000000000 7F 3F      F7"
   - "Performance(perf)        : 122 : F0 43 20 7A 'LM  0065PF' 0000000000000000000000000000 00 perf    F7"
+  - "Performance Edit Buffer(): 122 : F0 43 20 7A 'LM  0065PF' 0000000000000000000000000000 7F 00   F7"
   - "Multi(channel)           : 120 : F0 43 20 7A 'LM  0065MU' 0000000000000000000000000000 00 channel F7"
   - "AllMulti()               : Multi([0-15])"
   - "AllVoiceInternal1()      : Voice Internal 1([0-62])"
   - "AllVoiceInternal2()      : Voice Internal 2([0-62])"
   - "AllVoiceEditBuffer()     : Voice Edit Buffer([0-62])"
   - "AllPerformances()        : Performance([0-63])"
-  - "Everything()             : System Setup();AllVoiceInternal1();AllVoiceInternal2();AllVoiceEditBuffer();AllPerformances();AllMulti()" 
-  
+  - "Everything()             : System Setup();AllVoiceInternal1();AllVoiceInternal2();AllVoiceEditBuffer();AllPerformances();AllMulti()"
+  - "PatchName()              : Voice Edit Buffer() : YamahaMapper"
+  - "PerformanceName()        : Performance Edit Buffer() : YamahaMapper"
+
+#
+# Banks are listed in manual page 37
+# Categories found in manual page 24
+#
+
+deviceModes:
+  VoiceMode:
+    queryName: PatchName()
+    banks:
+      "Internal 1 Voices":
+        command: "$0000"
+        presetDomain: 0-63
+      "Internal 2 Voices":
+        command: "$0003"
+        presetDomain: 0-63
+      "Preset 1 Voices":
+        command: "$0002"
+        presetDomain: 0-63
+      "Preset 2 Voices":
+        command: "$0005"
+        presetDomain: 0-63
+      "Preset 3 Voices":
+        command: "$0008"
+        presetDomain: 0-63
+      "Preset 4 Voices":
+        command: "$0011"
+        presetDomain: 0-63
+      "Card 1 Voices":
+        command: "$0001"
+        #presetDomain: 0-63
+      "Card 2 Voices":
+        command: "$0004"
+        #presetDomain: 0-63
+      "Card 3 Voices":
+        command: "$0007"
+        #presetDomain: 0-63
+      "Card 4 Voices":
+        command: "$0010"
+        #presetDomain: 0-63
+    categories:
+      - "Piano: AP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Ensemble: ME"
+      - "Organ: OR"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Choir: SC"
+      - "Synth Ensemble: SE"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI"
+      - "Sound FX: SE"
+  PerformanceMode:
+    queryName: PerformanceName()
+    banks:
+      "Internal 1 Performance":
+        command: "$0040"
+        presetDomain: 0-63
+      "Preset 1 Performance":
+        command: "$0042"
+        presetDomain: 0-63
+      "Preset 2 Performance":
+        command: "$0045"
+        presetDomain: 0-63
+      "Card 1 Performance":
+        command: "$0041"
+        #presetDomain: 0-63
+      "Card 2 Performance":
+        command: "$0044"
+        #presetDomain: 0-63
+    categories:
+      - "Piano: AP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Ensemble: ME"
+      - "Organ: OR"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Choir: SC"
+      - "Synth Ensemble: SE"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI"
+      - "Sound FX: SE"
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# PRG              : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+#
+presetFormat: BANK_MSB_LSB_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+#
+# Mappers to extract patch names
+#
+mappers:
+  YamahaMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $69
+        size: 8

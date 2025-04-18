@@ -1,0 +1,4 @@
+deviceName: "Tr-Rack"
+brand: "Korg"
+inputMidiDevice: "taurus"
+outputMidiDevice: "taurus"
