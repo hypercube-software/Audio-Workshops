@@ -50,7 +50,8 @@ class SynthRipperConfigurationTest {
 
         var preset = lastPreset.forgeMidiPreset(cfg.getConfigFile(), cfg.getMidi());
 
-        assertEquals("Capital Drumkit", preset.getTitle());
+        assertEquals("Capital Drumkit", preset.getId()
+                .name());
         assertEquals(84, preset.getDrumKitNotes()
                 .size());
 

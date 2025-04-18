@@ -92,7 +92,7 @@ public class SynthRipper {
         return conf.getSelectedPresets()
                 .stream()
                 .flatMap(preset -> {
-                    log.info("=========== {} ===========", preset.getTitle());
+                    log.info("=========== {} ===========", preset.getId());
                     List<RecordedSynthNote> samples = new ArrayList<>();
                     int prevCcValue = 0;
                     for (int cc : preset.getControlChanges()) {
@@ -417,7 +417,7 @@ public class SynthRipper {
         var midiNote = MidiNote.fromValue(note);
 
         StringBuffer sb = new StringBuffer();
-        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.getTitle()));
+        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.getId()));
         sb.append("%s - Velo %03d".formatted(recordedSynthNote.getName(), Math.min(127, velocity)));
         if (recordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
             sb.append(" CC%d[%d]".formatted(recordedSynthNote.getControlChange(), recordedSynthNote.getCcValue()
@@ -431,12 +431,12 @@ public class SynthRipper {
         RecordedSynthNote currentRecordedSynthNote = state.getCurrentRecordedSynthNote();
         RecordedSynthNote previousRecordedSynthNote = state.getPreviousRecordedSynthNote();
         if (previousRecordedSynthNote == null || !currentRecordedSynthNote.getPreset()
-                .getTitle()
+                .getId()
                 .equals(previousRecordedSynthNote.getPreset()
-                        .getTitle())) {
+                        .getId())) {
             threadLogger.log("======================================================");
             threadLogger.log("Preset Change \"%s\"".formatted(currentRecordedSynthNote.getPreset()
-                    .getTitle()));
+                    .getId()));
             midiOutDevice.sendPresetChange(currentRecordedSynthNote.getPreset());
         }
         if (previousRecordedSynthNote != null && currentRecordedSynthNote.getControlChange() != previousRecordedSynthNote.getControlChange()) {

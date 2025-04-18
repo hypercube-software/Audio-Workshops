@@ -4,7 +4,10 @@ import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCrawler;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetIdentity;
+import com.hypercube.workshop.midiworkshop.common.presets.generic.MidiPresetCrawler;
+import com.hypercube.workshop.midiworkshop.common.presets.yamaha.CS1XPresetGenerator;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.dump.DeviceMemoryDumper;
@@ -28,7 +31,9 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.SysexMessage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.BrokenBarrierException;
@@ -36,6 +41,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_IDENTITY_RESPONSE;
@@ -148,7 +154,47 @@ public class SysExCLI {
     @ShellMethod(value = "Use the device library to dump all presets names of a synth")
     public void dumpPresets(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
         MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
-        midiPresetCrawler.crawlAllPatches(deviceName);
+        try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(deviceName)))) {
+            AtomicReference<MidiPreset> previous = new AtomicReference<>();
+            midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset) -> {
+                var prev = previous.get();
+                if (prev == null) {
+                    out.println("deviceName: " + device.getDeviceName());
+                    out.println("brand: " + device.getBrand());
+                    out.println("deviceModes: ");
+
+                }
+                if (prev == null || !prev.getId()
+                        .deviceMode()
+                        .equals(midiPreset.getId()
+                                .deviceMode())) {
+                    out.println("  " + midiPreset.getId()
+                            .deviceMode() + ":");
+                    out.println("   banks:");
+                }
+                if (prev == null || !prev.getId()
+                        .bankName()
+                        .equals(midiPreset.getId()
+                                .bankName())) {
+                    out.println("    " + midiPreset.getId()
+                            .bankName() + ":");
+                    out.println("      presets:");
+                }
+                MidiPresetIdentity identity = midiPreset.getId();
+                String escapedName = identity.name()
+                        .replace("\"", "\\\"");
+                out.println("        - \"%s | %s | %s\"".formatted(midiPreset.getConfig(), identity
+                        .category(), escapedName));
+                out.flush();
+                previous.set(midiPreset);
+            });
+        }
+    }
+
+    @ShellMethod("Generate CS1X voices SySex")
+    public void dumpCS1XVoices(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
+        CS1XPresetGenerator cs1XPresetGenerator = new CS1XPresetGenerator();
+        cs1XPresetGenerator.dumpCS1XVoices(deviceName);
     }
 
     private void receiveBulkMemory(Device model, MidiOutDevice out) {

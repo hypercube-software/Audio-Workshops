@@ -47,4 +47,12 @@ class CommandMacroTest {
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 FE 2D F7", result);
     }
+
+    @Test
+    void expandWithSpacesAndSize() {
+        CommandMacro macro = CommandMacro.parse(definitionFile, "name(p1,p2,p3) : 420 : FF F8 p1 000000 p2 p3 F7");
+        CommandCall actual = CommandCall.parse(configFile, "name (12 ,$FE, 45)");
+        String result = macro.expand(actual);
+        assertEquals("FF F8 0C 000000 FE 2D F7", result);
+    }
 }

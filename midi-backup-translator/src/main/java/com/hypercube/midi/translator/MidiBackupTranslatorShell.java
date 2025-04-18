@@ -6,7 +6,7 @@ import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
 import com.hypercube.workshop.midiworkshop.common.*;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequest;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -200,8 +200,8 @@ public class MidiBackupTranslatorShell {
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
                     device.sendAndWaitResponse(out, customMidiEvent);
 
-                    if (request.getSize() != null && device.getCurrentResponseSize() != request.getSize()) {
-                        log.error("Unexpected size received (0x%X) given what you specified (0x%X)".formatted(device.getCurrentResponseSize(), request.getSize()));
+                    if (request.getResponseSize() != null && device.getCurrentResponseSize() != request.getResponseSize()) {
+                        log.error("Unexpected size received (0x%X) given what you specified (0x%X)".formatted(device.getCurrentResponseSize(), request.getResponseSize()));
                         return;
                     }
 

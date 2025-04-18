@@ -3,7 +3,7 @@ package com.hypercube.midi.translator.model;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequest;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -152,7 +152,7 @@ public class DeviceInstance {
     }
 
     private boolean isResponseComplete() {
-        return currentRequest.getSize() != null && currentResponseSize == currentRequest.getSize();
+        return currentRequest.getResponseSize() != null && currentResponseSize == currentRequest.getResponseSize();
     }
 
     public void sendAndWaitResponse(MidiOutDevice out, CustomMidiEvent customMidiEvent) {

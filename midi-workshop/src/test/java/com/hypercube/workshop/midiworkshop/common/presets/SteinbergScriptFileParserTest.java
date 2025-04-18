@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common.presets;
 
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.presets.steinberg.SteinbergScriptFileParser;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -16,7 +17,7 @@ class SteinbergScriptFileParserTest {
     void generateSoundCanvasPresets() throws IOException {
 
         MidiDeviceDefinition device = new MidiDeviceDefinition();
-        device.setMidiPresetNaming(MidiPresetNaming.SOUND_CANVAS);
+        device.setPresetNaming(MidiPresetNaming.SOUND_CANVAS);
         device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
         device.setPresetNumbering(MidiPresetNumbering.FROM_ZERO);
         SteinbergScriptFileParser steinbergScriptFileParser = new SteinbergScriptFileParser(device, new File("./src/test/resources/steinberg-scripts/SC-88.txt"));
@@ -25,7 +26,7 @@ class SteinbergScriptFileParserTest {
                 .sorted(Comparator.comparing(MidiPreset::getBankMSB)
                         .thenComparing(MidiPreset::getBankLSB)
                         .thenComparing(MidiPreset::getProgram))
-                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getProgram(), p.getTitle()))
+                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getProgram(), p.getId()))
                 .toList();
         Files.write(Path.of("./src/main/resources/sc/SoundCanvasPatches.txt"), lines, StandardOpenOption.CREATE);
     }

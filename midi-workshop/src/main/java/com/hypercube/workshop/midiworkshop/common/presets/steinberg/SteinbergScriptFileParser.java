@@ -1,7 +1,10 @@
-package com.hypercube.workshop.midiworkshop.common.presets;
+package com.hypercube.workshop.midiworkshop.common.presets.steinberg;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

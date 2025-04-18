@@ -1,448 +1,448 @@
-0-0-0 Piano 1
-0-0-1 Piano 2
-0-0-2 Piano 3
-0-0-3 Honky-tonk
-0-0-4 E.Piano 1
-0-0-5 E.Piano 2
-0-0-6 Harpsichord
-0-0-7 Clav.
-0-0-8 Celesta
-0-0-9 Glockenspiel
-0-0-10 Music Box
-0-0-11 Vibraphone
-0-0-12 Marimba
-0-0-13 Xylophone
-0-0-14 Tubular-bell
-0-0-15 Santur
-0-0-16 Organ 1
-0-0-17 Organ 2
-0-0-18 Organ 3
-0-0-19 Church Org.1
-0-0-20 Reed Organ
-0-0-21 Accordion Fr
-0-0-22 Harmonica
-0-0-23 Bandoneon
-0-0-24 Nylon-str.Gt
-0-0-25 Steel-str.Gt
-0-0-26 Jazz Gt.
-0-0-27 Clean Gt.
-0-0-28 Muted Gt.
-0-0-29 Overdrive Gt
-0-0-30 DistortionGt
-0-0-31 Gt.Harmonics
-0-0-32 Acoustic Bs.
-0-0-33 Fingered Bs.
-0-0-34 Picked Bass
-0-0-35 Fretless Bs.
-0-0-36 Slap Bass 1
-0-0-37 Slap Bass 2
-0-0-38 Synth Bass 1
-0-0-39 Synth Bass 2
-0-0-40 Violin
-0-0-41 Viola
-0-0-42 Cello
-0-0-43 Contrabass
-0-0-44 Tremolo Str
-0-0-45 PizzicatoStr
-0-0-46 Harp
-0-0-47 Timpani
-0-0-48 Strings
-0-0-49 Slow Strings
-0-0-50 Syn.Strings1
-0-0-51 Syn.Strings2
-0-0-52 Choir Aahs
-0-0-53 Voice Oohs
-0-0-54 SynVox
-0-0-55 OrchestraHit
-0-0-56 Trumpet
-0-0-57 Trombone
-0-0-58 Tuba
-0-0-59 MutedTrumpet
-0-0-60 French Horns
-0-0-61 Brass 1
-0-0-62 Synth Brass1
-0-0-63 Synth Brass2
-0-0-64 Soprano Sax
-0-0-65 Alto Sax
-0-0-66 Tenor Sax
-0-0-67 Baritone Sax
-0-0-68 Oboe
-0-0-69 English Horn
-0-0-70 Bassoon
-0-0-71 Clarinet
-0-0-72 Piccolo
-0-0-73 Rlute
-0-0-74 Recorder
-0-0-75 Pan Flute
-0-0-76 Bottle Blow
-0-0-77 Shakuhachi
-0-0-78 Whistle
-0-0-79 Ocarina
-0-0-80 Square Wave
-0-0-81 Saw Wave
-0-0-82 Syn.Calliope
-0-0-83 Chiffer Lead
-0-0-84 Charang
-0-0-85 Solo Vox
-0-0-86 5th Saw Wave
-0-0-87 Bass & Lead
-0-0-88 Fantasia
-0-0-89 Warm Pad
-0-0-90 Polysynth
-0-0-91 Space Voice
-0-0-92 Bowed Glass
-0-0-93 Metal Pad
-0-0-94 Halo Pad
-0-0-95 Sweep Pad
-0-0-96 Ice Rain
-0-0-97 Soundtrack
-0-0-98 Crystal
-0-0-99 Atmosphere
-0-0-100 Brightness
-0-0-101 Goblin
-0-0-102 Echo Drops
-0-0-103 Star Theme
-0-0-104 Sitar
-0-0-105 Banjo
-0-0-106 Shamisen
-0-0-107 Koto
-0-0-108 Kalimba
-0-0-109 Bagpipe
-0-0-110 Fiddle
-0-0-111 Shanai
-0-0-112 Tinkle Bell
-0-0-113 Agogo
-0-0-114 Steel Drums
-0-0-115 Woodblock
-0-0-116 Taiko
-0-0-117 Melo. Tom 1
-0-0-118 Synth Drum
-0-0-119 Reverse Cym.
-0-0-120 Gt.FretNoise
-0-0-121 Breath Noise
-0-0-122 Seashore
-0-0-123 Bird
-0-0-124 Telephone 1
-0-0-125 Helicopter
-0-0-126 Applause
-0-0-127 Gun Shot
-1-0-2 EG+Rhodes 1
-1-0-11 hard Vibe
-1-0-15 Santur 2
-1-0-16 Organ 101
-1-0-17 Organ 201
-1-0-22 Harmonica 2
-1-0-26 Mellow Gt.
-1-0-28 Muted Dis.Gt
-1-0-30 Dist. Gt2
-1-0-33 Fingered Bs2
-1-0-35 Fretless Bs2
-1-0-38 SynthBass101
-1-0-39 SynthBass201
-1-0-48 Strings 2
-1-0-49 SlowStrings2
-1-0-50 OB Strings
-1-0-56 Trumpet 2
-1-0-57 Trombone 2
-1-0-58 Tuba 2
-1-0-60 Fr.Horn 2
-1-0-62 Polly Brass
-1-0-63 Soft Brass
-1-0-80 Square
-1-0-81 Saw Wave
-1-0-82 Vent Synth
-1-0-86 Big Fives
-1-0-87 Big & Raw
-1-0-88 Fantasia 2
-1-0-89 Thick Pad
-1-0-90 80's PolySyn
-1-0-91 Heaven II
-1-0-93 Tine Pad
-1-0-95 Polar Pad
-1-0-96 Harmo Rain
-1-0-97 Ancestral
-1-0-98 Syn Mallet
-1-0-99 Warm Atmos
-1-0-101 Goblinson
-1-0-102 Echo Bell
-1-0-103 Star Theme 2
-1-0-104 Sitar 2
-1-0-105 Muted Banjo
-1-0-106 Tsugaru
-1-0-111 Shanai 2
-1-0-117 Real Tom
-1-0-119 Reverse Cym2
-1-0-120 Gt.Cut Noise
-1-0-121 Fl.Key Click
-1-0-122 Rain
-1-0-123 Dog
-1-0-124 Telephone 2
-1-0-125 Car-Engine
-1-0-126 Laughing
-1-0-127 Machine Gun
-2-0-2 EG+Rhodes 2
-2-0-30 Dazed guitar
-2-0-33 Jazz Bass
-2-0-35 Fretless Bs3
-2-0-39 Modular Bass
-2-0-80 Hollow Mini
-2-0-81 Pulse Saw
-2-0-82 Pure PanLead
-2-0-87 Fat & Perky
-2-0-89 Horn Pad
-2-0-93 Panner Pad
-2-0-96 African wood
-2-0-97 Prologue
-2-0-98 Soft Crystal
-2-0-99 Nylon Harp
-2-0-101 50' Sci-Fi
-2-0-102 Echo Pan
-2-0-104 Detune Sitar
-2-0-120 String Slap
-2-0-122 Thunder
-2-0-123 Horse-Gallop
-2-0-124 DoorCreaking
-2-0-125 Car-Stop
-2-0-126 Screaming
-2-0-127 Lasergun
-3-0-35 Fretless Bs4
-3-0-39 Seq Bass
-3-0-80 Mello FM
-3-0-81 Feline GR
-3-0-89 Rotary Stng
-3-0-98 Round Glock
-3-0-99 Harpvox
-3-0-102 Echo Pan 2
-3-0-120 Gt.CutNoise2
-3-0-122 Wind
-3-0-123 Bird 2
-3-0-124 Door
-3-0-125 Car-Pass
-3-0-126 Punch
-3-0-127 Explosion
-4-0-35 Syn Fretless
-4-0-80 CC Solo
-4-0-81 Big Lead
-4-0-89 Soft Pad
-4-0-98 Loud Glock
-4-0-99 HollowReleas
-4-0-102 Big Panner
-4-0-120 Dist.CutNoiz
-4-0-122 Stream
-4-0-123 Kitty
-4-0-124 Scratch
-4-0-125 Car-Crash
-4-0-126 Heart Beat
-5-0-35 Mr.Smooth
-5-0-80 Shmoog
-5-0-81 Velo Lead
-5-0-98 GlockenChime
-5-0-99 Nylon+Rhodes
-5-0-102 Reso Panner
-5-0-120 Bass Slide
-5-0-122 Bubble
-5-0-123 Growl
-5-0-124 Wind Chimes
-5-0-125 Siren
-5-0-126 Footsteps
-6-0-80 LM Square
-6-0-81 GR-300
-6-0-98 Clear Bells
-6-0-99 Ambient Pad
-6-0-102 Water Piano
-6-0-120 Pick Scrape
-6-0-125 Train
-6-0-126 Applause 2
-7-0-81 LA Saw
-7-0-98 ChrismasBel
-7-0-124 Scratch 2
-7-0-125 Jetplane
-8-0-0 Piano 1w
-8-0-1 Piano 2w
-8-0-2 Piano 3w
-8-0-3 Old Upright
-8-0-4 St.Soft EP
-8-0-5 Detuned EP 2
-8-0-6 Coupled Hps.
-8-0-11 Vib.w
-8-0-12 Marimba w
-8-0-14 Church Bell
-8-0-15 Cimbalom
-8-0-16 Detuned Or.1
-8-0-17 Detuned Or.2
-8-0-18 Rotary Org.
-8-0-19 Church Org.2
-8-0-21 Accordion It
-8-0-24 Ukulele
-8-0-25 12-str.Gt
-8-0-26 Pedal Steel
-8-0-27 Chorus Gt.
-8-0-28 Funk Pop
-8-0-30 Feedback Gt.
-8-0-31 Gt. Feedback
-8-0-34 Mute PickBs.
-8-0-36 Reso Slap
-8-0-38 Acid Bass
-8-0-39 Beef FM Bass
-8-0-40 Slow Violin
-8-0-44 Slow Tremolo
-8-0-48 Orchestra
-8-0-49 Legato Str.
-8-0-50 Syn.Strings3
-8-0-52 St.Choir
-8-0-54 Syn.Voice
-8-0-55 Impact Hit
-8-0-56 Flugel Horn
-8-0-60 Fr.Horn Solo
-8-0-61 Brass 2
-8-0-62 Synth Brass3
-8-0-63 Synth Brass4
-8-0-65 Hyper Alto
-8-0-66 Breathy Tenor
-8-0-71 Bs Clarinet
-8-0-75 Kawala
-8-0-80 Sine Wave
-8-0-81 Doctor Solo
-8-0-84 Dist.Lead
-8-0-95 Converge
-8-0-96 Clavi Pad
-8-0-97 Rave
-8-0-98 Vibra Bells
-8-0-104 Tambra
-8-0-105 Rabab
-8-0-107 Taisho Koto
-8-0-111 Pungi
-8-0-112 Bonang
-8-0-113 Atarigane
-8-0-115 Castanets
-8-0-116 Concert BD
-8-0-117 Melo. Tom 2
-8-0-118 808 Tom
-8-0-119 Rev.Snare 1
-8-0-125 Starship
-9-0-14 Carillon
-9-0-16 Organ 109
-9-0-25 Nylon+Steel
-9-0-30 Feedback Gt2
-9-0-38 TB303 Bass
-9-0-39 X Wire Bass
-9-0-44 Suspense Str
-9-0-48 Orchestra 2
-9-0-49 Warm Strings
-9-0-52 Mello Choir
-9-0-55 Philly Hit
-9-0-62 Quack Brass
-9-0-95 Shwimmer
-9-0-98 Digi Bells
-9-0-112 Gender
-9-0-117 Rock Tom
-9-0-118 Elec Perc
-9-0-119 Rev.Snare 2
-9-0-125 Burst Noise
-10-0-38 Tekno Bass
-10-0-48 Tremolo Orch
-10-0-49 St.Slow Str.
-10-0-55 Double Hit
-10-0-95 Celestial Pd
-10-0-112 Gamelan Gong
-11-0-48 Choir Str.
-11-0-112 St.Gamelan
-16-0-0 Piano 1d
-16-0-4 FM+SA EP
-16-0-5 St.FM EP
-16-0-6 Harpsi.w
-16-0-12 Barafon
-16-0-16 60's Organ 1
-16-0-18 Rotary Org.S
-16-0-19 Church Org.3
-16-0-24 Nylon Gt.o
-16-0-25 Mandolin
-16-0-28 Funk Gt.2
-16-0-30 Power Guitar
-16-0-31 Ac.Gt.Harmnx
-16-0-38 Reso SH Bass
-16-0-39 Rubber Bass
-16-0-48 St.Strings
-16-0-55 Lo Fi Rave
-16-0-60 Horn Orch
-16-0-61 Brass Fall
-16-0-62 Octave Brass
-16-0-63 Velo Brass 1
-16-0-81 Waspy Synth
-16-0-98 Choral Bells
-16-0-104 Tamboura
-16-0-105 Gopichant
-16-0-107 Kanoon
-16-0-111 Hichiriki
-16-0-112 RAMA Cymbal
-16-0-119 Rev.Kick 1
-17-0-12 Barafon 2
-17-0-16 60's Organ 2
-17-0-30 Power Gt.2
-17-0-39 SH101 Bass 1
-17-0-63 Velo Brass 2
-17-0-98 Air Bells
-17-0-119 RevConBD
-18-0-16 60's Organ 3
-18-0-30 5th Dist.
-18-0-31 Gt. Feedback
-18-0-39 SH101 Bass 2
-18-0-98 Bell Harp
-19-0-39 Smooth Bass
-19-0-98 Gamelimba
-24-0-4 60's E.Piano
-24-0-5 Hard FM EP
-24-0-6 Harpsi.o
-24-0-12 Log drum
-24-0-16 Cheese Organ
-24-0-18 Rotary Org.F
-24-0-19 Organ Flute
-24-0-24 Velo Harmnix
-24-0-30 Rock Rhythm
-24-0-48 Velo Strings
-24-0-56 Bright Tp.
-24-0-105 Oud
-24-0-119 Rev.Tom 1
-25-0-4 Hard Rhodes
-25-0-30 Rock Rhythm2
-25-0-56 Warm Tp.
-25-0-119 Rev.Tom 2
-26-0-4 MellowRhodes
-32-0-16 Organ 4
-32-0-17 Organ 5
-32-0-19 Trem. Flute
-32-0-24 Nylon Gt.2
-32-0-25 Steel Gt.2
-32-0-52 Choir Aahs 2
-33-0-16 Even Bar
-40-0-16 Organ Bass
-40-0-24 Lequint Gt.
-86-64-0 Pop Kit 1
-86-64-1 Rock Kit
-86-64-2 Brush Jz Kit
-86-64-3 HipHop Kit
-86-64-4 R&B Kit
-86-64-5 Dance Kit 1
-86-64-6 Dance Kit 2
-86-64-7 Dance Kit 3
-86-64-8 Pop Kit 2
-86-64-9 Dance Kit 4
-86-64-10 Ambi Pop 1
-86-64-11 Ambi Rock
-86-64-12 Ambi BrushJz
-86-64-13 Ambi HipHop
-86-64-14 Ambi R&B
-86-64-15 Ambi Dance 1
-86-64-16 Ambi Dance 2
-86-64-17 Ambi Dance 3
-86-64-18 Ambi Pop 2
-86-64-19 Ambi Dance 4
-120-0-0 GM2 STANDARD
-120-0-8 GM2 ROOM
-120-0-16 GM2 POWER
-120-0-24 GM2 ELECTRIC
-120-0-25 GM2 ANALOG
-120-0-32 GM2 JAZZ
-120-0-40 GM2 BRUSH
-120-0-48 GM2 ORCHSTRA
-120-0-56 GM2 SFX
+0-0-0 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Piano 1, category=null]
+0-0-1 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Piano 2, category=null]
+0-0-2 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Piano 3, category=null]
+0-0-3 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Honky-tonk, category=null]
+0-0-4 MidiPresetIdentity[deviceMode=null, bankName=$0, name=E.Piano 1, category=null]
+0-0-5 MidiPresetIdentity[deviceMode=null, bankName=$0, name=E.Piano 2, category=null]
+0-0-6 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Harpsichord, category=null]
+0-0-7 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Clav., category=null]
+0-0-8 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Celesta, category=null]
+0-0-9 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Glockenspiel, category=null]
+0-0-10 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Music Box, category=null]
+0-0-11 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Vibraphone, category=null]
+0-0-12 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Marimba, category=null]
+0-0-13 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Xylophone, category=null]
+0-0-14 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Tubular-bell, category=null]
+0-0-15 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Santur, category=null]
+0-0-16 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Organ 1, category=null]
+0-0-17 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Organ 2, category=null]
+0-0-18 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Organ 3, category=null]
+0-0-19 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Church Org.1, category=null]
+0-0-20 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Reed Organ, category=null]
+0-0-21 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Accordion Fr, category=null]
+0-0-22 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Harmonica, category=null]
+0-0-23 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bandoneon, category=null]
+0-0-24 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Nylon-str.Gt, category=null]
+0-0-25 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Steel-str.Gt, category=null]
+0-0-26 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Jazz Gt., category=null]
+0-0-27 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Clean Gt., category=null]
+0-0-28 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Muted Gt., category=null]
+0-0-29 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Overdrive Gt, category=null]
+0-0-30 MidiPresetIdentity[deviceMode=null, bankName=$0, name=DistortionGt, category=null]
+0-0-31 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Gt.Harmonics, category=null]
+0-0-32 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Acoustic Bs., category=null]
+0-0-33 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Fingered Bs., category=null]
+0-0-34 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Picked Bass, category=null]
+0-0-35 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Fretless Bs., category=null]
+0-0-36 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Slap Bass 1, category=null]
+0-0-37 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Slap Bass 2, category=null]
+0-0-38 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Synth Bass 1, category=null]
+0-0-39 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Synth Bass 2, category=null]
+0-0-40 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Violin, category=null]
+0-0-41 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Viola, category=null]
+0-0-42 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Cello, category=null]
+0-0-43 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Contrabass, category=null]
+0-0-44 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Tremolo Str, category=null]
+0-0-45 MidiPresetIdentity[deviceMode=null, bankName=$0, name=PizzicatoStr, category=null]
+0-0-46 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Harp, category=null]
+0-0-47 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Timpani, category=null]
+0-0-48 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Strings, category=null]
+0-0-49 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Slow Strings, category=null]
+0-0-50 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Syn.Strings1, category=null]
+0-0-51 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Syn.Strings2, category=null]
+0-0-52 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Choir Aahs, category=null]
+0-0-53 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Voice Oohs, category=null]
+0-0-54 MidiPresetIdentity[deviceMode=null, bankName=$0, name=SynVox, category=null]
+0-0-55 MidiPresetIdentity[deviceMode=null, bankName=$0, name=OrchestraHit, category=null]
+0-0-56 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Trumpet, category=null]
+0-0-57 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Trombone, category=null]
+0-0-58 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Tuba, category=null]
+0-0-59 MidiPresetIdentity[deviceMode=null, bankName=$0, name=MutedTrumpet, category=null]
+0-0-60 MidiPresetIdentity[deviceMode=null, bankName=$0, name=French Horns, category=null]
+0-0-61 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Brass 1, category=null]
+0-0-62 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Synth Brass1, category=null]
+0-0-63 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Synth Brass2, category=null]
+0-0-64 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Soprano Sax, category=null]
+0-0-65 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Alto Sax, category=null]
+0-0-66 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Tenor Sax, category=null]
+0-0-67 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Baritone Sax, category=null]
+0-0-68 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Oboe, category=null]
+0-0-69 MidiPresetIdentity[deviceMode=null, bankName=$0, name=English Horn, category=null]
+0-0-70 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bassoon, category=null]
+0-0-71 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Clarinet, category=null]
+0-0-72 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Piccolo, category=null]
+0-0-73 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Rlute, category=null]
+0-0-74 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Recorder, category=null]
+0-0-75 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Pan Flute, category=null]
+0-0-76 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bottle Blow, category=null]
+0-0-77 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Shakuhachi, category=null]
+0-0-78 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Whistle, category=null]
+0-0-79 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Ocarina, category=null]
+0-0-80 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Square Wave, category=null]
+0-0-81 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Saw Wave, category=null]
+0-0-82 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Syn.Calliope, category=null]
+0-0-83 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Chiffer Lead, category=null]
+0-0-84 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Charang, category=null]
+0-0-85 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Solo Vox, category=null]
+0-0-86 MidiPresetIdentity[deviceMode=null, bankName=$0, name=5th Saw Wave, category=null]
+0-0-87 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bass & Lead, category=null]
+0-0-88 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Fantasia, category=null]
+0-0-89 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Warm Pad, category=null]
+0-0-90 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Polysynth, category=null]
+0-0-91 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Space Voice, category=null]
+0-0-92 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bowed Glass, category=null]
+0-0-93 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Metal Pad, category=null]
+0-0-94 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Halo Pad, category=null]
+0-0-95 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Sweep Pad, category=null]
+0-0-96 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Ice Rain, category=null]
+0-0-97 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Soundtrack, category=null]
+0-0-98 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Crystal, category=null]
+0-0-99 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Atmosphere, category=null]
+0-0-100 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Brightness, category=null]
+0-0-101 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Goblin, category=null]
+0-0-102 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Echo Drops, category=null]
+0-0-103 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Star Theme, category=null]
+0-0-104 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Sitar, category=null]
+0-0-105 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Banjo, category=null]
+0-0-106 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Shamisen, category=null]
+0-0-107 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Koto, category=null]
+0-0-108 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Kalimba, category=null]
+0-0-109 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bagpipe, category=null]
+0-0-110 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Fiddle, category=null]
+0-0-111 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Shanai, category=null]
+0-0-112 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Tinkle Bell, category=null]
+0-0-113 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Agogo, category=null]
+0-0-114 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Steel Drums, category=null]
+0-0-115 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Woodblock, category=null]
+0-0-116 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Taiko, category=null]
+0-0-117 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Melo. Tom 1, category=null]
+0-0-118 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Synth Drum, category=null]
+0-0-119 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Reverse Cym., category=null]
+0-0-120 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Gt.FretNoise, category=null]
+0-0-121 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Breath Noise, category=null]
+0-0-122 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Seashore, category=null]
+0-0-123 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Bird, category=null]
+0-0-124 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Telephone 1, category=null]
+0-0-125 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Helicopter, category=null]
+0-0-126 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Applause, category=null]
+0-0-127 MidiPresetIdentity[deviceMode=null, bankName=$0, name=Gun Shot, category=null]
+1-0-2 MidiPresetIdentity[deviceMode=null, bankName=$100, name=EG+Rhodes 1, category=null]
+1-0-11 MidiPresetIdentity[deviceMode=null, bankName=$100, name=hard Vibe, category=null]
+1-0-15 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Santur 2, category=null]
+1-0-16 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Organ 101, category=null]
+1-0-17 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Organ 201, category=null]
+1-0-22 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Harmonica 2, category=null]
+1-0-26 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Mellow Gt., category=null]
+1-0-28 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Muted Dis.Gt, category=null]
+1-0-30 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Dist. Gt2, category=null]
+1-0-33 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Fingered Bs2, category=null]
+1-0-35 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Fretless Bs2, category=null]
+1-0-38 MidiPresetIdentity[deviceMode=null, bankName=$100, name=SynthBass101, category=null]
+1-0-39 MidiPresetIdentity[deviceMode=null, bankName=$100, name=SynthBass201, category=null]
+1-0-48 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Strings 2, category=null]
+1-0-49 MidiPresetIdentity[deviceMode=null, bankName=$100, name=SlowStrings2, category=null]
+1-0-50 MidiPresetIdentity[deviceMode=null, bankName=$100, name=OB Strings, category=null]
+1-0-56 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Trumpet 2, category=null]
+1-0-57 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Trombone 2, category=null]
+1-0-58 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Tuba 2, category=null]
+1-0-60 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Fr.Horn 2, category=null]
+1-0-62 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Polly Brass, category=null]
+1-0-63 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Soft Brass, category=null]
+1-0-80 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Square, category=null]
+1-0-81 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Saw Wave, category=null]
+1-0-82 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Vent Synth, category=null]
+1-0-86 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Big Fives, category=null]
+1-0-87 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Big & Raw, category=null]
+1-0-88 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Fantasia 2, category=null]
+1-0-89 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Thick Pad, category=null]
+1-0-90 MidiPresetIdentity[deviceMode=null, bankName=$100, name=80's PolySyn, category=null]
+1-0-91 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Heaven II, category=null]
+1-0-93 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Tine Pad, category=null]
+1-0-95 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Polar Pad, category=null]
+1-0-96 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Harmo Rain, category=null]
+1-0-97 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Ancestral, category=null]
+1-0-98 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Syn Mallet, category=null]
+1-0-99 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Warm Atmos, category=null]
+1-0-101 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Goblinson, category=null]
+1-0-102 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Echo Bell, category=null]
+1-0-103 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Star Theme 2, category=null]
+1-0-104 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Sitar 2, category=null]
+1-0-105 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Muted Banjo, category=null]
+1-0-106 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Tsugaru, category=null]
+1-0-111 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Shanai 2, category=null]
+1-0-117 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Real Tom, category=null]
+1-0-119 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Reverse Cym2, category=null]
+1-0-120 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Gt.Cut Noise, category=null]
+1-0-121 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Fl.Key Click, category=null]
+1-0-122 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Rain, category=null]
+1-0-123 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Dog, category=null]
+1-0-124 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Telephone 2, category=null]
+1-0-125 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Car-Engine, category=null]
+1-0-126 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Laughing, category=null]
+1-0-127 MidiPresetIdentity[deviceMode=null, bankName=$100, name=Machine Gun, category=null]
+2-0-2 MidiPresetIdentity[deviceMode=null, bankName=$200, name=EG+Rhodes 2, category=null]
+2-0-30 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Dazed guitar, category=null]
+2-0-33 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Jazz Bass, category=null]
+2-0-35 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Fretless Bs3, category=null]
+2-0-39 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Modular Bass, category=null]
+2-0-80 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Hollow Mini, category=null]
+2-0-81 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Pulse Saw, category=null]
+2-0-82 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Pure PanLead, category=null]
+2-0-87 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Fat & Perky, category=null]
+2-0-89 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Horn Pad, category=null]
+2-0-93 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Panner Pad, category=null]
+2-0-96 MidiPresetIdentity[deviceMode=null, bankName=$200, name=African wood, category=null]
+2-0-97 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Prologue, category=null]
+2-0-98 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Soft Crystal, category=null]
+2-0-99 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Nylon Harp, category=null]
+2-0-101 MidiPresetIdentity[deviceMode=null, bankName=$200, name=50' Sci-Fi, category=null]
+2-0-102 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Echo Pan, category=null]
+2-0-104 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Detune Sitar, category=null]
+2-0-120 MidiPresetIdentity[deviceMode=null, bankName=$200, name=String Slap, category=null]
+2-0-122 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Thunder, category=null]
+2-0-123 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Horse-Gallop, category=null]
+2-0-124 MidiPresetIdentity[deviceMode=null, bankName=$200, name=DoorCreaking, category=null]
+2-0-125 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Car-Stop, category=null]
+2-0-126 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Screaming, category=null]
+2-0-127 MidiPresetIdentity[deviceMode=null, bankName=$200, name=Lasergun, category=null]
+3-0-35 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Fretless Bs4, category=null]
+3-0-39 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Seq Bass, category=null]
+3-0-80 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Mello FM, category=null]
+3-0-81 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Feline GR, category=null]
+3-0-89 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Rotary Stng, category=null]
+3-0-98 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Round Glock, category=null]
+3-0-99 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Harpvox, category=null]
+3-0-102 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Echo Pan 2, category=null]
+3-0-120 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Gt.CutNoise2, category=null]
+3-0-122 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Wind, category=null]
+3-0-123 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Bird 2, category=null]
+3-0-124 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Door, category=null]
+3-0-125 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Car-Pass, category=null]
+3-0-126 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Punch, category=null]
+3-0-127 MidiPresetIdentity[deviceMode=null, bankName=$300, name=Explosion, category=null]
+4-0-35 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Syn Fretless, category=null]
+4-0-80 MidiPresetIdentity[deviceMode=null, bankName=$400, name=CC Solo, category=null]
+4-0-81 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Big Lead, category=null]
+4-0-89 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Soft Pad, category=null]
+4-0-98 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Loud Glock, category=null]
+4-0-99 MidiPresetIdentity[deviceMode=null, bankName=$400, name=HollowReleas, category=null]
+4-0-102 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Big Panner, category=null]
+4-0-120 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Dist.CutNoiz, category=null]
+4-0-122 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Stream, category=null]
+4-0-123 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Kitty, category=null]
+4-0-124 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Scratch, category=null]
+4-0-125 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Car-Crash, category=null]
+4-0-126 MidiPresetIdentity[deviceMode=null, bankName=$400, name=Heart Beat, category=null]
+5-0-35 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Mr.Smooth, category=null]
+5-0-80 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Shmoog, category=null]
+5-0-81 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Velo Lead, category=null]
+5-0-98 MidiPresetIdentity[deviceMode=null, bankName=$500, name=GlockenChime, category=null]
+5-0-99 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Nylon+Rhodes, category=null]
+5-0-102 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Reso Panner, category=null]
+5-0-120 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Bass Slide, category=null]
+5-0-122 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Bubble, category=null]
+5-0-123 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Growl, category=null]
+5-0-124 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Wind Chimes, category=null]
+5-0-125 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Siren, category=null]
+5-0-126 MidiPresetIdentity[deviceMode=null, bankName=$500, name=Footsteps, category=null]
+6-0-80 MidiPresetIdentity[deviceMode=null, bankName=$600, name=LM Square, category=null]
+6-0-81 MidiPresetIdentity[deviceMode=null, bankName=$600, name=GR-300, category=null]
+6-0-98 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Clear Bells, category=null]
+6-0-99 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Ambient Pad, category=null]
+6-0-102 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Water Piano, category=null]
+6-0-120 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Pick Scrape, category=null]
+6-0-125 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Train, category=null]
+6-0-126 MidiPresetIdentity[deviceMode=null, bankName=$600, name=Applause 2, category=null]
+7-0-81 MidiPresetIdentity[deviceMode=null, bankName=$700, name=LA Saw, category=null]
+7-0-98 MidiPresetIdentity[deviceMode=null, bankName=$700, name=ChrismasBel, category=null]
+7-0-124 MidiPresetIdentity[deviceMode=null, bankName=$700, name=Scratch 2, category=null]
+7-0-125 MidiPresetIdentity[deviceMode=null, bankName=$700, name=Jetplane, category=null]
+8-0-0 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Piano 1w, category=null]
+8-0-1 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Piano 2w, category=null]
+8-0-2 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Piano 3w, category=null]
+8-0-3 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Old Upright, category=null]
+8-0-4 MidiPresetIdentity[deviceMode=null, bankName=$800, name=St.Soft EP, category=null]
+8-0-5 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Detuned EP 2, category=null]
+8-0-6 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Coupled Hps., category=null]
+8-0-11 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Vib.w, category=null]
+8-0-12 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Marimba w, category=null]
+8-0-14 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Church Bell, category=null]
+8-0-15 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Cimbalom, category=null]
+8-0-16 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Detuned Or.1, category=null]
+8-0-17 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Detuned Or.2, category=null]
+8-0-18 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Rotary Org., category=null]
+8-0-19 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Church Org.2, category=null]
+8-0-21 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Accordion It, category=null]
+8-0-24 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Ukulele, category=null]
+8-0-25 MidiPresetIdentity[deviceMode=null, bankName=$800, name=12-str.Gt, category=null]
+8-0-26 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Pedal Steel, category=null]
+8-0-27 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Chorus Gt., category=null]
+8-0-28 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Funk Pop, category=null]
+8-0-30 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Feedback Gt., category=null]
+8-0-31 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Gt. Feedback, category=null]
+8-0-34 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Mute PickBs., category=null]
+8-0-36 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Reso Slap, category=null]
+8-0-38 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Acid Bass, category=null]
+8-0-39 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Beef FM Bass, category=null]
+8-0-40 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Slow Violin, category=null]
+8-0-44 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Slow Tremolo, category=null]
+8-0-48 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Orchestra, category=null]
+8-0-49 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Legato Str., category=null]
+8-0-50 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Syn.Strings3, category=null]
+8-0-52 MidiPresetIdentity[deviceMode=null, bankName=$800, name=St.Choir, category=null]
+8-0-54 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Syn.Voice, category=null]
+8-0-55 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Impact Hit, category=null]
+8-0-56 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Flugel Horn, category=null]
+8-0-60 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Fr.Horn Solo, category=null]
+8-0-61 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Brass 2, category=null]
+8-0-62 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Synth Brass3, category=null]
+8-0-63 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Synth Brass4, category=null]
+8-0-65 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Hyper Alto, category=null]
+8-0-66 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Breathy Tenor, category=null]
+8-0-71 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Bs Clarinet, category=null]
+8-0-75 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Kawala, category=null]
+8-0-80 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Sine Wave, category=null]
+8-0-81 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Doctor Solo, category=null]
+8-0-84 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Dist.Lead, category=null]
+8-0-95 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Converge, category=null]
+8-0-96 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Clavi Pad, category=null]
+8-0-97 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Rave, category=null]
+8-0-98 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Vibra Bells, category=null]
+8-0-104 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Tambra, category=null]
+8-0-105 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Rabab, category=null]
+8-0-107 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Taisho Koto, category=null]
+8-0-111 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Pungi, category=null]
+8-0-112 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Bonang, category=null]
+8-0-113 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Atarigane, category=null]
+8-0-115 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Castanets, category=null]
+8-0-116 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Concert BD, category=null]
+8-0-117 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Melo. Tom 2, category=null]
+8-0-118 MidiPresetIdentity[deviceMode=null, bankName=$800, name=808 Tom, category=null]
+8-0-119 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Rev.Snare 1, category=null]
+8-0-125 MidiPresetIdentity[deviceMode=null, bankName=$800, name=Starship, category=null]
+9-0-14 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Carillon, category=null]
+9-0-16 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Organ 109, category=null]
+9-0-25 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Nylon+Steel, category=null]
+9-0-30 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Feedback Gt2, category=null]
+9-0-38 MidiPresetIdentity[deviceMode=null, bankName=$900, name=TB303 Bass, category=null]
+9-0-39 MidiPresetIdentity[deviceMode=null, bankName=$900, name=X Wire Bass, category=null]
+9-0-44 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Suspense Str, category=null]
+9-0-48 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Orchestra 2, category=null]
+9-0-49 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Warm Strings, category=null]
+9-0-52 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Mello Choir, category=null]
+9-0-55 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Philly Hit, category=null]
+9-0-62 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Quack Brass, category=null]
+9-0-95 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Shwimmer, category=null]
+9-0-98 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Digi Bells, category=null]
+9-0-112 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Gender, category=null]
+9-0-117 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Rock Tom, category=null]
+9-0-118 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Elec Perc, category=null]
+9-0-119 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Rev.Snare 2, category=null]
+9-0-125 MidiPresetIdentity[deviceMode=null, bankName=$900, name=Burst Noise, category=null]
+10-0-38 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=Tekno Bass, category=null]
+10-0-48 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=Tremolo Orch, category=null]
+10-0-49 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=St.Slow Str., category=null]
+10-0-55 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=Double Hit, category=null]
+10-0-95 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=Celestial Pd, category=null]
+10-0-112 MidiPresetIdentity[deviceMode=null, bankName=$A00, name=Gamelan Gong, category=null]
+11-0-48 MidiPresetIdentity[deviceMode=null, bankName=$B00, name=Choir Str., category=null]
+11-0-112 MidiPresetIdentity[deviceMode=null, bankName=$B00, name=St.Gamelan, category=null]
+16-0-0 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Piano 1d, category=null]
+16-0-4 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=FM+SA EP, category=null]
+16-0-5 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=St.FM EP, category=null]
+16-0-6 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Harpsi.w, category=null]
+16-0-12 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Barafon, category=null]
+16-0-16 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=60's Organ 1, category=null]
+16-0-18 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Rotary Org.S, category=null]
+16-0-19 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Church Org.3, category=null]
+16-0-24 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Nylon Gt.o, category=null]
+16-0-25 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Mandolin, category=null]
+16-0-28 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Funk Gt.2, category=null]
+16-0-30 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Power Guitar, category=null]
+16-0-31 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Ac.Gt.Harmnx, category=null]
+16-0-38 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Reso SH Bass, category=null]
+16-0-39 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Rubber Bass, category=null]
+16-0-48 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=St.Strings, category=null]
+16-0-55 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Lo Fi Rave, category=null]
+16-0-60 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Horn Orch, category=null]
+16-0-61 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Brass Fall, category=null]
+16-0-62 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Octave Brass, category=null]
+16-0-63 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Velo Brass 1, category=null]
+16-0-81 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Waspy Synth, category=null]
+16-0-98 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Choral Bells, category=null]
+16-0-104 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Tamboura, category=null]
+16-0-105 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Gopichant, category=null]
+16-0-107 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Kanoon, category=null]
+16-0-111 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Hichiriki, category=null]
+16-0-112 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=RAMA Cymbal, category=null]
+16-0-119 MidiPresetIdentity[deviceMode=null, bankName=$1000, name=Rev.Kick 1, category=null]
+17-0-12 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=Barafon 2, category=null]
+17-0-16 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=60's Organ 2, category=null]
+17-0-30 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=Power Gt.2, category=null]
+17-0-39 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=SH101 Bass 1, category=null]
+17-0-63 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=Velo Brass 2, category=null]
+17-0-98 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=Air Bells, category=null]
+17-0-119 MidiPresetIdentity[deviceMode=null, bankName=$1100, name=RevConBD, category=null]
+18-0-16 MidiPresetIdentity[deviceMode=null, bankName=$1200, name=60's Organ 3, category=null]
+18-0-30 MidiPresetIdentity[deviceMode=null, bankName=$1200, name=5th Dist., category=null]
+18-0-31 MidiPresetIdentity[deviceMode=null, bankName=$1200, name=Gt. Feedback, category=null]
+18-0-39 MidiPresetIdentity[deviceMode=null, bankName=$1200, name=SH101 Bass 2, category=null]
+18-0-98 MidiPresetIdentity[deviceMode=null, bankName=$1200, name=Bell Harp, category=null]
+19-0-39 MidiPresetIdentity[deviceMode=null, bankName=$1300, name=Smooth Bass, category=null]
+19-0-98 MidiPresetIdentity[deviceMode=null, bankName=$1300, name=Gamelimba, category=null]
+24-0-4 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=60's E.Piano, category=null]
+24-0-5 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Hard FM EP, category=null]
+24-0-6 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Harpsi.o, category=null]
+24-0-12 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Log drum, category=null]
+24-0-16 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Cheese Organ, category=null]
+24-0-18 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Rotary Org.F, category=null]
+24-0-19 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Organ Flute, category=null]
+24-0-24 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Velo Harmnix, category=null]
+24-0-30 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Rock Rhythm, category=null]
+24-0-48 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Velo Strings, category=null]
+24-0-56 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Bright Tp., category=null]
+24-0-105 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Oud, category=null]
+24-0-119 MidiPresetIdentity[deviceMode=null, bankName=$1800, name=Rev.Tom 1, category=null]
+25-0-4 MidiPresetIdentity[deviceMode=null, bankName=$1900, name=Hard Rhodes, category=null]
+25-0-30 MidiPresetIdentity[deviceMode=null, bankName=$1900, name=Rock Rhythm2, category=null]
+25-0-56 MidiPresetIdentity[deviceMode=null, bankName=$1900, name=Warm Tp., category=null]
+25-0-119 MidiPresetIdentity[deviceMode=null, bankName=$1900, name=Rev.Tom 2, category=null]
+26-0-4 MidiPresetIdentity[deviceMode=null, bankName=$1A00, name=MellowRhodes, category=null]
+32-0-16 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Organ 4, category=null]
+32-0-17 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Organ 5, category=null]
+32-0-19 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Trem. Flute, category=null]
+32-0-24 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Nylon Gt.2, category=null]
+32-0-25 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Steel Gt.2, category=null]
+32-0-52 MidiPresetIdentity[deviceMode=null, bankName=$2000, name=Choir Aahs 2, category=null]
+33-0-16 MidiPresetIdentity[deviceMode=null, bankName=$2100, name=Even Bar, category=null]
+40-0-16 MidiPresetIdentity[deviceMode=null, bankName=$2800, name=Organ Bass, category=null]
+40-0-24 MidiPresetIdentity[deviceMode=null, bankName=$2800, name=Lequint Gt., category=null]
+86-64-0 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Pop Kit 1, category=null]
+86-64-1 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Rock Kit, category=null]
+86-64-2 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Brush Jz Kit, category=null]
+86-64-3 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=HipHop Kit, category=null]
+86-64-4 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=R&B Kit, category=null]
+86-64-5 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Dance Kit 1, category=null]
+86-64-6 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Dance Kit 2, category=null]
+86-64-7 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Dance Kit 3, category=null]
+86-64-8 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Pop Kit 2, category=null]
+86-64-9 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Dance Kit 4, category=null]
+86-64-10 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Pop 1, category=null]
+86-64-11 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Rock, category=null]
+86-64-12 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi BrushJz, category=null]
+86-64-13 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi HipHop, category=null]
+86-64-14 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi R&B, category=null]
+86-64-15 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Dance 1, category=null]
+86-64-16 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Dance 2, category=null]
+86-64-17 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Dance 3, category=null]
+86-64-18 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Pop 2, category=null]
+86-64-19 MidiPresetIdentity[deviceMode=null, bankName=$5640, name=Ambi Dance 4, category=null]
+120-0-0 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 STANDARD, category=null]
+120-0-8 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 ROOM, category=null]
+120-0-16 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 POWER, category=null]
+120-0-24 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 ELECTRIC, category=null]
+120-0-25 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 ANALOG, category=null]
+120-0-32 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 JAZZ, category=null]
+120-0-40 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 BRUSH, category=null]
+120-0-48 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 ORCHSTRA, category=null]
+120-0-56 MidiPresetIdentity[deviceMode=null, bankName=$7800, name=GM2 SFX, category=null]

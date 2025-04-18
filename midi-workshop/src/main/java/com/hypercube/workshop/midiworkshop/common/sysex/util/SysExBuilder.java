@@ -178,8 +178,8 @@ public class SysExBuilder {
             String fromStr = matcher.group("from");
             String toStr = matcher.group("to");
             int size = computeRangeSize(fromStr, toStr);
-            int from = getNumber(fromStr);
-            int to = getNumber(toStr);
+            int from = parseNumber(fromStr);
+            int to = parseNumber(toStr);
             SysExRange r = new SysExRange(matcher.group(), size, matcher.start(), from, to);
             result.add(r);
         }
@@ -199,7 +199,12 @@ public class SysExBuilder {
 
     }
 
-    private static int getNumber(String number) {
+    /**
+     * Convenient method to parse numbers in various formats: 0xFF or $FF or 255
+     *
+     * @throws MidiError is the number is incorrect
+     */
+    public static int parseNumber(String number) {
         var m = DECIMAL_OR_HEX_NUMBER.matcher(number);
         if (m.find()) {
             String hexadecimal = m.group("hexadecimal");

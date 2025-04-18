@@ -1,5 +1,6 @@
-package com.hypercube.workshop.midiworkshop.common.sysex.library;
+package com.hypercube.workshop.midiworkshop.common.sysex.library.request;
 
+import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,9 @@ public class MidiRequest {
     /**
      * Expected response size of the request. Can be null
      */
-    private final Integer size;
+    private final Integer responseSize;
+    /**
+     * Which mapper is used to parse the response
+     */
+    private final MidiResponseMapper mapper;
 }

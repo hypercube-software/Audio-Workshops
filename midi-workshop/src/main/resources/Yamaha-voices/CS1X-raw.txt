@@ -1,0 +1,826 @@
+# Voices for Performances(Bank PRE 0～11)
+
+### MSB-> 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F)
+
+### LSB-> 0 1 2 3 4 5 6 7 8 9 10(0A) 11(0B)
+
+```
+Pre00 Pre01 Pre02 Pre03 Pre04 Pre05 Pre06 Pre07 Pre08 Pre09 Pre10 Pre
+PGM#Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName
+1 Dr umTrx1 A -- --- -- --- -- --- Dr umTrx2 A
+Sq PanSeq B
+```
+```
+-- --- -- --- Pf Wrltza A Pf Wrltza B -- --- -- ---
+2 Sq Sn*Arp A Sq Sn*Arp B -- --- -- --- Sq PanSeq A
+-- ---
+```
+```
+-- --- -- --- Pf Radio A -- --- -- --- -- ---
+3 Sq Kirmes A Sq Kirmes B Sq Kirmes C -- --- Sq MC-Lne1A
+Sq MC-Lne2B
+```
+```
+-- --- -- --- Pf DncePn A -- --- -- --- -- ---
+4 Sq Clasic A Sq Clasic B -- --- -- --- Sq MC-Lne2A
+Sq Suprrp B
+```
+```
+-- --- -- --- Cp AirHtz A Cp AirHtz B -- --- -- ---
+5 Sq Seqnza A -- --- -- --- -- --- Sq Suprrp A
+-- ---
+```
+```
+Sq Suprrp C Sq Suprrp D Cp TheBig A Cp TheBig B -- --- -- ---
+6 Sq RytFld A Sq RytFld B -- --- -- --- Sq uidgy1 A
+-- ---
+```
+```
+-- --- -- --- Cp Vibes A Cp Vibes B -- --- -- ---
+7 Sq B-Luva A Sq B-Luva B -- --- -- --- Sq uidgy2 A
+Sq HardOn B
+```
+```
+-- --- -- --- Or Drwbrs2A Or Drwbrs2B OrDrwbrs2C OrDrwbrs2D
+8 Sq ObieSq A Sq ObieSq B -- --- -- --- Sq HardOn A
+Sq Pltyps B
+```
+```
+Sq HardOn C Sq HardOn D Or PeeEss A Or PeeEss B Or PeeEss C OrPeeEss D
+9 Sq Strobe A Sq Strobe B -- --- -- --- Sq Pltyps A
+Sq Cyborg B
+```
+```
+-- --- -- --- Or PhseOrgA Or PhseOrgB -- --- -- ---
+10 Sq Fly A -- --- -- --- -- --- Sq Cyborg A
+Sq uelchy B
+```
+```
+-- --- -- --- Or DistHm A Or DistHm B -- --- -- ---
+11 Sq Vivldi A Sq Vivldi B -- --- -- --- Sq uelchy A
+-- ---
+```
+```
+-- --- -- --- Or JacjJz A Or JacjJz B -- --- -- ---
+12 Sq Dorian A Sq Dorian B -- --- -- --- Sq uenza1 A
+Sq uenza2 B
+```
+```
+-- --- -- --- Or Hamond A Or Hamond B Or Hamond C -- ---
+13 Sc Rezlne A Sc Rezlne B Sc Rezlne C Sc Rezlne D Sq uenza2 A
+Sq Erased B
+```
+```
+-- --- -- --- Gt JazAmp A -- --- -- --- -- ---
+14 Sc Todd A Sc Todd B -- --- -- --- Sq Erased A
+Sq uareDg B
+```
+```
+-- --- -- --- Gt Chorus A Gt Chorus B Gt Chorus C Gt Chorus D
+15 Sc Thick A -- --- -- --- -- --- Sq uareDg A
+-- ---
+```
+```
+-- --- -- --- Ba Dubstr A -- --- -- --- -- ---
+16 Sc Thin A Sc Thin B Sc Thin C Sc Thin D Sq Pulse A
+Co Ethno B
+```
+```
+-- --- -- --- Ba Joda-C A Ba Joda-C B -- --- -- ---
+17 Sc CutGls A Sc CutGls B -- --- -- --- Co Ethno A
+-- ---
+```
+```
+Co Ethno C Co Ethno D Ba sPunch A Ba sPunch B Ba sPunch C -- ---
+18 Sc Unvrse A -- --- -- --- -- --- Fx CfiFlt A
+Sq SprkRn B
+```
+```
+-- --- -- --- Ba Marins A Ba Marins B -- --- -- ---
+19 Sc Crispy A Sc Crispy B -- --- -- --- Sq SprkRn A
+Fx SnCrny B
+```
+```
+-- --- -- --- Ba Trad A -- --- -- --- -- ---
+20 Sc FatAne A -- --- -- --- -- --- Fx SnCrny A
+Fx SwepRn B
+```
+```
+Fx SnCrny C FxSnCrny D Ba Yeah A Ba Yeah B Ba Yeah C -- ---
+21 Sc Brassy A -- --- -- --- -- --- Fx SwepRn A
+Fx BrekIt B
+```
+```
+-- --- -- --- Ba Boing A Ba Boing B -- --- -- ---
+22 Sc TheWrksA Sc TheWrksB -- --- -- --- Fx BrekIt A
+Sc Syndim B
+```
+```
+-- --- -- --- Ba 303Vlo A Ba 303Vlo B -- --- -- ---
+23 Sc PlsMoD6A Sc PlsMoD6B Sc PlsMoD6C Sc PlsMoD6D Sc Syndim A
+ScTranCS B
+```
+```
+Sc Syndim C -- --- Ba Outlnd A -- --- -- --- -- ---
+24 Sc Minora A Sc Minora B Sc Minora C -- --- Sc TranCS A
+Sc Source B
+```
+```
+Sc TranCS C Sc TranCS D Ba belshs A Ba belshs B Ba belshs C -- ---
+25 Sc Nble'Q A Sc Nble'Q B Sc Nble'Q C -- --- Sc Source A
+Sc ary B
+```
+```
+Sc Source C Sc Source D St ObeStrgA -- --- -- --- -- ---
+26 Sc TexSas A Sc TexSas B ScTexSas C Sc TexSas D Sc ary A
+Sc EurRal B
+```
+```
+Sc ary C Sc ary D St Phaser A St Phaser B -- --- -- ---
+27 Sc Quadra A Sc Quadra B -- --- -- --- Sc EurRal A
+Sc OwaOwa B
+```
+```
+-- --- -- --- St Dark A St Dark B St Dark C -- ---
+28 Sc DstArp A Sc DstArp B -- --- -- --- Sc OwaOwa A
+Sc Xrayz B
+```
+```
+-- --- -- --- St UFourr A St UFourr B St UFourr C -- ---
+29 Sc Digitz A Sc Digitz B -- --- -- --- Sc Xrayz A
+-- ---
+```
+```
+-- --- -- --- St Cars A St Cars B St Cars C -- ---
+30 Sc Odysey A Sc Odysey B ScOdysey C Sc Odysey D Pd ResoCt A
+Sc Glassy B
+```
+```
+-- --- -- --- St Arco A St Arco B St Arco C St Arco D
+31 Sc Doves A -- --- -- --- -- --- Sc Glassy A
+ScSynchrdB
+```
+```
+Sc Glassy C -- --- Br Behind A Br Behind B -- --- -- ---
+32 Fx Airy A Fx Airy B Fx Airy C Fx Airy D Sc SynchrdA
+ScC-Hook B
+```
+```
+Sc SynchrdC Sc SynchrdD Br OldTnr A Br OldTnr B Br OldTnr C -- ---
+33 Fx Pardse A Fx Pardse B Fx Pardse C -- --- Sc C-Hook A
+-- ---
+```
+```
+-- --- -- --- Br GoaBrs A Br GoaBrs B -- --- -- ---
+34 Fx Indies A Fx Indies B -- --- -- --- Sc raper A
+Sc Stab B
+```
+```
+-- --- -- --- Br Punchy A Br Punchy B -- --- -- ---
+35 Fx CSpace A Fx CSpace B FxCSpace C -- --- Sc Stab A
+Sc MonBas B
+```
+```
+-- --- -- --- Br Trmpts A Br Trmpts B Br Trmpts C -- ---
+36 Fx Eerie A Fx Eerie B -- --- -- --- Sc MonBas A
+Ld UniLed B
+```
+```
+-- --- -- --- Br Sectin A Br Sectin B Br Sectin C Br Sectin D
+37 Fx Ambint A -- --- -- --- -- --- Ld UniLed A
+Ld 4Poles B
+```
+```
+-- --- -- --- Br Soft A Br Soft B Br Soft C Br Soft D
+38 Fx Mornng A Fx Mornng B -- --- -- --- Ld 4Poles A
+-- ---
+```
+```
+Ld 4Poles C -- --- Ld ToClse A Ld ToClse B Ld ToClse C -- ---
+39 Fx CSphre A Fx CSphre B FxCSphre C -- --- Ld Cream A
+LdZapLed B
+```
+```
+-- --- -- --- Ld EntrnseA Ld EntrnseB -- --- -- ---
+40 Fx MagcPd A Fx MagcPd B Fx MagcPd C Fx MagcPd D Ld ZapLed A
+LdTheHok B
+```
+```
+-- --- -- --- Ld MiniQS A Ld MiniQS B -- --- -- ---
+41 Fx Tintpa A Fx Tintpa B -- --- -- --- Ld TheHok A
+Ld Trngle B
+```
+```
+Ld TheHok C -- --- Ld Babyln A Ld Babyln B Ld Babyln C -- ---
+42 Fx FlwrArpA -- --- -- --- -- --- Ld Trngle A
+Ld Fuji B
+```
+```
+-- --- -- --- Ld Thermn A -- --- -- --- -- ---
+43 Fx K.Scpe A Fx K.Scpe B Fx K.Scpe C -- --- Ld Fuji A
+Ld MegaHk B
+```
+```
+Ld Fuji C -- --- Ld DstShk A Ld DstShk B Ld DstShk C Ld DstShk D
+44 Fx Orient A Fx Orient B -- --- -- --- Ld MegaHk A
+Ld Mondo B
+```
+```
+LdMegaHk C Ld MegaHk D Ld AcidLd A Ld AcidLd B -- --- -- ---
+45 Fx Omnivr A Fx Omnivr B Fx Omnivr C Fx Omnivr D Ld Mondo A
+Ld Marion B
+```
+```
+-- --- -- --- Ld BabyLd A Ld BabyLd B Ld BabyLd C -- ---
+46 Fx Whelez A Fx Whelez B FxWhelez C -- --- Ld Marion A
+Ld Seminl B
+```
+```
+Ld Marion C -- --- Ld MogLed A Ld MogLed B -- --- -- ---
+47 Ba Baslne A -- --- -- --- -- --- Ld Seminl A
+Ld PureSn B
+```
+```
+Ld Seminl C -- --- Ld Raplnd A Ld Raplnd B -- --- -- ---
+48 Ba Basln2 A Ba Basln2 B -- --- -- --- Ld PureSn A
+Ld Volfet B
+```
+```
+-- --- -- --- Ld CryBby A Ld CryBby B -- --- -- ---
+49 Ba Super A Ba Super B -- --- -- --- Ld Volfet A
+-- ---
+```
+```
+-- --- -- --- Ld SneMng A Ld SneMng B -- --- -- ---
+50 Ba Unison A Ba Unison B Ba Unison C -- --- Ld Empha A
+Ba Fashns B
+```
+```
+-- --- -- --- Ld TheLog A Ld TheLog B -- --- -- ---
+51 Ba SQ-Bas A Ba SQ-Bas B -- --- -- --- Ba Fashns A
+-- ---
+```
+```
+-- --- -- --- Ld InYFce A Ld InYFce B Ld InYFce C -- ---
+52 Ba 80sSynBA Ba 80sSynBB Ba 80sSynBC Ba 80sSynBD Ba Relaxr A
+Ba ssWire B
+```
+```
+-- --- -- --- Pd ChoSwp A Pd ChoSwp B -- --- -- ---
+53 Ba Pulsbs A Ba Pulsbs B -- --- -- --- Ba ssWire A
+-- ---
+```
+```
+-- --- -- --- Pd Synagy A Pd Synagy B -- --- -- ---
+54 Ba SawBas A Ba SawBas B -- --- -- --- Ba Wound A
+Ba Fridge B
+```
+```
+-- --- -- --- Pd Vangls A Pd Vangls B -- --- -- ---
+55 Ba Fsh303 A -- --- -- --- -- --- Ba Fridge A
+Ba ssSine B
+```
+```
+-- --- -- --- Pd ClubUK A Pd ClubUK B Pd ClubUK C Pd ClubUK D
+56 Ba SawnOf A Ba SawnOf B -- --- -- --- Ba ssSine A
+-- ---
+```
+```
+-- --- -- --- Pd Dolfns A Pd Dolfns B -- --- -- ---
+57 Ba CS 01 A Ba CS 01 B -- --- -- --- Ba Saw 1 A
+-- ---
+```
+```
+-- --- -- --- Pd Expndr A Pd Expndr B Pd Expndr C -- ---
+58 Ba Mogue A Ba Mogue B -- --- -- --- Ba Saw 2 A
+-- ---
+```
+```
+-- --- -- --- Pd MayTrk A Pd MayTrk B -- --- -- ---
+59 Ba LeeDa A Ba LeeDa B Ba LeeDa C -- --- Ba Plse25 A
+-- ---
+```
+```
+-- --- -- --- Pd MonPad A Pd MonPad B Pd MonPad C Pd MonPad D
+60 Ba Howler A Ba Howler B Ba Howler C -- --- Ba Fuzlne A
+Ba listic B
+```
+```
+-- --- -- --- Pd Nebula A Pd Nebula B Pd Nebula C -- ---
+61 Ba KickBs A Ba KickBs B Ba KickBs C -- --- Ba listic A
+-- ---
+```
+```
+-- --- -- --- Pd RelAnl A Pd RelAnl B Pd RelAnl C -- ---
+62 Ba Sub A Ba Sub B -- --- -- --- Ba 303Wve A
+-- ---
+```
+```
+-- --- -- --- Pd Dawn A Pd Dawn B -- --- -- ---
+63 Ld Wasp A Ld Wasp B -- --- -- --- Ba Howtzr A
+Ba Polrze B
+```
+```
+-- --- -- --- Pd Satrn5 A Pd Satrn5 B -- --- -- ---
+64 Ld E-no A Ld E-no B -- --- -- --- Ba Polrze A -- --- -- --- Fx KeslRn A Fx KeslRn B Fx KeslRn C Fx KeslRn D
+```
+## Preset Performance User Performance Additions
+
+## ●The voice numbers 1 through 128 categorized in "Preset Performance" correspond to the voices used to configure the Preset Performances 1 through 128, respectively.�
+
+## ●The voice numbers 1 through 128 categorized in "User Performance" correspond to the voices used to configure the User Performances 1 through 128, respectively.�
+
+## ●The voice numbers 1 through 128 categorized in "Additions" are for your own creativity to expand your musical world.
+
+```
+No Sound
+```
+
+# Voices for Performances(Bank PRE 0～11)
+
+65 Ld Fifths A Ld Fifths B -- --- -- --- Pf 70'sClvA
+Pf Woltz2 B
+
+Pf 70'sClvB -- --- -- --- Fx Goldlx A Fx Goldlx B Fx Goldlx C -- ---
+66 Ld TalkBx A Ld TalkBx B Ld TalkBx C -- --- Pf Woltz2 A
+Pf DynaRseB
+
+-- --- -- --- Fx Washot A Fx Washot B Fx Washot C FxWashot D
+67 Ld Micrdt A -- --- -- --- -- --- Pf DynaRseA
+Pf Major7 B
+
+Pf DynaRseC -- --- Fx Chilin A Fx Chilin B -- --- -- ---
+68 Ld OldMni A Ld OldMni B -- --- -- --- Pf Major7 A
+Pf SwetFn B
+
+Pf Major7 C Pf Major7 D Fx Scvnge A -- --- -- --- -- ---
+69 Ld NuSync A Ld NuSync B -- --- -- --- Pf SwetFn A
+Cp XyldyneB
+
+Pf SwetFn C -- --- Fx Dr Hoo A -- --- -- --- -- ---
+70 Ld Clangr A Ld Clangr B -- --- -- --- Cp XyldyneA
+Or ganMtl B
+
+-- --- -- --- Fx D-Laid A Fx D-Laid B -- --- -- ---
+71 Ld OldRso A Ld OldRso B -- --- -- --- Or ganMtl A
+OrYC45D B
+
+Or ganMtl C Or ganMtl D Fx Wisppp A Fx Wisppp B -- --- -- ---
+72 Ld Sync A -- --- -- --- -- --- Or YC45D A
+Or Door B
+
+-- --- -- --- Fx Comdwn A FxComdwn B -- --- -- ---
+73 Ld Croma A Ld Croma B -- --- -- --- Or Door A
+Or ganPrc B
+
+-- --- -- --- Fx SpceDstA Fx SpceDstB Fx SpceDstC -- ---
+74 Ld Bg'mUp A Ld Bg'mUp B LdBg'mUp C LdBg'mUp D Or ganPrc A
+OrganRve B
+
+Or ganPrc C Or ganPrc D Fx Wowlng A -- --- -- --- -- ---
+75 Ld Human A Ld Human B -- --- -- --- Or ganRve A
+Or Celuli B
+
+Or ganRve C -- --- Fx Chiled A Fx Chiled B -- --- -- ---
+76 Ld BigBob A Ld BigBob B -- --- -- --- Or Celuli A
+Gt Tele B
+
+-- --- -- --- Fx Touch A Fx Touch B Fx Touch C Fx Touch D
+77 Gt Firstr A Gt Firstr B -- --- -- --- Gt Tele A
+Gt EzaGza B
+
+-- --- -- --- Fx DynaHt A Fx DynaHt B Fx DynaHt C -- ---
+78 Gt Sevila A Gt Sevila B -- --- -- --- Gt EzaGza A
+-- ---
+
+-- --- -- --- Fx NoseCt A -- --- -- --- -- ---
+79 Pf CP80 A -- --- -- --- -- --- Br Obie A
+Br Cross B
+
+-- --- -- --- Fx Elctro A Fx Elctro B Fx Elctro C Fx Elctro D
+80 Pf Woltz1 A Pf Woltz1 B -- --- -- --- Br Cross A
+Br assTek B
+
+Br Cross C Br Cross D Fx Winter A Fx Winter B Fx Winter C Fx Winter D
+81 Pf Tina A Pf Tina B -- --- -- --- Br assTek A
+Br asHose B
+
+-- --- -- --- Fx Magicl A Fx Magicl B Fx Magicl C Fx Magicl D
+82 Pf DX-Cls A -- --- -- --- -- --- Br asHose A
+Br asFase B
+
+Br asHose C -- --- Fx JaWble A Fx JaWble B -- --- -- ---
+83 Pf AmbiEp A Pf AmbiEp B -- --- -- --- Br asFase A
+St Swpstr B
+
+-- --- -- --- Fx CSubSb A Fx CSubSb B -- --- -- ---
+84 Pf HipRds A Pf HipRds B Pf HipRds C -- --- St Swpstr A
+-- ---
+
+St Swpstr C -- --- Et Shaku A Et Shaku B Et Shaku C -- ---
+85 Pf Hard A Pf Hard B -- --- -- --- St Vintge A
+St StrngpdB
+
+-- --- -- --- Et Koto A Et Koto B -- --- -- ---
+86 Cp BelEnd A Cp BelEnd B Cp BelEnd C Cp BelEnd D St StrngpdA
+St Bartok B
+
+-- --- -- --- Et Bali A Et Bali B -- --- -- ---
+87 Or Compct A Or Compct B -- --- -- --- St Bartok A
+St Vienna B
+
+-- --- -- --- Et Ravi A -- --- -- --- -- ---
+88 Or EnsmbleA OrEnsmbleB -- --- -- --- St Vienna A
+-- ---
+
+-- --- -- --- Se Yavin A Se Yavin B Se Yavin C -- ---
+89 Or Gospel A Or Gospel B -- --- -- --- St FltaFe A
+Pd MlkyWy B
+
+-- --- -- --- Se SwptWy A Se SwptWy B -- --- -- ---
+90 Or Drwbrs A Or Drwbrs B Or Drwbrs C Or Drwbrs D Pd MlkyWy A
+Pd SlvrThwB
+
+Pd MlkyWy C -- --- Se Fitzcr A Se Fitzcr B -- --- -- ---
+91 Or MissU A Or MissU B -- --- -- --- Pd SlvrThwA
+Pd Solinl B
+
+-- --- -- --- Se HrpGls A Se HrpGls B Se HrpGls C Se HrpGls D
+92 Or GlsOrgnA OrGlsOrgnB OrGlsOrgnC -- --- Pd Solinl A
+Pd Spooks B
+
+Pd Solinl C -- --- Se Inosns A Se Inosns B -- --- -- ---
+93 Pd AnglSt A Pd AnglSt B Pd AnglSt C -- --- Pd Spooks A
+Pd Swell B
+
+-- --- -- --- Se Monaco A Se Monaco B Se Monaco C -- ---
+94 Pd IceFld A Pd IceFld B Pd IceFld C -- --- Pd Swell A
+Pd VS-Pad B
+
+-- --- -- --- Se Isoltr A Se Isoltr B -- --- -- ---
+95 Pd Memory A Pd Memory B Pd Memory C -- --- Pd VS-Pad A
+-- ---
+
+-- --- -- --- Se E-Drpz A -- --- -- --- -- ---
+96 Pd SckWve A Pd SckWve B Pd SckWve C -- --- Pd Amber A
+Pd Aurora B
+
+-- --- -- --- Se DeadBl A Se DeadBl B -- --- -- ---
+97 Pd Sprite A Pd Sprite B Pd Sprite C -- --- Pd Aurora A
+Pd Crystl B
+
+Pd Aurora C -- --- Se DblWtr A Se DblWtr B -- --- -- ---
+98 Pd Trance A Pd Trance B -- --- -- --- Pd Crystl A
+Pd Haze B
+
+Pd Crystl C -- --- Se Shinng A Se Shinng B -- --- -- ---
+99 Pd White A Pd White B -- --- -- --- Pd Haze A
+Pd FSOTkyoB
+
+-- --- -- --- Se Jungle A Se Jungle B Se Jungle C Se Jungle D
+100 Pd AirCls A Pd AirCls B -- --- -- --- Pd FSOTkyoA
+Fx Tribal B
+
+-- --- -- --- Se DevlCt A Se DevlCt B Se DevlCt C -- ---
+101 Pd Carpet A Pd Carpet B Pd Carpet C -- --- Fx Tribal A
+-- ---
+
+Fx Tribal C -- --- Se Whsprs A Se Whsprs B Se Whsprs C Se Whsprs D
+102 St Detrot A St Detrot B -- --- -- --- Fx Plnktn A
+Fx Ryza B
+
+-- --- -- --- Se ColrMe A Se ColrMe B -- --- -- ---
+103 St Baroqe A St Baroqe B St Baroqe C -- --- Fx Ryza A
+Fx Gaa'99 B
+
+Fx Ryza C -- --- Sc Loaded A Sc Loaded B -- --- -- ---
+104 St Octava A St Octava B St Octava C -- --- Fx Gaa'99 A
+Fx Lights B
+
+Fx Gaa'99 C Fx Gaa'99 D Sc ATenth A Sc ATenth B -- --- -- ---
+105 St Jupitr A St Jupitr B St Jupitr C St Jupitr D Fx Lights A
+Fx Morf B
+
+Fx Lights C -- --- Sc Ugly A Sc Ugly B -- --- -- ---
+106 St Strwmn A St Strwmn B -- --- -- --- Fx Morf A
+FxQSpacs B
+
+Fx Morf C -- --- Sc FMInte A Sc FMInte B -- --- -- ---
+107 St Strynx A St Strynx B St Strynx C -- --- Fx QSpacs A
+Fx WatrTy B
+
+Fx QSpacs C Fx QSpacs D Sc BigDgi A Sc BigDgi B Sc BigDgi C -- ---
+108 Br Jump A Br Jump B -- --- -- --- Fx WatrTy A
+Fx Galaxy B
+
+Fx WatrTy C -- --- Sc Monkee A Sc Monkee B -- --- -- ---
+109 Br Bronze A Br Bronze B -- --- -- --- Fx Galaxy A
+-- ---
+
+-- --- -- --- Sc Arpstc A Sc Arpstc B Sc Arpstc C Sc Arpstc D
+110 Br Xpandr A Br Xpandr B -- --- -- --- Fx Triger A
+Fx Reslve B
+
+-- --- -- --- Sc Feelme A Sc Feelme B Sc Feelme C ScFeelme D
+111 Br HansUp A BrHansUp B Br HansUp C Br HansUp D Fx Reslve A
+Et Santur B
+
+-- --- -- --- Sc C-Quor A -- --- -- --- -- ---
+112 Br Prophy A Br Prophy B Br Prophy C Br Prophy D Et Santur A
+Se Plasma B
+
+Et Santur C -- --- Sc Strinx A -- --- -- --- -- ---
+113 Br Matrix A Br Matrix B Br Matrix C Br Matrix D Se Plasma A
+Se Lunar B
+
+-- --- -- --- Sc Busy A -- --- -- --- -- ---
+114 Se Union A -- --- -- --- -- --- Se Lunar A
+Se ArpDrpsB
+
+Se Lunar C Se Lunar D Vo You A Vo You B -- --- -- ---
+115 Se Vulcan A Se Vulcan B -- --- -- --- Se ArpDrpsA
+Se HybriFlB
+
+-- --- -- --- Co Split A Co Split B Co Split C Co Split D
+116 Se WStatn A Se WStatn B Se WStatn C -- --- Se HybriFlA
+Se BetPhl B
+
+Se HybriFlC -- --- Co Str&Pn A Co Str&Pn B Co Str&Pn C -- ---
+117 Se Ghost A Se Ghost B Se Ghost C Se Ghost D Se BetPhl A
+Se Organx B
+
+-- --- -- --- Co Fairy A Co Fairy B -- --- -- ---
+118 Vo Choir A Vo Choir B -- --- -- --- Se Organx A
+Se Varint B
+
+Se Organx C -- --- Co EP&StrnA Co EP&StrnB -- --- -- ---
+119 Vo Fragle A Vo Fragle B -- --- -- --- Se Varint A
+Se SkyDmn B
+
+-- --- -- --- Co Loop A Co Loop B Co Loop C Co Loop D
+120 Co Haendl A Co Haendl B Co Haendl C -- --- Se SkyDmn A
+Vo ooDooo B
+
+-- --- -- --- Co Chldrn A Co Chldrn B Co Chldrn C -- ---
+121 Co WshUha A Co WshUha B Co WshUha C Co WshUha D Vo ooDooo A
+Vo xoMono B
+
+Vo ooDooo C Vo ooDooo D Co SynE.P A Co SynE.P B -- --- -- ---
+122 Co Transt A Co Transt B Co Transt C Co Transt D Vo xoMono A
+Vo Tehilm B
+
+Vo xoMono C Vo xoMono D Co New808 A Co New808 B Co New808 C Co New808 D
+123 Dr KtB900 A Dr KtB900 B Dr KtB900 C Dr KtB900 D Vo Tehilm A
+Co EthnoSpB
+
+-- --- -- --- Sq uirt A Sq uirt B -- --- -- ---
+124 Dr Kit9o9 A Dr Kit9o9 B Dr Kit9o9 C Dr Kit9o9 D Co EthnoSpA
+Co ldHitz B
+
+Co EthnoSpC Co EthnoSpD Sq Einstn A Sq Einstn B Sq Einstn C Sq Einstn D
+125 Dr Kit8o8 A Dr Kit8o8 B Dr Kit8o8 C Dr Kit8o8 D Co ldHitz A
+Co ShmStr B
+
+Co ldHitz C Co ldHitz D Sq Estury A Sq Estury B -- --- -- ---
+126 Dr HipHop A Dr HipHop B Dr HipHop C Dr HipHop D Co ShmStr A
+Co DistKk B
+
+Co ShmStr C Co ShmStr D Sq Pulshn A Sq Pulshn B -- --- -- ---
+127 Dr Jungly A Dr Jungly B Dr Jungly C Dr Jungly D Co DistKk A
+Co EuroKt B
+
+Co DistKk C -- --- Dr HipSet A Dr HipSet B Dr HipSet C Dr HipSet D
+128 Dr Elctrc A Dr Elctrc B Dr Elctrc C -- --- Co EuroKt A Co EuroKt C Co EuroKt D Dr LfiAna A Dr LfiAna B -- --- -- ---
+
+### MSB-> 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F)
+
+### LSB-> 0 1 2 3 4 5 6 7 8 9 10(0A) 11(0B)
+
+Pre00 Pre01 Pre02 Pre03 Pre04 Pre05 Pre06 Pre07 Pre08 Pre09 Pre10 Pre
+PGM#Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName Ca VoiceName
+
+## Preset Performance User Performance Additions
+
+```
+No Sound
+```
+
+# Voices for Performances(Bank PRE 12)
+
+## Bank MSB# 63(3F) 63(3F) 63(3F) 63(3F) 63(3F) 63(3F)
+
+## Bank LSB# 12(0C) 12(0C) 12(0C) 12(0C) 12(0C) 12(0C)
+
+## Program # 123456
+
+## Note# Note Capital TechKt A ElctrKtA JnglKt A HpHpKt A 8o8Kit A 9o9Kit A
+
+## 13 C# -1 Surdo Mute
+
+## 14 D -1 Surdo Open
+
+## 15 D# -1 Hi Q
+
+## 16 E -1 Whip Slap
+
+## 17 F -1 Scratch Push
+
+## 18 F# -1 Scratch Pull
+
+## 19 G -1 Finger Snap
+
+## 20 G# -1 Click Noise
+
+## 21 A -1 Metronome Click
+
+## 22 A# -1 Metronome Bell
+
+## 23 B -1 Seq Click L
+
+## 24 C 0 Seq Click H
+
+## 25 C# 0 Brush Tap
+
+## 26 D 0 Brush Swirl L
+
+## 27 D# 0 Brush Slap
+
+## 28 E 0 Brush Swirl H
+
+## 29 F 0 Snare Roll
+
+## 30 F# 0 Castanet
+
+## 31 G 0 Snare L SD Jungle2 SD HipHop3 T8 SN1 T9 SN
+
+## 32 G# 0 Sticks
+
+## 33 A 0 Bass Drum L BD Jungle2 BD Ana BD Ana BD Ana
+
+## 34 A# 0 Open Rim Shot SD Jungle2 SD HipHop
+
+## 35 B 0 Bass Drum M BD Jungle3 BD HipHop2 T8 Kik2 BD Jungle
+
+## 36 C 1 Bass Drum H BD Jungle1 T8 Kik2 BD Jungle2 BD HipHop1 T8 Kik3 T9 Kik
+
+## 37 C# 1 Side Stick BD Jungle2 T8 Kik2 T8 SN3 SD Jungle4 T8 Rim T9 Rim
+
+## 38 D 1 Snare M T8 Kik2 T8 Kik3 SD Jungle2 SD Elect3 T8 SN3 T9 SN
+
+## 39 D# 1 Hand Clap BD Jungle5 T8 SN
+
+## 40 E 1 Snare H BD HipHop1 T8 SN3 SD Jungle3 SD HipHop3 T8 SN3 T9 SN
+
+## 41 F 1 Floor Tom L BD HipHop2 T8 SN4 T8 Tom T9 Tom HI
+
+## 42 F# 1 Hi-Hat Closed SD Jungle1 T8 SN5 HH 2CL HH 2CL T8 HH CL1 T9 HH CL
+
+## 43 G 1 Floor Tom H SD Jungle2 T8 Conga HI1 T8 Tom T9 Tom HI
+
+## 44 G# 1 Hi-Hat Pedal SD Jungle3 T8 Cowbell HH 2CL HH 2CL T8 HH CL2 T9 HH CL
+
+## 45 A 1 Low Tom SD Jungle4 T8 Conga HI1 T8 Tom T9 Tom HI
+
+## 46 A# 1 Hi-Hat Open SD HipHop1 T8 Marracas HH 2OP HH 2OP T8 HH OP1 T9 HH OP
+
+## 47 B 1 Mid Tom L SD HipHop2 T8 Conga HI1 T8 Tom T9 Tom HI
+
+## 48 C 2 Mid Tom H SD HipHop3 T8 Conga HI1 T8 Tom T9 Tom HI
+
+## 49 C# 2 Crash Cymbal 1 SD Elect1 T8 Rim
+
+## 50 D 2 High Tom SD Elect2 T8 CLAVE T8 Tom T9 Tom HI
+
+## 51 D# 2 Ride Cymbal 1 SD Elect3 T8 CLAP HH 4CL HH 4CL
+
+## 52 E 2 Chinese Cymbal SD Elect
+
+## 53 F 2 Ride Cymbal Cup T8 SN3 T8 Tom HH 4CL HH 4CL
+
+## 54 F# 2 Tambourine 78 SN T8 HH CL1 PC Tamb2 PC Tamb
+
+## 55 G 2 Splash Cymbal HH 1CL T8 Tom
+
+## 56 G# 2 Cowbell HH 2CL T8 HH CL
+
+## 57 A 2 Crash Cymbal 2 HH 2OP T8 Tom
+
+## 58 A# 2 Vibraslap HH 3CL T8 HH OP
+
+## 59 B 2 Ride Cymbal 2 78 HH Op T8 Tom HH 4CL HH 4CL
+
+## 60 C 3 Bongo H HH 4CL T8 Cymbal
+
+## 61 C# 3 Bongo L HH 4OP
+
+## 62 D 3 Conga H Mute PC Snap
+
+## 63 D# 3 Conga H Open PC Tamb2 T9 Kik
+
+## 64 E 3 Conga L BD Jungle4 T9 Kik3n
+
+## 65 F 3 Timbale H BD Ana BD Jungle
+
+## 66 F# 3 Timbale L Hit 1 T9 HH OP
+
+## 67 G 3 Agogo H Hit 1 T9 SN
+
+## 68 G# 3 Agogo L Hit 1 T9 SN
+
+## 69 A 3 Cabasa Hit 2 T9 SN
+
+## 70 A# 3 Maracas Hit 2 T9 SN
+
+## 71 B 3 Samba Whistle H Hit 2 T9 SN
+
+## 72 C 4 Samba Whistle L Hit Brass T9 SN
+
+## 73 C# 4 Guiro Short SCR 1 T9 Rim
+
+## 74 D 4 Guiro Long SCR 1 T9 SN
+
+## 75 D# 4 Claves SCR 1 T9 CLAP
+
+## 76 E 4 Wood Block H SCR 2 T9 SN
+
+## 77 F 4 Wood Block L SCR 2 T9 Tom HI
+
+## 78 F# 4 Cuica Mute SCR 2 T9 HH CL
+
+## 79 G 4 Cuica Open SCR 3 T9 Tom HI
+
+## 80 G# 4 Triangle Mute SCR 3 T9 HH CL
+
+## 81 A 4 Triangle Open SCR 3 T9 Tom HI
+
+## 82 A# 4 Shaker SCR 4 T9 HH OP
+
+## 83 B 4 Jingle Bell SCR 4 T9 Tom HI
+
+## 84 C 5 Bell Tree SCR 4 T9 Crash
+
+## 85 C# 5 Bell Tree SCR 6 T9 Ride
+
+## 86 D 5 Bell Tree SCR 6 T9 Crash
+
+## 87 D# 5 Bell Tree SCR 6 T8 Kik
+
+## 88 E 5 Bell Tree SCR 6 78 SN
+
+## 89 F 5 Bell Tree SCR 7 T8 SN
+
+## 90 F# 5 Bell Tree SCR 7 78 HH CL
+
+## 91 G 5 Bell Tree SCR 7 78 Cowbell
+
+## 92 G# 5 Bell Tree SCR 7 78 Marracas
+
+## 93 A 5 Bell Tree Hit Brass 78 Tamb
+
+## 94 A# 5 Bell Tree Hit Brass 78 HH Op
+
+## 95 B 5 Bell Tree Hit Brass 78 Guiro
+
+## 96 C 6 Bell Tree Hit Brass 78 Metal
+
+## = Same as Capital
+
+## Drum
+
+## MSB
+
+## PGM#Ca VoiceName
+
+## 63(3F)
+
+## LSB 12(0C)
+
+## Pre
+
+## 1Dr
+
+## Dr
+
+## Dr
+
+## Dr
+
+## Dr
+
+## Dr
+
+## TechKt A
+
+## 2 ElctrKtA
+
+## 3 JnglKt A
+
+## 4 HpHpKt A
+
+## 5 8o8Kit A
+
+## 6 9o9Kit A
+
+## Drums Assign List for PRE
+
+

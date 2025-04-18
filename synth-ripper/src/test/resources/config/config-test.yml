@@ -22,9 +22,9 @@ midi:
   maxNoteDurationSec: 6
   maxNoteReleaseDurationSec: 10
   #
-  # Select how to send bank select messages to the device:
+  # Select how to send bankName select messages to the device:
   # ------------------------------------------------------
-  # PRG              : Does not send bank select, send only Program Change
+  # PRG              : Does not send bankName select, send only Program Change
   # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
   # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
   # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
@@ -37,10 +37,10 @@ midi:
   presetNumbering: FROM_ONE
   #
   # preset numbers can be in two forms:
-  #   <bank number>-<program number>
-  #   <program number> only, in this case bank will be 0
+  #   <bankName number>-<program number>
+  #   <program number> only, in this case bankName will be 0
   #
-  # NOTE: <bank number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
+  # NOTE: <bankName number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
   # CS1X MSB:
   #  0   : XG NORMAL,
   #  63  : USER/PRESET PERFORMANCE,

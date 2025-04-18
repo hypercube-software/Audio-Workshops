@@ -1,14 +1,15 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.alesis;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseField;
 import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.common.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.BitStreamReader;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExReader;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class AlesisSysExParser extends ManufacturerSysExParser {
     private static final String characterTable = " !\"#$%&’()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[¥]^_`abcdefghijklmnopqrstuvwxyz{|}→←";
@@ -26,6 +27,7 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
             0 G7 F0 F1 F2 F3 F4 F5
             0 G0 G1 G2 G3 G4 G5 G6
             """;
+
     /**
      * This key can be found in the service manual and does not work
      */
@@ -40,14 +42,39 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
             0 G7 G6 G5 G4 G3 G2 G1
             """;
 
-    private List<Integer> decodingKey = getDecodingKey();
-
     int getCharCode(Character c) {
         return characterTable.indexOf(c) & 0x7F; // 6 bit code
     }
 
-    Character getChar(int code) {
-        return characterTable.charAt(code);
+    String getChar(int code) {
+        if (characterTable.length() > code) {
+            return "" + characterTable.charAt(code);
+        } else {
+            return "\uD83D\uDC80";
+        }
+    }
+
+    public String getString(MidiResponseField field, byte[] payload) {
+        BitStreamReader bsr = new BitStreamReader(payload);
+        String name = "";
+        bsr.readBits(field.getOffset());
+        for (int i = 0; i < field.getSize(); i++) {
+            name += getChar(bsr.readInvertedBits(7));
+        }
+        return name;
+    }
+
+    public MidiPresetIdentity getProgramName(MidiDeviceDefinition device, MidiDeviceMode mode, String currentBankName, byte[] decodedBuffer) {
+        BitStreamReader bsr = new BitStreamReader(decodedBuffer);
+        String name = "";
+        bsr.readBits(8);
+        for (int i = 0; i < 10; i++) {
+            name += getChar(bsr.readInvertedBits(7));
+        }
+        bsr.readBits(3);
+        int groupId = bsr.readInvertedBits(6);
+        String category = device.getCategoryName(mode, groupId);
+        return new MidiPresetIdentity(mode.getName(), currentBankName, name, category);
     }
 
     public void dumpASCIITable() {
@@ -58,63 +85,6 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
         }
     }
 
-    /**
-     * Alesis Quadrasynth SYSEX use a complex 7 bit stream that need to be converted to a 8 bit stream given a decoding key
-     * <p>It is decoded in blocks of 56 bits, producing 7 bytes</p>
-     *
-     * @param sysexPayload
-     * @return
-     */
-    public byte[] unpackAlesisMidiBuffer(byte[] sysexPayload) {
-        final int inputBlockSizeInBytes = 8;
-        final int outputBlockSizeInBytes = 7;
-        final BitStreamReader bsr = new BitStreamReader(sysexPayload);
-        final int nbBlocks = sysexPayload.length / inputBlockSizeInBytes;
-        final int outputSize = nbBlocks * outputBlockSizeInBytes;
-        final byte[] output = new byte[outputSize];
-        if (sysexPayload.length % inputBlockSizeInBytes != 0) {
-            throw new RuntimeException("Invalid size, should be multiple of %d bytes".formatted(inputBlockSizeInBytes));
-        }
-        for (int block = 0; block < nbBlocks; block++) {
-            for (int bitIndex = 0; bitIndex < decodingKey.size(); bitIndex++) {
-                int bit = bsr.readBit();
-                int blockbitpos = decodingKey.get(bitIndex);
-                if (blockbitpos == -1) {
-                    //System.out.println("skip\n");
-                    continue;
-                }
-                int blockPos = blockbitpos / 8;
-                int bitPos = blockbitpos % 8;
-                int mask = 1 << bitPos;
-                int globalBytePos = blockPos + (block * outputBlockSizeInBytes);
-                if (bit == 1) {
-                    output[globalBytePos] = (byte) (output[globalBytePos] | mask);
-                }
-                /*System.out.println("blocksize %s: %3d BLOCK [%d-%d-%d] Bit Mask %s = %d Content: %s".formatted(outputBlockSize, globalBytePos, block, blockPos, bitPos, getBinaryString(mask, 8), bit,
-                        getBinaryString(output[globalBytePos], 8)));*/
-            }
-        }
-        return output;
-    }
-
-    private static List<Integer> getDecodingKey() {
-        List<Integer> key = Arrays.stream(officialKeyReverted.trim()
-                        .split("\\s"))
-                .map(v -> {
-                    if (v.equals("0")) {
-                        return -1;
-                    } else {
-                        int offset = v.charAt(0) - 'A';
-                        int bit = v.charAt(1) - '0';
-                        return bit + offset * 8;
-                    }
-                })
-                .toList();
-        if (key.size() != 64) {
-            throw new MidiError("Invalid decoding key, should have 64 bits");
-        }
-        return key;
-    }
 
     @Override
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {

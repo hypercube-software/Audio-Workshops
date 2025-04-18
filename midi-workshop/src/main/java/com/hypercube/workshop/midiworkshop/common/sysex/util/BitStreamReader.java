@@ -39,6 +39,10 @@ public class BitStreamReader {
         return value;
     }
 
+    public void skipBytes(int size) {
+        readBits(size * 8);
+    }
+
     /**
      * Read bits from LSB to MSB
      *
@@ -60,7 +64,7 @@ public class BitStreamReader {
         if (bitIndex == 8) {
             bitIndex = 0;
             byteIndex++;
-            currentByte = data[byteIndex];
+            currentByte = byteIndex < data.length ? data[byteIndex] : 0;
         }
         int bitValue = (currentByte >> (7 - bitIndex)) & 0x1;
         bitIndex++;

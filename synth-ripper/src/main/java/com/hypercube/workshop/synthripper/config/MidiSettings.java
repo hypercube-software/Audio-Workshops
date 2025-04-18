@@ -32,7 +32,7 @@ public class MidiSettings {
      */
     private float maxNoteReleaseDurationSec;
     /**
-     * Which kinf of bank select must be used
+     * Which kinf of bankName select must be used
      */
     private MidiBankFormat presetFormat;
     /**

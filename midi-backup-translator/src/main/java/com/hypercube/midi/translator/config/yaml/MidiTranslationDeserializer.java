@@ -7,8 +7,8 @@ import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslationPayload;
 import com.hypercube.midi.translator.error.ConfigError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.ExpandedRequestDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +47,14 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
                     .orElse(127);
 
             String rawPayload = translationMatcher.group("payload");
-            // expand the macro if there is one
             ProjectConfiguration projectConfiguration = (ProjectConfiguration) jsonParser.getParsingContext()
                     .getParent()
                     .getCurrentValue();
-            List<ExpandedRequestDefinition> expandedTexts = midiDeviceLibrary.expand(configFile, projectConfiguration.getTranslate()
-                    .getToDevice(), rawPayload);
+            // expand the macro if there is one
+            var device = midiDeviceLibrary.getDevice(projectConfiguration.getTranslate()
+                            .getToDevice())
+                    .orElseThrow();
+            List<MidiRequest> expandedTexts = midiDeviceLibrary.expand(configFile, device, null, rawPayload);
             return forgeMidiTranslation(translationDefinition, cc, lowerBound, upperBound, expandedTexts);
         } else {
             throw new ConfigError("Unexpected Translation definition: " + translationDefinition);
@@ -62,12 +64,12 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
     /**
      * Given a translation payload, properly expanded without any macro call, generate a {@link MidiTranslation}
      */
-    private static MidiTranslation forgeMidiTranslation(String translationDefinition, int cc, int lowerBound, int upperBound, List<ExpandedRequestDefinition> expandedRequestDefinitions) {
+    private static MidiTranslation forgeMidiTranslation(String translationDefinition, int cc, int lowerBound, int upperBound, List<MidiRequest> expandedRequestDefinitions) {
         var payloads = expandedRequestDefinitions.stream()
                 .map(expandedRequestDefinition -> {
-                    var payloadMatcher = translationPayloadRegExp.matcher(expandedRequestDefinition.payload());
+                    var payloadMatcher = translationPayloadRegExp.matcher(expandedRequestDefinition.getValue());
                     // we need to convert the payload string in a list of bytes
-                    // "vv" will be repplaced by 0, and we store its position in valueIndex
+                    // "vv" will be replaced by 0, and we store its position in valueIndex
                     int valueIndex = -1;
                     List<Byte> list = new ArrayList<>();
                     while (payloadMatcher.find()) {

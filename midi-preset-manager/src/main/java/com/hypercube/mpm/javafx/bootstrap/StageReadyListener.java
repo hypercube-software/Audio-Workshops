@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.bootstrap;
 
+import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.event.StageReadyEvent;
 import com.hypercube.mpm.javafx.widgets.MainWindow;
 import javafx.fxml.FXMLLoader;
@@ -20,10 +21,12 @@ public class StageReadyListener implements ApplicationListener<StageReadyEvent> 
 
     private final String applicationTitle;
     private final ApplicationContext applicationContext;
+    private final ProjectConfiguration projectConfiguration;
 
-    public StageReadyListener(@Value("${spring.application.ui.title}") String applicationTitle, ApplicationContext applicationContext) {
+    public StageReadyListener(@Value("${spring.application.ui.title}") String applicationTitle, ApplicationContext applicationContext, ProjectConfiguration configuration) {
         this.applicationTitle = applicationTitle;
         this.applicationContext = applicationContext;
+        this.projectConfiguration = configuration;
     }
 
     @Override

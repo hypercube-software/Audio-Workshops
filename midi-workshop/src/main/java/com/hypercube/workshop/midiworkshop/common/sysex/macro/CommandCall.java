@@ -7,9 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public record CommandCall(String name, List<String> parameters) {
-    private static Pattern commandCall = Pattern.compile("(^|[\\s:])(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_NAME_REGEXP));
+    private static Pattern commandCall = Pattern.compile("(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_NAME_REGEXP));
 
     /**
      * Parse a command definition
@@ -31,7 +32,13 @@ public record CommandCall(String name, List<String> parameters) {
                     .orElse(List.of());
             return new CommandCall(name, paramArray);
         } else {
-            throw new MidiError("Invalid command call definition: %s in file %s".formatted(definition, configFile.getAbsolutePath()));
+            throw new MidiError("Invalid command call definition: '%s' in file %s".formatted(definition, configFile.getAbsolutePath()));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "%s(%s)".formatted(name, parameters.stream()
+                .collect(Collectors.joining(",")));
     }
 }

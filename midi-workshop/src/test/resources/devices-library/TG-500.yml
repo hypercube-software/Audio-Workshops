@@ -20,4 +20,11 @@ macros:
   - "AllVoiceInternal2()      : Voice Internal 2([0-62])"
   - "AllVoiceEditBuffer()     : Voice Edit Buffer([0-62])"
   - "AllPerformances()        : Performance([0-63])"
-  
+
+mappers:
+  "patchName":
+    fields:
+      title:
+        offset: "$69"
+        size: 8
+        type: STRING

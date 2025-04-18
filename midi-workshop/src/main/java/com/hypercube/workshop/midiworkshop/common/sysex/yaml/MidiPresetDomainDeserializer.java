@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,6 @@ public class MidiPresetDomainDeserializer extends StdDeserializer<MidiPresetDoma
                 .getParent()
                 .getCurrentValue();
 
-        return MidiPresetDomain.parse(definitionFile, midiDeviceDefinition.getPresetFormat(), value);
+        return MidiPresetDomain.parse(definitionFile, midiDeviceDefinition, value);
     }
 }

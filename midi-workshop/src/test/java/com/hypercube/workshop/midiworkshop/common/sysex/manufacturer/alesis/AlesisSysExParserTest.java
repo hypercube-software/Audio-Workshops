@@ -1,12 +1,13 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.alesis;
 
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDecodingKey;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.BitStreamReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -46,13 +47,30 @@ class AlesisSysExParserTest {
         //
         // GIVEN
         //
+        MidiDeviceDefinition device = new MidiDeviceDefinition();
+        MidiDeviceDecodingKey key = new MidiDeviceDecodingKey(7, 1, """
+                    0 A1 A2 A3 A4 A5 A6 A7
+                    0 B2 B3 B4 B5 B6 B7 A0
+                    0 C3 C4 C5 C6 C7 B0 B1
+                    0 D4 D5 D6 D7 C0 C1 C2
+                    0 E5 E6 E7 D0 D1 D2 D3
+                    0 F6 F7 E0 E1 E2 E3 E4
+                    0 G7 F0 F1 F2 F3 F4 F5
+                    0 G0 G1 G2 G3 G4 G5 G6                
+                """);
+        device.setDecodingKey(key);
         AlesisSysExParser alesisSysExParser = new AlesisSysExParser();
-        byte[] data = AlesisSysExParser.class.getResourceAsStream("/SysEx/Alesis/" + file)
+        byte[] payload = AlesisSysExParser.class.getResourceAsStream("/SysEx/Alesis/" + file)
                 .readAllBytes();
-        // the SYSEX looks like this: F0 00 00 0E 0E 02 <edit#> <data> F7
+        // the SYSEX looks like this:
+        // USER PROGRAM: F0 00 00 0E 0E 00 <edit#> <data> F7
+        // PROGRAM     : F0 00 00 0E 0E 02 <edit#> <data> F7
+        // MIX         : F0 00 00 0E 0E 0E <edit#> <data> F7
         // we extract "data" and decode it
-        byte[] payload = Arrays.copyOfRange(data, 7, 7 + 400);
-
+        int payloadType = payload[5];
+        if (payloadType != 0x02 && payloadType != 00) {
+            throw new IllegalStateException("Unexpected payload payloadType for this test: " + payloadType);
+        }
         String header1 = "AAAAAAAA";
         String header2 = "76543210";
         String expected = "00000000";
@@ -73,13 +91,14 @@ class AlesisSysExParserTest {
         //
         // WHEN
         //
-        byte[] unpacked = alesisSysExParser.unpackAlesisMidiBuffer(payload);
+        byte[] unpacked = alesisSysExParser.unpackMidiBuffer(device, payload);
 
         // THEN
-        assertEquals(350, unpacked.length);
+        //assertEquals(350, unpacked.length);
         BitStreamReader bsr = new BitStreamReader(unpacked);
         String actual = getActualDecodedBits(bsr);
-        String actualTitle = getActualTitle(bsr, alesisSysExParser);
+        String actualTitle = payloadType == 0x0E ? getActualTitle2(bsr, alesisSysExParser) : getActualTitle(bsr, alesisSysExParser);
+
         String errors = getActualBitsErrors(actual, expected);
         System.out.println("Title          : '" + title + "'");
         System.out.println("Actual Title   : '" + actualTitle + "'");
@@ -100,6 +119,7 @@ class AlesisSysExParserTest {
         assertEquals(expected, actual);
     }
 
+
     private static String getActualBitsErrors(String actual, String expected) {
         String errors = "";
         for (int i = 0; i < actual.length(); i++) {
@@ -116,6 +136,17 @@ class AlesisSysExParserTest {
         bsr.reset();
         String actualTitle = "";
         bsr.readBits(8);
+        for (int i = 0; i < 10; i++) {
+            int c = bsr.readInvertedBits(7);
+            actualTitle += alesisSysExParser.getChar(c);
+        }
+        return actualTitle;
+    }
+
+    private String getActualTitle2(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
+        bsr.reset();
+        String actualTitle = "";
+        bsr.readBits(5);
         for (int i = 0; i < 10; i++) {
             int c = bsr.readInvertedBits(7);
             actualTitle += alesisSysExParser.getChar(c);

@@ -8,9 +8,10 @@ import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.config.yaml.MidiTranslationDeserializer;
 import com.hypercube.midi.translator.error.ConfigError;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSequence;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,8 +121,9 @@ public class ProjectConfigurationFactory {
      */
     public MidiRequestSequence forgeMidiRequestSequence(ProjectDevice device, String rawRequestDefinition) {
         String rawMacroDefinition = "noname() : - : %s".formatted(rawRequestDefinition);
-        CommandMacro requestDefinition = CommandMacro.parse(configFile, rawMacroDefinition);
-        return midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(), requestDefinition);
+        CommandMacro commandMacro = CommandMacro.parse(configFile, rawMacroDefinition);
+        CommandCall commandCall = CommandCall.parse(configFile, "noname()");
+        return midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(), commandMacro, commandCall);
     }
 
     public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {
