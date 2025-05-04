@@ -58,7 +58,7 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithSequenceOfMacroAndMapper() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : MapperName");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : patchName");
         CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
                 .getFirst();
         // WHEN
