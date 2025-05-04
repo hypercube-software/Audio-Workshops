@@ -25,8 +25,8 @@ class SteinbergScriptFileParserTest {
                 .stream()
                 .sorted(Comparator.comparing(MidiPreset::getBankMSB)
                         .thenComparing(MidiPreset::getBankLSB)
-                        .thenComparing(MidiPreset::getProgram))
-                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getProgram(), p.getId()))
+                        .thenComparing(MidiPreset::getLastProgram))
+                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getLastProgram(), p.getId()))
                 .toList();
         Files.write(Path.of("./src/main/resources/sc/SoundCanvasPatches.txt"), lines, StandardOpenOption.CREATE);
     }

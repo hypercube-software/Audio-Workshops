@@ -1,6 +1,6 @@
 package com.hypercube.workshop.synthripper.config;
 
-import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
+import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

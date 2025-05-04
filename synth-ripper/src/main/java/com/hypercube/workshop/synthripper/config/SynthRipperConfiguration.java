@@ -6,9 +6,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
-import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPresetDeserializer;
-import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
 import com.hypercube.workshop.synthripper.config.yaml.CommandMacroDeserializer;
+import com.hypercube.workshop.synthripper.config.yaml.ConfigMidiPresetDeserializer;
+import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import lombok.Getter;
 import lombok.Setter;
 

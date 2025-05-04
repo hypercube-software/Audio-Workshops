@@ -12,7 +12,6 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrar
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSequence;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
-import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -120,10 +119,15 @@ public class ProjectConfigurationFactory {
      * @return The {@link MidiRequestSequence}
      */
     public MidiRequestSequence forgeMidiRequestSequence(ProjectDevice device, String rawRequestDefinition) {
-        String rawMacroDefinition = "noname() : - : %s".formatted(rawRequestDefinition);
-        CommandMacro commandMacro = CommandMacro.parse(configFile, rawMacroDefinition);
-        CommandCall commandCall = CommandCall.parse(configFile, "noname()");
-        return midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(), commandMacro, commandCall);
+        return CommandCall.parse(configFile, rawRequestDefinition)
+                .stream()
+                .map(commandCall -> midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(),
+                        midiDeviceLibrary.getDevice(device.getName())
+                                .map(d -> d.getMacro(commandCall))
+                                .orElseThrow(), commandCall))
+                .findFirst()
+                .orElseThrow();
+
     }
 
     public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {

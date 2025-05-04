@@ -28,11 +28,11 @@ class MidiPresetTest {
     @ParameterizedTest
     @MethodSource
     void parseMSBLSBBank(TestParam testParam) {
-        MidiPreset preset = MidiPreset.of(new File("config.yml"), 1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
+        MidiPreset preset = MidiPresetBuilder.parse(new File("config.yml"), 1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
         assertEquals("title", preset.getId()
                 .name());
-        assertEquals(1, preset.getChannel());
-        assertEquals(testParam.expectedProgram(), preset.getProgram());
+        assertEquals(1, preset.getZeroBasedChannel());
+        assertEquals(testParam.expectedProgram(), preset.getLastProgram());
         assertEquals(testParam.expectedBank(), preset.getBank());
     }
 
@@ -49,6 +49,6 @@ class MidiPresetTest {
     @MethodSource
     void parseBrokenMSBLSBBank(TestParam testParam) {
         assertThrows(MidiConfigError.class, () ->
-                MidiPreset.of(new File("config.yml"), 1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of()));
+                MidiPresetBuilder.parse(new File("config.yml"), 1, testParam.midiBankFormat(), testParam.presetNumbering(), "title", List.of(), List.of(testParam.input()), List.of(), List.of()));
     }
 }

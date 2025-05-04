@@ -43,7 +43,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithoutMacro() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
+                .getFirst();
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN
@@ -58,7 +59,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithSequenceOfMacroAndMapper() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : MapperName");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
+                .getFirst();
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN
@@ -87,7 +89,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithSequenceOfMacro() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
+                .getFirst();
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN
@@ -116,7 +119,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithSequenceOfMacroAndRawPayload() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
+                .getFirst();
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN
@@ -138,7 +142,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithoutSequence() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
+                .getFirst();
         // WHEN
         var actual = midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN
@@ -164,7 +169,8 @@ class MidiDeviceLibraryTest {
     void forgeRequestsWithParametersFail() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "Multi(channel) : 120 : F0 43 20 7A 'LM  0065MU' 0000000000000000000000000000 00 channel F7");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "Multi()");
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "Multi()")
+                .getFirst();
         // WHEN
         Executable actual = () -> midiDeviceLibrary.forgeMidiRequestSequence(APP_CONFIGFILE, DEVICE_NAME, commandMacro, commandCall);
         // THEN

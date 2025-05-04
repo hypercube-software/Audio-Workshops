@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper.config.presets;
+package com.hypercube.workshop.synthripper.config.yaml;
 
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.config.MidiSettings;

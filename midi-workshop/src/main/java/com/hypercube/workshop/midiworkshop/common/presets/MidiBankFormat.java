@@ -16,5 +16,9 @@ public enum MidiBankFormat {
     /**
      * Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
      */
-    BANK_MSB_LSB_PRG
+    BANK_MSB_LSB_PRG,
+    /**
+     * Send 2 Program Changes (used by Yamaha TG-77 in 'direct mode')
+     */
+    BANK_PRG_PRG
 }

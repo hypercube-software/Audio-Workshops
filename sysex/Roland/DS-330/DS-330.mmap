@@ -178,7 +178,7 @@ struct 000100 PatchParams
 	byte Channel
 	Switch Rx Pitch Bend
 	Switch Rx Channel Aftertouch
-	Switch Rx Prorgram Change
+	Switch Rx Program Change
 	Switch Rx Command Change
 	Switch Rx Polyphonic Aftertouch
 	Switch Rx Note Message

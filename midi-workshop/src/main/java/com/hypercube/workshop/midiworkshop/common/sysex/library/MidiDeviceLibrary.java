@@ -186,32 +186,35 @@ public class MidiDeviceLibrary {
     /**
      * Expand a payloadBody using macro for a specific device
      *
-     * @param device       device owning the macro
-     * @param configFile   from where device macro are loaded
-     * @param responseSize optional response size if known (null otherwise)
-     * @param mapper       mapper used to read the response
-     * @param payloadBody  current payload to expand. Typically, contains a list of macro calls
-     * @param path         keep the context of all resolved macros for debug
+     * @param device             device owning the macro
+     * @param configFile         from where device macro are loaded
+     * @param parentResponseSize optional response size if known (null otherwise)
+     * @param mapper             mapper used to read the response
+     * @param payloadBody        current payload to expand. Typically, contains a list of macro calls
+     * @param path               keep the context of all resolved macros for debug
      * @return list of requests produced by payloadBody
      */
-    public List<MidiRequest> expandWithPath(MidiDeviceDefinition device, File configFile, MidiResponseMapper mapper, Integer responseSize, String payloadBody, String path) {
+    public List<MidiRequest> expandWithPath(MidiDeviceDefinition device, File configFile, MidiResponseMapper mapper, Integer parentResponseSize, String payloadBody, String path) {
         checkLoaded();
         log.trace("Expand " + payloadBody);
         boolean hasMacroCall = payloadBody.contains("(");
         if (hasMacroCall) {
-            CommandCall commandCall = CommandCall.parse(configFile, payloadBody);
-            String newPath = path + "/" + commandCall.name();
-            CommandMacro macro = device.getMacro(commandCall);
-            String expanded = macro.expand(commandCall);
-            Integer newResponseSize = macro.getResponseSize();
-            MidiResponseMapper newMapper = macro.getMapperName() != null ? getMacroMapper(device, macro) : mapper;
-            // the expanded macro can contain again a list of macro commandCall, so we recurse after splitting with ";"
-            return Arrays.stream(expanded.split(MACRO_CALL_SEPARATOR))
-                    .flatMap(expandedCommand -> expandWithPath(device, configFile, newMapper, newResponseSize, expandedCommand, newPath).stream())
+            return CommandCall.parse(configFile, payloadBody)
+                    .stream()
+                    .flatMap(commandCall -> {
+                        String newPath = path + "/" + commandCall.name();
+                        CommandMacro macro = device.getMacro(commandCall);
+                        String expanded = macro.expand(commandCall);
+                        Integer newResponseSize = macro.getResponseSize() != null ? macro.getResponseSize() : parentResponseSize;
+                        MidiResponseMapper newMapper = macro.getMapperName() != null ? getMacroMapper(device, macro) : mapper;
+                        // the expanded macro can contain again a list of macro commandCall, so we recurse after splitting with ";"
+                        return Arrays.stream(expanded.split(MACRO_CALL_SEPARATOR))
+                                .flatMap(expandedCommand -> expandWithPath(device, configFile, newMapper, newResponseSize, expandedCommand, newPath).stream());
+                    })
                     .toList();
         } else {
             // There is no more macro commandCall to resolve we return the string "as is" with its path
-            return List.of(new MidiRequest(path, payloadBody, responseSize, mapper));
+            return List.of(new MidiRequest(path, payloadBody, parentResponseSize, mapper));
         }
     }
 
@@ -308,7 +311,11 @@ public class MidiDeviceLibrary {
     public MidiRequestSequence forgeMidiRequestSequence(File configFile, String deviceName, CommandMacro commandMacro, CommandCall commandCall) {
         MidiDeviceDefinition device = Optional.ofNullable(devices.get(deviceName))
                 .orElseThrow(() -> new MidiConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
-        MidiResponseMapper mapper = device.getMapper(commandMacro.getMapperName())
+        // if the mapper name is not set, mapper is null
+        // if the mapper name is specified, we are looking for the corresponding MidiResponseMapper or raise an error if not found
+        MidiResponseMapper mapper = Optional.ofNullable(commandMacro.getMapperName())
+                .map(mapperName -> device.getMapper(mapperName)
+                        .orElseThrow(() -> new MidiConfigError("Undefined request Mapper 'not defined: '" + commandMacro.getMapperName() + "' in " + configFile.toString())))
                 .orElse(null);
         List<MidiRequest> result = Arrays.stream(commandMacro.expand(commandCall)
                         .split(MACRO_CALL_SEPARATOR))

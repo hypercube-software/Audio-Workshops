@@ -27,7 +27,8 @@ class CommandMacroTest {
     @Test
     void expandByte() {
         CommandMacro macro = CommandMacro.parse(definitionFile, "name(p1,p2,p3) : FF F8 p1 000000 p2 p3 F7");
-        CommandCall actual = CommandCall.parse(configFile, "name(12,0xFE,45)");
+        CommandCall actual = CommandCall.parse(configFile, "name(12,0xFE,45)")
+                .getFirst();
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 FE 2D F7", result);
     }
@@ -35,7 +36,8 @@ class CommandMacroTest {
     @Test
     void expandWord() {
         CommandMacro macro = CommandMacro.parse(definitionFile, "name(p1,p2,p3) : FF F8 p1 000000 p2 p3 F7");
-        CommandCall actual = CommandCall.parse(configFile, "name(12,0x0000FE,$0045)");
+        CommandCall actual = CommandCall.parse(configFile, "name(12,0x0000FE,$0045)")
+                .getFirst();
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 0000FE 0045 F7", result);
     }
@@ -43,7 +45,8 @@ class CommandMacroTest {
     @Test
     void expandWithSpaces() {
         CommandMacro macro = CommandMacro.parse(definitionFile, "name(p1,p2,p3) : FF F8 p1 000000 p2 p3 F7");
-        CommandCall actual = CommandCall.parse(configFile, "name (12 ,$FE, 45)");
+        CommandCall actual = CommandCall.parse(configFile, "name (12 ,$FE, 45)")
+                .getFirst();
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 FE 2D F7", result);
     }
@@ -51,7 +54,8 @@ class CommandMacroTest {
     @Test
     void expandWithSpacesAndSize() {
         CommandMacro macro = CommandMacro.parse(definitionFile, "name(p1,p2,p3) : 420 : FF F8 p1 000000 p2 p3 F7");
-        CommandCall actual = CommandCall.parse(configFile, "name (12 ,$FE, 45)");
+        CommandCall actual = CommandCall.parse(configFile, "name (12 ,$FE, 45)")
+                .getFirst();
         String result = macro.expand(actual);
         assertEquals("FF F8 0C 000000 FE 2D F7", result);
     }

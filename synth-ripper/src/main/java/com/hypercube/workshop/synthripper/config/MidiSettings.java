@@ -6,7 +6,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
-import com.hypercube.workshop.synthripper.config.presets.IConfigMidiPreset;
+import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +40,7 @@ public class MidiSettings {
      */
     private MidiPresetNumbering presetNumbering;
     /**
-     * Defautl MIDI channel to use
+     * Defautl MIDI channel to use in the range [1-16] not [0-15]
      */
     private int channel = DEFAULT_MIDI_CHANNEL;
     /**
@@ -118,5 +118,9 @@ public class MidiSettings {
     private int getNoteNumber(String note) {
         return MidiNote.fromName(note)
                 .value();
+    }
+
+    public int getZeroBasedChannel() {
+        return channel - 1;
     }
 }

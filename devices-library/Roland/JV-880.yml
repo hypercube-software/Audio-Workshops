@@ -11,5 +11,96 @@ macros:
   - "Performances()       : 19A0 : F041104611 01001000 00150000 CK8 F7"
   - "Internal Patches()   : 9943 : F041104611 01402000 00400000 CK8 F7"
   - "Internal Rhythm()    : 0C8D : F041104611 017F4000 00003300 CK8 F7"
-  - "Everything()         : System Common();Performances();Internal Patches();Internal Rhythm();Temp Performance();Temp Rhythm Setup();Temp Patch()" 
-  
+  - "Everything()         : System Common();Performances();Internal Patches();Internal Rhythm();Temp Performance();Temp Rhythm Setup();Temp Patch()"
+  - "setMode(mode)        : F041104612 00000000 mode CK5 F7"
+  - "setPatchMode()       : setMode($01)"
+  - "setPerformanceMode() : setMode($00)"
+  - "PatchName()          : F041104611 00082000 00000022 CK8 F7 : RolandPatchMapper"
+  - "PerformanceName()    : F041104611 00001000 0000001F CK8 F7 : RolandPerformanceMapper"
+
+deviceModes:
+  Patch:
+    command: setPatchMode()
+    queryName: PatchName()
+    categories:
+      - "Drum"
+      - "Keyboard: Piano, Rhode,Grand"
+      - "Chromatic Percussion: Clav, Marimba, Bell,Vibe"
+      - "Organ"
+      - "Guitar: Gtr,Strat,Overdrive,Nylon,Steel"
+      - "Bass: Fretless, Bs, Slap"
+      - "String: Pizz,Marcato,Strng,Harp"
+      - "Brass: Trumpet, Horn,Trombone,Sax"
+      - "Woodwinds: Flute,Ocarina,Pan,Harmon,Whistle"
+      - "Synth Pad: Pad"
+      - "Synth Lead: Lead, Fantasia, Sweep"
+      - "Voice: Ahh, Ohh, Vox"
+    banks:
+      "Preset A Bank":
+        command: 81
+        presetDomain: 0-63
+      "Preset B Bank":
+        command: 81
+        presetDomain: 64-127
+      "Internal Bank":
+        command: 80
+        presetDomain: 0-63
+      "Data Card":
+        command: 80
+        #presetDomain: 64-127
+  Performance:
+    command: setPerformanceMode()
+    queryName: PerformanceName()
+    # In performance mode, channel 16 must be used to select performances
+    banks:
+      "Preset A Bank":
+        command: 81
+        channel: 16
+        presetDomain: 0-15
+      "Preset B Bank":
+        command: 81
+        channel: 16
+        presetDomain: 0-15
+      "Internal Bank":
+        command: 80
+        channel: 16
+        presetDomain: 0-15
+      "Data Card":
+        command: 80
+        channel: 16
+        #presetDomain: 0-15
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# PRG              : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+#
+presetFormat: BANK_MSB_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+#
+# Mappers to extract patch names
+#
+mappers:
+  RolandPatchMapper:
+    fields:
+      name:
+        type: STRING
+        offset: 9
+        size: 12
+  RolandPerformanceMapper:
+    fields:
+      name:
+        type: STRING
+        offset: 9
+        size: 12

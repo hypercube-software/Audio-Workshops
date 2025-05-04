@@ -3,8 +3,10 @@ package com.hypercube.workshop.synthripper.config.presets;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
+import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,10 +28,25 @@ import static com.hypercube.workshop.synthripper.config.MidiSettings.USE_DEFAULT
 public class ConfigMidiPreset implements IConfigMidiPreset {
     private static Pattern presetRegExp = Pattern.compile("(?<command>(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?)(\\s+CC\\((?<CCLIST>[^)]+)\\))?\\s+(?<title>.*)");
     private static Pattern drumkitNoteExp = Pattern.compile("(?<note>[0-9]+)\\s+(?<title>.+)");
+    /**
+     * Name of the preset
+     */
     private String title;
+    /**
+     * Midi channel in the range [1-16] not [0-15] or -1 to use the default ones
+     */
     private int channel = USE_DEFAULT_MIDI_CHANNEL;
+    /**
+     * Commands to select the preset
+     */
     private List<String> commands = List.of();
+    /**
+     * Control changes to apply to the preset
+     */
     private List<Integer> controlChanges = List.of(MidiPreset.NO_CC);
+    /**
+     * If the preset is a drum kit, gives list of note number and names
+     */
     private List<String> drumkitNotes = List.of();
 
     public static ConfigMidiPreset fromShortSpec(String shortSpec) {
@@ -51,12 +68,12 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
 
     @Override
     public MidiPreset forgeMidiPreset(File configFile, MidiSettings midiSettings) {
-        final int midiChannel = channel == USE_DEFAULT_MIDI_CHANNEL ? midiSettings.getChannel() : channel;
+        final int midiChannel = (channel == USE_DEFAULT_MIDI_CHANNEL) ? midiSettings.getZeroBasedChannel() : getZeroBasedChannel();
         final List<DrumKitNote> drumKitNotes = drumkitNotes.stream()
                 .map(this::forgeDrumKitNote)
                 .toList();
         final List<CommandMacro> macros = midiSettings.getCommands();
-        return MidiPreset.of(configFile, midiChannel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, macros, commands, controlChanges, drumKitNotes);
+        return MidiPresetBuilder.parse(configFile, midiChannel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, macros, commands, controlChanges, drumKitNotes);
     }
 
     private DrumKitNote forgeDrumKitNote(String spec) {
@@ -70,5 +87,9 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
         } else {
             throw new MidiError("Unexpected drumkit note definition:" + spec);
         }
+    }
+
+    public int getZeroBasedChannel() {
+        return channel - 1;
     }
 }

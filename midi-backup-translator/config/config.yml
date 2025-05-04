@@ -6,7 +6,7 @@ devices:
   # Required fields (override those defined in "devices" folder
   #  inputMidiDevice: "4- MIDISPORT Uno In"
   #  outputMidiDevice: "4- MIDISPORT Uno Out"
-  - name: "DS-330"
+  - name: "TG-77"
     #
     # dumpRequests accept 2 formats:
     #   "TITLE : SIZE : PAYLOAD TEMPLATE"

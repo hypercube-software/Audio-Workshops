@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper.config.presets;
+package com.hypercube.workshop.synthripper.config.yaml;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPreset;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

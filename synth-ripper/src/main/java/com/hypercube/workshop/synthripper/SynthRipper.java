@@ -108,7 +108,7 @@ public class SynthRipper {
                             for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
                                 for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
                                     RecordedSynthNote rs = new RecordedSynthNote();
-                                    rs.setChannel(preset.getChannel() - 1);
+                                    rs.setChannel(preset.getZeroBasedChannel());
                                     rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
 
                                     rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
@@ -128,7 +128,7 @@ public class SynthRipper {
                                     rs.setFile(getOutputFile(rs));
                                     samples.add(rs);
 
-                                    log.info("%s %s = %s".formatted(rs.getNote(), rs.getVelocity(), rs.getFile()
+                                    log.info("Note %s Velocity %s = %s".formatted(rs.getNote(), rs.getVelocity(), rs.getFile()
                                             .getName()));
                                 }
                             }
@@ -417,7 +417,8 @@ public class SynthRipper {
         var midiNote = MidiNote.fromValue(note);
 
         StringBuffer sb = new StringBuffer();
-        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getId(), preset.getId()));
+        sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getFirstProgram(), preset.getId()
+                .name()));
         sb.append("%s - Velo %03d".formatted(recordedSynthNote.getName(), Math.min(127, velocity)));
         if (recordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
             sb.append(" CC%d[%d]".formatted(recordedSynthNote.getControlChange(), recordedSynthNote.getCcValue()

@@ -10,15 +10,16 @@ import com.hypercube.workshop.midiworkshop.common.sysex.parser.ManufacturerSysEx
 import com.hypercube.workshop.midiworkshop.common.sysex.util.BitStreamReader;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
 
 @Getter
 @Setter
+@Slf4j
 public class MidiResponseMapper {
     public static final String BRAND_ALESIS = "Alesis";
-    public static final String BRAND_KORG = "Korg";
     private String name;
     private MidiDeviceDefinition device;
     private Map<String, MidiResponseField> fields;
@@ -30,6 +31,13 @@ public class MidiResponseMapper {
         if (currentResponse.getCategory() == null && currentResponse.getPatchName() != null) {
             searchCategoryInName(mode, currentResponse, currentResponse.getPatchName());
         }
+    }
+
+    public void dumpFields(MidiResponse midiResponse) {
+        log.info("Extracted field:");
+        fields.keySet()
+                .stream()
+                .forEach(field -> log.info("%10s: %s".formatted(field, midiResponse.getField(field))));
     }
 
     private void extract(MidiDeviceMode mode, MidiResponse currentResponse, CustomMidiEvent event, MidiResponseField field) {

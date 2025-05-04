@@ -24,6 +24,15 @@ public class CustomMidiEvent extends MidiEvent {
         return sb.toString();
     }
 
+    public String getHexValuesSpaced() {
+        var a = getMessage().getMessage();
+        StringBuilder sb = new StringBuilder((a.length + 1) * 2);
+        sb.append("0x");
+        for (byte b : a)
+            sb.append(String.format(" %02X", b));
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         var message = getMessage();

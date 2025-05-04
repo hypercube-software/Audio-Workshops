@@ -4,25 +4,44 @@
 deviceName: "TG-77"
 brand: "Yamaha"
 # requests format is in table 5 (page 15) of the document "MIDI DATA FORMAT"
+# mtype: 00 = INTERNAL
+#        02 = PRESET 1
+#        03 = PRESET 2
+#        7F = EDIT BUFFER
+# mem: [0-63] except for EDIT BUFFER where it is only 0
+# NOTE:
+# responses size (byte count) must be converted from 7 bits to 8 bits, so $034A is $01CA
+# as vaguely explained in the manual 0bbbbbbb 0bbbbbbb => 00bbbbbbbb bbbbbbbb
+#
 macros:
   - "REQ(type,mtype,mem) : - : F0 43 20 7A type 0000000000000000000000000000 mtype mem F7" # Voice
   
   # Voices
-  # "mem" is in range [0-63], this include 4 banks (A,B,C,D) of 16 presets
-  - "Internal CVMEM()    : 24C : REQ('LM  8101VC', $00, 0)" # mem 0 is common settings
-  - "Internal VMEM()     : 24B : REQ('LM  8101VC', $00, [1-63])"
-  - "Preset VMEM()       : 24B : REQ('LM  8101VC', $02, [0-63])"
-  - "Edit Buffer VMEM()  : 248 : REQ('LM  8101VC', $7F, [0-63])"
+  # "mem" is in range [0-63], this includes 4 banks (A,B,C,D) of 16 presets
+  # Unfortunately the response size depends on the voice type
+  # 0 (1AFM_mono) is 466 bytes ($1D2)
+  # 1 (2AFM_mono) is 832 bytes ($340)
+  # 2 (4AFM_mono) is ... bytes ($...)
+  # 3 (1AFM_poly) is 466 bytes ($1D2)
+  # 4 (2AFM_poly) is 832 bytes ($340)
+  # 5 (1AWM_poly) is 221 bytes ($DD)
+  # 6 (2AWM_poly) is 342 bytes ($156)
+  # 7 (4AWM_poly) is 584 bytes ($248)
+  # 8 (1AWM_1AWM_poly) is 587 bytes ($24B)
+  # 9 (2FM_2PCM_poly) is 1074 bytes ($432)
+  #
+  - "Internal VMEM(program)     : - : REQ('LM  8101VC', $00, program)"
+  - "Preset1 VMEM(program)      : - : REQ('LM  8101VC', $02, program)"
+  - "Preset2 VMEM(program)      : - : REQ('LM  8101VC', $03, program)"
+  - "Edit Buffer VMEM()         : - : REQ('LM  8101VC', $7F, $00)"
 
-  - "IVMEM()             : Internal CVMEM();Internal VMEM()"
-  
-  - "AllVMEM()           : IVMEM();Preset VMEM();Preset VMEM();Edit Buffer VMEM()"
+  - "AllVMEM()           : Internal VMEM([0-63]);Preset1 VMEM([0-63]);Preset2 VMEM([0-63]);Edit Buffer VMEM()"
   
   # MULTI
   # "mem" is in range [0-15], this include the 16 channels of a MULTI
   - "Internal MMEM()    : 0110 : REQ('LM  8101MU', $00, [0-15])"
   - "Preset MMEM()      : 0110 : REQ('LM  8101MU', $02, [0-15])"
-  - "Edit Buffer MMEM() : 0110 : REQ('LM  8101MU', $7F, [0-15])"  
+  - "Edit Buffer MMEM() : 0110 : REQ('LM  8101MU', $7F, $00)"
   - "AMMEM()            : 0154 : REQ('LM  8104MU', 0,0)" # MMEM+AMMEM
   - "AllMulti()         : AMMEM();Edit Buffer MMEM()"
   
@@ -33,8 +52,114 @@ macros:
 
   # Micro Tunning (has no preset memory)
   - "Internal MicroTuning(): 012C : REQ('LM  8101MT', $00, [0-1])"
-  
+
   - "SYSTEM()     : 0062 : REQ('LM  8101SY',0,0)" # system setup
   - "PRGCH()      : 0122 : REQ('LM  8104PC',0,0)" # prg change table
-  
+
   - "Everything() : SYSTEM();PRGCH();AllPan();Internal MicroTuning();AllVMEM();AllMulti()"
+  # Remote CTRL
+  - "remote(param,value)       : F0 43 10 34 0D 00 00 param 00 value F7"
+  - "RemoteEdit(): remote(05,$7F)"
+  - "RemoteVoice(): remote(00,$7F)"
+  # Settings
+  - "setSystemSetup(param,value) : F0 43 10 34 0F 00 00 param 00 value F7"
+  # PGCMOD: 0-5
+  # 0 = OFF
+  # 1 = NORMAL
+  # 2 = DIRECT
+  # 3 = TABLE
+  # 4 = ??
+  # 5 = ??
+  - "setProgramChangeMode(mode) : setSystemSetup($35,mode)"
+  - "setProgramChangeModeDIRECT() : setProgramChangeMode(2)"
+  # See page 2 of the MIDI manual, the TG-77 does not use bank select, instead, in mode 'Direct', 2 CTRL Change messages !!
+  - "setBank(bank): C0 bank 00"
+  - "setVoice(program) : C0 program 00"
+  - "setVoiceBankPRESET1(program): setBank(124);setVoice(program)"
+  - "setVoiceBankPRESET2(program): setBank(117);setVoice(program)"
+  - "setVoiceBankINTERNAL(program): setBank(122);setVoice(program)"
+  - "setVoiceBankCARD(program): setBank(123);setVoice(program)"
+  # queries
+  - "Preset1VoiceName(program): Preset1 VMEM(program): YamahaVoiceMapper"
+  - "Preset2VoiceName(program): Preset2 VMEM(program): YamahaVoiceMapper"
+  - "InternalVoiceName(program): REQ('LM  8101VC', $00, program): YamahaVoiceMapper"
+
+deviceModes:
+  VoiceMode:
+    command: setProgramChangeModeDIRECT()
+    banks:
+      "Preset 1 Voices":
+        command: setVoiceBankPRESET1(program)
+        queryName: Preset1VoiceName(program)
+        presetDomain: 0-63
+      "Preset 2 Voices":
+        command: setVoiceBankPRESET2(program)
+        queryName: Preset2VoiceName(program)
+        presetDomain: 0-63
+      "Internal Voices":
+        command: setVoiceBankINTERNAL(program)
+        queryName: InternalVoiceName(program)
+        presetDomain: 0-63
+      "Bank Voices":
+        command: setVoiceBankCARD(program)
+        queryName: InternalVoiceName(program) # you have to copy the card to Internal unfortunately
+        #presetDomain: 0-63
+
+    categories:
+      - "Piano: AP"
+      - "Electric Piano: EP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Musical Effect: ME"
+      - "Organ: OR"
+      - "Plucked: PL"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Comp: SC"
+      - "Synth Ensemble: SE"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI,PC"
+      - "Sound FX: SE"
+
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# PRG              : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+# BANK_PRG_PRG     : Send 2 Program Changes (used by Yamaha TG-77 in 'direct mode')
+#
+presetFormat: BANK_PRG_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+#
+# Mappers to extract patch names
+#
+mappers:
+  YamahaVoiceMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $21
+        size: 10
+      voiceType:
+        type: INTEGER
+        offset: $20
+        size: 1

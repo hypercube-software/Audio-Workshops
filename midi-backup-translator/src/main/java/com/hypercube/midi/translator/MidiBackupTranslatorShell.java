@@ -15,9 +15,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -223,10 +221,8 @@ public class MidiBackupTranslatorShell {
 
     @SuppressWarnings("java:S106")
     private void onSysEx(DeviceInstance device, MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
-        MidiMessage msg = customMidiEvent.getMessage();
-        SysexMessage sysexMsg = (SysexMessage) msg;
-
-        byte[] data = msg.getStatus() == 0xF0 ? msg.getMessage() : sysexMsg.getData();
+        byte[] data = customMidiEvent.getMessage()
+                .getMessage();
         if (device.getCurrentResponseSize() == 0) {
             System.out.print("    Receiving");
         }

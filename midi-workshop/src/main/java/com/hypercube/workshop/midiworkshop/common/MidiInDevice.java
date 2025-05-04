@@ -47,7 +47,7 @@ public class MidiInDevice extends AbstractMidiDevice {
             listeners.stream()
                     .filter(SysExMidiListener.class::isInstance)
                     .map(l -> (SysExMidiListener) l)
-                    .filter(l -> l.listener()
+                    .filter(l -> l.getListener()
                             .equals(listener))
                     .findFirst()
                     .ifPresent(listeners::remove);

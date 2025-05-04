@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.common.presets.steinberg;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class SteinbergScriptFileParser {
             int bankSelectMSB = Integer.parseInt(parts[2].trim(), 10);
             int bankSelectLSB = Integer.parseInt(parts[3].trim(), 10);
             String presetName = body.trim();
-            return Optional.of(MidiPreset.of(presetName, device, bankSelectMSB, bankSelectLSB, program));
+            return Optional.of(MidiPresetBuilder.parse(presetName, device, 0, bankSelectMSB, bankSelectLSB, program));
         }
         return Optional.empty();
     }

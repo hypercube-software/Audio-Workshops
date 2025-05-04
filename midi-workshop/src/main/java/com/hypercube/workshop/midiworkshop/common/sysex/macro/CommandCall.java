@@ -13,27 +13,31 @@ public record CommandCall(String name, List<String> parameters) {
     private static Pattern commandCall = Pattern.compile("(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(CommandMacro.COMMAND_NAME_REGEXP));
 
     /**
-     * Parse a command definition
+     * Parse a list of command definitions: A();B();C()
      *
-     * @param configFile where this definition comes from
-     * @param definition the definition to parse
+     * @param configFile  where this definition comes from
+     * @param definitions the definitions to parse
      * @return parsed definition
      */
-    public static CommandCall parse(File configFile, String definition) {
-        var m = commandCall.matcher(definition.trim());
-        if (m.find()) {
-            String name = m.group("name")
-                    .trim();
-            String params = m.group("params");
-            List<String> paramArray = Optional.ofNullable(params)
-                    .map(p -> Arrays.stream(p.split(","))
-                            .map(String::trim)
-                            .toList())
-                    .orElse(List.of());
-            return new CommandCall(name, paramArray);
-        } else {
-            throw new MidiError("Invalid command call definition: '%s' in file %s".formatted(definition, configFile.getAbsolutePath()));
-        }
+    public static List<CommandCall> parse(File configFile, String definitions) {
+        return Arrays.stream(definitions.split(";"))
+                .map(definition -> {
+                    var m = commandCall.matcher(definition.trim());
+                    if (m.find()) {
+                        String name = m.group("name")
+                                .trim();
+                        String params = m.group("params");
+                        List<String> paramArray = Optional.ofNullable(params)
+                                .map(p -> Arrays.stream(p.split(","))
+                                        .map(String::trim)
+                                        .toList())
+                                .orElse(List.of());
+                        return new CommandCall(name, paramArray);
+                    } else {
+                        throw new MidiError("Invalid command call definition: '%s' in file %s".formatted(definitions, configFile.getAbsolutePath()));
+                    }
+                })
+                .toList();
     }
 
     @Override
