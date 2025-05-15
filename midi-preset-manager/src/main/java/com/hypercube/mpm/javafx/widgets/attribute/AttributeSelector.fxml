@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
+<?import java.lang.String?>
 <fx:root type="GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
@@ -11,9 +12,12 @@
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints/>
     </rowConstraints>
+    <fx:define>
+        <String fx:id="dataSource"/>
+    </fx:define>
     <children>
         <Button fx:id="button" text="Button" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"
                 GridPane.valignment="CENTER"/>
-        <ListView GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+        <ListView fx:id="attributes" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     </children>
 </fx:root>

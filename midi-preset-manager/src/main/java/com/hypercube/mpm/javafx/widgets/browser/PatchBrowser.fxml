@@ -7,7 +7,9 @@
          xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <AttributeSelector minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="0" GridPane.hgrow="NEVER"
-                           GridPane.vgrow="ALWAYS"/>
+                           GridPane.vgrow="ALWAYS"
+                           dataSource="controller.model.root.devices"
+        />
         <AttributeSelector minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <AttributeSelector minWidth="-Infinity" GridPane.columnIndex="2" GridPane.hgrow="NEVER"

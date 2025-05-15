@@ -13,7 +13,6 @@
     </rowConstraints>
     <children>
         <Button mnemonicParsing="false" text="Patches" GridPane.halignment="CENTER" GridPane.rowIndex="0"/>
-        <ListView fx:id="patchList" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"
-                  items="${controller.model.root.patches}"/>
+        <ListView fx:id="patchList" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     </children>
 </fx:root>

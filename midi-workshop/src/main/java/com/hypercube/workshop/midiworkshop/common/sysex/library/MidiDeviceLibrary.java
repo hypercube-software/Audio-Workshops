@@ -38,11 +38,11 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class MidiDeviceLibrary {
+    private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     public static final String DEVICES_LIBRARY_FOLDER = "/devices-library/";
     public static final String ENV_MDL_FOLDER = "MDL_FOLDER";
-    private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     public static final String MACRO_CALL_SEPARATOR = ";";
-
+    @Getter
     private Map<String, MidiDeviceDefinition> devices;
     @Getter
     private boolean loaded;

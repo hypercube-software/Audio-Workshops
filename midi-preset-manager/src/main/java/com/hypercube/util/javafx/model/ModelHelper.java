@@ -71,7 +71,11 @@ public class ModelHelper {
             T instance = observableModelClass.newInstance();
             for (Field field : modelClass
                     .getDeclaredFields()) {
-                instanciateObservableProperty(field, model, instance);
+                if (!field.getType()
+                        .getName()
+                        .contains("Logger")) {
+                    instanciateObservableProperty(field, model, instance);
+                }
             }
             return instance;
         } catch (Exception e) {
@@ -207,7 +211,13 @@ public class ModelHelper {
             Method propertySetter = getObservablePropertySetter(property, fieldName);
             if (value instanceof List && !(value instanceof ObservableList<?>)) {
                 List<?> newList = ((List<?>) value).stream()
-                        .map(ModelHelper::forgeMMVM)
+                        .map(v -> {
+                            if (v instanceof String || v instanceof Boolean || v instanceof Integer || v instanceof Long || v instanceof Float || v instanceof Double) {
+                                return v;
+                            } else {
+                                return ModelHelper.forgeMMVM(v);
+                            }
+                        })
                         .toList();
                 var observableValue = FXCollections.observableList(newList);
                 getField(observableModel.getClass(), fieldName).set(observableModel, observableValue);

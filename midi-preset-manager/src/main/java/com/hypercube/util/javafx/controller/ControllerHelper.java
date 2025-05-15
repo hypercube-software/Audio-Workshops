@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.UtilityClass;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  *     <li>Finally we bind the widget to the controller using {@link Node#setUserData(Object)}</li>
  * </ul>
  */
-@Getter
+@UtilityClass
 public class ControllerHelper {
     @Getter
     @Setter
@@ -26,7 +27,7 @@ public class ControllerHelper {
                 .getName() + "Controller");
     }
 
-    public static <T extends Node> T loadFXML(T widget, String controller) {
+    public static <T extends Node, View> T loadFXML(T widget, String controller) {
         var viewClass = widget.getClass();
         var loader = new FXMLLoader(viewClass.getResource(viewClass.getSimpleName() + ".fxml"));
         try {

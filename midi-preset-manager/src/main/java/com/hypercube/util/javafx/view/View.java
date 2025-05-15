@@ -1,9 +1,11 @@
 package com.hypercube.util.javafx.view;
 
 import com.hypercube.util.javafx.controller.Controller;
+import javafx.scene.Node;
 
 /**
- * Generated widgets will implement this interface for convenience
+ * This interface enforce the link between a {@link Node} and a {@link Controller}
+ * <p>Thereforce generated {@link Node} will implement this interface for convenience
  *
  * @param <C> Type used for the controller bound to this widget
  */
