@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -16,10 +15,8 @@ import java.util.zip.ZipInputStream;
 public class AudioTestFileDownloader {
     public void downloadSound(String url, File outputfolder) {
 
-        InputStream in = null;
         try {
             outputfolder.mkdirs();
-            in = new URL(url).openStream();
             String filename;
             int idx = url.lastIndexOf('/');
             if (idx != -1) {
@@ -33,7 +30,7 @@ public class AudioTestFileDownloader {
             if (!destfile.toFile()
                     .exists()) {
                 log.info("Download test file %s ...".formatted(url));
-                Files.copy(in, destfile, StandardCopyOption.REPLACE_EXISTING);
+                download(url, destfile.toString());
                 if (destfile.toString()
                         .endsWith(".zip")) {
                     unzip(destfile.toFile());
@@ -42,9 +39,28 @@ public class AudioTestFileDownloader {
 
 
         } catch (IOException e) {
-            throw new AudioError("Unable to download" + url, e);
+            throw new AudioError("Unable to download " + url, e);
         }
 
+    }
+
+    private void download(String url, String file) throws IOException {
+
+        URLConnection connection = new URL(url).openConnection();
+
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36");
+        connection.setRequestProperty("Referer", "https://musical-artifacts.com/artifacts/787/?__cf_chl_tk=zi7bgUEADS.0ggJmIUZdZXbjmjYwr9CTwfaQNuSB39g-1747374596-1.0.1.1-4GcPxJVcAJwDNc3VPbqqVEZZecsqLVKmBWp7NyBt8dg");
+        
+        try (InputStream inputStream = connection.getInputStream();
+             FileOutputStream outputStream = new FileOutputStream(file)) {
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
     }
 
     private String cheapUrlDecode(String str) {

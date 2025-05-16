@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +27,14 @@ class DSL2Test {
     @BeforeAll
     static void downloadAudioFiles() {
         var d = new AudioTestFileDownloader();
-        d.downloadSound("https://musical-artifacts.com/artifacts/787/Nokia_6230i.DLS", SRC_FOLDER);
-        d.downloadSound("https://musical-artifacts.com/artifacts/74/TaijiguyGigaTron_switched.gig", SRC_FOLDER);
+        d.downloadSound("http://www.tictokmen.com/sample/moogdrums-giga.zip", SRC_FOLDER);
+        //d.downloadSound("https://musical-artifacts.com/artifacts/787/Nokia_6230i.DLS", SRC_FOLDER); no longer work, protected
     }
 
     @Test
     void parseDSL() throws IOException {
-        File input = new File("%s/%s".formatted(SRC_FOLDER, "Nokia_6230i.DLS"));
+        File input = findFirst(".dls");
+
         try (RiffReader r = new RiffReader(input, false)) {
             var info = r.parse();
             dump("", info.collectChunks());
@@ -57,9 +59,18 @@ class DSL2Test {
         }
     }
 
+    private File findFirst(String fileExt) {
+        return Arrays.stream(SRC_FOLDER.listFiles())
+                .filter(f -> f.getName()
+                        .toLowerCase()
+                        .endsWith(fileExt))
+                .findFirst()
+                .orElseThrow();
+    }
+
     @Test
     void parseGig() throws IOException {
-        File input = new File("./sounds/dsl2/TaijiguyGigaTron_switched.gig");
+        File input = findFirst(".gig");
         try (RiffReader r = new RiffReader(input, false)) {
             var info = r.parse();
             log.info("Version: " + info.getVersion());
@@ -86,8 +97,8 @@ class DSL2Test {
                     .forEach(f -> log.info("Not used: " + f.getFilename()));
 
             assertEquals(0, nbUnused);
-            assertEquals(455, nbUsed);
-            assertEquals("3.0.0.0", info.getVersion()
+            assertEquals(79, nbUsed);
+            assertEquals("2.0.0.0", info.getVersion()
                     .toString());
             log.info("Extract samples...");
             info.getFiles()
