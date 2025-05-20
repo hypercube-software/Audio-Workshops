@@ -3,19 +3,40 @@
 #
 deviceName: "Motif-RackXS"
 brand: "Yamaha"
-# definitions found in the "DATA LIST" PDF from Yamaha
+# definitions found in the "DATA LIST" PDF from Yamaha (see chapter Bulk Dump Block)
 macros:
-  - "REQ(addr)                    : - : F0 43 20 7F 03 addr F7"
-  - "REQ3(a1,a2,a3)               : - : F0 43 20 7F 03 a1 a2 a3 F7"
+  - "DREQ(addr)                   : - : F0 43 20 7F 03 addr F7" # dump request
+  - "PREQ(addr)                   : - : F0 43 30 7F 03 addr F7" # param request
+  - "PCHG(addr,value)             : - : F0 43 10 7F 03 addr value F7" # param request
   # SYSTEM
-  - "System()                     : 40 : REQ(0x000000)"
-  - "SeqSetup()                   : 22 : REQ(0x000500)"
-  - "VoiceMasterEQ()              : 20 : REQ(0x002000)"
-  - "VoiceMasterFX()              : 20 : REQ(0x002100)"
-  - "MicroTuningUserTables()      : -  : REQ3(0,[48-55],0)"
-  - "MicroTuningUserTableNames()  : -  : REQ3(0,[80-87],0)"  
-  - "QuickSetup()                 : -  : REQ3(0,[96-98],0)"
-  - "AudioInPart()                : 14 : REQ(0x004100)" # mLAN
+  - "System()                     : 40 : DREQ(00 0 0 00)"
+  - "SeqSetup()                   : 22 : DREQ(00 0 5 00)"
+  - "VoiceMasterEQ()              : 20 : DREQ(00 2 0 00)"
+  - "VoiceMasterFX()              : 20 : DREQ(00 2 1 00)"
+  - "MicroTuningUserTable(t)      : 24 : DREQ(00 3 t 00)"
+  - "AudioInPart()                : 14 : DREQ(00 4 1 00)" # mLAN
+  - "MicroTuningUserTableName(t)  : 20 : DREQ(00 5 t 00)"
+  - "MicroTuningUserTables()      : -  : MicroTuningUserTable([$0-$7])"
+  - "MicroTuningUserTableNames()  : -  : MicroTuningUserTableName([$0-$7])"
+  - "QuickSetup()                 : -  : DREQ(00 6 [$0-$2] 00)"
+  - "AllSystem()                  : -  : System();SeqSetup();VoiceMasterEQ();VoiceMasterFX();MicroTuningUserTables();MicroTuningUserTableNames();QuickSetup();AudioInPart()"
+  # Mode Change
+  - "ModeChange()                 : -  : PREQ(0A 00 00)"
+  # Part Set Control
+  - "PartSetControl()             : -  : PREQ(0D 00 00)"
+  # Bulk Control
+  - "BulkControlHeader(nn)        : 7DB : DREQ(0E 00 nn)"
+  - "BulkControlFooter(nn)        : 7DB : DREQ(0F 00 nn)"
+  - "BulkControl()                : -- : BulkControlHeader([0-127])"
+  #
+  - "NormalVoices()               : -- : DREQ(0E 01 [0-127])"
+  - "DrumVoices()                 : -- : DREQ(0E 00 [0-127])"
+  - "Multi()                      : -- : DREQ(0E 0C [0-127])"
+  - "setVoiceMode()                  : PCHG(0x0A0001,0x00)"
+  - "setMultiMode()                  : PCHG(0x0A0001,0x05)"
+  - "PatchName()                  : 7DB : DREQ(0x0E0F00) : VoiceMapper" # Voice Edit Buffer
+  - "MultiName()                  : AC5 : DREQ(0x0E5F00) : MultiMapper" # Multi Edit Buffer
+
   # Mode Change
   # Part Set Control
   # Bulk Control
@@ -26,3 +47,110 @@ macros:
   # Drum Element Group1
   # Drum Element Group2
   # Multi
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# NO_BANK_PRG      : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+#
+presetFormat: BANK_MSB_LSB_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+#
+# Mappers to extract patch names
+#
+mappers:
+  VoiceMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $16
+        size: 20
+      category:
+        type: CATEGORY
+        offset: $2E
+        size: 1
+  MultiMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $16
+        size: 20
+deviceModes:
+  #MultiMode:
+  #  command: setMultiMode()
+  #  queryName: MultiName()
+  #  banks:
+  #    # User
+  #    "User Multis":
+  #      command: "$3F44" # work only with firmware 1.02+
+  #      presetDomain: 0-127
+  VoiceMode:
+    command: setVoiceMode()
+    queryName: PatchName()
+    banks:
+      # PRE1-PRE8 , USR1-3, GM
+      "Preset 1 Voices":
+        command: "$3F00"
+        presetDomain: 0-127
+      "Preset 2 Voices":
+        command: "$3F01"
+        presetDomain: 0-127
+      "Preset 3 Voices":
+        command: "$3F02"
+        presetDomain: 0-127
+      "Preset 4 Voices":
+        command: "$3F03"
+        presetDomain: 0-127
+      "Preset 5 Voices":
+        command: "$3F04"
+        presetDomain: 0-127
+      "Preset 6 Voices":
+        command: "$3F05"
+        presetDomain: 0-127
+      "Preset 7 Voices":
+        command: "$3F06"
+        presetDomain: 0-127
+      "Preset 8 Voices":
+        command: "$3F07"
+        presetDomain: 0-127
+      "User 1 Voices":
+        command: "$3F08"
+        presetDomain: 0-127
+      "User 2 Voices":
+        command: "$3F09"
+        presetDomain: 0-127
+      "User 3 Voices":
+        command: "$3F0A"
+        presetDomain: 0-127
+      "GM Voices":
+        command: "$0000"
+        presetDomain: 0-127
+    categories:
+      - "Piano"
+      - "Keyboard"
+      - "Organ"
+      - "Guitar"
+      - "Bass"
+      - "String"
+      - "Brass"
+      - "Sax & Woodwind"
+      - "Synth Lead"
+      - "Synth Pad/Choir"
+      - "Synth Comp"
+      - "Chromatic Percussion"
+      - "Drum / Percussion"
+      - "Sound FX"
+      - "Musical Effect"
+      - "Ethnic"
+      - "Other"

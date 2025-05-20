@@ -10,4 +10,91 @@ macros:
   - "Voice Internal()    : 092FF : F0 43 20 7E 'LM  0012VC' F7"
   - "Voice Edit Buffer() : 0025D : F0 43 20 7E 'LM  0012VE' F7"
   - "Everything()        : System Data();Multi Internal();Multi Edit Buffer();Voice Internal();Voice Edit Buffer()"
-  
+  - "setRemote(code)     : F0 43 10 26 07 code F7"
+  - "setVoiceMode()      : setRemote($06)"
+  - "setMultiMode()      : setRemote($07)"
+  - "getVoiceName()      : Voice Edit Buffer() : YamahaVoiceMapper"
+  - "getMultiName()      : Multi Edit Buffer() : YamahaMultiMapper"
+
+#
+# Select how to send bank select messages to the device:
+# ------------------------------------------------------
+# NO_BANK_PRG      : Does not send bank select, send only Program Change
+# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+# BANK_PRG_PRG     : Send 2 Program Changes (used by Yamaha TG-77 in 'direct mode')
+#
+presetFormat: BANK_MSB_LSB_PRG
+#
+# FROM_ONE : preset number start from 1, it will be converted to n-1
+# FROM_ZERO: preset number will be sent "as is"
+#
+presetNumbering: FROM_ZERO
+#
+# STANDARD     : it is possible to get the patch name with SysEx
+# SOUND_CANVAS : Path names are hardcoded in java application
+#
+presetNaming: STANDARD
+
+deviceModes:
+  MultiMode:
+    command: setMultiMode()
+    banks:
+      "Preset 1 Multis":
+        command: $0010
+        queryName: getMultiName()
+        presetDomain: 64-79
+  VoiceMode:
+    command: setVoiceMode()
+    banks:
+      "Preset 1 Voices":
+        command: $0002
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Preset 2 Voices":
+        command: $0005
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Internal Voices":
+        command: $0000
+        queryName: getVoiceName()
+        presetDomain: 0-63
+    categories:
+      - "Piano: AP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Ensemble: ME"
+      - "Organ: OR"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Choir: SC"
+      - "Synth Ensemble: SE"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI"
+      - "Sound FX: SE"
+      - "Sequence: SQ"
+#
+# Mappers to extract patch names
+#
+mappers:
+  YamahaVoiceMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $1C
+        size: 8
+  YamahaMultiMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $1C
+        size: 8

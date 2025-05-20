@@ -203,7 +203,7 @@ deviceModes:
 #
 # Select how to send bank select messages to the device:
 # ------------------------------------------------------
-# PRG              : Does not send bank select, send only Program Change
+# NO_BANK_PRG      : Does not send bank select, send only Program Change
 # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
 # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
 # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
@@ -219,8 +219,6 @@ presetNumbering: FROM_ZERO
 # SOUND_CANVAS : Path names are hardcoded in java application
 #
 presetNaming: STANDARD
-#presetNameLocation: 9-8
-#presetCategoryLocation: 17-1
 #
 # Mappers to extract patch names
 #
