@@ -8,13 +8,14 @@ import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
 
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_END;
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_START;
 
+@Slf4j
 public class BehringerDevice extends Device {
 
     public BehringerDevice(Manufacturer manufacturer, String name, int code) {
@@ -35,7 +36,7 @@ public class BehringerDevice extends Device {
 
         try {
             CustomMidiEvent evt = sb.buildMidiEvent();
-            Log.info("Send: " + evt.getHexValues());
+            log.info("Send: " + evt.getHexValues());
             midiOutDevice.send(evt);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);

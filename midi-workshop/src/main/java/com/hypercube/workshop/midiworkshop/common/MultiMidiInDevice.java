@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common;
 
 import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public class MultiMidiInDevice extends MidiInDevice {
     private final List<MidiInDevice> devices;
     private final AtomicInteger runningListeners = new AtomicInteger(0);
@@ -64,7 +65,7 @@ public class MultiMidiInDevice extends MidiInDevice {
                             try {
                                 listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
                             } catch (RuntimeException e) {
-                                Log.error("Unexpected error in midi listener", e);
+                                log.error("Unexpected error in midi listener", e);
                             }
                         }
 

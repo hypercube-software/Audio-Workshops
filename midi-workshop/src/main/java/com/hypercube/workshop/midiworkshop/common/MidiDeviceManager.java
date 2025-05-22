@@ -56,14 +56,14 @@ public class MidiDeviceManager {
 
     public MidiOutDevice openOutput(String name) {
         MidiOutDevice out = getOutput(name)
-                .orElseThrow(() -> new MidiError("Output Port not found " + name));
+                .orElseThrow(() -> new MidiError("Output Port '%s' not found".formatted(name)));
         out.open();
         return out;
     }
 
     public MidiInDevice openInput(String name) {
         MidiInDevice in = getInput(name)
-                .orElseThrow(() -> new MidiError("Input Port not found " + name));
+                .orElseThrow(() -> new MidiError("Input Port '%s' not found".formatted(name)));
         in.open();
         return in;
     }

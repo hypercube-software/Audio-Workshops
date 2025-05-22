@@ -13,7 +13,10 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +53,7 @@ public class MidiPresetBuilder {
     public static List<MidiMessage> forgeCommands(MidiDeviceDefinition device, MidiDeviceBank bank, int program) {
         MidiBankFormat midiBankFormat = device.getPresetFormat();
         String bankCommand = bank.getCommand();
-        if (bankCommand
+        if (bankCommand != null && bankCommand
                 .contains("(")) {
             String commandCall = bankCommand
                     .replace("program", "$%02X".formatted(program));
@@ -63,7 +66,7 @@ public class MidiPresetBuilder {
                     })
                     .toList();
         } else {
-            int bankId = device.getBankId(bank.getName());
+            int bankId = midiBankFormat == MidiBankFormat.NO_BANK_PRG ? -1 : device.getBankId(bank.getName());
             int zeroBasedChannel = bank.getZeroBasedChannel();
             return switch (midiBankFormat) {
                 case NO_BANK_PRG -> forgeCommands(device, zeroBasedChannel, 0, 0, program);
@@ -246,7 +249,7 @@ public class MidiPresetBuilder {
     }
 
     private static Stream<MidiMessage> doubleProgramChange(String definition, int zeroBasedChannel, List<Integer> ids, int program) throws InvalidMidiDataException {
-        if (ids.size() != 1) {
+        if (ids.size() != 2) {
             throw new MidiConfigError("Unexpected number of values given %s, should be 1, it is %d: %s".formatted(MidiBankFormat.BANK_PRG_PRG, ids.size(), definition));
         }
         return Stream.of(
@@ -259,6 +262,7 @@ public class MidiPresetBuilder {
      * <ul>
      *     <li>prg: program change only</li>
      *     <li>lsb,prg: bankName select LSB then program change</li>
+     *     <li>prg,prg: double program change (Yamaha TG-77)</li>
      *     <li>msb,lsb,prg: bankName select MSB,LSB then program change</li>
      * </ul>
      *
@@ -314,4 +318,23 @@ public class MidiPresetBuilder {
         }
     }
 
+    public static MidiPreset fromSysExFile(String deviceMode, String bank, File sysExFile) {
+        List<MidiMessage> commands = new ArrayList<>();
+        try {
+            byte[] data = Files.readAllBytes(sysExFile.toPath());
+            ByteArrayOutputStream evt = new ByteArrayOutputStream();
+            for (int i = 0; i < data.length; i++) {
+                evt.write(data[i]);
+                if (data[i] == (byte) 0xF7) {
+                    byte[] payload = evt.toByteArray();
+                    MidiMessage sysex = new SysexMessage(payload, payload.length);
+                    commands.add(sysex);
+                    evt.reset();
+                }
+            }
+            return new MidiPreset(deviceMode, bank, sysExFile.getName(), 0, commands, List.of(MidiPreset.NO_CC), null, null);
+        } catch (IOException | InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+    }
 }

@@ -3,13 +3,14 @@ package com.hypercube.workshop.midiworkshop.common;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.common.listener.SysExMidiListener;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
+@Slf4j
 public class MidiInDevice extends AbstractMidiDevice {
     private final Set<MidiListener> listeners = ConcurrentHashMap.newKeySet();
 
@@ -66,12 +67,12 @@ public class MidiInDevice extends AbstractMidiDevice {
         Receiver receiver = new Receiver() {
             @Override
             public void send(MidiMessage message, long timeStamp) {
-                //Log.info("%d listeners, receive %02X".formatted(listeners.size(), message.getStatus()));
+                //log.info("%d listeners, receive %02X".formatted(listeners.size(), message.getStatus()));
                 for (MidiListener listener : listeners) {
                     try {
                         listener.onEvent(MidiInDevice.this, new CustomMidiEvent(message, timeStamp));
                     } catch (RuntimeException e) {
-                        Log.error("Unexpected error in midi listener", e);
+                        log.error("Unexpected error in midi listener", e);
                     }
                 }
             }

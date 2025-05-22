@@ -2,13 +2,14 @@ package com.hypercube.workshop.midiworkshop.common;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class MidiOutDevice extends AbstractMidiDevice {
     public static final int CTRL_SUSTAIN_PEDAL = 64;
     public static final int CTRL_ALL_NOTE_OFF = 123;
@@ -66,7 +67,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
                 .stream()
                 .map(cmd -> new CustomMidiEvent(cmd, 0))
                 .forEach(evt -> {
-                    Log.info("Send " + evt.getHexValues());
+                    log.info("Send " + evt.getHexValues());
                     send(evt);
                 });
     }

@@ -7,7 +7,6 @@ import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.roland.comm
 import com.hypercube.workshop.midiworkshop.common.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExReader;
 import lombok.extern.slf4j.Slf4j;
-import org.jline.utils.Log;
 
 import java.nio.ByteBuffer;
 import java.util.stream.IntStream;
@@ -47,7 +46,7 @@ public class RolandSysExParser extends ManufacturerSysExParser {
                 .mapToInt(Integer::intValue)
                 .sum() & 0x7F;
         if (sum != 0) {
-            Log.error("Checksum error");
+            log.error("Checksum error");
         }
         int end = buffer.getByte();
         assert (end == SYSEX_END);

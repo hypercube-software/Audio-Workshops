@@ -3,11 +3,12 @@ package com.hypercube.workshop.midiworkshop.common.clock;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.seq.MidiSequence;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
 import java.io.IOException;
 
+@Slf4j
 public class SequencerBasedMidiClock implements MidiClock {
     public static final int CLOCK_RESOLUTION_PPQ = 24 * 8;
     private final Sequencer clockSequencer;
@@ -76,7 +77,7 @@ public class SequencerBasedMidiClock implements MidiClock {
             try {
                 midiTickSignal.wait();
             } catch (InterruptedException e) {
-                Log.warn("Interrupted", e);
+                log.warn("Interrupted", e);
             }
         }
     }

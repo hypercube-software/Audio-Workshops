@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNaming;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
@@ -33,6 +34,7 @@ public class MidiDeviceDefinition {
     private MidiDeviceDecodingKey decodingKey;
     private List<CommandMacro> macros = new ArrayList<>();
     private List<String> presets = new ArrayList<>();
+    private List<MidiPresetCategory> categories = new ArrayList<>();
     private Map<String, MidiDeviceMode> deviceModes = new HashMap<>();
     private Map<String, MidiResponseMapper> mappers = new HashMap<>();
 
@@ -68,13 +70,13 @@ public class MidiDeviceDefinition {
         return matches.getFirst();
     }
 
-    public String getCategoryName(MidiDeviceMode mode, int categoryIndex) {
+    public MidiPresetCategory getCategory(MidiDeviceMode mode, int categoryIndex) {
         if (categoryIndex < mode.getCategories()
                 .size()) {
             return mode.getCategories()
                     .get(categoryIndex);
         } else {
-            return "Unknown " + categoryIndex;
+            return MidiPresetCategory.of("Unknown " + categoryIndex);
         }
     }
 
@@ -97,16 +99,15 @@ public class MidiDeviceDefinition {
         return parseBankNumber(bankNumber);
     }
 
-    public int getCategoryCode(MidiDeviceMode mode, String category) {
-        if (category == null) {
+    public int getCategoryCode(MidiDeviceMode mode, String categoryName) {
+        if (categoryName == null) {
             return 0;
         }
         for (int c = 0; c < mode.getCategories()
                 .size(); c++) {
             if (mode.getCategories()
                     .get(c)
-                    .toLowerCase()
-                    .contains(category.toLowerCase())) {
+                    .matches(categoryName)) {
                 return c;
             }
         }

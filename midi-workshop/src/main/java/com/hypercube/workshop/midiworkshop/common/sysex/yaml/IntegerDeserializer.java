@@ -5,15 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 
-import java.io.File;
 import java.io.IOException;
 
 public class IntegerDeserializer extends StdDeserializer<Integer> {
-    private final File definitionFile;
 
-    public IntegerDeserializer(File definitionFile) {
+    public IntegerDeserializer() {
         super((Class<?>) null);
-        this.definitionFile = definitionFile;
     }
 
     @Override

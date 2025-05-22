@@ -22,7 +22,7 @@ public record MidiPresetCategory(String name, List<String> aliases) {
         return aliases.size() > 0 && aliases.stream()
                 .filter(a -> a.length() != 2)
                 .findFirst()
-                .isPresent();
+                .isEmpty();
     }
 
     public boolean matches(String presetName) {

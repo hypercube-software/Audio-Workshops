@@ -7,7 +7,7 @@
 <fx:root fx:id="root" hgap="5.0" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="patchName" minWidth="130.0" prefHeight="17.0" prefWidth="130.0" text="patch name"
+        <Label fx:id="patchName" minWidth="130.0" prefHeight="17.0" text="patch name"
                GridPane.columnIndex="0" GridPane.hgrow="ALWAYS">
             <GridPane.margin>
                 <Insets right="20.0"/>
@@ -40,7 +40,7 @@
         </ImageView>
     </children>
     <columnConstraints>
-        <ColumnConstraints/>
+        <ColumnConstraints hgrow="ALWAYS"/>
         <ColumnConstraints/>
         <ColumnConstraints/>
         <ColumnConstraints/>

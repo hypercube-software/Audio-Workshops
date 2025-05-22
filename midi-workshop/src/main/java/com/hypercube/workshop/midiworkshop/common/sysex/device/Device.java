@@ -14,7 +14,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.parser.SysExParser;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.SysexMessage;
@@ -39,6 +39,7 @@ import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstan
 
 @Getter
 @EqualsAndHashCode
+@Slf4j
 public abstract class Device {
     @EqualsAndHashCode.Include
     protected final Manufacturer manufacturer;
@@ -75,7 +76,7 @@ public abstract class Device {
 
         try {
             CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(data, data.length), -1);
-            Log.info("Send: " + evt.getHexValues());
+            log.info("Send: " + evt.getHexValues());
             midiOutDevice.send(evt);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
@@ -128,7 +129,7 @@ public abstract class Device {
                 return 0;
             final CountDownLatch sysExReceived = new CountDownLatch(1);
             final MidiListener listener = (device, event) -> {
-                Log.info("Receive SYSEX:" + event.toString());
+                log.info("Receive SYSEX:" + event.toString());
                 SysExParser sysExParser = new SysExParser();
                 Device d = sysExParser.parse(event.getMessage());
                 assert (d == this);
@@ -139,7 +140,7 @@ public abstract class Device {
             boolean timedOut = !sysExReceived.await(500, TimeUnit.MILLISECONDS);
             in.removeListener(listener);
             if (timedOut) {
-                Log.error("Timeout waiting SysEx...");
+                log.error("Timeout waiting SysEx...");
                 return 0;
             }
             return memory.readByte(address);

@@ -57,8 +57,8 @@ public class MidiResponseMapper {
 
     private void extractCategory(MidiDeviceMode mode, MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
         int categoryIndex = readInteger(payload, field);
-        String value = device.getCategoryName(mode, categoryIndex);
-        currentResponse.addField(field.getName(), value);
+        MidiPresetCategory category = device.getCategory(mode, categoryIndex);
+        currentResponse.addField(field.getName(), category.name());
     }
 
     private int readInteger(byte[] payload, MidiResponseField field) {
@@ -71,7 +71,6 @@ public class MidiResponseMapper {
     private void searchCategoryInName(MidiDeviceMode mode, MidiResponse currentResponse, String presetName) {
         currentResponse.addField(MidiResponse.MIDI_PRESET_CATEGORY, mode.getCategories()
                 .stream()
-                .map(MidiPresetCategory::of)
                 .filter(c -> c.matches(presetName))
                 .findFirst()
                 .map(MidiPresetCategory::name)
@@ -83,6 +82,8 @@ public class MidiResponseMapper {
         for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
             if (payload[i] >= 32 && payload[i] <= 127) {
                 value += (char) payload[i];
+            } else if (payload[i] == 0) {
+                value += " "; // happen in Motif Rack XS for instance
             } else {
                 value += "❌";
             }

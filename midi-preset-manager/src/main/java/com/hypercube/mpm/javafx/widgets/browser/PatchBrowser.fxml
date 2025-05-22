@@ -3,24 +3,34 @@
 <?import com.hypercube.mpm.javafx.widgets.attribute.AttributeSelector?>
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchSelector?>
 <?import javafx.scene.layout.*?>
-<fx:root gridLinesVisible="true" style="-fx-background-color: blue;" type="GridPane"
+<fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <AttributeSelector minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="0" GridPane.hgrow="NEVER"
-                           GridPane.vgrow="ALWAYS"
-                           dataSource="controller.model.root.devices"
-        />
-        <AttributeSelector minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="NEVER"
-                           GridPane.vgrow="ALWAYS"/>
-        <AttributeSelector minWidth="-Infinity" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
+        <AttributeSelector dataSource="controller.model.root.devices" minHeight="-Infinity" minWidth="-Infinity"
+                           title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
+        <GridPane GridPane.columnIndex="1">
+            <AttributeSelector dataSource="controller.model.root.deviceModes" maxHeight="200.0" minWidth="-Infinity"
+                               title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER"/>
+            <AttributeSelector dataSource="controller.model.root.modeBanks" minWidth="-Infinity" title="Mode Bank"
+                               GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+            <columnConstraints>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+                <RowConstraints/>
+            </rowConstraints>
+        </GridPane>
+        <AttributeSelector allowMultiSelection="true" dataSource="controller.model.root.modeCategories"
+                           minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>
     </children>
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>
-        <ColumnConstraints/>
-        <ColumnConstraints/>
+        <ColumnConstraints maxWidth="250"/>
+        <ColumnConstraints minWidth="400"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints/>

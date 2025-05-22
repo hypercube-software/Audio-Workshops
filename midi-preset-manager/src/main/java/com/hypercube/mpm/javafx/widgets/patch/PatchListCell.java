@@ -18,6 +18,5 @@ public class PatchListCell extends ListCell<Patch> {
         super.updateItem(item, empty);
         PatchViewController controller = (PatchViewController) view.getUserData();
         controller.update(item, empty);
-
     }
 }

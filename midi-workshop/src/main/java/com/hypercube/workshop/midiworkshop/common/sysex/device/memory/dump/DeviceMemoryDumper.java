@@ -7,7 +7,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.Memory
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.primitives.MemoryInt24;
 import lombok.RequiredArgsConstructor;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
+@Slf4j
 public class DeviceMemoryDumper {
     public static final String SEPARATOR = "-------------------------------------";
     private final DeviceMemory memory;
@@ -33,7 +34,7 @@ public class DeviceMemoryDumper {
     }
 
     public void dumpMemory(File dump) {
-        Log.info("Dump memory to " + dump.getAbsolutePath());
+        log.info("Dump memory to " + dump.getAbsolutePath());
         if (!dump.getParentFile()
                 .exists() && !dump.getParentFile()
                 .mkdirs()) {
@@ -251,7 +252,7 @@ public class DeviceMemoryDumper {
     }
 
     public void dumpMemoryMap(File dump) {
-        Log.info("Dump memory map to " + dump.getAbsolutePath());
+        log.info("Dump memory map to " + dump.getAbsolutePath());
         if (!dump.getParentFile()
                 .exists() && !dump.getParentFile()
                 .mkdirs()) {

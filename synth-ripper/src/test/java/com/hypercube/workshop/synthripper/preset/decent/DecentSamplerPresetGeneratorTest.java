@@ -8,7 +8,7 @@ import com.hypercube.workshop.synthripper.preset.decent.model.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.jline.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 class DecentSamplerPresetGeneratorTest {
     @Test
     void canSerializeToXML() throws JAXBException, IOException {
@@ -62,7 +63,7 @@ class DecentSamplerPresetGeneratorTest {
             xml = sw.toString();
         }
         // THEN
-        Log.info(xml);
+        log.info(xml);
         assertEquals("""
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <DecentSampler>
@@ -124,7 +125,7 @@ class DecentSamplerPresetGeneratorTest {
             xml = sw.toString();
         }
         // THEN
-        Log.info(xml);
+        log.info(xml);
         assertEquals("""
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <DecentSampler>

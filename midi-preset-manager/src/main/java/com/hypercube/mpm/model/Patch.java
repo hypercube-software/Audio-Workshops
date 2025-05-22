@@ -7,9 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Patch {
+    private String device;
+    private String mode;
+    private String bank;
     private String name;
     private int score;
 }

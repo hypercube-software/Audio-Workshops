@@ -7,11 +7,9 @@ import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiDeviceTimeout;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetConsumer;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetIdentity;
+import com.hypercube.workshop.midiworkshop.common.presets.*;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSequence;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
@@ -25,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.SysexMessage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,6 +43,7 @@ import java.util.stream.IntStream;
 public class MidiPresetCrawler {
     private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
     AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
+    int expectedResponseSize = 0;
     ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
 
     public void crawlAllPatches(String deviceName, MidiPresetConsumer midiPresetConsumer) {
@@ -144,7 +144,7 @@ public class MidiPresetCrawler {
                 List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
                 for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                     var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                    log.info("Send {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
+                    log.info("Send {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
                     out.send(customMidiEvent);
                 }
             }
@@ -155,14 +155,26 @@ public class MidiPresetCrawler {
     }
 
     private void onResponse(MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
-        currentResponse.set(customMidiEvent);
+        try {
+            currentSysex.write(customMidiEvent.getMessage()
+                    .getMessage());
+            /*log.info("Receive %d bytes, current total: 0x%X".formatted(customMidiEvent.getMessage()
+                    .getMessage().length, currentSysex.size()));*/
+            if (expectedResponseSize > 0 && currentSysex.size() == expectedResponseSize) {
+                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysex.toByteArray(), currentSysex.size()), 0));
+            } else if (expectedResponseSize == 0) {
+                currentResponse.set(customMidiEvent);
+            }
+        } catch (IOException | InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
     }
 
-    private MidiRequestSequence forgeRequestSequence(MidiDeviceLibrary library, MidiDeviceDefinition device, String macroName) {
-        if (macroName == null) {
+    private MidiRequestSequence forgeRequestSequence(MidiDeviceLibrary library, MidiDeviceDefinition device, String command) {
+        if (command == null) {
             return null;
         }
-        var sequences = CommandCall.parse(device.getDefinitionFile(), macroName)
+        var sequences = CommandCall.parse(device.getDefinitionFile(), command)
                 .stream()
                 .map(commandCall -> {
                     CommandMacro macro = device.getMacro(commandCall);
@@ -182,6 +194,7 @@ public class MidiPresetCrawler {
 
     void resetCurrentResponse() {
         currentResponse.set(null);
+        currentSysex.reset();
     }
 
     CustomMidiEvent waitResponse() {
@@ -203,13 +216,13 @@ public class MidiPresetCrawler {
         MidiDeviceBank bank = device.getBankByMSB("" + bankMSB)
                 .orElseThrow(() -> new MidiConfigError("Bank MSB %d not declared in presetBank section of decide '%'".formatted(bankMSB, device.getDeviceName())));
         String presetName = getSoundCanvasPresetName(bankMSB, midiPreset.getBankLSB(), program).orElse("Unknown");
-        String category = getSoundCanvasCategory(device, mode, program);
-        return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category);
+        MidiPresetCategory category = getSoundCanvasCategory(device, mode, program);
+        return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
     private MidiResponse requestFields(MidiDeviceMode mode, int program, MidiRequestSequence sequence, MidiOutDevice out) throws InvalidMidiDataException {
-        MidiResponse response = new MidiResponse();
-        resetCurrentResponse();
+        MidiResponse response = null;
+        expectedResponseSize = sequence.getTotalSize();
         for (var request : sequence.getMidiRequests()) {
             List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue()
                     .replace("program", "%02X".formatted(program)));
@@ -218,6 +231,8 @@ public class MidiPresetCrawler {
                 CustomMidiEvent midiEvent = null;
                 for (int retry = 0; retry < 4; retry++) {
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
+                    response = new MidiResponse();
+                    resetCurrentResponse();
                     out.send(customMidiEvent);
                     try {
                         midiEvent = waitResponse();
@@ -231,12 +246,12 @@ public class MidiPresetCrawler {
                             log.error("Wrong size received: " + receivedSize + " bytes instead of " + sequence.getTotalSize());
                             break;
                         }
-                    } catch (MidiError timeout) {
-                        log.warn("Retry...");
+                    } catch (MidiDeviceTimeout timeout) {
+                        log.warn("No response after %d seconds, Retry...".formatted(timeout.getTimeoutInSec()));
                     }
                 }
                 // extract fields from the response
-                if (request.getMapper() != null) {
+                if (request.getMapper() != null && midiEvent.getMessage() != null && response != null) {
                     request.getMapper()
                             .extract(mode, response, midiEvent);
                     request.getMapper()
@@ -250,15 +265,15 @@ public class MidiPresetCrawler {
 
     private static void dumpResonse(CustomMidiEvent midiEvent) {
         try {
-            Files.write(Path.of("C:\\tmp\\response.syx"), midiEvent.getMessage()
+            Files.write(Path.of("response.syx"), midiEvent.getMessage()
                     .getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String getSoundCanvasCategory(MidiDeviceDefinition device, MidiDeviceMode mode, int program) {
-        return device.getCategoryName(mode, program / 8);
+    private MidiPresetCategory getSoundCanvasCategory(MidiDeviceDefinition device, MidiDeviceMode mode, int program) {
+        return device.getCategory(mode, program / 8);
     }
 
     private Optional<String> getSoundCanvasPresetName(int bankMSB, int bankLSB, int program) {
@@ -294,7 +309,10 @@ public class MidiPresetCrawler {
             wait(50);
             long now = System.currentTimeMillis();
             if (currentSysex.size() == size && now - start > 1000 * 4) {
-                throw new MidiError("No response from the device. SysEx request seems inappropriate");
+                int timeoutInSec = (int) (now - start) / 1000;
+                throw new MidiDeviceTimeout("No response from the device. SysEx request seems inappropriate", timeoutInSec);
+            } else if (currentSysex.size() != size) {
+                size = currentSysex.size();
             }
         }
         while (!predicate.get());

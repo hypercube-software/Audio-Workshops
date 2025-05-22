@@ -61,7 +61,9 @@ public class ModelHelper {
                         .subclass(modelClass);
                 for (Field field : modelClass
                         .getDeclaredFields()) {
-                    builder = forgeObservableProperty(field, builder);
+                    if (field.getAnnotation(NotObservable.class) == null) {
+                        builder = forgeObservableProperty(field, builder);
+                    }
                 }
                 DynamicType.Unloaded unloadedType = builder.make();
                 observableModelClass = unloadedType.load(modelClass
@@ -71,10 +73,12 @@ public class ModelHelper {
             T instance = observableModelClass.newInstance();
             for (Field field : modelClass
                     .getDeclaredFields()) {
-                if (!field.getType()
-                        .getName()
-                        .contains("Logger")) {
-                    instanciateObservableProperty(field, model, instance);
+                if (field.getAnnotation(NotObservable.class) == null) {
+                    if (!field.getType()
+                            .getName()
+                            .contains("Logger")) {
+                        instanciateObservableProperty(field, model, instance);
+                    }
                 }
             }
             return instance;
@@ -101,7 +105,7 @@ public class ModelHelper {
         property.set(observableModel, property.getType()
                 .getConstructor()
                 .newInstance());
-        getObservableSetter(observableModel, name, value.getClass()).invoke(observableModel, value);
+        getObservableSetter(observableModel, name, field.getType()).invoke(observableModel, value);
     }
 
     /**
@@ -168,9 +172,10 @@ public class ModelHelper {
                     .substring(0, methodName
                             .length() - 8);
         }
-        return methodName
-                .substring(3)
-                .toLowerCase();
+        String camelCaseField = methodName
+                .substring(3);
+        return camelCaseField.substring(0, 1)
+                .toLowerCase() + camelCaseField.substring(1);
     }
 
     /**

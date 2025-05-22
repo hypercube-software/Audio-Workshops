@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.MidiWorkshopApplication;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
@@ -90,20 +91,20 @@ public class CS1XPresetGenerator {
                     if (title.equals("--")) {
                         continue;
                     }
-                    int category = searchCategory(device, mode, bankName, program, categories, title);
+                    int categoryIndex = searchCategory(device, mode, bankName, program, categories, title);
                     System.out.println("%s \"%d-%d\" : \"%s\"".formatted(bankName, bank, program, title));
                     String cleanTitle = title.replace("\"", "'")
                             .replace("/", "-")
                             .replace("*", "-");
-                    String categoryName = device.getCategoryName(mode, category);
-                    String filePath = "%s/%s/Banks/%s/%4X-%d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, categoryName, cleanTitle);
+                    MidiPresetCategory category = device.getCategory(mode, categoryIndex);
+                    String filePath = "%s/%s/PerformanceMode/%s/%4X-%3.3d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, category.name(), cleanTitle);
                     pout.println("  - \"@%s\"".formatted(filePath));
                     File file = new File("devices-library/" + filePath);
                     file.getParentFile()
                             .mkdirs();
                     // CS1X Native Bulk Dump
                     try (OutputStream out = new FileOutputStream(file)) {
-                        out.write(generatePerformance(title, category));
+                        out.write(generatePerformance(title, categoryIndex));
                         for (int layer = 0; layer < 4; layer++) {
                             out.write(generateLayer(layer, bank, program));
                         }
@@ -180,8 +181,9 @@ public class CS1XPresetGenerator {
             String prefix = title.substring(0, 2);
             category = mode.getCategories()
                     .stream()
-                    .filter(c -> c.startsWith(prefix))
+                    .filter(c -> c.matches(prefix))
                     .findFirst()
+                    .map(MidiPresetCategory::name)
                     .orElse(null);
         }
         return device.getCategoryCode(mode, category);

@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.alesis;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
@@ -73,8 +74,8 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
         }
         bsr.readBits(3);
         int groupId = bsr.readInvertedBits(6);
-        String category = device.getCategoryName(mode, groupId);
-        return new MidiPresetIdentity(mode.getName(), currentBankName, name, category);
+        MidiPresetCategory category = device.getCategory(mode, groupId);
+        return new MidiPresetIdentity(mode.getName(), currentBankName, name, category.name());
     }
 
     public void dumpASCIITable() {

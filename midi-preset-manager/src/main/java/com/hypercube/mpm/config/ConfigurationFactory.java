@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.MidiPresetManagerApplication;
+import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
@@ -38,19 +39,31 @@ public class ConfigurationFactory {
                         .forEach(projectDevice -> {
                             setDefaultDeviceSettings(projectDevice);
                         });
+                config.setMidiDeviceLibrary(midiDeviceLibrary);
+                config.setMidiDeviceManager(new MidiDeviceManager());
+                config.getMidiDeviceManager()
+                        .collectDevices();
                 return config;
             } catch (IOException e) {
                 throw new ConfigError(e);
             }
         } else {
             log.warn("The project config does not exists: " + configFile.getAbsolutePath());
-            return new ProjectConfiguration();
+            ProjectConfiguration config = new ProjectConfiguration();
+            config.setMidiDeviceLibrary(midiDeviceLibrary);
+            config.setMidiDeviceManager(new MidiDeviceManager());
+            config.getMidiDeviceManager()
+                    .collectDevices();
+            return config;
         }
     }
 
     private void loadLibary() {
         if (!midiDeviceLibrary.isLoaded()) {
             midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class));
+            midiDeviceLibrary.getDevices()
+                    .values()
+                    .forEach(d -> midiDeviceLibrary.collectCustomPatches(d));
         }
     }
 
