@@ -72,49 +72,43 @@ public class CS1XPresetGenerator {
             banks.put(line, new ArrayList<>());
             bankNames.add(line);
         }
-        try (PrintWriter pout = new PrintWriter(new File("presets-CS1x.yaml"))) {
-            pout.println("presets:");
-            for (int b = 0; b < bankNames.size(); b++) {
-                int offset = bankNames.size() + 1 + b * 128;
-                String bankName = bankNames.get(b);
-                for (int i = 0; i < 128; i++) {
-                    int l = i + offset;
-                    String line = lines.get(l);
-                    var m = VOICE_DEFINITION.matcher(line);
-                    if (!m.matches()) {
-                        throw new MidiConfigError("Invalid voice definition at line %d: %s".formatted(l + 1, line));
+        for (int b = 0; b < bankNames.size(); b++) {
+            int offset = bankNames.size() + 1 + b * 128;
+            String bankName = bankNames.get(b);
+            for (int i = 0; i < 128; i++) {
+                int l = i + offset;
+                String line = lines.get(l);
+                var m = VOICE_DEFINITION.matcher(line);
+                if (!m.matches()) {
+                    throw new MidiConfigError("Invalid voice definition at line %d: %s".formatted(l + 1, line));
+                }
+                int bank = device.getBankId(bankName);
+                int program = Integer.parseInt(m.group(1)) - 1;
+                String title = m.group(2)
+                        .trim();
+                if (title.equals("--")) {
+                    continue;
+                }
+                int categoryIndex = searchCategory(device, mode, bankName, program, categories, title);
+                System.out.println("%s \"%d-%d\" : \"%s\"".formatted(bankName, bank, program, title));
+                String cleanTitle = title.replace("\"", "'")
+                        .replace("/", "-")
+                        .replace("*", "-");
+                MidiPresetCategory category = device.getCategory(mode, categoryIndex);
+                String filePath = "%s/%s/PerformanceMode/%s/%4X-%03d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, category.name(), cleanTitle);
+                File file = new File("devices-library/" + filePath);
+                file.getParentFile()
+                        .mkdirs();
+                // CS1X Native Bulk Dump
+                try (OutputStream out = new FileOutputStream(file)) {
+                    out.write(generatePerformance(title, categoryIndex));
+                    for (int layer = 0; layer < 4; layer++) {
+                        out.write(generateLayer(layer, bank, program));
                     }
-                    int bank = device.getBankId(bankName);
-                    int program = Integer.parseInt(m.group(1)) - 1;
-                    String title = m.group(2)
-                            .trim();
-                    if (title.equals("--")) {
-                        continue;
-                    }
-                    int categoryIndex = searchCategory(device, mode, bankName, program, categories, title);
-                    System.out.println("%s \"%d-%d\" : \"%s\"".formatted(bankName, bank, program, title));
-                    String cleanTitle = title.replace("\"", "'")
-                            .replace("/", "-")
-                            .replace("*", "-");
-                    MidiPresetCategory category = device.getCategory(mode, categoryIndex);
-                    String filePath = "%s/%s/PerformanceMode/%s/%4X-%3.3d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, category.name(), cleanTitle);
-                    pout.println("  - \"@%s\"".formatted(filePath));
-                    File file = new File("devices-library/" + filePath);
-                    file.getParentFile()
-                            .mkdirs();
-                    // CS1X Native Bulk Dump
-                    try (OutputStream out = new FileOutputStream(file)) {
-                        out.write(generatePerformance(title, categoryIndex));
-                        for (int layer = 0; layer < 4; layer++) {
-                            out.write(generateLayer(layer, bank, program));
-                        }
-                    } catch (IOException e) {
-                        throw new MidiError(e);
-                    }
+                } catch (IOException e) {
+                    throw new MidiError(e);
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new MidiError(e);
         }
     }
 
