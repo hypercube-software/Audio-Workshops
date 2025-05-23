@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MidiPresetManagerApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.hypercube.mpm.MidiPresetManagerApplication" />
+    <module name="midi-preset-manager" />
+    <option name="VM_PARAMETERS" value="-Dmpm-config=config/config.yml" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.hypercube.mpm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.patch;
 
+import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import javafx.fxml.FXML;
@@ -69,6 +70,7 @@ public class PatchViewController extends Controller<PatchView, Void> implements 
             log.info(this.toString() + " Set score " + score + " on patch " + currentPatch.getName());
             currentPatch.setScore(score);
             updateScore(score);
+            fireEvent(PatchScoreChangedEvent.class, currentPatch);
         }
     }
 

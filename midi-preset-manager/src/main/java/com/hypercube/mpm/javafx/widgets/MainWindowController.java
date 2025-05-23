@@ -1,6 +1,8 @@
 package com.hypercube.mpm.javafx.widgets;
 
+import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.DeviceState;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 public class MainWindowController extends Controller<MainWindow, ObservableMainModel> implements Initializable {
     @Autowired
     ProjectConfiguration cfg;
+    @Autowired
+    ConfigurationFactory configurationFactory;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -47,6 +51,11 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                         .toList());
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
+        addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
+    }
+
+    private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {
+        configurationFactory.updateFavorites(patchScoreChangedEvent.getPatch());
     }
 
     private void onSearchPatches(SearchPatchesEvent searchPatchesEvent) {
@@ -166,7 +175,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                                             .filter(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"))
                                             .count() > 0) && (model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter()))
                             )
-                            .map(preset -> new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0)))
+                            .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0))))
                     .toList();
         }
         model.setPatches(patches);

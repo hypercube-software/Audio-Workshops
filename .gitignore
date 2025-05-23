@@ -50,3 +50,4 @@ hs_err_pid*
 /Manuals/
 /synth-ripper/output/**/*.*
 
+/midi-preset-manager/config/favorite-patches.yaml

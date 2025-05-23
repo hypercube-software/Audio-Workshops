@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.MidiPresetManagerApplication;
+import com.hypercube.mpm.model.Patch;
+import com.hypercube.util.javafx.yaml.ObservableSerializer;
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
@@ -12,12 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class ConfigurationFactory {
@@ -26,9 +28,12 @@ public class ConfigurationFactory {
     @Value("${mpm-config:./config.yml}")
     private File configFile;
 
+    private Favorites favorites;
+
     @Bean
     public ProjectConfiguration loadConfig() {
         loadLibary();
+        favorites = loadFavoritePatches();
         if (configFile.exists()) {
             log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
             var mapper = new ObjectMapper(new YAMLFactory());
@@ -55,6 +60,53 @@ public class ConfigurationFactory {
             config.getMidiDeviceManager()
                     .collectDevices();
             return config;
+        }
+    }
+
+    public void updateFavorites(Patch patch) {
+        favorites.updateFavorites(patch);
+        saveFavoritePatches(favorites);
+    }
+
+    public Patch getFavorite(Patch patch) {
+        int idx = favorites.getFavorites()
+                .indexOf(patch);
+        if (idx != -1) {
+            patch.setScore(favorites.getFavorites()
+                    .get(idx)
+                    .getScore());
+        }
+        return patch;
+    }
+
+    private void saveFavoritePatches(Favorites favorites) {
+        File file = getFavoriteFile();
+        var mapper = new ObjectMapper(new YAMLFactory());
+        try {
+            SimpleModule observableModule = new SimpleModule("observableModule");
+            observableModule.setSerializerModifier(new ObservableSerializer());
+            mapper.registerModule(observableModule);
+            mapper.writeValue(file, favorites);
+        } catch (IOException e) {
+            throw new ConfigError(e);
+        }
+    }
+
+    private File getFavoriteFile() {
+        return new File(configFile.getParentFile(), "favorite-patches.yaml");
+    }
+
+    private Favorites loadFavoritePatches() {
+        File file = getFavoriteFile();
+        if (file.exists() && file.length() > 0) {
+            var mapper = new ObjectMapper(new YAMLFactory());
+            try {
+                return mapper.readValue(file, Favorites.class);
+            } catch (IOException e) {
+                throw new ConfigError(e);
+            }
+        } else {
+            return new Favorites();
         }
     }
 
