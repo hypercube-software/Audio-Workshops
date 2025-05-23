@@ -21,8 +21,92 @@ Topics covered:
 
 - Midi Sequencer with various clock implementations
 - Various Memory maps are provided: **Boss DS-330** (= Sound Canvas), **Roland D-70**
-- SysEx are not finished yet: various devices need to be analyzed, especially **AKAI MPK-261**
+- SysEx are available for various devices allopwing full backup/restore:
+  - **Yamaha TG-33**
+  - **Yamaha TG-77**
+  - **Yamaha TG-500**
+  - **Yamaha TX-81z**
+  - **Yamaha AN1x**
+  - **Yamaha CS1x**
+  - **Yamaha Motif Rack XS**
+  - **Roland JV-880**
+  - **Korg Tr-Rack**
+  - **Boss DS-330**
+  - **Alesis QS6.1**
+  - **AKAI MPK-261**: early stage
 
+
+The core API rely on a **Midi Device Library** which use a powerful macro system to handle all kind of SysEx. Here an example for the Yamaha TG-33:
+
+```yaml
+deviceName: "TG-33"
+brand: "Yamaha"
+macros:
+  - "System Data()       : 0001B : F0 43 20 7E 'LM  0012SY' F7"
+  - "Multi Internal()    : 00D12 : F0 43 20 7E 'LM  0012MU' F7"
+  - "Multi Edit Buffer() : 000E2 : F0 43 20 7E 'LM  0012ME' F7"
+  - "Voice Internal()    : 092FF : F0 43 20 7E 'LM  0012VC' F7"
+  - "Voice Edit Buffer() : 0025D : F0 43 20 7E 'LM  0012VE' F7"
+  - "Everything()        : System Data();Multi Internal();Multi Edit Buffer();Voice Internal();Voice Edit Buffer()"
+  - "setRemote(code)     : F0 43 10 26 07 code F7"
+  - "setVoiceMode()      : setRemote($06)"
+  - "setMultiMode()      : setRemote($07)"
+```  
+
+Available presets are organized by **"device mode"** and **"banks"** allowing easy selection via Bank Select, Program Change or Sysex messages.
+It is possible to retrieve automatically all the device preset names (if possible)
+```yaml
+deviceModes:
+  MultiMode:
+    command: setMultiMode()
+    banks:
+      "Preset 1 Multis":
+        command: $0010
+        queryName: getMultiName()
+        presetDomain: 64-79
+  VoiceMode:
+    command: setVoiceMode()
+    banks:
+      "Preset 1 Voices":
+        command: $0002
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Preset 2 Voices":
+        command: $0005
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Internal Voices":
+        command: $0000
+        queryName: getVoiceName()
+        presetDomain: 0-63
+```
+
+Presets can have categories with aliases:
+```yaml
+    categories:
+      - "Piano: AP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Ensemble: ME"
+      - "Organ: OR"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Choir: SC"
+      - "Synth Ensemble: SE"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI"
+      - "Sound FX: SE"
+      - "Sequence: SQ"
+```
+        
 ## AUDIO workshop
 
 #### Topics
@@ -166,9 +250,13 @@ Presets will be generated in `output`folder
 
 # Audience
 
-Most workshops are made for Java developers knowing zero about MIDI and Audio, except the **Synth Editor** and **Synth Ripper** which is more advanced.
+Most workshops are made for Java developers knowing zero about MIDI and Audio, nevertheless some projects are much more advanced:
+- **Synth Editor**
+- **Synth Ripper**
+- **MBT: Midi Backup Translator**
+- **MPM: Midi Preset Manager**
 
-We are targeting Windows OS but things should works on OSX in the same way.
+We are targeting Windows OS but things should work on OSX in the same way.
 
 # Documentation
 
