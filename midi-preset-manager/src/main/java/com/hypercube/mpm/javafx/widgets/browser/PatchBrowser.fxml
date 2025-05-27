@@ -9,9 +9,13 @@
         <AttributeSelector dataSource="controller.model.root.devices" minHeight="-Infinity" minWidth="-Infinity"
                            title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
         <GridPane GridPane.columnIndex="1">
-            <AttributeSelector dataSource="controller.model.root.deviceModes" maxHeight="200.0" minWidth="-Infinity"
+            <AttributeSelector dataSource="controller.model.root.deviceModes"
+                               selectedIndexes="controller.model.root.currentModeIndex"
+                               maxHeight="200.0" minWidth="-Infinity"
                                title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER"/>
-            <AttributeSelector dataSource="controller.model.root.modeBanks" minWidth="-Infinity" title="Mode Bank"
+            <AttributeSelector dataSource="controller.model.root.modeBanks"
+                               selectedIndexes="controller.model.root.currentModeBankName"
+                               minWidth="-Infinity" title="Mode Bank"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
             <columnConstraints>
                 <ColumnConstraints/>
@@ -21,7 +25,9 @@
                 <RowConstraints/>
             </rowConstraints>
         </GridPane>
-        <AttributeSelector allowMultiSelection="true" dataSource="controller.model.root.modeCategories"
+        <AttributeSelector allowMultiSelection="true"
+                           dataSource="controller.model.root.modeCategories"
+                           selectedIndexes="controller.model.root.currentSelectedCategories"
                            minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>

@@ -45,13 +45,13 @@ public abstract class Controller<T extends Node, M> {
                 .getName() + "::" + property + " changed: " + newValue);
     }
 
-    public Object resolvePath(String path) {
+    public <P> P resolvePath(String path) {
         if (path == null) {
             return null;
         }
         ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(path);
-        return expression.getValue(getView());
+        return (P) expression.getValue(getView());
     }
 
 

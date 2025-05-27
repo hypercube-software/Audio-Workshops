@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.hypercube.mpm.javafx.widgets.browser.PatchBrowser?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root type="GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
@@ -26,7 +27,11 @@
         </MenuBar>
         <PatchBrowser GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
         <Pane GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
-            <Label text="Info..."/>
+            <Label text="${controller.model.root.info}">
+                <padding>
+                    <Insets left="10.0"/>
+                </padding>
+            </Label>
         </Pane>
     </children>
     <columnConstraints>

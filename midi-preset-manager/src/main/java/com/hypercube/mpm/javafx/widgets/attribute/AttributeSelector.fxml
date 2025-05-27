@@ -15,12 +15,15 @@
     <fx:define>
         <String fx:id="title"/>
         <String fx:id="dataSource"/>
+        <String fx:id="selectedIndexes"/>
         <String fx:id="allowMultiSelection"/>
     </fx:define>
     <children>
         <Label fx:id="label" text="title" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"
                GridPane.valignment="CENTER" GridPane.vgrow="NEVER"/>
         <ListView fx:id="attributes" GridPane.hgrow="ALWAYS"
-                  GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+                  GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"
+                  onMouseClicked="#onMouseClicked"
+                  onKeyReleased="#onKeyReleased"/>
     </children>
 </fx:root>

@@ -69,6 +69,7 @@ public class ModelHelper {
                 observableModelClass = unloadedType.load(modelClass
                                 .getClassLoader())
                         .getLoaded();
+                observableModelClasses.put(modelClass, observableModelClass);
             }
             T instance = observableModelClass.newInstance();
             for (Field field : modelClass

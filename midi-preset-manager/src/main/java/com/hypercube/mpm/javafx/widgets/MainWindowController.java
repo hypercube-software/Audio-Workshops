@@ -16,6 +16,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
@@ -78,7 +79,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
             refreshPatches(model);
         } else if (selectionChangedEvent.getDataSource()
                 .endsWith(".modeCategories")) {
-            model.setCurrentSelectedCategories(selectionChangedEvent.getSelectedItems());
+            onCategoriesChanged(selectionChangedEvent, model);
             refreshPatches(model);
         } else if (selectionChangedEvent.getDataSource()
                 .endsWith(".modeBanks")) {
@@ -88,6 +89,13 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                 .endsWith(".patches")) {
             onPatchChanged(selectionChangedEvent, model);
         }
+    }
+
+    private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
+        List<Integer> selectedItems = selectionChangedEvent.getSelectedItems();
+        var state = getCurrentDeviceState(model);
+        model.setCurrentSelectedCategories(selectedItems);
+        state.setCurrentSelectedCategories(selectedItems);
     }
 
     private void onModeBankChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
@@ -100,8 +108,12 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                     .get(selectionChangedEvent.getSelectedItems()
                             .getFirst());
             model.setCurrentModeBankName(bankName);
+            getCurrentDeviceState(model)
+                    .setCurrentBank(bankName);
         } else {
             model.setCurrentModeBankName(null);
+            getCurrentDeviceState(model)
+                    .setCurrentBank(null);
         }
     }
 
@@ -109,9 +121,10 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         if (!selectionChangedEvent.getSelectedItems()
                 .isEmpty()) {
 
+            Integer patchIndex = selectionChangedEvent.getSelectedItems()
+                    .getFirst();
             Patch patch = model.getPatches()
-                    .get(selectionChangedEvent.getSelectedItems()
-                            .getFirst());
+                    .get(patchIndex);
             var device = cfg.getMidiDeviceLibrary()
                     .getDevice(patch.getDevice())
                     .orElseThrow();
@@ -142,7 +155,14 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                         .getMidiOutDevice()
                         .sendPresetChange(midiPreset);
             }
+            getCurrentDeviceState(model)
+                    .setCurrentPatch(patch);
         }
+    }
+
+    private DeviceState getCurrentDeviceState(MainModel model) {
+        return model.getDeviceStates()
+                .get(model.getCurrentDeviceName());
     }
 
     private void refreshPatches(MainModel model) {
@@ -155,47 +175,67 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
 
         String currentModeName = model.getCurrentModeName();
         if (currentModeName != null) {
+            // Note: it is possible that currentModeBankName is not yet updated at this point
+            // so midiDeviceMode will be null because it points to the previous selected device
             String currentModeBankName = model.getCurrentModeBankName();
-            patches = device.getDeviceModes()
-                    .get(currentModeName)
-                    .getBanks()
-                    .values()
-                    .parallelStream()
-                    .filter(bank -> currentModeBankName == null || currentModeBankName
-                            .equals(bank.getName()))
-                    .flatMap(bank -> bank.getPresets()
-                            .stream()
-                            .filter(preset -> (model.getCurrentSelectedCategories()
-                                    .isEmpty() ||
-                                    model.getCurrentSelectedCategories()
-                                            .stream()
-                                            .map(idx -> model.getModeCategories()
-                                                    .get(idx))
-                                            .map(c -> c.split(":")[0].trim())
-                                            .filter(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"))
-                                            .count() > 0) && (model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter()))
-                            )
-                            .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0))))
-                    .toList();
+            MidiDeviceMode midiDeviceMode = device.getDeviceModes()
+                    .get(currentModeName);
+            if (midiDeviceMode != null) {
+                patches = midiDeviceMode
+                        .getBanks()
+                        .values()
+                        .parallelStream()
+                        .filter(bank -> currentModeBankName == null || currentModeBankName
+                                .equals(bank.getName()))
+                        .flatMap(bank -> bank.getPresets()
+                                .stream()
+                                .filter(preset -> (model.getCurrentSelectedCategories()
+                                        .isEmpty() ||
+                                        model.getCurrentSelectedCategories()
+                                                .stream()
+                                                .map(idx -> model.getModeCategories()
+                                                        .get(idx))
+                                                .map(c -> c.split(":")[0].trim())
+                                                .filter(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"))
+                                                .count() > 0) && (model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter()))
+                                )
+                                .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0)))
+                                .filter(patch -> patch.getScore() >= model.getCurrentPatchScoreFilter()))
+                        .toList();
+            }
         }
         model.setPatches(patches);
+        model.setInfo("%d patches".formatted(patches.size()));
+        getCurrentDeviceState(model)
+                .setCurrentSearchOutput(patches);
     }
 
     private void onDeviceModeChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(model.getCurrentDeviceName())
                 .orElseThrow();
-        var state = model.getDeviceStates()
-                .get(model.getCurrentDeviceName());
+        var state = getCurrentDeviceState(model);
         if (!selectionChangedEvent.getSelectedItems()
                 .isEmpty()) {
+            Integer modeIndex = selectionChangedEvent.getSelectedItems()
+                    .getFirst();
             var modeName = model.getDeviceModes()
-                    .get(selectionChangedEvent.getSelectedItems()
-                            .getFirst());
+                    .get(modeIndex);
+            log.info("Current Mode: " + modeName);
             changeMode(device, state, modeName);
             model.setCurrentModeName(modeName);
-            var mode = device.getDeviceModes()
-                    .get(modeName);
+            state.setCurrentMode(modeName);
+            refreshModeCategoriesAndBanks(model, device, modeName);
+        } else {
+            model.setModeCategories(List.of());
+            state.setCurrentMode(null);
+        }
+    }
+
+    private void refreshModeCategoriesAndBanks(MainModel model, MidiDeviceDefinition device, String modeName) {
+        var mode = device.getDeviceModes()
+                .get(modeName);
+        if (mode != null) {
             model.setModeCategories(mode.getCategories()
                     .stream()
                     .map(MidiPresetCategory::name)
@@ -207,7 +247,8 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                     .sorted()
                     .toList());
         } else {
-            model.setModeCategories(List.of());
+            model.setModeCategories(null);
+            model.setModeBanks(null);
         }
     }
 
@@ -242,6 +283,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                                 }
                             });
                 });
+                state.setCurrentMode(modeName);
             } else {
                 log.info("There is no command to switch mode");
             }
@@ -264,6 +306,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                 .get(deviceName);
         if (deviceState == null) {
             deviceState = new DeviceState();
+            deviceState.setDeviceName(deviceName);
             if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
                 deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
                         .openOutput(device.getOutputMidiDevice()));
@@ -277,7 +320,22 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                 .stream()
                 .sorted()
                 .toList();
-        model
-                .setDeviceModes(modes);
+        model.setDeviceModes(modes);
+        restoreDeviceState(model, deviceState, device);
+    }
+
+    private void restoreDeviceState(MainModel model, DeviceState deviceState, MidiDeviceDefinition device) {
+        int currentModeIndex = model.getDeviceModes()
+                .indexOf(deviceState.getCurrentMode());
+        int currentPatchIndex = deviceState.getCurrentSearchOutput() != null && deviceState.getCurrentPatch() != null ? deviceState.getCurrentSearchOutput()
+                .indexOf(deviceState.getCurrentPatch()) : -1;
+        log.info("Restore {} state: mode {} bank {} categories {} patch {}", device.getDeviceName(), deviceState.getCurrentMode(), deviceState.getCurrentBank(), deviceState.getCurrentSelectedCategories(), currentPatchIndex);
+        model.setCurrentModeName(deviceState.getCurrentMode());
+        model.setCurrentModeIndex(currentModeIndex);
+        refreshModeCategoriesAndBanks(model, device, deviceState.getCurrentMode());
+        model.setCurrentModeBankName(deviceState.getCurrentBank());
+        model.setPatches(deviceState.getCurrentSearchOutput());
+        model.setCurrentSelectedCategories(deviceState.getCurrentSelectedCategories());
+        model.setCurrentPatchIndex(currentPatchIndex);
     }
 }
