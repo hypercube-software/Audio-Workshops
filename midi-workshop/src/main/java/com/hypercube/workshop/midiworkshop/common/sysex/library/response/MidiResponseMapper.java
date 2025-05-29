@@ -46,7 +46,11 @@ public class MidiResponseMapper {
 
         ManufacturerSysExParser sysExParser = new ManufacturerSysExParser();
         payload = sysExParser.unpackMidiBuffer(device, payload);
-
+        /*try {
+            Files.write(Path.of("unpack.dat"), payload);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
         switch (field.getType()) {
             case STRING -> extractString(currentResponse, payload, field);
             case INTEGER -> extractInteger(currentResponse, payload, field);
@@ -62,6 +66,10 @@ public class MidiResponseMapper {
     }
 
     private int readInteger(byte[] payload, MidiResponseField field) {
+        if ((field.getUnit() == MidiResponseUnit.BYTE && field.getOffset() >= payload.length) ||
+                (field.getUnit() == MidiResponseUnit.BIT && field.getOffset() / 8 >= payload.length)) {
+            return 0;
+        }
         return switch (field.getUnit()) {
             case BYTE -> readByteInteger(ByteBuffer.wrap(payload), field);
             case BIT -> readBitInteger(field, payload);
@@ -80,7 +88,9 @@ public class MidiResponseMapper {
     private void extractString(MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
         String value = "";
         for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
-            if (payload[i] >= 32 && payload[i] <= 127) {
+            if (i >= payload.length) {
+                value += "❌";
+            } else if (payload[i] >= 32 && payload[i] <= 127) {
                 value += (char) payload[i];
             } else if (payload[i] == 0) {
                 value += " "; // happen in Motif Rack XS for instance
@@ -115,8 +125,7 @@ public class MidiResponseMapper {
     private int readBitInteger(MidiResponseField field, byte[] payload) {
         BitStreamReader bsr = new BitStreamReader(payload);
         bsr.readBits(field.getOffset());
-        if (device.getBrand()
-                .equals(BRAND_ALESIS)) {
+        if (field.isLsbFirst()) {
             return bsr.readInvertedBits(field.getSize());
         } else {
             return bsr.readBits(field.getSize());

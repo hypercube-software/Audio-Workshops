@@ -26,4 +26,8 @@ public class MidiResponseField {
      * For strings, number of characters. Otherwise, number of bits or bytes to read
      */
     private int size;
+    /**
+     * Some Alesis devices invert bits (QS6.1)
+     */
+    private boolean lsbFirst;
 }

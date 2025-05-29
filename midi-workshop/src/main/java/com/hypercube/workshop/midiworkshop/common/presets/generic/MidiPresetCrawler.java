@@ -95,15 +95,27 @@ public class MidiPresetCrawler {
                             String currentBankName = bank.getName();
                             MidiPreset midiPreset = MidiPresetBuilder.parse(device, mode, bank, program);
                             log.info("Select Bank '%s' Program '%s' in mode '%s'".formatted(currentBankName, program, mode.getName()));
+                            int bankLSB = 0;
+                            int bankMSB = 0;
                             for (var command : midiPreset.getCommands()) {
                                 CustomMidiEvent cm = new CustomMidiEvent(command, 0);
                                 log.info("    " + cm.getHexValuesSpaced());
+                                if (cm.getHexValues()
+                                        .startsWith("0xB020")) {
+                                    bankLSB = Integer.parseInt(cm.getHexValues()
+                                            .substring(6), 16);
+                                }
+                                if (cm.getHexValues()
+                                        .startsWith("0xB000")) {
+                                    bankMSB = Integer.parseInt(cm.getHexValues()
+                                            .substring(6), 16);
+                                }
                                 out.send(cm);
                             }
                             wait(1000); // let the time the edit buffer is completely set before querying it
                             MidiPresetIdentity midiPresetIdentity = switch (device.getPresetNaming()) {
                                 case STANDARD ->
-                                        getStandardPreset(mode, currentBankName, program, bankRequestSequence, out);
+                                        getStandardPreset(mode, currentBankName, bankMSB, bankLSB, program, bankRequestSequence, out);
                                 case SOUND_CANVAS -> getSoundCanvasPreset(device, mode, program, midiPreset);
                             };
                             if (midiPresetIdentity != null) {
@@ -202,8 +214,8 @@ public class MidiPresetCrawler {
         return currentResponse.get();
     }
 
-    private MidiPresetIdentity getStandardPreset(MidiDeviceMode mode, String currentBankName, int program, MidiRequestSequence queryNameRequestSequence, MidiOutDevice out) throws InvalidMidiDataException {
-        var response = requestFields(mode, program, queryNameRequestSequence, out);
+    private MidiPresetIdentity getStandardPreset(MidiDeviceMode mode, String currentBankName, int bankMSB, int bankLSB, int program, MidiRequestSequence queryNameRequestSequence, MidiOutDevice out) throws InvalidMidiDataException {
+        var response = requestFields(mode, bankMSB, bankLSB, program, queryNameRequestSequence, out);
         if (response.getPatchName() != null) {
             return new MidiPresetIdentity(mode.getName(), currentBankName, response.getPatchName(), response.getCategory());
         } else {
@@ -220,12 +232,15 @@ public class MidiPresetCrawler {
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
-    private MidiResponse requestFields(MidiDeviceMode mode, int program, MidiRequestSequence sequence, MidiOutDevice out) throws InvalidMidiDataException {
+    private MidiResponse requestFields(MidiDeviceMode mode, int bankMSB, int bankLSB, int program, MidiRequestSequence sequence, MidiOutDevice out) throws InvalidMidiDataException {
         MidiResponse response = null;
         expectedResponseSize = sequence.getTotalSize();
         for (var request : sequence.getMidiRequests()) {
             List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue()
-                    .replace("program", "%02X".formatted(program)));
+                    .replace("program", "%02X".formatted(program))
+                    .replace("bankMSB", "%02X".formatted(bankMSB))
+                    .replace("bankLSB", "%02X".formatted(bankLSB))
+            );
             for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                 var customMidiEvent = requestInstances.get(requestInstanceIndex);
                 CustomMidiEvent midiEvent = null;
@@ -251,7 +266,7 @@ public class MidiPresetCrawler {
                     }
                 }
                 // extract fields from the response
-                if (request.getMapper() != null && midiEvent.getMessage() != null && response != null) {
+                if (request.getMapper() != null && midiEvent != null && midiEvent.getMessage() != null && response != null) {
                     request.getMapper()
                             .extract(mode, response, midiEvent);
                     request.getMapper()
@@ -326,3 +341,4 @@ public class MidiPresetCrawler {
         }
     }
 }
+

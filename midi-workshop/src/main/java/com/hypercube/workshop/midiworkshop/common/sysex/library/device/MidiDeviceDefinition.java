@@ -71,7 +71,7 @@ public class MidiDeviceDefinition {
     }
 
     public MidiPresetCategory getCategory(MidiDeviceMode mode, int categoryIndex) {
-        if (categoryIndex < mode.getCategories()
+        if (categoryIndex >= 0 && categoryIndex < mode.getCategories()
                 .size()) {
             return mode.getCategories()
                     .get(categoryIndex);

@@ -148,6 +148,7 @@ mappers:
       category:
         type: CATEGORY
         unit: BIT
+        lsbFirst: true
         offset: 81
         size: 6
   AlesisMixMapper:

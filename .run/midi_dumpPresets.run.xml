@@ -2,7 +2,7 @@
   <configuration default="false" name="midi:dumpPresets" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;TX-81z&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;Micron&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

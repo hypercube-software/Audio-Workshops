@@ -21,7 +21,7 @@ public class MidiPresetDomain {
      */
     private List<MidiPresetRange> ranges;
 
-    private static Pattern RANGE_REGEXP = Pattern.compile("([^,]+)");
+    private static Pattern RANGE_REGEXP = Pattern.compile("([^,;]+)");
 
     public static MidiPresetDomain parse(File definitionFile, MidiDeviceDefinition midiDeviceDefinition, String definition) {
         List<MidiPresetRange> ranges = new ArrayList<>();
