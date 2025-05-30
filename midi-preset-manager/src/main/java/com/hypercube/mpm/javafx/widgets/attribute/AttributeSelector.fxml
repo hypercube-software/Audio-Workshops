@@ -3,13 +3,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <?import java.lang.String?>
-<fx:root type="GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root type="GridPane" styleClass="header" xmlns="http://javafx.com/javafx/17.0.12"
+         xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints minWidth="25.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="30.0"/>
+        <RowConstraints minHeight="35.0"/>
         <RowConstraints minHeight="368.0" prefHeight="405.0"/>
     </rowConstraints>
     <fx:define>
@@ -19,11 +21,14 @@
         <String fx:id="allowMultiSelection"/>
     </fx:define>
     <children>
-        <Label fx:id="label" text="title" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"
-               GridPane.valignment="CENTER" GridPane.vgrow="NEVER"/>
-        <ListView fx:id="attributes" GridPane.hgrow="ALWAYS"
-                  GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"
-                  onMouseClicked="#onMouseClicked"
-                  onKeyReleased="#onKeyReleased"/>
+        <Label fx:id="label" text="title" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+               GridPane.rowIndex="0"
+               GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+            <font>
+                <Font name="Arial" size="16.0"/>
+            </font>
+        </Label>
+        <ListView fx:id="attributes" onKeyReleased="#onKeyReleased" onMouseClicked="#onMouseClicked"
+                  GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     </children>
 </fx:root>

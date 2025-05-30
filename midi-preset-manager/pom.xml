@@ -38,14 +38,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-            <version>1.18.36</version>
-        </dependency>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -103,10 +95,26 @@
                     <exclude>**/*.java</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.otf</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.OTF</include>
+                    <include>**/*.TTF</include>
+                </includes>
+            </resource>
             <!-- Add the default resource path back in - by overriding above it disables the default -->
             <resource>
                 <filtering>true</filtering>
                 <directory>${project.basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.otf</exclude>
+                    <exclude>**/*.ttf</exclude>
+                    <exclude>**/*.OTF</exclude>
+                    <exclude>**/*.TTF</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>

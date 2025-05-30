@@ -121,7 +121,6 @@ deviceModes:
       - "Synth Pad: SP"
       - "Synth Lead: SL"
       - "Synth Comp: SC"
-      - "Synth Ensemble: SE"
       - "Combination : CO"
       - "Choir: CH"
       - "Chromatic Percussion: TP"

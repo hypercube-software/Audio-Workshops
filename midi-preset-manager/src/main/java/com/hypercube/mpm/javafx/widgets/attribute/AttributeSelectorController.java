@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 public class AttributeSelectorController extends Controller<AttributeSelector, ObservableMainModel> implements Initializable {
@@ -64,32 +63,33 @@ public class AttributeSelectorController extends Controller<AttributeSelector, O
      */
     private void onModelSelectedIndexesChange(Observable observable) {
         log.info("onModelSelectedIndexesChange {} for {}", observable, getView().getTitle());
-        int[] selectedIndices = null;
+        List<Integer> selectedIndices = null;
         if (observable instanceof IntegerProperty integerProperty) {
             int value = integerProperty.getValue();
-            selectedIndices = IntStream.of(value)
+            selectedIndices = List.of(value)
+                    .stream()
                     .filter(idx -> idx != -1)
-                    .toArray();
+                    .toList();
         } else if (observable instanceof StringProperty stringProperty) {
             String value = stringProperty.getValue();
             int valueIndex = attributes.getItems()
                     .indexOf(value);
-            selectedIndices = IntStream.of(valueIndex)
+            selectedIndices = List.of(valueIndex)
+                    .stream()
                     .filter(idx -> idx != -1)
-                    .toArray();
+                    .toList();
         } else if (observable instanceof SimpleListProperty simpleListProperty) {
             ObservableList<Integer> value = simpleListProperty.getValue();
             selectedIndices = value.stream()
-                    .mapToInt(Integer::intValue)
-                    .toArray();
+                    .toList();
         }
         if (selectedIndices != null) {
-            if (selectedIndices.length == 0) {
+            if (selectedIndices.size() == 0) {
                 attributes.getSelectionModel()
                         .clearSelection();
             } else {
-                attributes.getSelectionModel()
-                        .selectIndices(selectedIndices[0], selectedIndices);
+                selectedIndices.forEach(idx -> attributes.getSelectionModel()
+                        .select((int) idx));
             }
         }
     }

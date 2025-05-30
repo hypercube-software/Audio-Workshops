@@ -9,7 +9,6 @@ import com.hypercube.util.javafx.yaml.ObservableSerializer;
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 @Service
 @RequiredArgsConstructor
@@ -34,32 +34,32 @@ public class ConfigurationFactory {
     public ProjectConfiguration loadConfig() {
         loadLibary();
         favorites = loadFavoritePatches();
-        if (configFile.exists()) {
+        try {
+            if (!configFile.exists() || configFile.length() == 0) {
+                Files.writeString(configFile.toPath(), """
+                        ---
+                        selectedPatches: {}
+                        """);
+            }
             log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
             var mapper = new ObjectMapper(new YAMLFactory());
-            try {
-                SimpleModule module = new SimpleModule();
-                ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
-                config.getDevices()
-                        .forEach(projectDevice -> {
-                            setDefaultDeviceSettings(projectDevice);
-                        });
-                config.setMidiDeviceLibrary(midiDeviceLibrary);
-                config.setMidiDeviceManager(new MidiDeviceManager());
-                config.getMidiDeviceManager()
-                        .collectDevices();
-                return config;
-            } catch (IOException e) {
-                throw new ConfigError(e);
-            }
-        } else {
-            log.warn("The project config does not exists: " + configFile.getAbsolutePath());
-            ProjectConfiguration config = new ProjectConfiguration();
+            ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
             config.setMidiDeviceLibrary(midiDeviceLibrary);
             config.setMidiDeviceManager(new MidiDeviceManager());
             config.getMidiDeviceManager()
                     .collectDevices();
             return config;
+        } catch (IOException e) {
+            throw new ConfigError(e);
+        }
+    }
+
+    public void saveConfig(ProjectConfiguration configuration) {
+        var mapper = new ObjectMapper(new YAMLFactory());
+        try {
+            mapper.writeValue(configFile, configuration);
+        } catch (IOException e) {
+            throw new ConfigError(e);
         }
     }
 
@@ -117,42 +117,5 @@ public class ConfigurationFactory {
                     .values()
                     .forEach(d -> midiDeviceLibrary.collectCustomPatches(d));
         }
-    }
-
-    /**
-     * If the device is defined in the library and some values are not already set, try to fill the gap with what we have
-     *
-     * @param device
-     */
-    private void setDefaultDeviceSettings(ProjectDevice device) {
-        midiDeviceLibrary.getDevice(device.getName())
-                .ifPresent(def -> {
-                    if (device.getInactivityTimeoutMs() == null) {
-                        device.setInactivityTimeoutMs(def.getInactivityTimeoutMs());
-                    }
-                    if (device.getSysExPauseMs() == null) {
-                        device.setSysExPauseMs(def.getSysExPauseMs());
-                    }
-                    if (device.getOutputBandWidth() == null) {
-                        device.setOutputBandWidth(def.getOutputBandWidth());
-                    }
-                    if (device.getInputMidiDevice() == null) {
-                        device.setInputMidiDevice(def.getInputMidiDevice());
-                    }
-                    if (device.getOutputMidiDevice() == null) {
-                        device.setOutputMidiDevice(def.getOutputMidiDevice());
-                    }
-                });
-    }
-
-    private ProjectDevice forgeDefaultProjectDevice(MidiDeviceDefinition midiDeviceDefinition) {
-        ProjectDevice pd = new ProjectDevice();
-        pd.setName(midiDeviceDefinition.getDeviceName());
-        pd.setOutputBandWidth(midiDeviceDefinition.getOutputBandWidth());
-        pd.setInputMidiDevice(midiDeviceDefinition.getInputMidiDevice());
-        pd.setOutputMidiDevice(midiDeviceDefinition.getOutputMidiDevice());
-        pd.setSysExPauseMs(midiDeviceDefinition.getSysExPauseMs());
-        pd.setInactivityTimeoutMs(midiDeviceDefinition.getInactivityTimeoutMs());
-        return pd;
     }
 }

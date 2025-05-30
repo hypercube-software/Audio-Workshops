@@ -31,6 +31,8 @@ public class MidiDeviceDefinition {
     private MidiBankFormat presetFormat;
     private MidiPresetNumbering presetNumbering;
     private MidiPresetNaming presetNaming;
+    private int presetLoadTimeMs = 1000;
+    private int modeLoadTimeMs = 1000;
     private MidiDeviceDecodingKey decodingKey;
     private List<CommandMacro> macros = new ArrayList<>();
     private List<String> presets = new ArrayList<>();

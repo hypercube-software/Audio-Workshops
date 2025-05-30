@@ -70,7 +70,7 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
             imageView.visibleProperty()
                     .set(score >= 0);
             int starScore = i + 1;
-            float opacity = score >= starScore ? 1f : 0.5f;
+            float opacity = score >= starScore ? 1f : 0.2f;
             String css = String.format(Locale.ENGLISH, "-fx-opacity: %f;", opacity);
             imageView.setStyle(css);
         }

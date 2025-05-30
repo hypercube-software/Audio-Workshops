@@ -1,2 +1,22 @@
-devices:
-  - name: "DS-330"
+---
+selectedPatches:
+  QS6.1:
+    mode: "ProgramMode"
+    bank: "User Bank"
+    name: "0-11 | Wave | Digi Clav"
+  Micron:
+    mode: "ProgramMode"
+    bank: "Red Bank"
+    name: "0-0-74 | Sound FX | +Bass banaze"
+  CS1x:
+    mode: "PerformanceMode"
+    bank: "PRE 03"
+    name: "@3F03-073 [Not specified] Bg`m Up D.syx"
+  AN1x:
+    mode: "VoiceMode"
+    bank: "Voices"
+    name: "4 | Synth Pad | Soar"
+  TG-500:
+    mode: "PerformanceMode"
+    bank: "Internal 1 Performance"
+    name: "0-64-36 | Brass | BR Sfz2"

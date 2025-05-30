@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * {@link #drumKitNotes} if not empty, indicate this preset load a Drumkit
  */
 @Getter
-@EqualsAndHashCode(of = {"title", "commands", "controlChanges", "channel"})
+@EqualsAndHashCode(of = {"id.title", "commands", "controlChanges", "channel"})
 public final class MidiPreset {
 
     public static final int BANK_SELECT_MSB = 0;

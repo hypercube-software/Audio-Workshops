@@ -21,16 +21,39 @@ macros:
   - "AllPerformances()        : Performance([0-63])"
   - "Everything()             : System Setup();AllVoiceInternal1();AllVoiceInternal2();AllVoiceEditBuffer();AllPerformances();AllMulti()"
   - "PatchName()              : Voice Edit Buffer() : YamahaMapper"
+  - "DrumPatchName()          : Drum voice Edit Buffer(): YamahaMapper"
   - "PerformanceName()        : Performance Edit Buffer() : YamahaMapper"
 
+# Categories found in manual page 24
+categories:
+  - "Piano: AP"
+  - "Keyboard: KY"
+  - "Brass: BR"
+  - "Wind: WN"
+  - "String: ST"
+  - "Guitar: GT"
+  - "Bass: BA"
+  - "Ensemble: ME"
+  - "Organ: OR"
+  - "Ethnic: FI"
+  - "Synth Pad: SP"
+  - "Synth Lead: SL"
+  - "Synth Comp: SC"
+  - "Combination : CO"
+  - "Choir: CH"
+  - "Chromatic Percussion: TP"
+  - "Drum: DR"
+  - "Percussion: MI"
+  - "Sound FX: SE"
 #
 # Banks are listed in manual page 37
-# Categories found in manual page 24
+# The TG-500 is tricky because it has 2 edit buffers: one for regular voices and one for drum voices
+# So we use fallBackQueryName to get the name of the drum voice
 #
-
 deviceModes:
   VoiceMode:
     queryName: PatchName()
+    fallBackQueryName: DrumPatchName()
     banks:
       "Internal 1 Voices":
         command: "$0000"
@@ -62,27 +85,6 @@ deviceModes:
       "Card 4 Voices":
         command: "$0010"
         #presetDomain: 0-63
-    categories:
-      - "Piano: AP"
-      - "Keyboard: KY"
-      - "Brass: BR"
-      - "Wind: WN"
-      - "String: ST"
-      - "Guitar: GT"
-      - "Bass: BA"
-      - "Ensemble: ME"
-      - "Organ: OR"
-      - "Ethnic: FI"
-      - "Synth Pad: SP"
-      - "Synth Lead: SL"
-      - "Synth Choir: SC"
-      - "Synth Ensemble: SE"
-      - "Combination : CO"
-      - "Choir: CH"
-      - "Chromatic Percussion: TP"
-      - "Drum: DR"
-      - "Percussion: MI"
-      - "Sound FX: SE"
   PerformanceMode:
     queryName: PerformanceName()
     banks:
@@ -101,27 +103,7 @@ deviceModes:
       "Card 2 Performance":
         command: "$0044"
         #presetDomain: 0-63
-    categories:
-      - "Piano: AP"
-      - "Keyboard: KY"
-      - "Brass: BR"
-      - "Wind: WN"
-      - "String: ST"
-      - "Guitar: GT"
-      - "Bass: BA"
-      - "Ensemble: ME"
-      - "Organ: OR"
-      - "Ethnic: FI"
-      - "Synth Pad: SP"
-      - "Synth Lead: SL"
-      - "Synth Choir: SC"
-      - "Synth Ensemble: SE"
-      - "Combination : CO"
-      - "Choir: CH"
-      - "Chromatic Percussion: TP"
-      - "Drum: DR"
-      - "Percussion: MI"
-      - "Sound FX: SE"
+
 #
 # Select how to send bank select messages to the device:
 # ------------------------------------------------------
@@ -141,6 +123,11 @@ presetNumbering: FROM_ZERO
 # SOUND_CANVAS : Path names are hardcoded in java application
 #
 presetNaming: STANDARD
+#
+# How many times we have to wait to be sure the edit buffer is loaded after a program change
+# (default is 1000)
+presetLoadTimeMs: 400
+
 #
 # Mappers to extract patch names
 #

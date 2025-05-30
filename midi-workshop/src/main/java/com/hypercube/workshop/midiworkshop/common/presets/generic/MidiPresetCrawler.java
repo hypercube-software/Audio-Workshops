@@ -68,6 +68,7 @@ public class MidiPresetCrawler {
         }
 
         try {
+            MidiPresetIdentity previousPatchIdentity = null;
             in.open();
             in.addSysExListener(this::onResponse);
             in.startListening();
@@ -79,9 +80,10 @@ public class MidiPresetCrawler {
                 if (mode.getCommand() != null) {
                     MidiRequestSequence setModeRequestSequence = forgeRequestSequence(library, device, mode.getCommand());
                     send(setModeRequestSequence, out);
-                    wait(1000);
+                    wait("Wait mode change", device.getModeLoadTimeMs());
                 }
                 MidiRequestSequence modeRequestSequence = forgeRequestSequence(library, device, mode.getQueryName());
+                MidiRequestSequence fallbackRequestSequence = mode.getFallBackQueryName() != null ? forgeRequestSequence(library, device, mode.getFallBackQueryName()) : null;
                 for (var bank : mode.getBanks()
                         .values()) {
                     if (bank.getPresetDomain() == null) {
@@ -112,21 +114,39 @@ public class MidiPresetCrawler {
                                 }
                                 out.send(cm);
                             }
-                            wait(1000); // let the time the edit buffer is completely set before querying it
-                            MidiPresetIdentity midiPresetIdentity = switch (device.getPresetNaming()) {
-                                case STANDARD ->
-                                        getStandardPreset(mode, currentBankName, bankMSB, bankLSB, program, bankRequestSequence, out);
-                                case SOUND_CANVAS -> getSoundCanvasPreset(device, mode, program, midiPreset);
-                            };
-                            if (midiPresetIdentity != null) {
-                                log.info("Bank  name : " + midiPresetIdentity.bankName());
-                                log.info("Patch name : " + midiPresetIdentity.name());
-                                log.info("Category   : " + midiPresetIdentity.category());
-                                log.info("Preset     : " + midiPreset.getConfig());
-                                log.info("");
-                                midiPreset.setId(midiPresetIdentity);
-                                midiPresetConsumer.onNewMidiPreset(device, midiPreset);
+                            // let the time the edit buffer is completely set before querying it
+                            wait("Wait patch change", device.getPresetLoadTimeMs());
+                            MidiPresetIdentity midiPresetIdentity = null;
+                            for (int retry = 0; retry < 2; retry++) {
+                                midiPresetIdentity = switch (device.getPresetNaming()) {
+                                    case STANDARD ->
+                                            getStandardPreset(mode, currentBankName, bankMSB, bankLSB, program, bankRequestSequence, out);
+                                    case SOUND_CANVAS -> getSoundCanvasPreset(device, mode, program, midiPreset);
+                                };
+                                if (midiPresetIdentity != null) {
+                                    if (previousPatchIdentity != null && previousPatchIdentity.name()
+                                            .equals(midiPresetIdentity.name())) {
+                                        log.error("Something wrong, the patch name is the same than the previous one");
+                                        if (fallbackRequestSequence != null) {
+                                            log.info("Try with fallback request...");
+                                            bankRequestSequence = fallbackRequestSequence;
+                                        }
+                                    } else {
+                                        log.info("Bank  name : " + midiPresetIdentity.bankName());
+                                        log.info("Patch name : " + midiPresetIdentity.name());
+                                        log.info("Category   : " + midiPresetIdentity.category());
+                                        log.info("Preset     : " + midiPreset.getConfig());
+                                        log.info("");
+                                        midiPreset.setId(midiPresetIdentity);
+                                        midiPresetConsumer.onNewMidiPreset(device, midiPreset);
+                                        break;
+                                    }
+                                } else {
+                                    log.error("Something wrong, the patch name is not found");
+                                }
+                                log.error("Retry...");
                             }
+                            previousPatchIdentity = midiPresetIdentity;
                         }
                     }
                 }
@@ -160,7 +180,6 @@ public class MidiPresetCrawler {
                     out.send(customMidiEvent);
                 }
             }
-            wait(1000);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -321,7 +340,7 @@ public class MidiPresetCrawler {
         int size = currentSysex.size();
         long start = System.currentTimeMillis();
         do {
-            wait(50);
+            wait(null, 50);
             long now = System.currentTimeMillis();
             if (currentSysex.size() == size && now - start > 1000 * 4) {
                 int timeoutInSec = (int) (now - start) / 1000;
@@ -333,8 +352,11 @@ public class MidiPresetCrawler {
         while (!predicate.get());
     }
 
-    private static void wait(int timeMs) {
+    private static void wait(String msg, int timeMs) {
         try {
+            if (msg != null) {
+                log.info("{} : {} ms...", msg, timeMs);
+            }
             Thread.sleep(timeMs);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

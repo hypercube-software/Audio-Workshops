@@ -19,9 +19,9 @@ public class MainModel {
     private List<Patch> patches = new ArrayList<>();
     private String currentDeviceName;
     private String currentModeName;
-    private int currentModeIndex;
+    private int currentModeIndex = -1;
     private String currentModeBankName;
-    private int currentPatchIndex;
+    private int currentPatchIndex = -1;
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
     private List<Integer> currentSelectedCategories = new ArrayList<>();

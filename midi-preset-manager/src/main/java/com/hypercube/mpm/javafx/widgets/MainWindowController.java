@@ -2,6 +2,7 @@ package com.hypercube.mpm.javafx.widgets;
 
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.config.SelectedPatch;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
@@ -53,6 +54,8 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
+        cfg.getSelectedPatches()
+                .forEach((deviceName, selectedPatch) -> initDeviceState(getModel().getRoot(), deviceName));
     }
 
     private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {
@@ -94,14 +97,13 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
     private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
         List<Integer> selectedItems = selectionChangedEvent.getSelectedItems();
         var state = getCurrentDeviceState(model);
+        if (state != null) {
+            state.setCurrentSelectedCategories(selectedItems);
+        }
         model.setCurrentSelectedCategories(selectedItems);
-        state.setCurrentSelectedCategories(selectedItems);
     }
 
     private void onModeBankChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
-        var device = cfg.getMidiDeviceLibrary()
-                .getDevice(model.getCurrentDeviceName())
-                .orElseThrow();
         if (!selectionChangedEvent.getSelectedItems()
                 .isEmpty()) {
             var bankName = model.getModeBanks()
@@ -125,39 +127,53 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                     .getFirst();
             Patch patch = model.getPatches()
                     .get(patchIndex);
-            var device = cfg.getMidiDeviceLibrary()
-                    .getDevice(patch.getDevice())
-                    .orElseThrow();
-            if (patch.getName()
-                    .startsWith("@")) {
-                File filename = new File(device.getDefinitionFile()
-                        .getParent(), "%s/%s/%s/%s".formatted(patch.getDevice(), patch.getMode(), patch.getBank(), patch.getName()
-                        .substring(1)));
-                MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(patch.getMode(), patch.getBank(), filename);
-                model.getDeviceStates()
-                        .get(device.getDeviceName())
-                        .getMidiOutDevice()
-                        .sendPresetChange(midiPreset);
-            } else {
-                var values = Arrays.stream(patch.getName()
-                                .split("\\|"))
-                        .toList();
-                String command = values.get(0);
-                String name = values.getLast();
-                MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), 0,
-                        device.getPresetFormat(),
-                        device.getPresetNumbering(),
-                        name,
-                        device.getMacros(),
-                        List.of(command), List.of(MidiPreset.NO_CC), null);
-                model.getDeviceStates()
-                        .get(device.getDeviceName())
-                        .getMidiOutDevice()
-                        .sendPresetChange(midiPreset);
+            if (!patch.getName()
+                    .equals(getCurrentDeviceState(model).getCurrentPatchName())) {
+                sendPatchToDevice(model, patch);
             }
-            getCurrentDeviceState(model)
-                    .setCurrentPatch(patch);
+            setCurrentPatch(model, patch);
         }
+    }
+
+    private void sendPatchToDevice(MainModel model, Patch patch) {
+        var device = cfg.getMidiDeviceLibrary()
+                .getDevice(patch.getDevice())
+                .orElseThrow();
+        log.info("Send patch '{}' to '{}'", patch.getName(), patch.getDevice());
+        if (patch.getName()
+                .startsWith("@")) {
+            File filename = new File(device.getDefinitionFile()
+                    .getParent(), "%s/%s/%s/%s".formatted(patch.getDevice(), patch.getMode(), patch.getBank(), patch.getName()
+                    .substring(1)));
+            MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(patch.getMode(), patch.getBank(), filename);
+            model.getDeviceStates()
+                    .get(device.getDeviceName())
+                    .getMidiOutDevice()
+                    .sendPresetChange(midiPreset);
+        } else {
+            var values = Arrays.stream(patch.getName()
+                            .split("\\|"))
+                    .toList();
+            String command = values.get(0);
+            String name = values.getLast();
+            MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), 0,
+                    device.getPresetFormat(),
+                    device.getPresetNumbering(),
+                    name,
+                    device.getMacros(),
+                    List.of(command), List.of(MidiPreset.NO_CC), null);
+            model.getDeviceStates()
+                    .get(device.getDeviceName())
+                    .getMidiOutDevice()
+                    .sendPresetChange(midiPreset);
+        }
+    }
+
+    private void setCurrentPatch(MainModel model, Patch patch) {
+        getCurrentDeviceState(model).setCurrentPatchName(patch.getName());
+        cfg.getSelectedPatches()
+                .put(patch.getDevice(), new SelectedPatch(patch.getMode(), patch.getBank(), patch.getName()));
+        configurationFactory.saveConfig(cfg);
     }
 
     private DeviceState getCurrentDeviceState(MainModel model) {
@@ -201,16 +217,40 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                                 )
                                 .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0)))
                                 .filter(patch -> patch.getScore() >= model.getCurrentPatchScoreFilter()))
+                        .sorted((p1, p2) -> p1.getName()
+                                .compareTo(p2.getName()))
                         .toList();
             }
         }
         model.setPatches(patches);
         model.setInfo("%d patches".formatted(patches.size()));
-        getCurrentDeviceState(model)
+        DeviceState deviceState = getCurrentDeviceState(model);
+        deviceState
                 .setCurrentSearchOutput(patches);
+        selectCurrentPatch(model, deviceState);
+    }
+
+    private void selectCurrentPatch(MainModel model, DeviceState deviceState) {
+        List<Patch> patches = model.getPatches();
+
+        if (deviceState.getCurrentPatchName() != null) {
+            for (int idx = 0; idx < patches.size(); idx++) {
+                if (patches.get(idx)
+                        .getName()
+                        .equals(deviceState.getCurrentPatchName())) {
+                    model.setCurrentPatchIndex(idx);
+                    break;
+                }
+            }
+        } else {
+            model.setCurrentPatchIndex(-1);
+        }
     }
 
     private void onDeviceModeChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
+        if (model.getCurrentDeviceName() == null)
+            return;
+
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(model.getCurrentDeviceName())
                 .orElseThrow();
@@ -225,9 +265,13 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
             changeMode(device, state, modeName);
             model.setCurrentModeName(modeName);
             state.setCurrentMode(modeName);
+            state.setCurrentBank(null);
+            state.setCurrentSearchOutput(null);
             refreshModeCategoriesAndBanks(model, device, modeName);
         } else {
             model.setModeCategories(List.of());
+            state.setCurrentBank(null);
+            state.setCurrentSearchOutput(null);
             state.setCurrentMode(null);
         }
     }
@@ -305,14 +349,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         DeviceState deviceState = model.getDeviceStates()
                 .get(deviceName);
         if (deviceState == null) {
-            deviceState = new DeviceState();
-            deviceState.setDeviceName(deviceName);
-            if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
-                deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
-                        .openOutput(device.getOutputMidiDevice()));
-            }
-            model.getDeviceStates()
-                    .put(deviceName, deviceState);
+            deviceState = initDeviceState(model, deviceName);
         }
         model.setCurrentDeviceName(deviceName);
         var modes = device.getDeviceModes()
@@ -324,18 +361,41 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         restoreDeviceState(model, deviceState, device);
     }
 
+    private DeviceState initDeviceState(MainModel model, String deviceName) {
+        var device = cfg.getMidiDeviceLibrary()
+                .getDevice(deviceName)
+                .orElseThrow();
+        DeviceState deviceState;
+        deviceState = new DeviceState();
+        deviceState.setDeviceName(deviceName);
+        SelectedPatch selectedPatch = cfg.getSelectedPatches()
+                .get(deviceName);
+        if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
+            deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
+                    .openOutput(device.getOutputMidiDevice()));
+        }
+        model.getDeviceStates()
+                .put(deviceName, deviceState);
+        if (selectedPatch != null) {
+            deviceState.setCurrentMode(selectedPatch.getMode());
+            deviceState.setCurrentPatchName(selectedPatch.getName());
+            sendPatchToDevice(getModel().getRoot(), new Patch(deviceName, selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getName(), 0));
+        }
+        return deviceState;
+    }
+
     private void restoreDeviceState(MainModel model, DeviceState deviceState, MidiDeviceDefinition device) {
+        log.info("Restore {} state: mode '{}' bank '{}' categories '{}' patch '{}'", device.getDeviceName(), deviceState.getCurrentMode(), deviceState.getCurrentBank(), deviceState.getCurrentSelectedCategories(), deviceState.getCurrentPatchName());
         int currentModeIndex = model.getDeviceModes()
                 .indexOf(deviceState.getCurrentMode());
-        int currentPatchIndex = deviceState.getCurrentSearchOutput() != null && deviceState.getCurrentPatch() != null ? deviceState.getCurrentSearchOutput()
-                .indexOf(deviceState.getCurrentPatch()) : -1;
-        log.info("Restore {} state: mode {} bank {} categories {} patch {}", device.getDeviceName(), deviceState.getCurrentMode(), deviceState.getCurrentBank(), deviceState.getCurrentSelectedCategories(), currentPatchIndex);
         model.setCurrentModeName(deviceState.getCurrentMode());
         model.setCurrentModeIndex(currentModeIndex);
         refreshModeCategoriesAndBanks(model, device, deviceState.getCurrentMode());
         model.setCurrentModeBankName(deviceState.getCurrentBank());
         model.setPatches(deviceState.getCurrentSearchOutput());
         model.setCurrentSelectedCategories(deviceState.getCurrentSelectedCategories());
-        model.setCurrentPatchIndex(currentPatchIndex);
+        model.setCurrentPatchIndex(-1);
     }
+
+
 }

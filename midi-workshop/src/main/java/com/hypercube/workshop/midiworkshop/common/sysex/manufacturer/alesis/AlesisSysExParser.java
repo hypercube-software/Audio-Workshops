@@ -49,7 +49,11 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
 
     String getChar(int code) {
         if (characterTable.length() > code) {
-            return "" + characterTable.charAt(code);
+            char c = characterTable.charAt(code);
+            if (c == '|') {
+                c = ' '; // '|' is reserved for our own usage during preset storage
+            }
+            return "" + c;
         } else {
             return "\uD83D\uDC80";
         }

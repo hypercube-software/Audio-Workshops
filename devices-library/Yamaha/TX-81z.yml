@@ -71,9 +71,9 @@ deviceModes:
         queryName: getPerformanceName()
         presetDomain: 32-55
   SingleMode:
-    command: setModifedPrgChgTable()
+    command: setDefaultPrgChgTable()
     banks:
-      "Bank D":
+      "Bank Internal":
         queryName: getVoiceName()
         presetDomain: 0-31
       "Bank A":
@@ -85,10 +85,10 @@ deviceModes:
       "Bank C":
         queryName: getVoiceName()
         presetDomain: 96-127
-  SingleModeInternal:
-    command: setDefaultPrgChgTable()
+  SingleModeD:
+    command: setModifedPrgChgTable()
     banks:
-      "Bank Internal":
+      "Bank D":
         queryName: getVoiceName()
         presetDomain: 0-31
 

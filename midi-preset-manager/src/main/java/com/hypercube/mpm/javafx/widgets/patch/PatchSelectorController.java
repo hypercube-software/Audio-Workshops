@@ -49,14 +49,14 @@ public class PatchSelectorController extends Controller<PatchSelector, Observabl
         patchList.itemsProperty()
                 .bind(patchesProperty);
         searchBox.textProperty()
-                .bind(currentPatchNameFilterProperty);
+                .bindBidirectional(currentPatchNameFilterProperty);
         searchBox.setOnAction(this::onSearch);
-        currentPatchIndexProperty.addListener(this::onModelSelectedPatchIndexeChange);
+        currentPatchIndexProperty.addListener(this::onModelSelectedPatchIndexChange);
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
     }
 
-    private void onModelSelectedPatchIndexeChange(ObservableValue<? extends Number> integerProperty, Number oldValue, Number newValue) {
-        log.info("onModelSelectedPatchIndexeChange {} for Patches", integerProperty);
+    private void onModelSelectedPatchIndexChange(ObservableValue<? extends Number> integerProperty, Number oldValue, Number newValue) {
+        log.info("onModelSelectedPatchIndexChange {} for Patches", integerProperty);
         int value = newValue.intValue();
         if (value == -1) {
             patchList.getSelectionModel()

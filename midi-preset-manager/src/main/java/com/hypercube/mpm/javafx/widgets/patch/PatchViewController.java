@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +62,11 @@ public class PatchViewController extends Controller<PatchView, Void> implements 
         IntStream.range(0, stars.size())
                 .forEach(index ->
                         stars.get(index)
-                                .setOnMouseClicked(e -> onMouseClick(index)));
+                                .setOnMouseClicked(e -> onMouseClick(e, index)));
     }
 
-    private void onMouseClick(int index) {
+    private void onMouseClick(MouseEvent e, int index) {
+        e.consume(); // we don't want to trigger a patch change again, we just want to update the score
         if (currentPatch != null) {
             int score = (currentPatch.getScore() == index + 1) ? 0 : index + 1;
             log.info(this.toString() + " Set score " + score + " on patch " + currentPatch.getName());
