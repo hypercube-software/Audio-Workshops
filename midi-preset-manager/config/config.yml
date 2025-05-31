@@ -20,3 +20,7 @@ selectedPatches:
     mode: "PerformanceMode"
     bank: "Internal 1 Performance"
     name: "0-64-36 | Brass | BR Sfz2"
+  Mininova:
+    mode: "SingleMode"
+    bank: "Bank A"
+    name: "1-115 | Unknown | VoiceOfGrey PS"

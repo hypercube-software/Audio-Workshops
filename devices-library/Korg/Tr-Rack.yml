@@ -16,6 +16,7 @@ macros:
   - "Everything() : GLOBAL DATA();MODE DATA();MULTI DATA();ALL DRUMKITS DATA();ALL PROGRAM PARAMETER();ALL COMBINATIONS PARAMETER();CURRENT PROGRAM PARAMETER();CURRENT COMBINATION PARAMETER()"
   - "PatchName()                     : CURRENT PROGRAM PARAMETER() : KorgProgramMapper"
   - "CombiName()                     : CURRENT COMBINATION PARAMETER() : KorgCombiMapper"
+  # note how mode use nibble instead of byte
   - "ModeChange(mode)                : - : F0 42 30 3B 4E 0 mode 00 F7"
   - "ProgramMode()                   : - : ModeChange( $2 )"
   - "CombiMode()                     : - : ModeChange( $0 )"

@@ -184,14 +184,14 @@ public final class CommandMacro {
         }
         // This replacement is very tricky
         // Parameter values must be expanded ONLY when we reach the final HEXA payload
-        // if the payload contains a macro call, somthing with "(", then we don't expand the parameter value yet
+        // if the payload contains a macro call, something with "(", then we don't expand the parameter value yet
         String replacement = currentBody.contains("(") ? paramValue : expandParameterValue(paramValue);
         // since $ is a regexp character, we need to escape it if it is present
-        replacement = replacement.replace("$", "\\$");
+        //replacement = replacement.replace("$", "\\$");
         // now we are ready to forge the regexp
         String separator = "[() ,]";
-        String findParameter = "%s(%s)%s".formatted(separator, paramName, separator);
-        // now we look for any match and we replace it with the parameter value (expanded or not)
+        String findParameter = "%s(%s)".formatted(separator, paramName);
+        // now we look for any match, and we replace it with the parameter value (expanded or not)
         Pattern p = Pattern.compile(findParameter);
         for (; ; ) {
             var m = p.matcher(currentBody);

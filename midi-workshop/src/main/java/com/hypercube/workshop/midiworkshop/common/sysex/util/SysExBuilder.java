@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class SysExBuilder {
     public static final Pattern DECIMAL_OR_HEX_NUMBER = Pattern.compile("((0x|\\$)(?<hexadecimal>[0-9A-F]+))|(?<decimal>[0-9]+)");
-    public static final Pattern nibbles = Pattern.compile("\\s+(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
+    public static final Pattern nibbles = Pattern.compile("(^|\\s)(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
 
 
     private static class State {
@@ -143,9 +144,15 @@ public class SysExBuilder {
         }
         byte[] result = sb.buildBuffer();
         try {
-            return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+            if ((result[0] & 0xFF) == 0xF0) {
+                return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+            } else if (result.length == 3) {
+                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF), -1);
+            } else {
+                throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + inputRawString);
+            }
         } catch (InvalidMidiDataException e) {
-            throw new MidiError(e);
+            throw new MidiError("Unexpected message forged: " + inputRawString, e);
         }
     }
 
@@ -169,6 +176,10 @@ public class SysExBuilder {
         return rawString;
     }
 
+    /**
+     * @param payload like   F043204B 70 [00-127] 00 F7
+     * @return The list of ranges position in the payload
+     */
     private static List<SysExRange> collectRanges(String payload) {
         List<SysExRange> result = new ArrayList<>();
         final String HEXA_OR_DECIMAL = "[0-9A-Fx$]+";
@@ -218,6 +229,12 @@ public class SysExBuilder {
         throw new MidiError("Expected a number in the form $FF or 0xFF or 00 but got: " + number);
     }
 
+    /**
+     * ASCII strings are used for Yamaha
+     *
+     * @param payload like this  F0 43 20 7E 'LM  0012SY' F7
+     * @return the payload with the strings converted to hexa
+     */
     private static String resolveASCIIStrings(String payload) {
         var asciiString = Pattern.compile("'[^']+'");
         var matcher = asciiString.matcher(payload);

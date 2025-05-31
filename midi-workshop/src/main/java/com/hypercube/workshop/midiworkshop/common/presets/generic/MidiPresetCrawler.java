@@ -132,19 +132,21 @@ public class MidiPresetCrawler {
                                             bankRequestSequence = fallbackRequestSequence;
                                         }
                                     } else {
-                                        log.info("Bank  name : " + midiPresetIdentity.bankName());
-                                        log.info("Patch name : " + midiPresetIdentity.name());
-                                        log.info("Category   : " + midiPresetIdentity.category());
-                                        log.info("Preset     : " + midiPreset.getConfig());
-                                        log.info("");
-                                        midiPreset.setId(midiPresetIdentity);
-                                        midiPresetConsumer.onNewMidiPreset(device, midiPreset);
                                         break;
                                     }
                                 } else {
                                     log.error("Something wrong, the patch name is not found");
                                 }
                                 log.error("Retry...");
+                            }
+                            if (midiPresetIdentity != null) {
+                                log.info("Bank  name : " + midiPresetIdentity.bankName());
+                                log.info("Patch name : " + midiPresetIdentity.name());
+                                log.info("Category   : " + midiPresetIdentity.category());
+                                log.info("Preset     : " + midiPreset.getConfig());
+                                log.info("");
+                                midiPreset.setId(midiPresetIdentity);
+                                midiPresetConsumer.onNewMidiPreset(device, midiPreset);
                             }
                             previousPatchIdentity = midiPresetIdentity;
                         }
