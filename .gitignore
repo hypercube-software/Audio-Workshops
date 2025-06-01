@@ -51,3 +51,4 @@ hs_err_pid*
 /synth-ripper/output/**/*.*
 
 /midi-preset-manager/config/favorite-patches.yaml
+/midi-preset-manager/fonts/

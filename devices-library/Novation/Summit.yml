@@ -63,8 +63,8 @@ deviceModes:
       - Synth Poly
       - Sound FX
       - String
-      - User 1
-      - User 2
+      - External Input
+      - Vocoder/Tune
   MultiMode:
     command: multiMode()
     queryName: MultiName()

@@ -90,8 +90,6 @@ public class MidiResponseMapper {
         for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
             if (i >= payload.length) {
                 value += "❌";
-            } else if (payload[i] == '|') {
-                value += " "; // we use this character to store presets, so it is reserved
             } else if (payload[i] >= 32 && payload[i] <= 127) {
                 value += (char) payload[i];
             } else if (payload[i] == 0) {
@@ -100,6 +98,8 @@ public class MidiResponseMapper {
                 value += "❌";
             }
         }
+        value = value.replace("|nitial", "Initial"); // Weird case from Mininova
+        value = value.replace("|", " ");// we use this character to store presets, so it is reserved
         currentResponse.addField(field.getName(), value.trim());
     }
 

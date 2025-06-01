@@ -3,13 +3,16 @@ package com.hypercube.workshop.midiworkshop.common.sysex.library;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponse;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
@@ -21,6 +24,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.SysexMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -124,9 +130,13 @@ public class MidiDeviceLibrary {
                                 mode.getBanks()
                                         .put(bankName, bank);
                             }
-                            bank.getPresets()
-                                    .add("@" + patchPath.getFileName()
-                                            .toString());
+                            String presetName = "@" + patchPath.getFileName()
+                                    .toString();
+                            if (!bank.getPresets()
+                                    .contains(presetName)) {
+                                bank.getPresets()
+                                        .add(presetName);
+                            }
                         }
                     }
                 });
@@ -397,5 +407,100 @@ public class MidiDeviceLibrary {
             return commandMacro.getResponseSize();
         }
         return null;
+    }
+
+    public void importSysex(String device, String mode, File file) {
+        try {
+            MidiDeviceDefinition midiDeviceDefinition = getDevice(device).orElseThrow();
+            MidiDeviceMode midiDeviceMode = midiDeviceDefinition.getMode(mode)
+                    .orElseThrow();
+            if (!file.exists()) {
+                log.info("SYSEX not found: " + file.getAbsolutePath());
+                return;
+            }
+            log.info("Parsing SYSEX: " + file.getAbsolutePath());
+            byte[] content = Files.readAllBytes(file.toPath());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            List<byte[]> messages = new ArrayList<>();
+            for (int i = 0; i < content.length; i++) {
+                int value = content[i] & 0xFF;
+                if (value == 0xF0) {
+                    if (out.size() > 0) {
+                        messages.add(out.toByteArray());
+                    }
+                    out.reset();
+                }
+                out.write(value);
+            }
+            if (out.size() > 0) {
+                messages.add(out.toByteArray());
+            }
+            log.info("{} messages found", messages.size());
+            for (int presetId = 0; presetId < messages.size(); presetId++) {
+                byte[] patchData = messages.get(presetId);
+                String patchName = getPatchName(file, midiDeviceDefinition, midiDeviceMode, presetId, messages.get(presetId));
+                String bankName = getBankName(file);
+                File destFile = new File(midiDeviceDefinition.getDefinitionFile()
+                        .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), mode, bankName, patchName));
+                log.info("Generate " + destFile.getAbsolutePath());
+                destFile.getParentFile()
+                        .mkdirs();
+                if (midiDeviceDefinition.getPatchOverrides() != null) {
+                    midiDeviceDefinition.getPatchOverrides()
+                            .forEach(override -> {
+                                log.info("Override byte at pos 0x%04X with value 0x%02X instead of 0x%02X".formatted(
+                                        override.offset(),
+                                        override.value(),
+                                        patchData[override.offset()]
+                                ));
+                                patchData[override.offset()] = (byte) override.value();
+                            });
+                }
+                Files.write(destFile.toPath(), patchData);
+            }
+        } catch (IOException e) {
+            throw new MidiError(e);
+        }
+    }
+
+    private String getBankName(File file) {
+        String name = file.getName()
+                .replace(".syx", "");
+        return name.substring(0, 1)
+                .toUpperCase() + name.substring(1);
+    }
+
+    private String getPatchName(File sysexFile, MidiDeviceDefinition device, MidiDeviceMode midiDeviceMode, int presetId, byte[] content) {
+        String patchName = "%03d".formatted(presetId);
+        if (midiDeviceMode.getQueryName() != null) {
+            var sequences = CommandCall.parse(device.getDefinitionFile(), midiDeviceMode.getQueryName())
+                    .stream()
+                    .map(commandCall -> {
+                        CommandMacro macro = device.getMacro(commandCall);
+                        return forgeMidiRequestSequence(device.getDefinitionFile(), device.getDeviceName(), macro, commandCall);
+                    })
+                    .toList();
+            var mapper = sequences.getFirst()
+                    .getMidiRequests()
+                    .getFirst()
+                    .getMapper();
+            MidiResponse midiResponse = new MidiResponse();
+            CustomMidiEvent event = null;
+            try {
+                event = new CustomMidiEvent(new SysexMessage(content, content.length), 0);
+                mapper.extract(midiDeviceMode, midiResponse, event);
+                String realPatchName = midiResponse.getPatchName();
+                if (realPatchName != null) {
+                    realPatchName = realPatchName.replace("/", "-")
+                            .replace(":", "-")
+                            .replace("\"", "'");
+                    return "%03d %s".formatted(presetId, realPatchName);
+                }
+            } catch (InvalidMidiDataException e) {
+                log.error("Unable to forge Sysex from patch {} in file ", presetId, sysexFile);
+                return patchName;
+            }
+        }
+        return patchName;
     }
 }

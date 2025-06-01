@@ -3,6 +3,7 @@ package com.hypercube.mpm.javafx.widgets;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.config.SelectedPatch;
+import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
@@ -12,6 +13,7 @@ import com.hypercube.mpm.model.ObservableMainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
@@ -54,8 +56,30 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
+        addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         cfg.getSelectedPatches()
                 .forEach((deviceName, selectedPatch) -> initDeviceState(getModel().getRoot(), deviceName));
+    }
+
+    private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
+        try {
+            MainModel model = getModel().getRoot();
+            var state = getCurrentDeviceState(model);
+            if (state != null) {
+                filesDroppedEvent.getFiles()
+                        .forEach(f -> cfg.getMidiDeviceLibrary()
+                                .importSysex(state.getDeviceName(), state.getCurrentMode(), f));
+                var device = cfg.getMidiDeviceLibrary()
+                        .getDevice(model
+                                .getCurrentDeviceName())
+                        .orElseThrow();
+                cfg.getMidiDeviceLibrary()
+                        .collectCustomPatches(device);
+                refreshModeCategoriesAndBanks(model, device, model.getCurrentModeName());
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error:", e);
+        }
     }
 
     private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {
@@ -140,16 +164,20 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                 .getDevice(patch.getDevice())
                 .orElseThrow();
         log.info("Send patch '{}' to '{}'", patch.getName(), patch.getDevice());
+        MidiOutDevice port = model.getDeviceStates()
+                .get(device.getDeviceName())
+                .getMidiOutDevice();
         if (patch.getName()
                 .startsWith("@")) {
             File filename = new File(device.getDefinitionFile()
                     .getParent(), "%s/%s/%s/%s".formatted(patch.getDevice(), patch.getMode(), patch.getBank(), patch.getName()
                     .substring(1)));
-            MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(patch.getMode(), patch.getBank(), filename);
-            model.getDeviceStates()
-                    .get(device.getDeviceName())
-                    .getMidiOutDevice()
-                    .sendPresetChange(midiPreset);
+            if (filename.exists()) {
+                MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(patch.getMode(), patch.getBank(), filename);
+                if (port != null) {
+                    port.sendPresetChange(midiPreset);
+                }
+            }
         } else {
             var values = Arrays.stream(patch.getName()
                             .split("\\|"))
@@ -162,10 +190,9 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                     name,
                     device.getMacros(),
                     List.of(command), List.of(MidiPreset.NO_CC), null);
-            model.getDeviceStates()
-                    .get(device.getDeviceName())
-                    .getMidiOutDevice()
-                    .sendPresetChange(midiPreset);
+            if (port != null) {
+                port.sendPresetChange(midiPreset);
+            }
         }
     }
 
@@ -371,8 +398,12 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         SelectedPatch selectedPatch = cfg.getSelectedPatches()
                 .get(deviceName);
         if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
-            deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
-                    .openOutput(device.getOutputMidiDevice()));
+            try {
+                deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
+                        .openOutput(device.getOutputMidiDevice()));
+            } catch (MidiError e) {
+                log.error("Unable to open device " + device.getOutputMidiDevice(), e);
+            }
         }
         model.getDeviceStates()
                 .put(deviceName, deviceState);

@@ -5,6 +5,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNaming;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchOverride;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
@@ -39,6 +40,11 @@ public class MidiDeviceDefinition {
     private List<MidiPresetCategory> categories = new ArrayList<>();
     private Map<String, MidiDeviceMode> deviceModes = new HashMap<>();
     private Map<String, MidiResponseMapper> mappers = new HashMap<>();
+    private List<PatchOverride> patchOverrides;
+
+    public Optional<MidiDeviceMode> getMode(String mode) {
+        return Optional.ofNullable(deviceModes.get(mode));
+    }
 
     /**
      * Given a command call, tell if some macros matches the call

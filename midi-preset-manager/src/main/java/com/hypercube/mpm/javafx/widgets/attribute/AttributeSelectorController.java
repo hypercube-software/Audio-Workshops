@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.attribute;
 
+import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.ObservableMainModel;
 import com.hypercube.util.javafx.controller.Controller;
@@ -17,8 +18,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -48,6 +53,61 @@ public class AttributeSelectorController extends Controller<AttributeSelector, O
             selectedIndexesProperty.addListener(this::onModelSelectedIndexesChange);
         } else if (property.equals("title")) {
             label.setText(newValue);
+        } else if (property.equals("allowDrop")) {
+            if (newValue.equals("true")) {
+                attributes.setOnDragOver(this::onDragOver);
+                attributes.setOnDragEntered(this::onDragEntered);
+                attributes.setOnDragExited(this::onDragExited);
+                attributes.setOnDragDropped(this::onDragDropped);
+            }
+        }
+
+    }
+
+    private void onDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        if (db.hasFiles()) {
+            List<File> files = db.getFiles()
+                    .stream()
+                    .filter(f -> f.getName()
+                            .endsWith(getView().getAcceptedFileType()))
+                    .toList();
+            files.forEach(f -> log.info(f.toString()));
+            fireEvent(FilesDroppedEvent.class, files);
+            success = true;
+        }
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
+    private void onDragExited(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles()) {
+//
+        }
+        event.consume();
+    }
+
+    private void onDragEntered(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles()) {
+//
+        }
+        event.consume();
+    }
+
+    private void onDragOver(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles() && db.getFiles()
+                .stream()
+                .filter(f -> f.getName()
+                        .endsWith(getView().getAcceptedFileType()))
+                .findFirst()
+                .isPresent()) {
+            event.acceptTransferModes(TransferMode.COPY);
+        } else {
+            event.consume();
         }
     }
 

@@ -177,4 +177,10 @@ class MidiDeviceLibraryTest {
         assertThrows(MidiConfigError.class, actual);
     }
 
+    @Test
+    void importSysEx() {
+        // WHEN
+        midiDeviceLibrary.importSysex("Mininova", "SingleMode", new File("src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
+    }
+
 }

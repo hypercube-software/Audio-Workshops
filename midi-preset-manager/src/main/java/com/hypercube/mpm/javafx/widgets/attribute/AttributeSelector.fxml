@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import java.lang.String?>
+<?import java.lang.*?>
 <fx:root type="GridPane" styleClass="header" xmlns="http://javafx.com/javafx/17.0.12"
          xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -19,6 +19,8 @@
         <String fx:id="dataSource"/>
         <String fx:id="selectedIndexes"/>
         <String fx:id="allowMultiSelection"/>
+        <String fx:id="allowDrop"/>
+        <String fx:id="acceptedFileType"/>
     </fx:define>
     <children>
         <Label fx:id="label" text="title" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
