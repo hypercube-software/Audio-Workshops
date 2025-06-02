@@ -28,7 +28,7 @@
                     </opaqueInsets>
                 </TextField>
                 <PatchScore fx:id="scoreFilter" alignment="CENTER"
-                            score="${controller.model.root.currentPatchScoreFilter}"/>
+                            score="${controller.model.currentPatchScoreFilter}"/>
             </children>
             <GridPane.margin>
                 <Insets left="5.0" right="10.0"/>

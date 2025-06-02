@@ -1,5 +1,6 @@
 package com.hypercube.mpm.model;
 
+import com.hypercube.util.javafx.model.ModelHelper;
 import com.hypercube.util.javafx.model.NotObservable;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,13 @@ public class MainModel {
     @NotObservable
     private Map<String, DeviceState> deviceStates = new HashMap<>();
     private String info;
+
+    private static MainModel observableInstance = null;
+
+    public static MainModel getObservableInstance() {
+        if (observableInstance == null) {
+            observableInstance = ModelHelper.forgeMMVM(new MainModel());
+        }
+        return observableInstance;
+    }
 }

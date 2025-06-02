@@ -9,7 +9,6 @@ import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
-import com.hypercube.mpm.model.ObservableMainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
@@ -31,12 +30,13 @@ import javax.sound.midi.InvalidMidiDataException;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class MainWindowController extends Controller<MainWindow, ObservableMainModel> implements Initializable {
+public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable {
     @Autowired
     ProjectConfiguration cfg;
     @Autowired
@@ -44,26 +44,25 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setModel(ObservableMainModel.getGetInstance());
-        getModel().getRoot()
-                .setDevices(cfg.getMidiDeviceLibrary()
-                        .getDevices()
-                        .values()
-                        .stream()
-                        .map(d -> d.getDeviceName())
-                        .sorted()
-                        .toList());
+        setModel(MainModel.getObservableInstance());
+        getModel().setDevices(cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .values()
+                .stream()
+                .map(d -> d.getDeviceName())
+                .sorted()
+                .toList());
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         cfg.getSelectedPatches()
-                .forEach((deviceName, selectedPatch) -> initDeviceState(getModel().getRoot(), deviceName));
+                .forEach((deviceName, selectedPatch) -> initDeviceState(getModel(), deviceName));
     }
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
         try {
-            MainModel model = getModel().getRoot();
+            MainModel model = getModel();
             var state = getCurrentDeviceState(model);
             if (state != null) {
                 filesDroppedEvent.getFiles()
@@ -87,7 +86,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
     }
 
     private void onSearchPatches(SearchPatchesEvent searchPatchesEvent) {
-        refreshPatches(getModel().getRoot());
+        refreshPatches(getModel());
     }
 
     private void onSelectionChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -95,14 +94,14 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
-        MainModel model = getModel().getRoot();
+        MainModel model = getModel();
         if (selectionChangedEvent.getDataSource()
                 .endsWith(".devices")) {
             onDeviceChanged(selectionChangedEvent, model);
             refreshPatches(model);
         } else if (selectionChangedEvent.getDataSource()
                 .endsWith(".deviceModes")) {
-            onDeviceModeChanged(selectionChangedEvent, model);
+            onModeChanged(selectionChangedEvent, model);
             refreshPatches(model);
         } else if (selectionChangedEvent.getDataSource()
                 .endsWith(".modeCategories")) {
@@ -232,20 +231,10 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
                                 .equals(bank.getName()))
                         .flatMap(bank -> bank.getPresets()
                                 .stream()
-                                .filter(preset -> (model.getCurrentSelectedCategories()
-                                        .isEmpty() ||
-                                        model.getCurrentSelectedCategories()
-                                                .stream()
-                                                .map(idx -> model.getModeCategories()
-                                                        .get(idx))
-                                                .map(c -> c.split(":")[0].trim())
-                                                .filter(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"))
-                                                .count() > 0) && (model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter()))
-                                )
+                                .filter(preset -> patchCategoryMatches(model, preset) && patchNameMatches(model, preset))
                                 .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0)))
-                                .filter(patch -> patch.getScore() >= model.getCurrentPatchScoreFilter()))
-                        .sorted((p1, p2) -> p1.getName()
-                                .compareTo(p2.getName()))
+                                .filter(patch -> patchScoreMatches(model, patch)))
+                        .sorted(Comparator.comparing(Patch::getName))
                         .toList();
             }
         }
@@ -255,6 +244,26 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         deviceState
                 .setCurrentSearchOutput(patches);
         selectCurrentPatch(model, deviceState);
+    }
+
+    private static boolean patchScoreMatches(MainModel model, Patch patch) {
+        return patch.getScore() >= model.getCurrentPatchScoreFilter();
+    }
+
+    private static boolean patchNameMatches(MainModel model, String preset) {
+        return model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter());
+    }
+
+    private static boolean patchCategoryMatches(MainModel model, String preset) {
+        return model.getCurrentSelectedCategories()
+                .isEmpty() ||
+                model.getCurrentSelectedCategories()
+                        .stream()
+                        .map(idx -> model.getModeCategories()
+                                .get(idx))
+                        .map(c -> c.split(":")[0].trim())
+                        .filter(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"))
+                        .count() > 0;
     }
 
     private void selectCurrentPatch(MainModel model, DeviceState deviceState) {
@@ -274,7 +283,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         }
     }
 
-    private void onDeviceModeChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
+    private void onModeChanged(SelectionChangedEvent selectionChangedEvent, MainModel model) {
         if (model.getCurrentDeviceName() == null)
             return;
 
@@ -291,6 +300,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
             log.info("Current Mode: " + modeName);
             changeMode(device, state, modeName);
             model.setCurrentModeName(modeName);
+            model.setCurrentSelectedCategories(List.of());
             state.setCurrentMode(modeName);
             state.setCurrentBank(null);
             state.setCurrentSearchOutput(null);
@@ -410,7 +420,7 @@ public class MainWindowController extends Controller<MainWindow, ObservableMainM
         if (selectedPatch != null) {
             deviceState.setCurrentMode(selectedPatch.getMode());
             deviceState.setCurrentPatchName(selectedPatch.getName());
-            sendPatchToDevice(getModel().getRoot(), new Patch(deviceName, selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getName(), 0));
+            sendPatchToDevice(getModel(), new Patch(deviceName, selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getName(), 0));
         }
         return deviceState;
     }

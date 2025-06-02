@@ -3,7 +3,7 @@ package com.hypercube.mpm.javafx.widgets.patch;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
-import com.hypercube.mpm.model.ObservableMainModel;
+import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 
-public class PatchSelectorController extends Controller<PatchSelector, ObservableMainModel> implements Initializable {
+public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
 
     @FXML
     ListView patchList;
@@ -36,16 +36,16 @@ public class PatchSelectorController extends Controller<PatchSelector, Observabl
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setModel(ObservableMainModel.getGetInstance());
+        setModel(MainModel.getObservableInstance());
         patchList.setCellFactory(new Callback<ListView<String>, PatchListCell>() {
             @Override
             public PatchListCell call(ListView listView) {
                 return new PatchListCell();
             }
         });
-        ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.root.patchesProperty");
-        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("controller.model.root.currentPatchNameFilterProperty");
-        SimpleIntegerProperty currentPatchIndexProperty = resolvePath("controller.model.root.currentPatchIndexProperty");
+        ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.patchesProperty");
+        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("controller.model.currentPatchNameFilterProperty");
+        SimpleIntegerProperty currentPatchIndexProperty = resolvePath("controller.model.currentPatchIndexProperty");
         patchList.itemsProperty()
                 .bind(patchesProperty);
         searchBox.textProperty()
@@ -69,14 +69,12 @@ public class PatchSelectorController extends Controller<PatchSelector, Observabl
     }
 
     private void onScoreChangedEventChanged(ScoreChangedEvent scoreChangedEvent) {
-        getModel().getRoot()
-                .setCurrentPatchScoreFilter(scoreChangedEvent.getScore());
+        getModel().setCurrentPatchScoreFilter(scoreChangedEvent.getScore());
         refreshSearch();
     }
 
     private void onSearch(ActionEvent actionEvent) {
-        getModel().getRoot()
-                .setCurrentPatchNameFilter(searchBox.getText());
+        getModel().setCurrentPatchNameFilter(searchBox.getText());
         refreshSearch();
     }
 
@@ -106,6 +104,6 @@ public class PatchSelectorController extends Controller<PatchSelector, Observabl
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
 
-        fireEvent(SelectionChangedEvent.class, "controller.model.root.patches", indexes);
+        fireEvent(SelectionChangedEvent.class, "controller.model.patches", indexes);
     }
 }

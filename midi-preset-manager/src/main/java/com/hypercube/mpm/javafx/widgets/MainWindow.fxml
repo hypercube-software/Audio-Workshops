@@ -28,7 +28,7 @@
         </MenuBar>
         <PatchBrowser GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
         <Pane GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
-            <Label text="${controller.model.root.info}">
+            <Label text="${controller.model.info}">
                 <padding>
                     <Insets left="10.0"/>
                 </padding>

@@ -77,7 +77,7 @@ public class ModelHelper {
                 if (field.getAnnotation(NotObservable.class) == null) {
                     if (!field.getType()
                             .getName()
-                            .contains("Logger")) {
+                            .contains("Logger") && !Modifier.isStatic(field.getModifiers())) {
                         instanciateObservableProperty(field, model, instance);
                     }
                 }
@@ -283,7 +283,7 @@ public class ModelHelper {
                             .equals("set" + name.substring(0, 1)
                                     .toUpperCase() + name.substring(1)))
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> new ModelHelperException("There is no observable setter for  field " + name + " of type " + clazz.getName() + " in class " + observableModelClass.getName()));
             observableSetters.put(key, setter);
         }
         return setter;

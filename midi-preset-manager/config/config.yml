@@ -24,3 +24,7 @@ selectedPatches:
     mode: "SingleMode"
     bank: "SN Patches II"
     name: "@000 Essence Of SNVII.syx"
+  Summit:
+    mode: "SingleMode"
+    bank: "Bank C"
+    name: "0-3-4 | Keyboard | Raw Deal"

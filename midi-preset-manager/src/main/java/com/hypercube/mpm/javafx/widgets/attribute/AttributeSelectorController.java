@@ -2,7 +2,7 @@ package com.hypercube.mpm.javafx.widgets.attribute;
 
 import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
-import com.hypercube.mpm.model.ObservableMainModel;
+import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.View;
 import javafx.beans.Observable;
@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -30,7 +31,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class AttributeSelectorController extends Controller<AttributeSelector, ObservableMainModel> implements Initializable {
+public class AttributeSelectorController extends Controller<AttributeSelector, MainModel> implements Initializable {
     @FXML
     Label label;
 
@@ -113,7 +114,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, O
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setModel(ObservableMainModel.getGetInstance());
+        setModel(MainModel.getObservableInstance());
     }
 
     /**
@@ -144,12 +145,12 @@ public class AttributeSelectorController extends Controller<AttributeSelector, O
                     .toList();
         }
         if (selectedIndices != null) {
+            MultipleSelectionModel selectionModel = attributes.getSelectionModel();
             if (selectedIndices.size() == 0) {
-                attributes.getSelectionModel()
+                selectionModel
                         .clearSelection();
             } else {
-                selectedIndices.forEach(idx -> attributes.getSelectionModel()
-                        .select((int) idx));
+                selectedIndices.forEach(idx -> selectionModel.select((int) idx));
             }
         }
     }

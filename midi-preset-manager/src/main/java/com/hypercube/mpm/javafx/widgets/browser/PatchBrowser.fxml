@@ -6,15 +6,15 @@
 <fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <AttributeSelector dataSource="controller.model.root.devices" minHeight="-Infinity" minWidth="-Infinity"
+        <AttributeSelector dataSource="controller.model.devices" minHeight="-Infinity" minWidth="-Infinity"
                            title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
         <GridPane GridPane.columnIndex="1">
-            <AttributeSelector dataSource="controller.model.root.deviceModes"
-                               selectedIndexes="controller.model.root.currentModeIndex"
+            <AttributeSelector dataSource="controller.model.deviceModes"
+                               selectedIndexes="controller.model.currentModeIndex"
                                maxHeight="200.0" minWidth="-Infinity"
                                title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER"/>
-            <AttributeSelector dataSource="controller.model.root.modeBanks"
-                               selectedIndexes="controller.model.root.currentModeBankName"
+            <AttributeSelector dataSource="controller.model.modeBanks"
+                               selectedIndexes="controller.model.currentModeBankName"
                                allowDrop="true"
                                acceptedFileType="syx"
                                minWidth="-Infinity" title="Mode Bank"
@@ -28,8 +28,8 @@
             </rowConstraints>
         </GridPane>
         <AttributeSelector allowMultiSelection="true"
-                           dataSource="controller.model.root.modeCategories"
-                           selectedIndexes="controller.model.root.currentSelectedCategories"
+                           dataSource="controller.model.modeCategories"
+                           selectedIndexes="controller.model.currentSelectedCategories"
                            minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>
