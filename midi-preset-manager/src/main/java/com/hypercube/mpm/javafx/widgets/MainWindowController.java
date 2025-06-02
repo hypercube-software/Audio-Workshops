@@ -166,11 +166,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         MidiOutDevice port = model.getDeviceStates()
                 .get(device.getDeviceName())
                 .getMidiOutDevice();
-        if (patch.getName()
+        if (patch.getCommand()
                 .startsWith("@")) {
+            String sysExFilename = patch.getCommand()
+                    .substring(1);
             File filename = new File(device.getDefinitionFile()
-                    .getParent(), "%s/%s/%s/%s".formatted(patch.getDevice(), patch.getMode(), patch.getBank(), patch.getName()
-                    .substring(1)));
+                    .getParent(), "%s/%s/%s/%s".formatted(patch.getDevice(), patch.getMode(), patch.getBank(), sysExFilename));
             if (filename.exists()) {
                 MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(patch.getMode(), patch.getBank(), filename);
                 if (port != null) {
@@ -178,17 +179,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 }
             }
         } else {
-            var values = Arrays.stream(patch.getName()
-                            .split("\\|"))
-                    .toList();
-            String command = values.get(0);
-            String name = values.getLast();
             MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), 0,
                     device.getPresetFormat(),
                     device.getPresetNumbering(),
-                    name,
+                    patch.getName(),
                     device.getMacros(),
-                    List.of(command), List.of(MidiPreset.NO_CC), null);
+                    List.of(patch.getCommand()), List.of(MidiPreset.NO_CC), null);
             if (port != null) {
                 port.sendPresetChange(midiPreset);
             }
@@ -198,7 +194,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void setCurrentPatch(MainModel model, Patch patch) {
         getCurrentDeviceState(model).setCurrentPatchName(patch.getName());
         cfg.getSelectedPatches()
-                .put(patch.getDevice(), new SelectedPatch(patch.getMode(), patch.getBank(), patch.getName()));
+                .put(patch.getDevice(), new SelectedPatch(patch.getMode(), patch.getBank(), patch.getName(), patch.getCategory(), patch.getCommand()));
         configurationFactory.saveConfig(cfg);
     }
 
@@ -232,7 +228,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .flatMap(bank -> bank.getPresets()
                                 .stream()
                                 .filter(preset -> patchCategoryMatches(model, preset) && patchNameMatches(model, preset))
-                                .map(preset -> configurationFactory.getFavorite(new Patch(device.getDeviceName(), currentModeName, bank.getName(), preset, 0)))
+                                .map(preset -> configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, bank.getName(), preset)))
                                 .filter(patch -> patchScoreMatches(model, patch)))
                         .sorted(Comparator.comparing(Patch::getName))
                         .toList();
@@ -244,6 +240,37 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         deviceState
                 .setCurrentSearchOutput(patches);
         selectCurrentPatch(model, deviceState);
+    }
+
+    private Patch forgePatch(String deviceName, String currentModeName, String bankName, String patchDefinition) {
+        final String command;
+        final String category;
+        final String name;
+        if (patchDefinition.startsWith("@")) {
+            List<String> parts = Arrays.stream(patchDefinition.split("\\[|\\]"))
+                    .toList();
+            command = patchDefinition.trim();
+            if (parts.size() == 3) {
+                category = parts.get(1)
+                        .trim();
+                name = parts.get(2)
+                        .trim();
+            } else {
+                category = null;
+                name = patchDefinition.substring(1)
+                        .trim();
+            }
+        } else {
+            List<String> parts = Arrays.stream(patchDefinition.split("\\|"))
+                    .toList();
+            command = parts.get(0)
+                    .trim();
+            category = parts.get(1)
+                    .trim();
+            name = parts.get(2)
+                    .trim();
+        }
+        return new Patch(deviceName, currentModeName, bankName, name, category, command, 0);
     }
 
     private static boolean patchScoreMatches(MainModel model, Patch patch) {
@@ -420,9 +447,14 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (selectedPatch != null) {
             deviceState.setCurrentMode(selectedPatch.getMode());
             deviceState.setCurrentPatchName(selectedPatch.getName());
-            sendPatchToDevice(getModel(), new Patch(deviceName, selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getName(), 0));
+            sendPatchToDevice(getModel(), forgePatch(deviceName, selectedPatch));
+
         }
         return deviceState;
+    }
+
+    private Patch forgePatch(String deviceName, SelectedPatch selectedPatch) {
+        return new Patch(deviceName, selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getName(), null, selectedPatch.getCommand(), 0);
     }
 
     private void restoreDeviceState(MainModel model, DeviceState deviceState, MidiDeviceDefinition device) {

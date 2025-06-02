@@ -12,6 +12,8 @@ public class Patch {
     private String mode;
     private String bank;
     private String name;
+    private String category;
+    private String command;
     @EqualsAndHashCode.Exclude
     private int score;
 }

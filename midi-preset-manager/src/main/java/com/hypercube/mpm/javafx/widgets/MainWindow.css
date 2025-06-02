@@ -4,21 +4,24 @@
 
 .list-cell .label {
     -fx-text-fill: #00FF00;
-
 }
-.list-view, .list-cell {
+
+.list-view, .list-cell, .table-view, .table-row-cell {
     -fx-background-color: #000000;
     -fx-text-fill: #00FF00;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+.table-cell {
+    -fx-text-fill: #00FF00;
+}
 
-.tree-cell:selected, .list-cell:selected {
+.list-cell:selected , .table-row-cell:selected  {
     -fx-background-color: #005500; /* Darker green for selected items */
 }
 
-.list-view , .list-view:focused {
+.list-view , .table-view, .table-row-cell, .list-view:focused {
     -fx-border-insets: 0;
     -fx-padding: 0;
     -fx-background-insets: 0;

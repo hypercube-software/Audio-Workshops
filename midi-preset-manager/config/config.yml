@@ -1,30 +1,14 @@
 ---
 selectedPatches:
-  QS6.1:
-    mode: "ProgramMode"
-    bank: "User Bank"
-    name: "0-11 | Wave | Digi Clav"
-  Micron:
-    mode: "ProgramMode"
-    bank: "Red Bank"
-    name: "0-0-74 | Sound FX | +Bass banaze"
-  CS1x:
-    mode: "PerformanceMode"
-    bank: "PRE 03"
-    name: "@3F03-073 [Not specified] Bg`m Up D.syx"
-  AN1x:
-    mode: "VoiceMode"
-    bank: "Voices"
-    name: "4 | Synth Pad | Soar"
-  TG-500:
-    mode: "PerformanceMode"
-    bank: "Internal 1 Performance"
-    name: "0-64-36 | Brass | BR Sfz2"
-  Mininova:
-    mode: "SingleMode"
-    bank: "SN Patches II"
-    name: "@000 Essence Of SNVII.syx"
   Summit:
     mode: "SingleMode"
     bank: "Bank C"
-    name: "0-3-4 | Keyboard | Raw Deal"
+    name: "Ambi Sludge Pro"
+    category: "Synth Pad"
+    command: "0-3-115"
+  Mininova:
+    mode: "SingleMode"
+    bank: "Bank A"
+    name: "Shufflin DF"
+    category: "Motion Synth"
+    command: "1-9"

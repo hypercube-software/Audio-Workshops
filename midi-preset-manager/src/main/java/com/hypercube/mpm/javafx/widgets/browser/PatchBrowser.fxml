@@ -38,7 +38,7 @@
         <ColumnConstraints/>
         <ColumnConstraints/>
         <ColumnConstraints maxWidth="250"/>
-        <ColumnConstraints minWidth="400"/>
+        <ColumnConstraints minWidth="700"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints/>

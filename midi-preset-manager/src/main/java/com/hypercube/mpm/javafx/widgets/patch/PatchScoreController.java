@@ -1,6 +1,8 @@
 package com.hypercube.mpm.javafx.widgets.patch;
 
+import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
+import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import javafx.beans.Observable;
 import javafx.fxml.FXML;
@@ -17,6 +19,13 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
+/**
+ * This component cna be used in two ways:
+ * <ul>
+ *     <li>if currentPatch, it is used for the score filter of the search</li>
+ *     <li>if currentPatch is set, it is used to display and change the score of a patch in a TableView</li>
+ * </ul>
+ */
 @Slf4j
 public class PatchScoreController extends Controller<PatchScore, Void> implements Initializable {
 
@@ -38,6 +47,21 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
 
     private List<ImageView> stars;
 
+    Patch currentPatch;
+
+    /**
+     * This method is called when the component is used inside a TableView, it gives us the Patch we have to work with
+     */
+    public void update(Patch item) {
+        if (item != null) {
+            updateScore(item.getScore());
+            this.currentPatch = item;
+        } else {
+            updateScore(-1);
+            this.currentPatch = null;
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         stars = List.of(star1, star2, star3, star4, star5);
@@ -58,10 +82,18 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
     }
 
     private void onMouseClick(int index) {
-        int score = (getScore() == index + 1) ? 0 : index + 1;
-        log.info(this.toString() + " Set score " + score);
-        updateScore(score);
-        fireEvent(ScoreChangedEvent.class, score);
+        if (currentPatch == null) {
+            int score = (getScore() == index + 1) ? 0 : index + 1;
+            log.info(this.toString() + " Set score " + score);
+            updateScore(score);
+            fireEvent(ScoreChangedEvent.class, score);
+        } else {
+            int score = (currentPatch.getScore() == index + 1) ? 0 : index + 1;
+            log.info(this.toString() + " Set score " + score + " on patch " + currentPatch.getName());
+            currentPatch.setScore(score);
+            updateScore(score);
+            fireEvent(PatchScoreChangedEvent.class, currentPatch);
+        }
     }
 
     private void updateScore(int score) {

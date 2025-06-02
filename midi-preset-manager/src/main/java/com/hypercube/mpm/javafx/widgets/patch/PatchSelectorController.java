@@ -7,14 +7,18 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,21 +32,33 @@ import java.util.stream.Collectors;
 public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
 
     @FXML
-    ListView patchList;
+    TableView patchList;
     @FXML
     TextField searchBox;
     @FXML
     PatchScore scoreFilter;
+    @FXML
+    TableColumn colName;
+    @FXML
+    TableColumn colMode;
+    @FXML
+    TableColumn colBank;
+    @FXML
+    TableColumn colCategory;
+    @FXML
+    TableColumn colScore;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
-        patchList.setCellFactory(new Callback<ListView<String>, PatchListCell>() {
-            @Override
-            public PatchListCell call(ListView listView) {
-                return new PatchListCell();
-            }
-        });
+
+        colName.setCellValueFactory(new PropertyValueFactory<Patch, String>("name"));
+        colMode.setCellValueFactory(new PropertyValueFactory<Patch, String>("mode"));
+        colBank.setCellValueFactory(new PropertyValueFactory<Patch, String>("bank"));
+        colCategory.setCellValueFactory(new PropertyValueFactory<Patch, String>("category"));
+        colScore.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Patch, Patch>, ObservableValue<Patch>>) patch -> new SimpleObjectProperty<>(patch.getValue()));
+        colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
+
         ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.patchesProperty");
         SimpleStringProperty currentPatchNameFilterProperty = resolvePath("controller.model.currentPatchNameFilterProperty");
         SimpleIntegerProperty currentPatchIndexProperty = resolvePath("controller.model.currentPatchIndexProperty");

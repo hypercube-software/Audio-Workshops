@@ -2,9 +2,7 @@
 
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchScore?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root styleClass="header" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
          xmlns:fx="http://javafx.com/fxml/1">
@@ -27,8 +25,7 @@
                         <Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
                     </opaqueInsets>
                 </TextField>
-                <PatchScore fx:id="scoreFilter" alignment="CENTER"
-                            score="${controller.model.currentPatchScoreFilter}"/>
+                <PatchScore fx:id="scoreFilter" alignment="CENTER" score="${controller.model.currentPatchScoreFilter}"/>
             </children>
             <GridPane.margin>
                 <Insets left="5.0" right="10.0"/>
@@ -37,7 +34,18 @@
                 <Insets bottom="5.0" top="5.0"/>
             </padding>
         </HBox>
-        <ListView fx:id="patchList" onKeyReleased="#onKeyReleased" onMouseClicked="#onMouseClicked"
-                  GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+        <TableView fx:id="patchList" onKeyReleased="#onKeyReleased" onMouseClicked="#onMouseClicked"
+                   GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colScore" minWidth="120" maxWidth="120.0" text="Score"/>
+                <TableColumn fx:id="colName" prefWidth="259.0" text="Name"/>
+                <TableColumn fx:id="colCategory" maxWidth="105.0" text="Category"/>
+                <TableColumn fx:id="colMode" prefWidth="58.0" text="Mode"/>
+                <TableColumn fx:id="colBank" prefWidth="58.0" text="Bank"/>
+            </columns>
+        </TableView>
     </children>
 </fx:root>
