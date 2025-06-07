@@ -6,13 +6,13 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrar
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
 public class ProjectConfiguration {
-    private Map<String, SelectedPatch> selectedPatches = new HashMap<>();
+    private List<SelectedPatch> selectedPatches = new ArrayList<>();
     @JsonIgnore
     private MidiDeviceLibrary midiDeviceLibrary;
     @JsonIgnore

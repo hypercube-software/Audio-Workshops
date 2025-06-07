@@ -50,6 +50,13 @@ public class ModelHelper {
 
     public static <T> T forgeMMVM(T model) {
         try {
+            if (model == null) {
+                return null;
+            } else if (model.getClass()
+                    .getName()
+                    .contains("ByteBuddy")) {
+                return model; // already observable
+            }
             //log.info("forgeMMVM(" + model.getClass().getName() + ")");
             Class<T> modelClass = (Class<T>) model.getClass();
             Class<T> observableModelClass = observableModelClasses.get(modelClass);
@@ -80,6 +87,9 @@ public class ModelHelper {
                             .contains("Logger") && !Modifier.isStatic(field.getModifiers())) {
                         instanciateObservableProperty(field, model, instance);
                     }
+                } else {
+                    field.setAccessible(true);
+                    field.set(instance, field.get(model));
                 }
             }
             return instance;
@@ -186,7 +196,8 @@ public class ModelHelper {
      * @return the Field
      */
     private static Field getField(Class<?> clazz, String fieldName) {
-        Field field = assignedFields.get(fieldName);
+        String key = getModelClassName(clazz) + "::" + fieldName;
+        Field field = assignedFields.get(key);
         if (field == null) {
             while (field == null) {
                 try {
@@ -200,7 +211,7 @@ public class ModelHelper {
                 }
             }
             field.setAccessible(true);
-            assignedFields.put(fieldName, field);
+            assignedFields.put(key, field);
         }
         return field;
     }
@@ -230,7 +241,7 @@ public class ModelHelper {
                 // at this point the JavaFX SimplePropertyList will call the getter for some reason...
                 propertySetter.invoke(property, observableValue);
             } else if (property instanceof SimpleObjectProperty<?>) {
-                var observableObject = forgeMMVM(value);
+                var observableObject = value == null ? null : forgeMMVM(value);
                 getField(observableModel.getClass(), fieldName).set(observableModel, observableObject);
                 propertySetter.invoke(property, observableObject);
             } else {
@@ -262,7 +273,7 @@ public class ModelHelper {
 
     private static Field getObservableProperty(Object observableModel, String fieldName) throws NoSuchFieldException {
         Class<?> observableModelClass = observableModel.getClass();
-        String key = observableModelClass + "::" + fieldName;
+        String key = getModelClassName(observableModelClass) + "::" + fieldName;
         Field field = observableProperties.get(key);
         if (field == null) {
             field = observableModelClass
@@ -274,7 +285,7 @@ public class ModelHelper {
 
     private static Method getObservableSetter(Object observableModel, String name, Class<?> clazz) throws NoSuchMethodException {
         Class<?> observableModelClass = observableModel.getClass();
-        String key = observableModelClass.getName() + "::" + name;
+        String key = getModelClassName(observableModelClass) + "::" + name;
         Method setter = observableSetters.get(key);
         if (setter == null) {
             setter = Arrays.stream(observableModelClass
@@ -287,6 +298,10 @@ public class ModelHelper {
             observableSetters.put(key, setter);
         }
         return setter;
+    }
+
+    private static String getModelClassName(Class<?> observableModelClass) {
+        return observableModelClass.getName();
     }
 
 

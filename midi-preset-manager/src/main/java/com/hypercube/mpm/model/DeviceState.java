@@ -1,5 +1,7 @@
 package com.hypercube.mpm.model;
 
+import com.hypercube.mpm.config.SelectedPatch;
+import com.hypercube.util.javafx.model.NotObservable;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,19 +16,20 @@ public class DeviceState {
     private String deviceName;
     private String currentMode;
     private String currentBank;
-    private String currentPatchName;
-    private List<Patch> currentSearchOutput;
-    private List<Integer> currentSelectedCategories = new ArrayList<>();
+    private Patch currentPatch;
+    private SelectedPatch selectedPatch;
+    private List<Patch> currentSearchOutput = new ArrayList<>();
+    private List<String> currentSelectedCategories = new ArrayList<>();
+    @NotObservable
     private MidiOutDevice midiOutDevice;
 
     public int getPatchIndex() {
-        if (currentSearchOutput == null || currentPatchName == null) {
+        if (currentSearchOutput == null || currentPatch == null) {
             return -1;
         } else {
             return IntStream.range(0, currentSearchOutput.size())
                     .filter(i -> currentSearchOutput.get(i)
-                            .getName()
-                            .equals(currentPatchName))
+                            .equals(currentPatch))
                     .findFirst()
                     .orElse(-1);
         }

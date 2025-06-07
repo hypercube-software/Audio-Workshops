@@ -17,15 +17,10 @@ public class MainModel {
     private List<String> deviceModes = new ArrayList<>();
     private List<String> modeCategories = new ArrayList<>();
     private List<String> modeBanks = new ArrayList<>();
-    private List<Patch> patches = new ArrayList<>();
-    private String currentDeviceName;
-    private String currentModeName;
-    private int currentModeIndex = -1;
-    private String currentModeBankName;
-    private int currentPatchIndex = -1;
+    private DeviceState currentDeviceState = new DeviceState();
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
-    private List<Integer> currentSelectedCategories = new ArrayList<>();
+
     @NotObservable
     private Map<String, DeviceState> deviceStates = new HashMap<>();
     private String info;

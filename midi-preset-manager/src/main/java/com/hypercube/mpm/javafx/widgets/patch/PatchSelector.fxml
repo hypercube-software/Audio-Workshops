@@ -40,11 +40,12 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
             <columns>
-                <TableColumn fx:id="colScore" minWidth="120" maxWidth="120.0" text="Score"/>
+                <TableColumn fx:id="colScore" maxWidth="120.0" minWidth="120" text="Score"/>
                 <TableColumn fx:id="colName" prefWidth="259.0" text="Name"/>
-                <TableColumn fx:id="colCategory" maxWidth="105.0" text="Category"/>
-                <TableColumn fx:id="colMode" prefWidth="58.0" text="Mode"/>
-                <TableColumn fx:id="colBank" prefWidth="58.0" text="Bank"/>
+                <TableColumn fx:id="colCategory" maxWidth="105.0" style="-fx-alignment: CENTER;" text="Category"/>
+                <TableColumn fx:id="colMode" prefWidth="58.0" style="-fx-alignment: CENTER;" text="Mode"/>
+                <TableColumn fx:id="colBank" prefWidth="58.0" style="-fx-alignment: CENTER;" text="Bank"/>
+                <TableColumn fx:id="colCommand" prefWidth="58.0" style="-fx-alignment: CENTER;" text="Command"/>
             </columns>
         </TableView>
     </children>

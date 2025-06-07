@@ -18,6 +18,7 @@
         <String fx:id="title"/>
         <String fx:id="dataSource"/>
         <String fx:id="selectedIndexes"/>
+        <String fx:id="selectedItems"/>
         <String fx:id="allowMultiSelection"/>
         <String fx:id="allowDrop"/>
         <String fx:id="acceptedFileType"/>

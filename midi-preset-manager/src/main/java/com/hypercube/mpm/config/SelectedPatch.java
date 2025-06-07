@@ -10,9 +10,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SelectedPatch {
+    private String device;
     private String mode;
     private String bank;
     private String name;
     private String category;
     private String command;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -10,11 +10,11 @@
                            title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
         <GridPane GridPane.columnIndex="1">
             <AttributeSelector dataSource="controller.model.deviceModes"
-                               selectedIndexes="controller.model.currentModeIndex"
+                               selectedItems="controller.model.currentDeviceState.currentMode"
                                maxHeight="200.0" minWidth="-Infinity"
                                title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER"/>
             <AttributeSelector dataSource="controller.model.modeBanks"
-                               selectedIndexes="controller.model.currentModeBankName"
+                               selectedItems="controller.model.currentDeviceState.currentBank"
                                allowDrop="true"
                                acceptedFileType="syx"
                                minWidth="-Infinity" title="Mode Bank"
@@ -29,7 +29,7 @@
         </GridPane>
         <AttributeSelector allowMultiSelection="true"
                            dataSource="controller.model.modeCategories"
-                           selectedIndexes="controller.model.currentSelectedCategories"
+                           selectedItems="controller.model.currentDeviceState.currentSelectedCategories"
                            minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>

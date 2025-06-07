@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
@@ -27,7 +28,7 @@ public abstract class Controller<T extends Node, M> {
     private T view;
 
     private ObjectProperty<M> model = new SimpleObjectProperty<>();
-
+    
     public final M getModel() {
         return model.get();
     }
@@ -51,7 +52,11 @@ public abstract class Controller<T extends Node, M> {
         }
         ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(path);
-        return (P) expression.getValue(getView());
+        try {
+            return (P) expression.getValue(getView());
+        } catch (SpelEvaluationException e) {
+            throw new RuntimeException("Unable to resolve path " + path, e);
+        }
     }
 
 

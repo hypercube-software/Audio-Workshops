@@ -52,6 +52,9 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         } else if (property.equals("selectedIndexes")) {
             Property<?> selectedIndexesProperty = resolvePath(newValue + "Property");
             selectedIndexesProperty.addListener(this::onModelSelectedIndexesChange);
+        } else if (property.equals("selectedItems")) {
+            Property<?> selectedItemsProperty = resolvePath(newValue + "Property");
+            selectedItemsProperty.addListener(this::onModelSelectedItemsChange);
         } else if (property.equals("title")) {
             label.setText(newValue);
         } else if (property.equals("allowDrop")) {
@@ -155,6 +158,36 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         }
     }
 
+    /**
+     * Called when the model change, not the view. So when there is a programmatic update, not a user click
+     *
+     * @param observable
+     */
+    private void onModelSelectedItemsChange(Observable observable) {
+        log.info("onModelSelectedItemsChange {} for {}", observable, getView().getTitle());
+        List<Object> selectedItems = null;
+        if (observable instanceof IntegerProperty integerProperty) {
+            int value = integerProperty.getValue();
+            selectedItems = List.of(value);
+        } else if (observable instanceof StringProperty stringProperty) {
+            String value = stringProperty.getValue();
+            selectedItems = value == null ? List.of() : List.of(value);
+        } else if (observable instanceof SimpleListProperty simpleListProperty) {
+            ObservableList<Object> value = simpleListProperty.getValue();
+            selectedItems = value == null ? List.of() : value;
+        }
+        MultipleSelectionModel selectionModel = attributes.getSelectionModel();
+        selectionModel
+                .clearSelection();
+        if (selectedItems != null) {
+            selectedItems
+                    .forEach(item -> {
+                        selectionModel.select(item);
+                    });
+
+        }
+    }
+
     public void onMouseClicked(Event event) {
         onSelectedItemChange();
     }
@@ -171,13 +204,16 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 .getSelectedIndices()
                 .stream()
                 .toList();
-
+        List items = attributes.getSelectionModel()
+                .getSelectedItems()
+                .stream()
+                .toList();
         log.info("Selected item on {}: {}", getView()
                 .getTitle(), indexes.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
 
         fireEvent(SelectionChangedEvent.class, getView().dataSourceProperty()
-                .get(), indexes);
+                .get(), indexes, items);
     }
 }

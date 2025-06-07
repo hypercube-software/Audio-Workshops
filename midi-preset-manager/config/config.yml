@@ -1,14 +1,14 @@
 ---
 selectedPatches:
-  Summit:
-    mode: "SingleMode"
-    bank: "Bank C"
-    name: "Ambi Sludge Pro"
-    category: "Synth Pad"
-    command: "0-3-115"
-  Mininova:
-    mode: "SingleMode"
-    bank: "Bank A"
-    name: "Shufflin DF"
-    category: "Motion Synth"
-    command: "1-9"
+- device: "QS6.1"
+  mode: "ProgramMode"
+  bank: "Bank 2"
+  name: "LegatoAGtr"
+  category: "Guitar"
+  command: "2-30"
+- device: "Summit"
+  mode: "SingleMode"
+  bank: "Bank C"
+  name: "Fantasoba"
+  category: "Synth Poly"
+  command: "0-3-40"

@@ -6,7 +6,6 @@ import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -47,6 +46,8 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     TableColumn colCategory;
     @FXML
     TableColumn colScore;
+    @FXML
+    TableColumn colCommand;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,29 +59,30 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colCategory.setCellValueFactory(new PropertyValueFactory<Patch, String>("category"));
         colScore.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Patch, Patch>, ObservableValue<Patch>>) patch -> new SimpleObjectProperty<>(patch.getValue()));
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
+        colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
-        ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.patchesProperty");
         SimpleStringProperty currentPatchNameFilterProperty = resolvePath("controller.model.currentPatchNameFilterProperty");
-        SimpleIntegerProperty currentPatchIndexProperty = resolvePath("controller.model.currentPatchIndexProperty");
+        ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.currentDeviceState.currentSearchOutputProperty");
+        SimpleObjectProperty<Patch> currentPatchProperty = resolvePath("controller.model.currentDeviceState.currentPatchProperty");
         patchList.itemsProperty()
                 .bind(patchesProperty);
         searchBox.textProperty()
                 .bindBidirectional(currentPatchNameFilterProperty);
         searchBox.setOnAction(this::onSearch);
-        currentPatchIndexProperty.addListener(this::onModelSelectedPatchIndexChange);
+        currentPatchProperty.addListener(this::onSelectedPatchChange);
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
     }
 
-    private void onModelSelectedPatchIndexChange(ObservableValue<? extends Number> integerProperty, Number oldValue, Number newValue) {
-        log.info("onModelSelectedPatchIndexChange {} for Patches", integerProperty);
-        int value = newValue.intValue();
-        if (value == -1) {
-            patchList.getSelectionModel()
-                    .clearSelection();
-        } else {
-            patchList.getSelectionModel()
-                    .selectIndices(value);
-            patchList.scrollTo(value);
+    private void onSelectedPatchChange(ObservableValue<? extends Patch> patchProperty, Patch oldValue, Patch newValue) {
+        log.info("onSelectedPatchChange {} for Patches", patchProperty);
+        var sm = patchList.getSelectionModel();
+        Patch currentPatch = (Patch) sm.getSelectedItem();
+        if (currentPatch == null || !currentPatch.equals(newValue)) {
+            sm.clearSelection();
+            if (newValue != null) {
+                sm.select(newValue);
+                patchList.scrollTo(newValue);
+            }
         }
     }
 
@@ -111,15 +113,15 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     }
 
     private void onSelectedItemChange() {
-        List<Integer> indexes = patchList.getSelectionModel()
-                .getSelectedIndices()
+        List<Patch> patches = patchList.getSelectionModel()
+                .getSelectedItems()
                 .stream()
                 .toList();
 
-        log.info("Selected item:" + indexes.stream()
-                .map(Object::toString)
+        log.info("Selected item:" + patches.stream()
+                .map(Patch::getName)
                 .collect(Collectors.joining(",")));
 
-        fireEvent(SelectionChangedEvent.class, "controller.model.patches", indexes);
+        fireEvent(SelectionChangedEvent.class, "controller.model.patches", List.of(), patches);
     }
 }
