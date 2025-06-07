@@ -27,7 +27,7 @@ public class Patch {
         }
         return name.equals(selectedPatch.getName()) &&
                 command.equals(selectedPatch.getCommand()) &&
-                category.equals(selectedPatch.getCategory()) &&
+                (category == null || category.equals(selectedPatch.getCategory())) &&
                 bank.equals(selectedPatch.getBank()) &&
                 mode.equals(selectedPatch.getMode()) &&
                 device.equals(selectedPatch.getDevice());

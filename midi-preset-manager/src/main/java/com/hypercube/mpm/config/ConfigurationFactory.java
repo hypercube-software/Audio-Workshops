@@ -38,7 +38,7 @@ public class ConfigurationFactory {
             if (!configFile.exists() || configFile.length() == 0) {
                 Files.writeString(configFile.toPath(), """
                         ---
-                        selectedPatches: {}
+                        selectedPatches: []
                         """);
             }
             log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));

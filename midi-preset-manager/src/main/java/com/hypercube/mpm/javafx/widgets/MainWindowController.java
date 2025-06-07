@@ -57,7 +57,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         cfg.getSelectedPatches()
-                .forEach(selectedPatch -> initDeviceStateFromConfig(selectedPatch.getDevice(), selectedPatch));
+                .forEach(selectedPatch ->
+                {
+                    initDeviceStateFromConfig(selectedPatch.getDevice(), selectedPatch);
+                    sendPatchToDevice(selectedPatch);
+                });
     }
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
@@ -177,6 +181,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 if (port != null) {
                     port.sendPresetChange(midiPreset);
                 }
+            } else {
+                log.error("Patch file no longer exists: " + filename.getAbsolutePath());
             }
         } else {
             MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), 0,
@@ -249,7 +255,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .toList();
             }
         }
-        model.setInfo("%d patches".formatted(patches.size()));
+        model.setInfo("%s | MIDI OUT '%s' | %d patches".formatted(device.getDeviceName(), device.getOutputMidiDevice(), patches.size()));
         DeviceState deviceState = model.getCurrentDeviceState();
         deviceState
                 .setCurrentSearchOutput(patches);
