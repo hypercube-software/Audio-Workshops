@@ -37,7 +37,7 @@ class MidiDeviceLibraryTest {
 
         // THEN
         assertEquals(DEVICE_NAME, midiDeviceDefinition.getDeviceName());
-        assertEquals(14, midiDeviceDefinition.getMacros()
+        assertEquals(19, midiDeviceDefinition.getMacros()
                 .size());
     }
 
@@ -60,7 +60,7 @@ class MidiDeviceLibraryTest {
     @Test
     void forgeRequestsWithSequenceOfMacroAndMapper() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : patchName");
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : YamahaMapper");
         CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
                 .getFirst();
         // WHEN

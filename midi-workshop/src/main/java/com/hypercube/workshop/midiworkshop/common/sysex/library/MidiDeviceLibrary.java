@@ -372,7 +372,7 @@ public class MidiDeviceLibrary {
         // if the mapper name is specified, we are looking for the corresponding MidiResponseMapper or raise an error if not found
         MidiResponseMapper mapper = Optional.ofNullable(commandMacro.getMapperName())
                 .map(mapperName -> device.getMapper(mapperName)
-                        .orElseThrow(() -> new MidiConfigError("Undefined request Mapper 'not defined: '" + commandMacro.getMapperName() + "' in " + configFile.toString())))
+                        .orElseThrow(() -> new MidiConfigError("Undefined request Mapper: '" + commandMacro.getMapperName() + "' in " + configFile.toString())))
                 .orElse(null);
         List<MidiRequest> result = Arrays.stream(commandMacro.expand(commandCall)
                         .split(MACRO_CALL_SEPARATOR))

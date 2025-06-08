@@ -176,6 +176,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .getMidiOutDevice();
         if (selectedPatch.getCommand()
                 .startsWith("@")) {
+            log.info("Send Bank MSB/LSB 0, Program 0");
+            port.sendBankMSB(0);
+            port.sendBankLSB(0x40);
+            port.sendProgramChange(0);
+
             String sysExFilename = selectedPatch.getCommand()
                     .substring(1);
             File filename = new File(device.getDefinitionFile()
@@ -401,10 +406,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 sequences.forEach(s -> s.getMidiRequests()
                         .forEach(r -> {
                             try {
+
+                                MidiOutDevice midiOutDevice = state.getMidiOutDevice();
                                 List<CustomMidiEvent> requestInstances = SysExBuilder.parse(r.getValue());
                                 requestInstances.forEach(evt -> {
                                     log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
-                                    state.getMidiOutDevice()
+                                    midiOutDevice
                                             .send(evt);
                                 });
                             } catch (InvalidMidiDataException e) {

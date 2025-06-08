@@ -72,6 +72,33 @@ public class MidiOutDevice extends AbstractMidiDevice {
                 });
     }
 
+    public void sendProgramChange(int prg) {
+        try {
+            MidiEvent evt = new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, prg, 0), 0);
+            send(evt);
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+    }
+
+    public void sendBankMSB(int bankMSB) {
+        try {
+            MidiEvent evt = new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 0x00, bankMSB), 0);
+            send(evt);
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+    }
+
+    public void sendBankLSB(int bankLSB) {
+        try {
+            MidiEvent evt = new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 0x20, bankLSB), 0);
+            send(evt);
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+    }
+
     public void bindToSequencer(Sequencer sequencer) throws MidiUnavailableException {
         sequencer.getTransmitter()
                 .setReceiver(new ControlChangeFilter(receiver, List.of(
