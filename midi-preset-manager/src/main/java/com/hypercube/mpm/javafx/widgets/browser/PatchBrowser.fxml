@@ -16,7 +16,7 @@
             <AttributeSelector dataSource="controller.model.modeBanks"
                                selectedItems="controller.model.currentDeviceState.currentBank"
                                allowDrop="true"
-                               acceptedFileType="syx"
+                               acceptedFileTypes="syx,mid"
                                minWidth="-Infinity" title="Mode Bank"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
             <columnConstraints>

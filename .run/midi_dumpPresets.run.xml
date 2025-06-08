@@ -2,7 +2,7 @@
   <configuration default="false" name="midi:dumpPresets" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;Mininova&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;TG-500&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

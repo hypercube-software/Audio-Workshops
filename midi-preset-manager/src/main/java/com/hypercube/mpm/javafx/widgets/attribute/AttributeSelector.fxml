@@ -21,7 +21,7 @@
         <String fx:id="selectedItems"/>
         <String fx:id="allowMultiSelection"/>
         <String fx:id="allowDrop"/>
-        <String fx:id="acceptedFileType"/>
+        <String fx:id="acceptedFileTypes"/>
     </fx:define>
     <children>
         <Label fx:id="label" text="title" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"

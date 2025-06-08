@@ -202,7 +202,10 @@ class MidiDeviceLibraryTest {
         // THEN
         File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Super");
         assertTrue(dest.exists());
-        assertEquals(385, dest.listFiles().length);
+        assertEquals(257, dest.listFiles().length);
+        dest = new File("src/test/resources/devices-library/TG-500/PerformanceMode/Super");
+        assertTrue(dest.exists());
+        assertEquals(128, dest.listFiles().length);
     }
 
     @Test
@@ -215,6 +218,9 @@ class MidiDeviceLibraryTest {
         // THEN
         File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Top40");
         assertTrue(dest.exists());
-        assertEquals(385, dest.listFiles().length);
+        assertEquals(257, dest.listFiles().length);
+        dest = new File("src/test/resources/devices-library/TG-500/PerformanceMode/Top40");
+        assertTrue(dest.exists());
+        assertEquals(128, dest.listFiles().length);
     }
 }

@@ -53,38 +53,49 @@ categories:
 deviceModes:
   VoiceMode:
     queryName: PatchName()
-    fallBackQueryName: DrumPatchName()
     banks:
       "Internal 1 Voices":
         command: "$0000"
-        presetDomain: 0-63
+        presetDomain: 0-62
+      "Internal 1 Drum":
+        command: "$0000"
+        queryName: DrumPatchName()
+        presetDomain: 63
       "Internal 2 Voices":
         command: "$0003"
-        presetDomain: 0-63
+        presetDomain: 0-62
+      "Internal 2 Drum":
+        command: "$0003"
+        queryName: DrumPatchName()
+        presetDomain: 63
       "Preset 1 Voices":
         command: "$0002"
-        presetDomain: 0-63
+        presetDomain: 0-62
+      "Preset 1 Drum":
+        command: "$0002"
+        queryName: DrumPatchName()
+        presetDomain: 63
       "Preset 2 Voices":
         command: "$0005"
-        presetDomain: 0-63
+        presetDomain: 0-62
+      "Preset 2 Drum":
+        command: "$0005"
+        queryName: DrumPatchName()
+        presetDomain: 63
       "Preset 3 Voices":
         command: "$0008"
-        presetDomain: 0-63
+        presetDomain: 0-62
+      "Preset 3 Drum":
+        command: "$0008"
+        queryName: DrumPatchName()
+        presetDomain: 63
       "Preset 4 Voices":
         command: "$0011"
-        presetDomain: 0-63
-      "Card 1 Voices":
-        command: "$0001"
-        #presetDomain: 0-63
-      "Card 2 Voices":
-        command: "$0004"
-        #presetDomain: 0-63
-      "Card 3 Voices":
-        command: "$0007"
-        #presetDomain: 0-63
-      "Card 4 Voices":
-        command: "$0010"
-        #presetDomain: 0-63
+        presetDomain: 0-62
+      "Preset 4 Drum":
+        command: "$0011"
+        queryName: DrumPatchName()
+        presetDomain: 63
   PerformanceMode:
     queryName: PerformanceName()
     banks:
@@ -145,6 +156,7 @@ mappers:
 #
 patchOverrides:
   - name: Performances
+    mode: PerformanceMode
     condition:
       offset: $06
       value: "'LM  0065PF'" # Performance Patch
@@ -156,6 +168,7 @@ patchOverrides:
       - offset: $120
         value: CK282 # Checksum
   - name: Voices
+    mode: VoiceMode
     condition:
       offset: $06
       value: "'LM  0065VC'" # Voice Patch
@@ -167,6 +180,7 @@ patchOverrides:
       - offset: $ED
         value: CK231 # Checksum
   - name: Drum Voices
+    mode: VoiceMode
     condition:
       offset: $06
       value: "'LM  0065DR'" # Drum Voice Patch

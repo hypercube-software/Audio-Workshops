@@ -4,7 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 
 import java.util.List;
 
-public record PatchOverride(String name, OverrideCondition condition, List<OverrideLocation> overrides) {
+public record PatchOverride(String name, String mode, OverrideCondition condition, List<OverrideLocation> overrides) {
     public boolean matches(byte[] patchData) {
         if (condition == null) {
             return true;

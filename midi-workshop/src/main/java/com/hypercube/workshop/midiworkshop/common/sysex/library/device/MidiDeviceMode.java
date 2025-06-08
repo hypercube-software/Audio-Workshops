@@ -25,10 +25,6 @@ public class MidiDeviceMode {
      */
     private String queryName;
     /**
-     * How to get the patch name for this mode, typically a macro name
-     */
-    private String fallBackQueryName;
-    /**
      * Banks belonging to this mode
      */
     private Map<String, MidiDeviceBank> banks = new HashMap<>();

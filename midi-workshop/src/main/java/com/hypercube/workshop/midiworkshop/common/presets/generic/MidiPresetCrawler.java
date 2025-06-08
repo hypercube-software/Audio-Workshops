@@ -83,7 +83,6 @@ public class MidiPresetCrawler {
                     wait("Wait mode change", device.getModeLoadTimeMs());
                 }
                 MidiRequestSequence modeRequestSequence = forgeRequestSequence(library, device, mode.getQueryName());
-                MidiRequestSequence fallbackRequestSequence = mode.getFallBackQueryName() != null ? forgeRequestSequence(library, device, mode.getFallBackQueryName()) : null;
                 for (var bank : mode.getBanks()
                         .values()) {
                     if (bank.getPresetDomain() == null) {
@@ -127,10 +126,6 @@ public class MidiPresetCrawler {
                                     if (previousPatchIdentity != null && previousPatchIdentity.name()
                                             .equals(midiPresetIdentity.name())) {
                                         log.error("Something wrong, the patch name is the same than the previous one");
-                                        if (fallbackRequestSequence != null) {
-                                            log.info("Try with fallback request...");
-                                            bankRequestSequence = fallbackRequestSequence;
-                                        }
                                     } else {
                                         break;
                                     }

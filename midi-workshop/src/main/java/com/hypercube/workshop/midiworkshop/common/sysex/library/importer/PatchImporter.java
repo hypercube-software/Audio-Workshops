@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.library.importer;
 
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
@@ -22,16 +23,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 public class PatchImporter {
     private final MidiDeviceLibrary midiDeviceLibrary;
 
-    public void importSysex(MidiDeviceDefinition midiDeviceDefinition, String mode, File file) {
+    public void importSysex(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, File file) {
         try {
-            MidiDeviceMode midiDeviceMode = midiDeviceDefinition.getMode(mode)
-                    .orElseThrow();
             if (!file.exists()) {
                 log.info("SYSEX not found: " + file.getAbsolutePath());
                 return;
@@ -41,6 +41,9 @@ public class PatchImporter {
             log.info("{} messages found", messages.size());
             for (int presetId = 0; presetId < messages.size(); presetId++) {
                 byte[] patchData = messages.get(presetId);
+
+                MidiDeviceMode midiDeviceMode = applyOverrides(midiDeviceDefinition, defaultMode, patchData);
+
                 ExtractedFields extractedFields = getFields(file, midiDeviceDefinition, midiDeviceMode, presetId, messages.get(presetId));
                 String patchName = Optional.ofNullable(extractedFields.getPatchName())
                         .orElse("");
@@ -54,21 +57,43 @@ public class PatchImporter {
                         .replace(":", "-")
                         .replace("\"", "'");
                 File destFile = new File(midiDeviceDefinition.getDefinitionFile()
-                        .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), mode, bankName, completeName));
+                        .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), midiDeviceMode.getName(), bankName, completeName));
                 log.info("Generate " + destFile.getAbsolutePath());
                 destFile.getParentFile()
                         .mkdirs();
-                if (midiDeviceDefinition.getPatchOverrides() != null) {
-                    midiDeviceDefinition.getPatchOverrides()
-                            .forEach(patchOverride -> {
-                                patchOverride(patchOverride, patchData);
-                            });
-                }
+
                 Files.write(destFile.toPath(), patchData);
             }
         } catch (IOException | InvalidMidiDataException e) {
             throw new MidiError(e);
         }
+    }
+
+    private MidiDeviceMode applyOverrides(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, byte[] patchData) {
+        MidiDeviceMode midiDeviceMode = midiDeviceDefinition.getMode(defaultMode)
+                .orElseThrow();
+
+        if (midiDeviceDefinition.getPatchOverrides() != null) {
+            // detect the mode of the patch if possible
+            var electedMode = midiDeviceDefinition.getPatchOverrides()
+                    .stream()
+                    .filter(p -> p.matches(patchData) && p.mode() != null)
+                    .map(PatchOverride::mode)
+                    .distinct()
+                    .toList();
+            if (electedMode.size() > 1) {
+                String modes = electedMode.stream()
+                        .collect(Collectors.joining(","));
+                throw new MidiConfigError("Conflicting mode found in patch overrides: " + modes);
+            } else if (electedMode.size() == 1) {
+                midiDeviceMode = midiDeviceDefinition.getMode(electedMode.getFirst())
+                        .orElseThrow();
+            }
+            // apply overrides
+            midiDeviceDefinition.getPatchOverrides()
+                    .forEach(patchOverride -> patchOverride(patchOverride, patchData));
+        }
+        return midiDeviceMode;
     }
 
     private void patchOverride(PatchOverride patchOverride, byte[] patchData) {

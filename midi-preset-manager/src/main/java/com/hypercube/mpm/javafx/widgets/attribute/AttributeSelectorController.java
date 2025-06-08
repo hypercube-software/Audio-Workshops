@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,8 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     @FXML
     ListView attributes;
+
+    private List<String> acceptedFileTypes = List.of();
 
     @Override
     public void onPropertyChange(View<?> widget, String property, ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -64,6 +68,14 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 attributes.setOnDragExited(this::onDragExited);
                 attributes.setOnDragDropped(this::onDragDropped);
             }
+        } else if (property.equals("acceptedFileTypes")) {
+            acceptedFileTypes = Optional.ofNullable(getView().getAcceptedFileTypes())
+                    .map(str ->
+                            Arrays.stream(str
+                                            .split(","))
+                                    .map(String::toLowerCase)
+                                    .toList())
+                    .orElse(List.of());
         }
 
     }
@@ -74,8 +86,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         if (db.hasFiles()) {
             List<File> files = db.getFiles()
                     .stream()
-                    .filter(f -> f.getName()
-                            .endsWith(getView().getAcceptedFileType()))
+                    .filter(f -> hasRightFileExtension(f))
                     .toList();
             files.forEach(f -> log.info(f.toString()));
             fireEvent(FilesDroppedEvent.class, files);
@@ -105,14 +116,24 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         Dragboard db = event.getDragboard();
         if (db.hasFiles() && db.getFiles()
                 .stream()
-                .filter(f -> f.getName()
-                        .endsWith(getView().getAcceptedFileType()))
+                .filter(f -> hasRightFileExtension(f))
                 .findFirst()
                 .isPresent()) {
             event.acceptTransferModes(TransferMode.COPY);
         } else {
             event.consume();
         }
+    }
+
+    private boolean hasRightFileExtension(File f) {
+        for (String ext : acceptedFileTypes) {
+            if (f.getName()
+                    .toLowerCase()
+                    .endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
