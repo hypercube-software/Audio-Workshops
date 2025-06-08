@@ -110,6 +110,21 @@ public class SysExBuilder {
     }
 
     private static CustomMidiEvent forgeMidiEvent(String inputRawString) {
+        byte[] result = forgeBytesFromString(inputRawString);
+        try {
+            if ((result[0] & 0xFF) == 0xF0) {
+                return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+            } else if (result.length == 3) {
+                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF), -1);
+            } else {
+                throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + inputRawString);
+            }
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError("Unexpected message forged: " + inputRawString, e);
+        }
+    }
+
+    public static byte[] forgeBytesFromString(String inputRawString) {
         CheckSumDef checksum = new CheckSumDef();
         List<Integer> data = new ArrayList<>();
         String rawString = aggregateNibbles(inputRawString);
@@ -143,17 +158,7 @@ public class SysExBuilder {
             sb.write(data.get(i));
         }
         byte[] result = sb.buildBuffer();
-        try {
-            if ((result[0] & 0xFF) == 0xF0) {
-                return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
-            } else if (result.length == 3) {
-                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF), -1);
-            } else {
-                throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + inputRawString);
-            }
-        } catch (InvalidMidiDataException e) {
-            throw new MidiError("Unexpected message forged: " + inputRawString, e);
-        }
+        return result;
     }
 
     /**
@@ -235,7 +240,7 @@ public class SysExBuilder {
      * @param payload like this  F0 43 20 7E 'LM  0012SY' F7
      * @return the payload with the strings converted to hexa
      */
-    private static String resolveASCIIStrings(String payload) {
+    public static String resolveASCIIStrings(String payload) {
         var asciiString = Pattern.compile("'[^']+'");
         var matcher = asciiString.matcher(payload);
         Map<String, String> remplacement = new HashMap<>();

@@ -78,9 +78,11 @@ mappers:
 # In this way the internal memory of the device is never overridden
 #
 patchOverrides:
-  - offset: $07 # Edit Buffer message
-    value: 00
-  - offset: $0B # BANK
-    value: 00
-  - offset: $0C # PRG
-    value: 00
+  - name: Default
+    overrides:
+      - offset: $07 # Edit Buffer message
+        value: 00
+      - offset: $0B # BANK
+        value: 00
+      - offset: $0C # PRG
+        value: 00

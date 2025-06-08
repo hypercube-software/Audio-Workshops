@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class MidiResponseField {
     /**
-     * Name of the field. Will appear in {@link MidiResponse}
+     * Name of the field. Will appear in {@link ExtractedFields}
      */
     private String name;
     /**

@@ -93,7 +93,7 @@ public class ConfigurationFactory {
     }
 
     private File getFavoriteFile() {
-        return new File(configFile.getParentFile(), "favorite-patches.yaml");
+        return new File(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class), "favorite-patches.yaml");
     }
 
     private Favorites loadFavoritePatches() {

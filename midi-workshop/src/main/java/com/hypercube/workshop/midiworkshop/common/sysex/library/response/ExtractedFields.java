@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Collect all fields extracted from the MIDI payload with {@link MidiResponseMapper}
  */
-public class MidiResponse {
+public class ExtractedFields {
     public static final String MID_PRESET_NAME = "name";
     public static final String MIDI_PRESET_CATEGORY = "category";
     private final Map<String, String> fields = new HashMap<>();
@@ -15,7 +15,7 @@ public class MidiResponse {
         return fields.get(fieldName);
     }
 
-    public void addField(String fieldName, String value) {
+    public void setField(String fieldName, String value) {
         fields.put(fieldName, value);
     }
 

@@ -15,7 +15,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSeque
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponse;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.response.ExtractedFields;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
@@ -253,8 +253,8 @@ public class MidiPresetCrawler {
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
-    private MidiResponse requestFields(MidiDeviceMode mode, int bankMSB, int bankLSB, int program, MidiRequestSequence sequence, MidiOutDevice out) throws InvalidMidiDataException {
-        MidiResponse response = null;
+    private ExtractedFields requestFields(MidiDeviceMode mode, int bankMSB, int bankLSB, int program, MidiRequestSequence sequence, MidiOutDevice out) throws InvalidMidiDataException {
+        ExtractedFields response = null;
         expectedResponseSize = sequence.getTotalSize();
         for (var request : sequence.getMidiRequests()) {
             List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue()
@@ -267,7 +267,7 @@ public class MidiPresetCrawler {
                 CustomMidiEvent midiEvent = null;
                 for (int retry = 0; retry < 4; retry++) {
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
-                    response = new MidiResponse();
+                    response = new ExtractedFields();
                     resetCurrentResponse();
                     out.send(customMidiEvent);
                     try {

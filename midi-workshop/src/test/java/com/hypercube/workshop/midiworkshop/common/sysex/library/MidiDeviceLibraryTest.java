@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.library;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
@@ -12,19 +13,20 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class MidiDeviceLibraryTest {
     public static final String DEVICE_NAME = "TG-500";
     public static final File APP_CONFIGFILE = new File("MyAppConfigFile");
     MidiDeviceLibrary midiDeviceLibrary;
+    PatchImporter patchImporter;
 
     @BeforeEach
     void init() {
         midiDeviceLibrary = new MidiDeviceLibrary();
         midiDeviceLibrary.load(new File("./src/test/resources/devices-library"));
+        patchImporter = new PatchImporter(midiDeviceLibrary);
     }
 
     @Test
@@ -178,9 +180,41 @@ class MidiDeviceLibraryTest {
     }
 
     @Test
-    void importSysEx() {
+    void importMininovaSysEx() {
+        // GIVEN
+        MidiDeviceDefinition device = midiDeviceLibrary.getDevice("Mininova")
+                .orElseThrow();
         // WHEN
-        midiDeviceLibrary.importSysex("Mininova", "SingleMode", new File("src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
+        patchImporter.importSysex(device, "SingleMode", new File("src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
+        // THEN
+        File dest = new File("src/test/resources/devices-library/Mininova/SingleMode/SN Patches II");
+        assertTrue(dest.exists());
+        assertEquals(128, dest.listFiles().length);
     }
 
+    @Test
+    void importTG500SysExSuper() {
+        // GIVEN
+        MidiDeviceDefinition device = midiDeviceLibrary.getDevice("TG-500")
+                .orElseThrow();
+        // WHEN
+        patchImporter.importSysex(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/super.mid"));
+        // THEN
+        File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Super");
+        assertTrue(dest.exists());
+        assertEquals(385, dest.listFiles().length);
+    }
+
+    @Test
+    void importTG500SysExTop40() {
+        // GIVEN
+        MidiDeviceDefinition device = midiDeviceLibrary.getDevice("TG-500")
+                .orElseThrow();
+        // WHEN
+        patchImporter.importSysex(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/top40.mid"));
+        // THEN
+        File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Top40");
+        assertTrue(dest.exists());
+        assertEquals(385, dest.listFiles().length);
+    }
 }

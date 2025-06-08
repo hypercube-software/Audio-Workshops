@@ -17,8 +17,10 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
@@ -67,17 +69,19 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
         try {
             MainModel model = getModel();
+            MidiDeviceLibrary midiDeviceLibrary = cfg.getMidiDeviceLibrary();
+            PatchImporter patchImporter = new PatchImporter(midiDeviceLibrary);
             var state = model.getCurrentDeviceState();
             if (state != null) {
-                filesDroppedEvent.getFiles()
-                        .forEach(f -> cfg.getMidiDeviceLibrary()
-                                .importSysex(state.getDeviceName(), state.getCurrentMode(), f));
-                var device = cfg.getMidiDeviceLibrary()
+                var device = midiDeviceLibrary
                         .getDevice(model
                                 .getCurrentDeviceState()
                                 .getDeviceName())
                         .orElseThrow();
-                cfg.getMidiDeviceLibrary()
+                filesDroppedEvent.getFiles()
+                        .forEach(f -> patchImporter.importSysex(device, state.getCurrentMode(), f));
+
+                midiDeviceLibrary
                         .collectCustomPatches(device);
                 refreshModeCategoriesAndBanks(model, device, model.getCurrentDeviceState()
                         .getCurrentMode());

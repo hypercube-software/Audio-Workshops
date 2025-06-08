@@ -25,7 +25,7 @@ public class MidiResponseMapper {
     private Map<String, MidiResponseField> fields;
     private final AlesisSysExParser alesisSysExParser = new AlesisSysExParser();
 
-    public void extract(MidiDeviceMode mode, MidiResponse currentResponse, CustomMidiEvent event) {
+    public void extract(MidiDeviceMode mode, ExtractedFields currentResponse, CustomMidiEvent event) {
         fields.values()
                 .forEach(f -> extract(mode, currentResponse, event, f));
         if (currentResponse.getCategory() == null && currentResponse.getPatchName() != null) {
@@ -33,14 +33,14 @@ public class MidiResponseMapper {
         }
     }
 
-    public void dumpFields(MidiResponse midiResponse) {
+    public void dumpFields(ExtractedFields extractedFields) {
         log.info("Extracted field:");
         fields.keySet()
                 .stream()
-                .forEach(field -> log.info("%10s: %s".formatted(field, midiResponse.getField(field))));
+                .forEach(field -> log.info("%10s: %s".formatted(field, extractedFields.getField(field))));
     }
 
-    private void extract(MidiDeviceMode mode, MidiResponse currentResponse, CustomMidiEvent event, MidiResponseField field) {
+    private void extract(MidiDeviceMode mode, ExtractedFields currentResponse, CustomMidiEvent event, MidiResponseField field) {
         byte[] payload = event.getMessage()
                 .getMessage();
 
@@ -59,10 +59,10 @@ public class MidiResponseMapper {
         }
     }
 
-    private void extractCategory(MidiDeviceMode mode, MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
+    private void extractCategory(MidiDeviceMode mode, ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
         int categoryIndex = readInteger(payload, field);
         MidiPresetCategory category = device.getCategory(mode, categoryIndex);
-        currentResponse.addField(field.getName(), category.name());
+        currentResponse.setField(field.getName(), category.name());
     }
 
     private int readInteger(byte[] payload, MidiResponseField field) {
@@ -76,8 +76,8 @@ public class MidiResponseMapper {
         };
     }
 
-    private void searchCategoryInName(MidiDeviceMode mode, MidiResponse currentResponse, String presetName) {
-        currentResponse.addField(MidiResponse.MIDI_PRESET_CATEGORY, mode.getCategories()
+    private void searchCategoryInName(MidiDeviceMode mode, ExtractedFields currentResponse, String presetName) {
+        currentResponse.setField(ExtractedFields.MIDI_PRESET_CATEGORY, mode.getCategories()
                 .stream()
                 .filter(c -> c.matches(presetName))
                 .findFirst()
@@ -85,7 +85,7 @@ public class MidiResponseMapper {
                 .orElse("Unknown"));
     }
 
-    private void extractString(MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
+    private void extractString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
         String value = "";
         for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
             if (i >= payload.length) {
@@ -100,18 +100,18 @@ public class MidiResponseMapper {
         }
         value = value.replace("|nitial", "Initial"); // Weird case from Mininova
         value = value.replace("|", " ");// we use this character to store presets, so it is reserved
-        currentResponse.addField(field.getName(), value.trim());
+        currentResponse.setField(field.getName(), value.trim());
     }
 
-    private void extractInteger(MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
+    private void extractInteger(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
         int value = readInteger(payload, field);
-        currentResponse.addField(field.getName(), "" + value);
+        currentResponse.setField(field.getName(), "" + value);
     }
 
-    private void extractAlesisString(MidiResponse currentResponse, byte[] payload, MidiResponseField field) {
+    private void extractAlesisString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
         String strValue = alesisSysExParser.getString(field, payload)
                 .trim();
-        currentResponse.addField(field.getName(), strValue);
+        currentResponse.setField(field.getName(), strValue);
     }
 
     private int readByteInteger(ByteBuffer byteBuffer, MidiResponseField location) {

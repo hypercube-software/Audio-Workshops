@@ -2,7 +2,7 @@
 selectedPatches:
 - device: "Mininova"
   mode: "SingleMode"
-  bank: "Supernova-Soundpack"
-  name: "006 B.F.Stringz.syx"
-  category: null
-  command: "@006 B.F.Stringz.syx"
+  bank: "SN Patches II"
+  name: "ChopperPad.syx"
+  category: "Motion Synth"
+  command: "@007 [Motion Synth] ChopperPad.syx"

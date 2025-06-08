@@ -138,3 +138,41 @@ mappers:
         type: STRING
         offset: $69
         size: 8
+
+#
+# Patch Overrides are used to convert imported SYSEX to EditBuffer commands
+# In this way the internal memory of the device is never overridden
+#
+patchOverrides:
+  - name: Performances
+    condition:
+      offset: $06
+      value: "'LM  0065PF'" # Performance Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $1F
+        value: $00 # memory number
+      - offset: $120
+        value: CK282 # Checksum
+  - name: Voices
+    condition:
+      offset: $06
+      value: "'LM  0065VC'" # Voice Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $1F
+        value: $00 # memory number
+      - offset: $ED
+        value: CK231 # Checksum
+  - name: Drum Voices
+    condition:
+      offset: $06
+      value: "'LM  0065DR'" # Drum Voice Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $2C3
+        value: CK701 # Checksum
+
