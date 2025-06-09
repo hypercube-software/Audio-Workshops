@@ -2,6 +2,7 @@ package com.hypercube.mpm.model;
 
 import com.hypercube.util.javafx.model.NotObservable;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +18,7 @@ public class DeviceState {
     private String currentBank;
     private Patch currentPatch;
     private List<Patch> currentSearchOutput = new ArrayList<>();
-    private List<String> currentSelectedCategories = new ArrayList<>();
+    private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
     @NotObservable
     private MidiOutDevice midiOutDevice;
 

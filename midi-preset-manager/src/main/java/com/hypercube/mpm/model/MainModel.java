@@ -2,6 +2,7 @@ package com.hypercube.mpm.model;
 
 import com.hypercube.util.javafx.model.ModelHelper;
 import com.hypercube.util.javafx.model.NotObservable;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 public class MainModel {
     private List<String> devices = new ArrayList<>();
     private List<String> deviceModes = new ArrayList<>();
-    private List<String> modeCategories = new ArrayList<>();
+    private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<String> modeBanks = new ArrayList<>();
     private DeviceState currentDeviceState = new DeviceState();
     private String currentPatchNameFilter;

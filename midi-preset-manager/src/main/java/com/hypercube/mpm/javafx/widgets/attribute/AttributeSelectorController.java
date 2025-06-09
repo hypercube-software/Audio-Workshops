@@ -5,6 +5,7 @@ import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.View;
+import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -76,6 +77,13 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                                     .map(String::toLowerCase)
                                     .toList())
                     .orElse(List.of());
+        } else if (property.equals("labelMethod")) {
+            try {
+                Class<?> clazz = Class.forName(getView().getItemType());
+                attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }

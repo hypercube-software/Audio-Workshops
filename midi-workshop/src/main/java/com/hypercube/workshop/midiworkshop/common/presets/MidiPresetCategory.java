@@ -1,11 +1,23 @@
 package com.hypercube.workshop.midiworkshop.common.presets;
 
+import lombok.*;
+import lombok.experimental.Accessors;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record MidiPresetCategory(String name, MidiPresetCategoryType type, List<String> aliases) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(fluent = true)
+@EqualsAndHashCode
+public class MidiPresetCategory {
+    private String name;
+    private MidiPresetCategoryType type;
+    private List<String> aliases;
 
     public static MidiPresetCategory of(String definition) {
         String[] parts = definition.split(":");
@@ -54,5 +66,10 @@ public record MidiPresetCategory(String name, MidiPresetCategoryType type, List<
                 .filter(a -> presetName.startsWith(a))
                 .findFirst()
                 .isPresent();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

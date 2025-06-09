@@ -126,9 +126,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent) {
         var model = getModel();
-        List<String> selectedItems = selectionChangedEvent.getSelectedItems()
+        List<MidiPresetCategory> selectedItems = selectionChangedEvent.getSelectedItems()
                 .stream()
-                .map(Object::toString)
+                .map(obj -> (MidiPresetCategory) obj)
                 .toList();
         var state = model.getCurrentDeviceState();
         if (state != null) {
@@ -297,6 +297,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             MidiDeviceMode midiDeviceMode = device.getDeviceModes()
                     .get(currentModeName);
             if (midiDeviceMode != null) {
+                // Patches are stored by banks as String to keep space, we call them "presets"
+                // Once filtered, we convert string presets to a class Patch with score 0
+                // Then the score is updated configurationFactory.getFavorite()
+                // Finally they are sorted by name
                 patches = midiDeviceMode
                         .getBanks()
                         .values()
@@ -379,8 +383,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 model.getCurrentDeviceState()
                         .getCurrentSelectedCategories()
                         .stream()
-                        .map(c -> c.split(":")[0].trim())
-                        .anyMatch(c -> preset.contains(c + " |") || preset.contains(c + "]"));
+                        .anyMatch(c -> preset.contains(c.name() + " |") || preset.contains(c.name() + "]"));
     }
 
     private void selectCurrentPatch(DeviceState deviceState) {
@@ -432,8 +435,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (mode != null) {
             model.setModeCategories(mode.getCategories()
                     .stream()
-                    .map(MidiPresetCategory::name)
-                    .sorted()
+                    .sorted(Comparator.comparing(MidiPresetCategory::name))
                     .toList());
             model.setModeBanks(mode.getBanks()
                     .keySet()
@@ -537,10 +539,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void restoreDeviceState(DeviceState source, MainModel target) {
         var current = target.getCurrentDeviceState();
-        log.info("Restore {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
-        );
-        log.info("Over    {} state: mode '{}' command '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), source.getCurrentBank(), current.getCurrentSelectedCategories(), current.getCurrentPatch()
-        );
+        log.info("Restore {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch());
+        log.info("Over    {} state: mode '{}' command '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), source.getCurrentBank(), current.getCurrentSelectedCategories(), current.getCurrentPatch());
         copyState(source, current);
     }
 

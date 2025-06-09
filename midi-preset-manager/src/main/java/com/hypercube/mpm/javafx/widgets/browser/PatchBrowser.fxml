@@ -28,8 +28,10 @@
             </rowConstraints>
         </GridPane>
         <AttributeSelector allowMultiSelection="true"
+                           itemType="com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory"
                            dataSource="controller.model.modeCategories"
                            selectedItems="controller.model.currentDeviceState.currentSelectedCategories"
+                           labelMethod="name"
                            minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
                            GridPane.vgrow="ALWAYS"/>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>

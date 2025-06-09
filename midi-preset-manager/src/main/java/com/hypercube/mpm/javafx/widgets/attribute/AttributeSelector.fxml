@@ -16,7 +16,9 @@
     </rowConstraints>
     <fx:define>
         <String fx:id="title"/>
+        <String fx:id="itemType"/>
         <String fx:id="dataSource"/>
+        <String fx:id="labelMethod"/>
         <String fx:id="selectedIndexes"/>
         <String fx:id="selectedItems"/>
         <String fx:id="allowMultiSelection"/>

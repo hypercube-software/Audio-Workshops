@@ -56,6 +56,9 @@ public class ModelHelper {
                     .getName()
                     .contains("ByteBuddy")) {
                 return model; // already observable
+            } else if (model instanceof String || model instanceof Boolean || model instanceof Integer || model instanceof Long || model instanceof Float || model instanceof Double || model.getClass()
+                    .isEnum()) {
+                return model;
             }
             //log.info("forgeMMVM(" + model.getClass().getName() + ")");
             Class<T> modelClass = (Class<T>) model.getClass();
@@ -228,20 +231,14 @@ public class ModelHelper {
             Method propertySetter = getObservablePropertySetter(property, fieldName);
             if (value instanceof List && !(value instanceof ObservableList<?>)) {
                 List<?> newList = ((List<?>) value).stream()
-                        .map(v -> {
-                            if (v instanceof String || v instanceof Boolean || v instanceof Integer || v instanceof Long || v instanceof Float || v instanceof Double) {
-                                return v;
-                            } else {
-                                return ModelHelper.forgeMMVM(v);
-                            }
-                        })
+                        .map(ModelHelper::forgeMMVM)
                         .toList();
                 var observableValue = FXCollections.observableList(newList);
                 getField(observableModel.getClass(), fieldName).set(observableModel, observableValue);
                 // at this point the JavaFX SimplePropertyList will call the getter for some reason...
                 propertySetter.invoke(property, observableValue);
             } else if (property instanceof SimpleObjectProperty<?>) {
-                var observableObject = value == null ? null : forgeMMVM(value);
+                var observableObject = forgeMMVM(value);
                 getField(observableModel.getClass(), fieldName).set(observableModel, observableObject);
                 propertySetter.invoke(property, observableObject);
             } else {
@@ -288,13 +285,16 @@ public class ModelHelper {
         String key = getModelClassName(observableModelClass) + "::" + name;
         Method setter = observableSetters.get(key);
         if (setter == null) {
+            String regularSetter = "set" + name.substring(0, 1)
+                    .toUpperCase() + name.substring(1);
+            String fluentSetter = name;
             setter = Arrays.stream(observableModelClass
-                            .getDeclaredMethods())
-                    .filter(m -> m.getName()
-                            .equals("set" + name.substring(0, 1)
-                                    .toUpperCase() + name.substring(1)))
+                            .getMethods())
+                    .filter(m -> (m.getName()
+                            .equals(regularSetter) && m.getReturnType() == Void.TYPE) || (m.getName()
+                            .equals(fluentSetter) && m.getReturnType() == m.getDeclaringClass()) && m.getParameterCount() == 1)
                     .findFirst()
-                    .orElseThrow(() -> new ModelHelperException("There is no observable setter for  field " + name + " of type " + clazz.getName() + " in class " + observableModelClass.getName()));
+                    .orElseThrow(() -> new ModelHelperException("There is no observable setter for field '%s' of type '%s' in class %s".formatted(name, clazz.getName(), observableModelClass.getName())));
             observableSetters.put(key, setter);
         }
         return setter;
