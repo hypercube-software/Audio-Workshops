@@ -30,7 +30,7 @@ public class SysExMidiListener implements MidiListener {
                 if (data[data.length - 1] == (byte) 0xF7) {
                     SysexMessage sysexMessage = new SysexMessage(currentSysex.toByteArray(), currentSysex.size());
                     currentSysex.reset();
-                    listener.onEvent(device, new CustomMidiEvent(sysexMessage, 0));
+                    listener.onEvent(device, new CustomMidiEvent(sysexMessage));
                 } else {
                     log.warn("Receive partial SysEx... Message is bigger than driver buffer, that's fine.");
                 }

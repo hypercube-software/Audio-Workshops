@@ -20,14 +20,15 @@ We cover many subjects:
 
 - C++ entry level is too high and full of deadly traps.
 - Python or Typescript are nice but too slow
-- You can achieve cool things in JDK 17+ without too much effort
+- You can achieve cool things in JDK 23+ without too much effort
+- ⚠️ Do NOT use older JDK because they contain serious MIDI bugs
 - Using the new garbage collector called [ZGC](https://www.baeldung.com/jvm-zgc-garbage-collector), you can expect to
   have stable real-time applications.
 - There have been many improvements in the JVM landscape, especially
   with [GraalVM](https://www.baeldung.com/graal-java-jit-compiler). You can now convert your Java application into a
   native one to compete with C++.
-- You can build very nice Desktop applications with [JavaFX](https://openjfx.io/). Nevertheless this workshop will cover
-  only CLI applications to keep it simple.
+- You can build very nice Desktop applications with [JavaFX](https://openjfx.io/). Nevertheless this workshop will start
+  with CLI applications to keep it simple.
 
 # Free Tools
 

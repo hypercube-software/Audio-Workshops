@@ -75,7 +75,7 @@ public abstract class Device {
                         .byteValue());
 
         try {
-            CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(data, data.length), -1);
+            CustomMidiEvent evt = new CustomMidiEvent(new SysexMessage(data, data.length));
             log.info("Send: " + evt.getHexValues());
             midiOutDevice.send(evt);
         } catch (InvalidMidiDataException e) {

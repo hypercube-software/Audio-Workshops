@@ -15,6 +15,15 @@ public class CustomMidiEvent extends MidiEvent {
         super(message, tick);
     }
 
+    /**
+     * Constructs a new {@code MidiEvent} with tick -1 ({@link MidiOutDevice#NO_TIME_STAMP}).
+     *
+     * @param message the MIDI message contained in the event
+     */
+    public CustomMidiEvent(MidiMessage message) {
+        super(message, MidiOutDevice.NO_TIME_STAMP);
+    }
+
     public String getHexValues() {
         var a = getMessage().getMessage();
         StringBuilder sb = new StringBuilder((a.length + 1) * 2);

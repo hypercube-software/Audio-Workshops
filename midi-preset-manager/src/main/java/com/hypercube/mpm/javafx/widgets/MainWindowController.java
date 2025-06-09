@@ -176,36 +176,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             File filename = new File(device.getDefinitionFile()
                     .getParent(), "%s/%s/%s/%s".formatted(selectedPatch.getDevice(), selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getFilename()));
             if (filename.exists()) {
+                log.info(filename.getAbsolutePath());
                 MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(selectedPatch.getMode(), selectedPatch.getBank(), filename);
                 if (port != null) {
-                    if (selectedPatch.getCommand() != null) {
-                        List<Integer> digits = forgeCommand(device.getPresetFormat(), selectedPatch.getCommand());
-                        log.info("Send %s with preset format %s".formatted(digits.stream()
-                                .map(v -> "$%02X".formatted(v))
-                                .collect(Collectors.joining(",")), device.getPresetFormat()));
-                        switch (device.getPresetFormat()) {
-                            case NO_BANK_PRG -> {
-                                port.sendProgramChange(digits.getLast());
-                            }
-                            case BANK_MSB_PRG -> {
-                                port.sendBankMSB(digits.getFirst());
-                                port.sendProgramChange(digits.getLast());
-                            }
-                            case BANK_LSB_PRG -> {
-                                port.sendBankLSB(digits.getFirst());
-                                port.sendProgramChange(digits.getLast());
-                            }
-                            case BANK_MSB_LSB_PRG -> {
-                                port.sendBankMSB(digits.getFirst());
-                                port.sendBankLSB(digits.get(1));
-                                port.sendProgramChange(digits.getLast());
-                            }
-                            case BANK_PRG_PRG -> {
-                                port.sendProgramChange(digits.getFirst());
-                                port.sendProgramChange(digits.getLast());
-                            }
-                        }
-                    }
+                    selectEditBuffer(selectedPatch, device, port);
                     port.sendPresetChange(midiPreset);
                 }
             } else {
@@ -220,6 +194,40 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     List.of(selectedPatch.getCommand()), List.of(MidiPreset.NO_CC), null);
             if (port != null) {
                 port.sendPresetChange(midiPreset);
+            }
+        }
+    }
+
+    /**
+     * Some devices need to first select a factory patch before sending a sysex Edit Buffer update
+     */
+    private void selectEditBuffer(Patch selectedPatch, MidiDeviceDefinition device, MidiOutDevice port) {
+        if (selectedPatch.getCommand() != null) {
+            List<Integer> digits = forgeCommand(device.getPresetFormat(), selectedPatch.getCommand());
+            log.info("Select Edit Buffer with preset format %s: %s".formatted(device.getPresetFormat(), digits.stream()
+                    .map(v -> "$%02X".formatted(v))
+                    .collect(Collectors.joining(","))));
+            switch (device.getPresetFormat()) {
+                case NO_BANK_PRG -> {
+                    port.sendProgramChange(digits.getLast());
+                }
+                case BANK_MSB_PRG -> {
+                    port.sendBankMSB(digits.getFirst());
+                    port.sendProgramChange(digits.getLast());
+                }
+                case BANK_LSB_PRG -> {
+                    port.sendBankLSB(digits.getFirst());
+                    port.sendProgramChange(digits.getLast());
+                }
+                case BANK_MSB_LSB_PRG -> {
+                    port.sendBankMSB(digits.getFirst());
+                    port.sendBankLSB(digits.get(1));
+                    port.sendProgramChange(digits.getLast());
+                }
+                case BANK_PRG_PRG -> {
+                    port.sendProgramChange(digits.getFirst());
+                    port.sendProgramChange(digits.getLast());
+                }
             }
         }
     }

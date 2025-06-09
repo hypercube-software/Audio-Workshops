@@ -17,6 +17,9 @@ public class MidiDeviceManager {
     private final List<MidiOutDevice> outputs = new ArrayList<>();
 
     public void collectDevices() {
+        if (!isJdkVersionAtLeast(23)) {
+            throw new MidiError("Your JDK is too old and contains serious MIDI bugs, please upgrade to 23+. Current version is: " + System.getProperty("java.version"));
+        }
         inputs.clear();
         outputs.clear();
         MidiDevice.Info[] devices = MidiSystem.getMidiDeviceInfo();
@@ -82,5 +85,28 @@ public class MidiDeviceManager {
         inputs
                 .forEach(o -> log.info("IN :" + o.getName()));
 
+    }
+
+    public static boolean isJdkVersionAtLeast(int requiredMajorVersion) {
+        String javaVersion = System.getProperty("java.version");
+
+        // Before JDK 9
+        if (javaVersion.startsWith("1.")) {
+            try {
+                int majorVersion = Integer.parseInt(javaVersion.substring(2, 3));
+                return majorVersion >= requiredMajorVersion;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            // JDK9+
+            try {
+                String[] parts = javaVersion.split("\\.");
+                int majorVersion = Integer.parseInt(parts[0]);
+                return majorVersion >= requiredMajorVersion;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
     }
 }

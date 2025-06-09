@@ -69,7 +69,7 @@ public class SysExBuilder {
      */
     public CustomMidiEvent buildMidiEvent() throws InvalidMidiDataException {
         byte[] data = byteStream.toByteArray();
-        return new CustomMidiEvent(new SysexMessage(data, data.length), -1);
+        return new CustomMidiEvent(new SysexMessage(data, data.length));
     }
 
     @Getter
@@ -113,9 +113,9 @@ public class SysExBuilder {
         byte[] result = forgeBytesFromString(inputRawString);
         try {
             if ((result[0] & 0xFF) == 0xF0) {
-                return new CustomMidiEvent(new SysexMessage(result, result.length), -1);
+                return new CustomMidiEvent(new SysexMessage(result, result.length));
             } else if (result.length == 3) {
-                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF), -1);
+                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF));
             } else {
                 throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + inputRawString);
             }

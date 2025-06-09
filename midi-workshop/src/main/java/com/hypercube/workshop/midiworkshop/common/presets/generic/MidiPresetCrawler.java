@@ -99,7 +99,7 @@ public class MidiPresetCrawler {
                             int bankLSB = 0;
                             int bankMSB = 0;
                             for (var command : midiPreset.getCommands()) {
-                                CustomMidiEvent cm = new CustomMidiEvent(command, 0);
+                                CustomMidiEvent cm = new CustomMidiEvent(command);
                                 log.info("    " + cm.getHexValuesSpaced());
                                 if (cm.getHexValues()
                                         .startsWith("0xB020")) {
@@ -189,7 +189,7 @@ public class MidiPresetCrawler {
             /*log.info("Receive %d bytes, current total: 0x%X".formatted(customMidiEvent.getMessage()
                     .getMessage().length, currentSysex.size()));*/
             if (expectedResponseSize > 0 && currentSysex.size() == expectedResponseSize) {
-                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysex.toByteArray(), currentSysex.size()), 0));
+                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysex.toByteArray(), currentSysex.size())));
             } else if (expectedResponseSize == 0) {
                 currentResponse.set(customMidiEvent);
             }

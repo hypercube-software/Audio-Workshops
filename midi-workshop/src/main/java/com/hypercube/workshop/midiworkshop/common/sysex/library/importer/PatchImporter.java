@@ -239,7 +239,7 @@ public class PatchImporter {
                     .getMapper();
             CustomMidiEvent event = null;
             try {
-                event = new CustomMidiEvent(new SysexMessage(content, content.length), 0);
+                event = new CustomMidiEvent(new SysexMessage(content, content.length));
                 mapper.extract(midiDeviceMode, extractedFields, event);
             } catch (InvalidMidiDataException e) {
                 log.error("Unable to forge Sysex from patch {} in file ", presetId, sysexFile);
