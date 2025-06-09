@@ -4,10 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -32,4 +29,8 @@ public class MidiDeviceMode {
      * A specific mode can use its own categories (This can be found in Korg devices)
      */
     private List<MidiPresetCategory> categories = new ArrayList<>();
+
+    public Optional<MidiDeviceBank> getBank(String name) {
+        return Optional.ofNullable(banks.get(name));
+    }
 }

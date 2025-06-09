@@ -2,7 +2,6 @@ package com.hypercube.mpm.javafx.widgets;
 
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
-import com.hypercube.mpm.config.SelectedPatch;
 import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
@@ -13,7 +12,9 @@ import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
@@ -31,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.sound.midi.InvalidMidiDataException;
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -166,7 +164,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
-    private void sendPatchToDevice(SelectedPatch selectedPatch) {
+    private void sendPatchToDevice(Patch selectedPatch) {
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(selectedPatch.getDevice())
                 .orElseThrow();
@@ -174,20 +172,40 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         MidiOutDevice port = getModel().getDeviceStates()
                 .get(device.getDeviceName())
                 .getMidiOutDevice();
-        if (selectedPatch.getCommand()
-                .startsWith("@")) {
-            log.info("Send Bank MSB/LSB 0, Program 0");
-            port.sendBankMSB(0);
-            port.sendBankLSB(0x40);
-            port.sendProgramChange(0);
-
-            String sysExFilename = selectedPatch.getCommand()
-                    .substring(1);
+        if (selectedPatch.getFilename() != null) {
             File filename = new File(device.getDefinitionFile()
-                    .getParent(), "%s/%s/%s/%s".formatted(selectedPatch.getDevice(), selectedPatch.getMode(), selectedPatch.getBank(), sysExFilename));
+                    .getParent(), "%s/%s/%s/%s".formatted(selectedPatch.getDevice(), selectedPatch.getMode(), selectedPatch.getBank(), selectedPatch.getFilename()));
             if (filename.exists()) {
                 MidiPreset midiPreset = MidiPresetBuilder.fromSysExFile(selectedPatch.getMode(), selectedPatch.getBank(), filename);
                 if (port != null) {
+                    if (selectedPatch.getCommand() != null) {
+                        List<Integer> digits = forgeCommand(device.getPresetFormat(), selectedPatch.getCommand());
+                        log.info("Send %s with preset format %s".formatted(digits.stream()
+                                .map(v -> "$%02X".formatted(v))
+                                .collect(Collectors.joining(",")), device.getPresetFormat()));
+                        switch (device.getPresetFormat()) {
+                            case NO_BANK_PRG -> {
+                                port.sendProgramChange(digits.getLast());
+                            }
+                            case BANK_MSB_PRG -> {
+                                port.sendBankMSB(digits.getFirst());
+                                port.sendProgramChange(digits.getLast());
+                            }
+                            case BANK_LSB_PRG -> {
+                                port.sendBankLSB(digits.getFirst());
+                                port.sendProgramChange(digits.getLast());
+                            }
+                            case BANK_MSB_LSB_PRG -> {
+                                port.sendBankMSB(digits.getFirst());
+                                port.sendBankLSB(digits.get(1));
+                                port.sendProgramChange(digits.getLast());
+                            }
+                            case BANK_PRG_PRG -> {
+                                port.sendProgramChange(digits.getFirst());
+                                port.sendProgramChange(digits.getLast());
+                            }
+                        }
+                    }
                     port.sendPresetChange(midiPreset);
                 }
             } else {
@@ -206,18 +224,48 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
+    public static List<Integer> forgeCommand(MidiBankFormat presetFormat, String hexString) {
+        if (hexString == null || hexString.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // La chaîne doit avoir une longueur paire pour représenter des octets complets
+        if (hexString.length() % 2 != 0) {
+            // Vous pourriez choisir de lever une IllegalArgumentException ici
+            // ou de logger un avertissement, selon la robustesse souhaitée.
+            log.warn("La chaîne hexadécimale '{}' a une longueur impaire et ne peut pas être convertie.", hexString);
+            return Collections.emptyList();
+        }
+
+        List<Integer> byteValues = new ArrayList<>();
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String byteStr = hexString.substring(i, i + 2);
+            // Integer.parseInt avec une base de 16 convertit l'hexadécimal en entier
+            int byteValue = Integer.parseInt(byteStr, 16);
+            byteValues.add(byteValue);
+        }
+        int expectedSize = switch (presetFormat) {
+            case NO_BANK_PRG -> 1;
+            case BANK_MSB_PRG -> 2;
+            case BANK_LSB_PRG -> 2;
+            case BANK_MSB_LSB_PRG -> 3;
+            case BANK_PRG_PRG -> 2;
+        };
+        if (byteValues.size() != expectedSize) {
+            throw new MidiConfigError("Unexpected command size given preset format '%s' for patch '%s', expected %d digits, got %d".formatted(presetFormat, hexString, expectedSize, byteValues.size()));
+        }
+        return byteValues;
+    }
+
     private void setCurrentPatch(Patch patch) {
         getModel().getCurrentDeviceState()
                 .setCurrentPatch(patch);
-        SelectedPatch selectedPatch = new SelectedPatch(patch.getDevice(), patch.getMode(), patch.getBank(), patch.getName(), patch.getCategory(), patch.getCommand());
-        saveSelectedPatchToConfig(selectedPatch);
-        sendPatchToDevice(selectedPatch);
-        getModel().getCurrentDeviceState()
-                .setSelectedPatch(selectedPatch);
+        saveSelectedPatchToConfig(patch);
+        sendPatchToDevice(patch);
         saveDeviceState();
     }
 
-    private void saveSelectedPatchToConfig(SelectedPatch patch) {
+    private void saveSelectedPatchToConfig(Patch patch) {
         var list = cfg.getSelectedPatches()
                 .stream()
                 .filter(sp -> !sp.getDevice()
@@ -276,21 +324,32 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         final String command;
         final String category;
         final String name;
+        final String filename;
         if (patchDefinition.startsWith("@")) {
+            filename = patchDefinition.substring(1);
             List<String> parts = Arrays.stream(patchDefinition.split("\\[|\\]"))
                     .toList();
-            command = patchDefinition.trim();
             if (parts.size() == 3) {
-                category = parts.get(1)
-                        .trim();
+                String[] spec = parts.get(1)
+                        .trim()
+                        .split(",");
+                category = spec[spec.length - 1];
+                if (spec.length == 2) {
+                    command = spec[0];
+                } else {
+                    command = null;
+                }
                 name = parts.get(2)
                         .trim();
+
             } else {
                 category = null;
+                command = null;
                 name = patchDefinition.substring(1)
                         .trim();
             }
         } else {
+            filename = null;
             List<String> parts = Arrays.stream(patchDefinition.split("\\|"))
                     .toList();
             command = parts.get(0)
@@ -300,7 +359,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             name = parts.get(2)
                     .trim();
         }
-        return new Patch(deviceName, currentModeName, bankName, name, category, command, 0);
+        return new Patch(deviceName, currentModeName, bankName, name, category, command, filename, 0);
     }
 
     private boolean patchScoreMatches(Patch patch) {
@@ -321,17 +380,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .getCurrentSelectedCategories()
                         .stream()
                         .map(c -> c.split(":")[0].trim())
-                        .anyMatch(c -> preset.contains("| " + c + " |") || preset.contains("[" + c + "]"));
+                        .anyMatch(c -> preset.contains(c + " |") || preset.contains(c + "]"));
     }
 
     private void selectCurrentPatch(DeviceState deviceState) {
         Patch selectedPatch = deviceState.getCurrentSearchOutput()
                 .stream()
-                .filter(p -> p.sameAs(deviceState.getSelectedPatch()))
+                .filter(p -> p.equals(deviceState.getCurrentPatch()))
                 .findFirst()
                 .orElse(null);
-        if (selectedPatch == null && deviceState.getSelectedPatch() != null) {
-            log.warn("Patch not found in search result: " + deviceState.getSelectedPatch()
+        if (selectedPatch == null && deviceState.getCurrentPatch() != null) {
+            log.warn("Patch not found in search result: " + deviceState.getCurrentPatch()
                     .getName());
         }
         deviceState.setCurrentPatch(selectedPatch);
@@ -393,7 +452,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             String modeCommand = device.getDeviceModes()
                     .get(modeName)
                     .getCommand();
-            if (modeCommand != null) {
+            MidiOutDevice midiOutDevice = state.getMidiOutDevice();
+            if (modeCommand != null && midiOutDevice != null) {
                 log.info("Switch to mode: " + modeName);
                 var sequences = CommandCall.parse(device.getDefinitionFile(), modeCommand)
                         .stream()
@@ -406,8 +466,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 sequences.forEach(s -> s.getMidiRequests()
                         .forEach(r -> {
                             try {
-
-                                MidiOutDevice midiOutDevice = state.getMidiOutDevice();
                                 List<CustomMidiEvent> requestInstances = SysExBuilder.parse(r.getValue());
                                 requestInstances.forEach(evt -> {
                                     log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
@@ -419,8 +477,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                             }
                         }));
                 state.setCurrentMode(modeName);
-            } else {
-                log.info("There is no command to switch mode");
             }
         } else {
             log.info("Already in mode: " + modeName);
@@ -454,8 +510,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void dumpStates() {
         getModel().getDeviceStates()
                 .forEach(
-                        (key, source) -> log.info("[{}/{}] state: mode '{}' bank '{}' categories '{}' patch '{}'",
-                                key, source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getSelectedPatch()
+                        (key, source) -> log.info("[{}/{}] state: mode '{}' command '{}' categories '{}' patch '{}'",
+                                key, source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
                         ));
     }
 
@@ -464,7 +520,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         //dumpStates();
         var source = model.getCurrentDeviceState();
         if (source.getDeviceName() != null) {
-            log.info("Save {} state: mode '{}' bank '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getSelectedPatch()
+            log.info("Save {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
             );
             var target = model.getDeviceStates()
                     .get(source.getDeviceName());
@@ -481,9 +537,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void restoreDeviceState(DeviceState source, MainModel target) {
         var current = target.getCurrentDeviceState();
-        log.info("Restore {} state: mode '{}' bank '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getSelectedPatch()
+        log.info("Restore {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
         );
-        log.info("Over    {} state: mode '{}' bank '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), source.getCurrentBank(), current.getCurrentSelectedCategories(), current.getSelectedPatch()
+        log.info("Over    {} state: mode '{}' command '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), source.getCurrentBank(), current.getCurrentSelectedCategories(), current.getCurrentPatch()
         );
         copyState(source, current);
     }
@@ -497,11 +553,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             target.setCurrentSelectedCategories(source.getCurrentSelectedCategories());
             target.setCurrentSearchOutput(source.getCurrentSearchOutput());
             target.setCurrentPatch(source.getCurrentPatch());
-            target.setSelectedPatch(source.getSelectedPatch());
         }
     }
 
-    private void initDeviceStateFromConfig(String deviceName, SelectedPatch selectedPatch) {
+    private void initDeviceStateFromConfig(String deviceName, Patch selectedPatch) {
 
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(deviceName)
@@ -521,7 +576,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .put(deviceState.getDeviceName(), deviceState);
         if (selectedPatch != null) {
             deviceState.setCurrentMode(selectedPatch.getMode());
-            deviceState.setSelectedPatch(selectedPatch);
+            deviceState.setCurrentPatch(selectedPatch);
         }
     }
 

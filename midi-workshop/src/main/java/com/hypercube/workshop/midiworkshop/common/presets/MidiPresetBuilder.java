@@ -323,6 +323,7 @@ public class MidiPresetBuilder {
         try {
             byte[] data = Files.readAllBytes(sysExFile.toPath());
             ByteArrayOutputStream evt = new ByteArrayOutputStream();
+
             for (int i = 0; i < data.length; i++) {
                 evt.write(data[i]);
                 if (data[i] == (byte) 0xF7) {

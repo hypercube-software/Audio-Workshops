@@ -33,7 +33,7 @@ presetFormat: BANK_MSB_LSB_PRG
 presetNumbering: FROM_ZERO
 #
 # STANDARD     : it is possible to get the patch name with SysEx
-# SOUND_CANVAS : Path names are hardcoded in java application
+# SOUND_CANVAS : Patch names are hardcoded in java application
 #
 presetNaming: STANDARD
 

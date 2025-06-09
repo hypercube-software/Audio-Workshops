@@ -1,8 +1,18 @@
 ---
 selectedPatches:
-- device: "Mininova"
-  mode: "SingleMode"
-  bank: "SN Patches II"
-  name: "ChopperPad.syx"
-  category: "Motion Synth"
-  command: "@007 [Motion Synth] ChopperPad.syx"
+  - device: "TG-500"
+    mode: "VoiceMode"
+    bank: "Top40"
+    name: "AP Grand.syx"
+    category: "Piano"
+    command: "000000"
+    filename: "000 [000000,Piano] AP Grand.syx"
+    score: 0
+  - device: "TG-33"
+    mode: "VoiceMode"
+    bank: "Preset 2 Voices"
+    name: "BR*Anlog"
+    category: "Brass"
+    command: "0-5-39"
+    filename: null
+    score: 4

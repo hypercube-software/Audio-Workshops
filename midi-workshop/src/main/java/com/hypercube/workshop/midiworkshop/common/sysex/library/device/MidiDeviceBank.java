@@ -12,11 +12,11 @@ import java.util.List;
 @Getter
 public class MidiDeviceBank {
     /**
-     * Name of the bank
+     * Name of the command
      */
     private String name;
     /**
-     * Command to activate the bank in the device
+     * Command to activate the command in the device
      */
     private String command;
     /**
@@ -29,11 +29,11 @@ public class MidiDeviceBank {
     @Getter(AccessLevel.NONE)
     private int channel = 1; // from [1-16], not [0-15]
     /**
-     * Which programs are available in this bank
+     * Which programs are available in this command
      */
     private MidiPresetDomain presetDomain;
     /**
-     * Which presets are available in this bank
+     * Which presets are available in this command
      */
     private List<String> presets = new ArrayList<>();
 

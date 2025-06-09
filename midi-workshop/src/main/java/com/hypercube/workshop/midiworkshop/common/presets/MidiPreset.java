@@ -30,7 +30,7 @@ public final class MidiPreset {
     public static final int BANK_SELECT_LSB = 32;
     public static final int NO_CC = -1;
     /**
-     * Identifier of the preset 'device, bank, name, category'
+     * Identifier of the preset 'device, command, name, category'
      */
     @Setter
     private MidiPresetIdentity id;

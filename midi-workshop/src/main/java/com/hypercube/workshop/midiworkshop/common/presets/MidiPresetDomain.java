@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * This class represent a valid list of program changes for a given bank
+ * This class represent a valid list of program changes for a given command
  */
 @Getter
 @Setter

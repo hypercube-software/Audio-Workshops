@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +35,7 @@ public class ConfigurationFactory {
         favorites = loadFavoritePatches();
         try {
             if (!configFile.exists() || configFile.length() == 0) {
-                Files.writeString(configFile.toPath(), """
-                        ---
-                        selectedPatches: []
-                        """);
+                initEmptyConfig();
             }
             log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
             var mapper = new ObjectMapper(new YAMLFactory());
@@ -54,9 +50,17 @@ public class ConfigurationFactory {
         }
     }
 
+    private void initEmptyConfig() throws IOException {
+        ProjectConfiguration emptyConfig = new ProjectConfiguration();
+        saveConfig(emptyConfig);
+    }
+
     public void saveConfig(ProjectConfiguration configuration) {
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
+            SimpleModule observableModule = new SimpleModule("observableModule");
+            observableModule.setSerializerModifier(new ObservableSerializer());
+            mapper.registerModule(observableModule);
             mapper.writeValue(configFile, configuration);
         } catch (IOException e) {
             throw new ConfigError(e);

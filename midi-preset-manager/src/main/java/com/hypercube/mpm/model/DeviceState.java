@@ -1,6 +1,5 @@
 package com.hypercube.mpm.model;
 
-import com.hypercube.mpm.config.SelectedPatch;
 import com.hypercube.util.javafx.model.NotObservable;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import lombok.Getter;
@@ -17,7 +16,6 @@ public class DeviceState {
     private String currentMode;
     private String currentBank;
     private Patch currentPatch;
-    private SelectedPatch selectedPatch;
     private List<Patch> currentSearchOutput = new ArrayList<>();
     private List<String> currentSelectedCategories = new ArrayList<>();
     @NotObservable
