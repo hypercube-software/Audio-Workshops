@@ -1,0 +1,6970 @@
+---
+favorites:
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Last Breath"
+    category: "Sound FX"
+    command: "000175"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "+ Eska repley"
+    category: "Sound FX"
+    command: "000307"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "The Lab"
+    category: "Sound FX"
+    command: "000401"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "RubberBulletBs"
+    category: "Bass"
+    command: "000311"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Super Mini"
+    category: "Bass"
+    command: "000365"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Eskwl Bass"
+    category: "Bass"
+    command: "000446"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Red Bank"
+    name: "Closet Bass"
+    category: "Bass"
+    command: "000069"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "GrapSquishyBaz"
+    category: "Bass"
+    command: "00012C"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Rave Bass"
+    category: "Bass"
+    command: "00027B"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Red Bank"
+    name: "+Bass banaze"
+    category: "Sound FX"
+    command: "00004A"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Red Bank"
+    name: "System ska elc"
+    category: "Sound FX"
+    command: "000071"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Red Bank"
+    name: "Men in withe"
+    category: "Sound FX"
+    command: "000079"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "From Venus"
+    category: "Sound FX"
+    command: "000120"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Gizmo"
+    category: "Sound FX"
+    command: "000127"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "+Eska New song"
+    category: "Sound FX"
+    command: "000130"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "+Bass2 banaze"
+    category: "Sound FX"
+    command: "000171"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Space Jalopy"
+    category: "Sound FX"
+    command: "00034C"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Windy City"
+    category: "Sound FX"
+    command: "00043B"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "X-Mod"
+    category: "Sound FX"
+    command: "00043F"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "+Tim floyd"
+    category: "String"
+    command: "000313"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "String Dream"
+    category: "String"
+    command: "000360"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Funky Slide"
+    category: "Synth Comping"
+    command: "000122"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Owbercomper"
+    category: "Synth Comping"
+    command: "000236"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "PawnShopAnteek"
+    category: "Synth Comping"
+    command: "000265"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Simple"
+    category: "Synth Comping"
+    command: "00033F"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Porta Lead"
+    category: "Synth Lead"
+    command: "000272"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Trantor Lead"
+    category: "Synth Lead"
+    command: "00040B"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Warperheim"
+    category: "Synth Lead"
+    command: "00042E"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Whistler's Mom"
+    category: "Synth Lead"
+    command: "000438"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Ghostly"
+    category: "Synth Pad"
+    command: "000125"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "I Comprehend"
+    category: "Synth Pad"
+    command: "000152"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Intruder"
+    category: "Synth Pad"
+    command: "00015A"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Jurassic"
+    category: "Synth Pad"
+    command: "00016A"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "Liquid Sweep"
+    category: "Synth Pad"
+    command: "00017C"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Green Bank"
+    name: "+ost Children"
+    category: "Synth Pad"
+    command: "00017F"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Materialize"
+    category: "Synth Pad"
+    command: "00020B"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Moartal"
+    category: "Synth Pad"
+    command: "00021A"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Movie Pad"
+    category: "Synth Pad"
+    command: "000220"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "Oberpad"
+    category: "Synth Pad"
+    command: "00022C"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Blue Bank"
+    name: "PPGees"
+    category: "Synth Pad"
+    command: "000238"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Safe Landing"
+    category: "Synth Pad"
+    command: "00032C"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Shader"
+    category: "Synth Pad"
+    command: "000337"
+    filename: null
+    score: 2
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Silver Lining"
+    category: "Synth Pad"
+    command: "00033D"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "+olar Wire"
+    category: "Synth Pad"
+    command: "000347"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "Soupy Jupiter"
+    category: "Synth Pad"
+    command: "00034B"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "+tar Gate"
+    category: "Synth Pad"
+    command: "000354"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Yellow Bank"
+    name: "+empopansweep"
+    category: "Synth Pad"
+    command: "00037D"
+    filename: null
+    score: 5
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Undergrowth"
+    category: "Synth Pad"
+    command: "000418"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Vindicarum"
+    category: "Synth Pad"
+    command: "000421"
+    filename: null
+    score: 4
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Whisper"
+    category: "Synth Pad"
+    command: "000437"
+    filename: null
+    score: 3
+  - device: "Micron"
+    mode: "Program"
+    bank: "Edit Bank"
+    name: "Ghosty Voice2"
+    category: "Synth Pad"
+    command: "000454"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "Xpando Pad"
+    category: "Synth"
+    command: "015C"
+    filename: null
+    score: 5
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "ShineOn..."
+    category: "Synth"
+    command: "016A"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "J Strings"
+    category: "Synth"
+    command: "0139"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "MindSweep"
+    category: "Wave"
+    command: "0155"
+    filename: null
+    score: 5
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "Maze Lead"
+    category: "Wave"
+    command: "0167"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "Marktree"
+    category: "Percussions"
+    command: "017E"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "FuzzyGlass"
+    category: "Percussions"
+    command: "0263"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Buzz Clip"
+    category: "Sound FX"
+    command: "006C"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "DogsInSpac"
+    category: "Sound FX"
+    command: "0075"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Insectagon"
+    category: "Sound FX"
+    command: "0076"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Ocean Mood"
+    category: "Synth"
+    command: "0057"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "’74 Square"
+    category: "Synth"
+    command: "0069"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Wormholes"
+    category: "Voice"
+    command: "006E"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "MorphBells"
+    category: "Chromatic Percussion"
+    command: "0012"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "JoshuaTree"
+    category: "Chromatic Percussion"
+    command: "0054"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "Water!!!"
+    category: "Chromatic Percussion"
+    command: "0159"
+    filename: null
+    score: 5
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "Tacko Bell"
+    category: "Chromatic Percussion"
+    command: "0213"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 1"
+    name: "TronFlutes"
+    category: "Noise"
+    command: "0147"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Hyperspace"
+    category: "Noise"
+    command: "0377"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "Anasthesia"
+    category: "Synth"
+    command: "0253"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "Sparks"
+    category: "Synth"
+    command: "0254"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "Outland"
+    category: "Synth"
+    command: "0257"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 2"
+    name: "DiodeDoodl"
+    category: "Synth"
+    command: "0267"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Final Dawn"
+    category: "Synth"
+    command: "0352"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Fluid Pad"
+    category: "Synth"
+    command: "035C"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 4"
+    name: "Soundtrack"
+    category: "Synth"
+    command: "0461"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Space Bass"
+    category: "Synth"
+    command: "002A"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "User Bank"
+    name: "Whirl Lee"
+    category: "Piano"
+    command: "0007"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "GM"
+    name: "Dino + Dog"
+    category: "Custom"
+    command: "051B"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Film Score"
+    category: "String"
+    command: "0335"
+    filename: null
+    score: 2
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Mutablow"
+    category: "Woodwinds"
+    command: "0347"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Minotaur"
+    category: "Wave"
+    command: "0349"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Transformr"
+    category: "Woodwinds"
+    command: "034E"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "VelOoz&Aaz"
+    category: "Voice"
+    command: "0350"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Voxalon"
+    category: "Voice"
+    command: "0351"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "1stContact"
+    category: "Voice"
+    command: "0353"
+    filename: null
+    score: 5
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Eno Pad"
+    category: "String"
+    command: "0358"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "Vector Pad"
+    category: "Wave"
+    command: "035D"
+    filename: null
+    score: 4
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "Bank 3"
+    name: "PebbleBell"
+    category: "Chromatic Percussion"
+    command: "0363"
+    filename: null
+    score: 3
+  - device: "QS6.1"
+    mode: "Program"
+    bank: "GM"
+    name: "Saw Padd"
+    category: "Unknown 23"
+    command: "056F"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 1 Voices"
+    name: "CH Analg"
+    category: "Choir"
+    command: "000014"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 2 Performance"
+    name: "SP Arpeg"
+    category: "Synth Pad"
+    command: "00453A"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "ME Sprk2"
+    category: "Ensemble"
+    command: "004004"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "SE Devil"
+    category: "Sound FX"
+    command: "004007"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "SP Glas2"
+    category: "Synth Pad"
+    command: "000327"
+    filename: null
+    score: 5
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "SP Lash"
+    category: "Synth Pad"
+    command: "000329"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "SP Ray"
+    category: "Synth Pad"
+    command: "000330"
+    filename: null
+    score: 5
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "SP SloMo"
+    category: "Synth Pad"
+    command: "000331"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SP Exita"
+    category: "Synth Pad"
+    command: "000835"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SP Glass"
+    category: "Synth Pad"
+    command: "000837"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SP Hyper"
+    category: "Synth Pad"
+    command: "000839"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SP Movie"
+    category: "Synth Pad"
+    command: "00083C"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SP Glass"
+    category: "Synth Pad"
+    command: "001137"
+    filename: null
+    score: 5
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SP Goner"
+    category: "Synth Pad"
+    command: "001138"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SP Hyper"
+    category: "Synth Pad"
+    command: "001139"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SP Movie"
+    category: "Synth Pad"
+    command: "00113C"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SL Lyle"
+    category: "Synth Lead"
+    command: "00082C"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SL Lyle"
+    category: "Synth Lead"
+    command: "00112C"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SL Saw 1"
+    category: "Synth Lead"
+    command: "00112E"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SL Saw 2"
+    category: "Synth Lead"
+    command: "00112F"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SL Whisl"
+    category: "Synth Lead"
+    command: "001132"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "SE Swmp"
+    category: "Sound FX"
+    command: "000319"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 1 Voices"
+    name: "ME Treml"
+    category: "Ensemble"
+    command: "000031"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SE Noize"
+    category: "Sound FX"
+    command: "00081F"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SE Pops"
+    category: "Sound FX"
+    command: "000820"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "SE Swmp"
+    category: "Sound FX"
+    command: "004011"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 2 Performance"
+    name: "SE Xeno"
+    category: "Sound FX"
+    command: "004516"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "BA Mini"
+    category: "Bass"
+    command: "00422D"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "BA Guppy"
+    category: "Bass"
+    command: "004235"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "BA Doom"
+    category: "Bass"
+    command: "00423D"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "CH Breth"
+    category: "Choir"
+    command: "00420C"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "CH OohAh"
+    category: "Choir"
+    command: "004214"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "CO Nuage"
+    category: "Combination"
+    command: "004030"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 2 Performance"
+    name: "CO Kings"
+    category: "Combination"
+    command: "004530"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "ME Gokrk"
+    category: "Ensemble"
+    command: "00400E"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 2 Performance"
+    name: "ME Mars"
+    category: "Ensemble"
+    command: "00451C"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "OR Nave"
+    category: "Organ"
+    command: "004231"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "SE Rado"
+    category: "Sound FX"
+    command: "004025"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "SE Indst"
+    category: "Sound FX"
+    command: "00402F"
+    filename: null
+    score: 4
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "ST Rosin"
+    category: "String"
+    command: "004206"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 1 Performance"
+    name: "ST Big"
+    category: "String"
+    command: "004236"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Internal 1 Performance"
+    name: "SL Sqsaw"
+    category: "Synth Lead"
+    command: "004035"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Performance"
+    bank: "Preset 2 Performance"
+    name: "SL Mitey"
+    category: "Synth Lead"
+    command: "004503"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SC Bell"
+    category: "Synth Chorus"
+    command: "00053C"
+    filename: null
+    score: 1
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SC Synnr"
+    category: "Synth Chorus"
+    command: "00080D"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SL Dist"
+    category: "Synth Lead"
+    command: "000829"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SL Saw 1"
+    category: "Synth Lead"
+    command: "00082E"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 3 Voices"
+    name: "SL Saw 2"
+    category: "Synth Lead"
+    command: "00082F"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Preset 4 Voices"
+    name: "SL Dist"
+    category: "Synth Lead"
+    command: "001129"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Internal 2 Voices"
+    name: "WN Flut2"
+    category: "Wind"
+    command: "00033E"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SE*Fear"
+    category: "Sound FX"
+    command: "000233"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SC*Sweep"
+    category: "Synth Chorus"
+    command: "000213"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Internal Voices"
+    name: "SC*Sweep"
+    category: "Synth Chorus"
+    command: "000013"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SL*Sync"
+    category: "Synth Lead"
+    command: "000220"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SL*VCO"
+    category: "Synth Lead"
+    command: "000221"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SL*Wisul"
+    category: "Synth Lead"
+    command: "000224"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SL*Super"
+    category: "Synth Lead"
+    command: "000227"
+    filename: null
+    score: 5
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP*Pro33"
+    category: "Synth Pad"
+    command: "000200"
+    filename: null
+    score: 5
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP*Ice"
+    category: "Synth Pad"
+    command: "000204"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP*Matrx"
+    category: "Synth Pad"
+    command: "000208"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP*Oiled"
+    category: "Synth Pad"
+    command: "00020B"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP*Digit"
+    category: "Synth Pad"
+    command: "00020E"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "WN:Flute"
+    category: "Wind"
+    command: "00052F"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "BR*Anlog"
+    category: "Brass"
+    command: "000527"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "CH*Modrn"
+    category: "Choir"
+    command: "000538"
+    filename: null
+    score: 2
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "ME*Vecta"
+    category: "Ensemble"
+    command: "000228"
+    filename: null
+    score: 5
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "OR*Pipe"
+    category: "Organ"
+    command: "00050A"
+    filename: null
+    score: 4
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "OR*Perc"
+    category: "Organ"
+    command: "00050B"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "OR*Rock"
+    category: "Organ"
+    command: "000509"
+    filename: null
+    score: 2
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SQ:It"
+    category: "Sequence"
+    command: "000239"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "ST*Exel"
+    category: "String"
+    command: "000535"
+    filename: null
+    score: 3
+  - device: "TG-33"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "ST*Synth"
+    category: "String"
+    command: "000536"
+    filename: null
+    score: 2
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP"
+    category: "Synth Pad"
+    command: "7C00"
+    filename: null
+    score: 2
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SC.Hone"
+    category: "Synth Comp"
+    command: "7504"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "ME*Galaxia"
+    category: "Musical Effect"
+    command: "753D"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "ME Aquavox"
+    category: "Musical Effect"
+    command: "7C25"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "ME:Alps"
+    category: "Musical Effect"
+    command: "7C26"
+    filename: null
+    score: 4
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SE.Xpander"
+    category: "Sound FX"
+    command: "7531"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SE*Them!!!"
+    category: "Sound FX"
+    command: "7533"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Internal Voices"
+    name: "SP Annapad"
+    category: "Synth Pad"
+    command: "7A0A"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP Mystery"
+    category: "Synth Pad"
+    command: "7C07"
+    filename: null
+    score: 4
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP.Padfaze"
+    category: "Synth Pad"
+    command: "7C08"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 1 Voices"
+    name: "SP:Twilite"
+    category: "Synth Pad"
+    command: "7C09"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "OR Pipes"
+    category: "Organ"
+    command: "7521"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "KY.Wires"
+    category: "Keyboard"
+    command: "7512"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "KY Wahclav"
+    category: "Keyboard"
+    command: "7511"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "CH Spirit"
+    category: "Choir"
+    command: "752E"
+    filename: null
+    score: 4
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "BR*ZapBras"
+    category: "Brass"
+    command: "7535"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Internal Voices"
+    name: "6StrngBass"
+    category: "Unknown"
+    command: "7A0C"
+    filename: null
+    score: 3
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SL:Lips"
+    category: "Synth Lead"
+    command: "750F"
+    filename: null
+    score: 5
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SL.SawMono"
+    category: "Synth Lead"
+    command: "750A"
+    filename: null
+    score: 2
+  - device: "TG-77"
+    mode: "Voice"
+    bank: "Preset 2 Voices"
+    name: "SL.Gnome"
+    category: "Synth Lead"
+    command: "7509"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Relaxx"
+    category: "Combination"
+    command: "00"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "SyncSweep"
+    category: "Synth Pad"
+    command: "0D"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Soar"
+    category: "Synth Pad"
+    command: "04"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "PortPad"
+    category: "Synth Pad"
+    command: "50"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Sacred"
+    category: "Synth Pad"
+    command: "51"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Slip"
+    category: "Synth Pad"
+    command: "53"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Floyd75"
+    category: "Synth Lead"
+    command: "43"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Stevie"
+    category: "Synth Lead"
+    command: "42"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "HardSync"
+    category: "Synth Lead"
+    command: "40"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "OB-8"
+    category: "Synth Lead"
+    command: "3D"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Synchromes"
+    category: "Synth Lead"
+    command: "44"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "MegaDrone"
+    category: "Synth Lead"
+    command: "07"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "SyncLead"
+    category: "Synth Lead"
+    command: "08"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Soundtrack"
+    category: "Synth FX"
+    command: "00"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Heaven"
+    category: "Synth FX"
+    command: "06"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Porpoise"
+    category: "Synth FX"
+    command: "08"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Mars"
+    category: "Synth FX"
+    command: "07"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Jack"
+    category: "Synth FX"
+    command: "09"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Earth"
+    category: "Synth FX"
+    command: "13"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Magic"
+    category: "Synth FX"
+    command: "62"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Hypno"
+    category: "Synth FX"
+    command: "63"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Dust"
+    category: "Synth Comping"
+    command: "39"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Stakka"
+    category: "Synth Comping"
+    command: "38"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Caner"
+    category: "Synth Comping"
+    command: "0E"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Stringz"
+    category: "Strings"
+    command: "33"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Analog"
+    category: "Strings"
+    command: "30"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Industrial"
+    category: "Sound FX"
+    command: "10"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "CyberClock"
+    category: "Sound FX"
+    command: "0E"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Moment"
+    category: "Sound FX"
+    command: "11"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "BPF Morph"
+    category: "Sequence"
+    command: "11"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Doves"
+    category: "Sequence"
+    command: "10"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Poptart"
+    category: "Sequence"
+    command: "1A"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Saturn"
+    category: "Sequence"
+    command: "19"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Omega"
+    category: "Sequence"
+    command: "15"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Overdrive"
+    category: "Sequence"
+    command: "14"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Cactus"
+    category: "Sequence"
+    command: "13"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Alan"
+    category: "Sequence"
+    command: "0A"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Koan"
+    category: "Percussive"
+    command: "5F"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Woob"
+    category: "Percussive"
+    command: "60"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Vinnie"
+    category: "Combination"
+    command: "14"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Silence"
+    category: "Combination"
+    command: "18"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Padbells"
+    category: "Combination"
+    command: "55"
+    filename: null
+    score: 2
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Mini"
+    category: "Bass"
+    command: "0B"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Celluloid"
+    category: "Bass"
+    command: "02"
+    filename: null
+    score: 5
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "Dog Bass"
+    category: "Bass"
+    command: "19"
+    filename: null
+    score: 3
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "MiniLow"
+    category: "Bass"
+    command: "1C"
+    filename: null
+    score: 4
+  - device: "AN1x"
+    mode: "Voice"
+    bank: "Voices"
+    name: "CS80 Brass"
+    category: "Brass"
+    command: "2D"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "KickBass"
+    category: "Bass"
+    command: "3F403C"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Sub"
+    category: "Bass"
+    command: "3F403D"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Relaxer"
+    category: "Bass"
+    command: "3F4133"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Howitzer"
+    category: "Bass"
+    command: "3F413E"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Ghost"
+    category: "Sound FX"
+    command: "3F4074"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "HybriFlt"
+    category: "Sound FX"
+    command: "3F4173"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Sweepstr"
+    category: "Strings"
+    command: "3F4153"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Strawman"
+    category: "Strings"
+    command: "3F4069"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Jupiter"
+    category: "Strings"
+    command: "3F4068"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Universe"
+    category: "Synth Comping"
+    command: "3F4011"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Noble 'Q"
+    category: "Synth Comping"
+    command: "3F4018"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Doves"
+    category: "Synth Comping"
+    command: "3F401E"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "MoonBass"
+    category: "Synth Comping"
+    command: "3F4123"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Airy"
+    category: "Synth FX"
+    command: "3F401F"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "CSphere"
+    category: "Synth FX"
+    command: "3F4026"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Tintopia"
+    category: "Synth FX"
+    command: "3F4028"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Plankton"
+    category: "Synth FX"
+    command: "3F4165"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "M o r f"
+    category: "Synth FX"
+    command: "3F4169"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "WatrToy"
+    category: "Synth FX"
+    command: "3F416B"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Resolve"
+    category: "Synth FX"
+    command: "3F416E"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "SweepRun"
+    category: "Synth FX"
+    command: "3F4114"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Ensemble"
+    category: "Organ"
+    command: "3F4057"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Drawbars"
+    category: "Organ"
+    command: "3F4059"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "MissU"
+    category: "Organ"
+    command: "3F405A"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "EzaGeeza"
+    category: "Guitar"
+    command: "3F414D"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Firestar"
+    category: "Guitar"
+    command: "3F404C"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "WishUhea"
+    category: "Combination"
+    command: "3F4078"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Haendel"
+    category: "Combination"
+    command: "3F4077"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Ethno"
+    category: "Combination"
+    command: "3F4110"
+    filename: null
+    score: 2
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Spooks"
+    category: "Synth Pad"
+    command: "3F415C"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Solinal"
+    category: "Synth Pad"
+    command: "3F415B"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "AirClass"
+    category: "Synth Pad"
+    command: "3F4063"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Trance"
+    category: "Synth Pad"
+    command: "3F4061"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Sprite"
+    category: "Synth Pad"
+    command: "3F4060"
+    filename: null
+    score: 2
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "IceField"
+    category: "Synth Pad"
+    command: "3F405D"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Angel St"
+    category: "Synth Pad"
+    command: "3F405C"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Carpet"
+    category: "Synth Pad"
+    command: "3F4064"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "VS-Pad"
+    category: "Synth Pad"
+    command: "3F415E"
+    filename: null
+    score: 2
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Aurora"
+    category: "Synth Pad"
+    command: "3F4160"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Choir"
+    category: "Vocal"
+    command: "3F4075"
+    filename: null
+    score: 4
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "User Performance"
+    name: "Tehillim"
+    category: "Vocal"
+    command: "3F417A"
+    filename: null
+    score: 5
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "DX-Class"
+    category: "Piano"
+    command: "3F4051"
+    filename: null
+    score: 3
+  - device: "CS1x"
+    mode: "Performance"
+    bank: "Performances"
+    name: "HipRodes"
+    category: "Piano"
+    command: "3F4053"
+    filename: null
+    score: 2
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank Internal"
+    name: "DoubleBass"
+    category: "Bass"
+    command: "0A"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank Internal"
+    name: "LatelyBass"
+    category: "Bass"
+    command: "14"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank Internal"
+    name: "Tube Bells"
+    category: "Chromatic Percussion"
+    command: "1D"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank Internal"
+    name: "BriteCelst"
+    category: "Chromatic Percussion"
+    command: "05"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank C"
+    name: "LatelyBass"
+    category: "Bass"
+    command: "0A"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank B"
+    name: "DoubleBass"
+    category: "Bass"
+    command: "50"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank D"
+    name: "KrstlChoir"
+    category: "Voice"
+    command: "02"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank D"
+    name: "Brthbells"
+    category: "Chromatic Percussion"
+    command: "1C"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "SingleModeD"
+    bank: "Bank D"
+    name: "BowedBell"
+    category: "Chromatic Percussion"
+    command: "05"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "DoubleBass"
+    category: "Bass"
+    command: "0A"
+    filename: null
+    score: 4
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank C"
+    name: "HeavyMetal"
+    category: "Unknown"
+    command: "01"
+    filename: null
+    score: 2
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "HiString 1"
+    category: "String"
+    command: "0B"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Sync Lead"
+    category: "Synth Lead"
+    command: "11"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Sitar"
+    category: "Unknown"
+    command: "18"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "BreathOrgn"
+    category: "Unknown"
+    command: "0E"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "SynFunkBas"
+    category: "Unknown"
+    command: "13"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "LatelyBass"
+    category: "Bass"
+    command: "14"
+    filename: null
+    score: 5
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank Internal"
+    name: "Tube Bells"
+    category: "Chromatic Percussion"
+    command: "1D"
+    filename: null
+    score: 4
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank B"
+    name: "HarmoPad"
+    category: "Synth Pad"
+    command: "5B"
+    filename: null
+    score: 2
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank C"
+    name: "HeavyLead"
+    category: "Synth Lead"
+    command: "14"
+    filename: null
+    score: 4
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PercFlute"
+    category: "Woodwinds"
+    command: "5E"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Fuzz Piano"
+    category: "Keyboard"
+    command: "25"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Performance"
+    bank: "Performances"
+    name: "HiStrings"
+    category: "String"
+    command: "26"
+    filename: null
+    score: 3
+  - device: "TX-81z"
+    mode: "Performance"
+    bank: "Performances"
+    name: "Great Strg"
+    category: "String"
+    command: "31"
+    filename: null
+    score: 4
+  - device: "TX-81z"
+    mode: "Performance"
+    bank: "Performances"
+    name: "BigTimLead"
+    category: "Synth Lead"
+    command: "27"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Tsunami Warning"
+    category: "Motion Synth"
+    command: "000000"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Vocal Motion"
+    category: "Motion Synth"
+    command: "000140"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "({ Scanners })"
+    category: "Motion Synth"
+    command: "000160"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Noctiluca"
+    category: "Motion Synth"
+    command: "000215"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Mermaid"
+    category: "Motion Synth"
+    command: "000256"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Cyborg Pad'"
+    category: "Motion Synth"
+    command: "000262"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Orbiting Probes"
+    category: "Sound FX"
+    command: "00006E"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Martian Winds"
+    category: "Sound FX"
+    command: "000073"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Harp Heaven"
+    category: "Sound FX"
+    command: "000033"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "20,000 Fathoms"
+    category: "Sound FX"
+    command: "000051"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Birds & Bugs"
+    category: "Sound FX"
+    command: "000171"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Hover Craft"
+    category: "Sound FX"
+    command: "00017B"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Brain Swimming"
+    category: "Sound FX"
+    command: "00020C"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "<< Going Home >>"
+    category: "Sound FX"
+    command: "000243"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Sonic }{ Soup"
+    category: "Sound FX"
+    command: "000311"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "NOISY VOX Ribbon"
+    category: "Sound FX"
+    command: "000321"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "* Ice Whistle *"
+    category: "Sound FX"
+    command: "00034D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Lifting Off..."
+    category: "Sound FX"
+    command: "000350"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Analog Strings"
+    category: "Strings"
+    command: "000043"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Pizzicato Ens."
+    category: "Strings"
+    command: "000057"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "{Slow Strings}"
+    category: "Strings"
+    command: "000127"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Rezpad"
+    category: "Synth"
+    command: "000069"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Brass Pad"
+    category: "Synth"
+    command: "00006B"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Aftermath"
+    category: "Synth"
+    command: "000169"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Analog Pad"
+    category: "Synth"
+    command: "000139"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Hybrid keys"
+    category: "Synth"
+    command: "000149"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Synpiano"
+    category: "Synth"
+    command: "000159"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Clear Mallet"
+    category: "Synth"
+    command: "000201"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Icicle"
+    category: "Synth"
+    command: "00026B"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Dance Lead"
+    category: "Synth"
+    command: "000221"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Triangulation"
+    category: "Synth"
+    command: "00022B"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Space Life"
+    category: "Synth"
+    command: "000226"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Sub-Synth"
+    category: "Synth"
+    command: "000241"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Saw Pad"
+    category: "Synth"
+    command: "000242"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "SynMallet"
+    category: "Synth"
+    command: "000246"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "[{ The Summit }]"
+    category: "Synth"
+    command: "00024B"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Evolver Pad"
+    category: "Synth"
+    command: "000252"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Rhythmic Rez"
+    category: "Synth"
+    command: "000369"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Digital Polysix"
+    category: "Synth"
+    command: "000302"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "}( Meditate ){"
+    category: "Synth"
+    command: "00031E"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Rezo Airpad"
+    category: "Synth"
+    command: "000322"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Rubber Banned"
+    category: "Synth"
+    command: "00032E"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Seq DDL Lead"
+    category: "Synth"
+    command: "000331"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Vel~Swellz"
+    category: "Synth"
+    command: "000332"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Sweepy Strings"
+    category: "Synth"
+    command: "000338"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Tronic Strinng"
+    category: "Synth"
+    command: "000340"
+    filename: null
+    score: 1
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Ghostly Strings"
+    category: "Synth"
+    command: "000342"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Trianglular"
+    category: "Synth"
+    command: "000348"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Staccato Pad"
+    category: "Synth"
+    command: "000359"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Detuned Ana. Era"
+    category: "Synth"
+    command: "00035E"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Spectrum Lead"
+    category: "Synth Lead"
+    command: "00001E"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Monster Lead"
+    category: "Synth Lead"
+    command: "00010E"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Square Wave Lead"
+    category: "Synth Lead"
+    command: "00013E"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Trance Lead"
+    category: "Synth Lead"
+    command: "000204"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Perc. Bottle"
+    category: "Synth Lead"
+    command: "000232"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Mg Lead (Ribbon)"
+    category: "Synth Lead"
+    command: "00023F"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "son of big one"
+    category: "Synth Lead"
+    command: "000244"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Mr.8 Sync Lead"
+    category: "Synth Lead"
+    command: "000254"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Slow Sweeper"
+    category: "Synth Lead"
+    command: "000368"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Breath of Life"
+    category: "Vocal/Airy"
+    command: "000013"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Light Choir"
+    category: "Vocal/Airy"
+    command: "000023"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Mixed Choir"
+    category: "Vocal/Airy"
+    command: "000103"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Super Pad"
+    category: "Vocal/Airy"
+    command: "000133"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "City of Angels"
+    category: "Vocal/Airy"
+    command: "000163"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "TAP RibbonVoices"
+    category: "Vocal/Airy"
+    command: "000264"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Vocalscape"
+    category: "Vocal/Airy"
+    command: "000317"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Tek Quire"
+    category: "Vocal/Airy"
+    command: "000307"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Pan Flute"
+    category: "Woodwinds/Reeds"
+    command: "000062"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Tango / SW 1&2"
+    category: "Woodwinds/Reeds"
+    command: "00014B"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Tin Flute"
+    category: "Woodwinds/Reeds"
+    command: "000152"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Bottle"
+    category: "Woodwinds/Reeds"
+    command: "000162"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "01W Alto Sax"
+    category: "Woodwinds/Reeds"
+    command: "000259"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Shamisen"
+    category: "Plucked"
+    command: "00014F"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Banjo Andro"
+    category: "Plucked"
+    command: "00015F"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Adieu Rainforest"
+    category: "Plucked"
+    command: "00001F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Indian Duet"
+    category: "Plucked"
+    command: "00000F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Velocity Organ"
+    category: "Organ"
+    command: "00000A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Gospel Organ"
+    category: "Organ"
+    command: "00006A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Rotary Organ"
+    category: "Organ"
+    command: "00001A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Pipe Tutti"
+    category: "Organ"
+    command: "00002A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Garage Organ"
+    category: "Organ"
+    command: "00004A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Killer Organ"
+    category: "Organ"
+    command: "00010A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Pipe Tuentiana"
+    category: "Organ"
+    command: "00017A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Pipe Mixture"
+    category: "Organ"
+    command: "00012A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Big Old JazzOrg"
+    category: "Organ"
+    command: "00014A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Dark Old BX-3"
+    category: "Organ"
+    command: "00015A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Pipe Reeds"
+    category: "Organ"
+    command: "00015E"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Power R&B Organ"
+    category: "Organ"
+    command: "000239"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Bamboo \"B\" !!"
+    category: "Organ"
+    command: "00023B"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Vibraphone"
+    category: "Mallet"
+    command: "00002D"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Pro-Stage E.P."
+    category: "Keyboard"
+    command: "000111"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Super Grand"
+    category: "Keyboard"
+    command: "000121"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Super Whirly"
+    category: "Keyboard"
+    command: "000131"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Harpsichord"
+    category: "Keyboard"
+    command: "000151"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Rubber{Wah}Clav"
+    category: "Keyboard"
+    command: "000266"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "OLD/Dark E.P."
+    category: "Keyboard"
+    command: "000217"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Synth Clav"
+    category: "Keyboard"
+    command: "000366"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Chorus E.Guitar"
+    category: "Guitar"
+    command: "00006F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Hawaiian Glass"
+    category: "Guitar"
+    command: "00007F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Lead Guitar/JS-Y"
+    category: "Guitar"
+    command: "000034"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Stadium Guitar"
+    category: "Guitar"
+    command: "000134"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Pop Mutes"
+    category: "Guitar"
+    command: "00035D"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Asian Gong"
+    category: "Drums / Perc"
+    command: "000038"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Percussion Kit"
+    category: "Drums / Perc"
+    command: "000048"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Marc Tree"
+    category: "Drums / Perc"
+    command: "000178"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Timpani"
+    category: "Drums / Perc"
+    command: "000138"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Orch/Ethnic Kits"
+    category: "Drums / Perc"
+    command: "000148"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Industry/Analog"
+    category: "Drums / Perc"
+    command: "00026A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "House/Techno/Jun"
+    category: "Drums / Perc"
+    command: "00022A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Pop/R&B Kit"
+    category: "Drums / Perc"
+    command: "00030A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Agressiv Kit"
+    category: "Drums / Perc"
+    command: "00032A"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Finger Cymbal"
+    category: "Bell"
+    command: "000065"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Tubular Vibes"
+    category: "Bell"
+    command: "000015"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Ensemble Bell"
+    category: "Bell"
+    command: "000105"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "13 Bells Of Bali"
+    category: "Bell"
+    command: "000145"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "FM Bells"
+    category: "Bell"
+    command: "000155"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "FM Tubular"
+    category: "Bell"
+    command: "000224"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "Monster Bass"
+    category: "Bass"
+    command: "000076"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "FM Bass"
+    category: "Bass"
+    command: "000036"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "30303 Mega Bass"
+    category: "Bass"
+    command: "000056"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank A"
+    name: "30303 Square"
+    category: "Bass"
+    command: "00004E"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank B"
+    name: "Jazz Bass (SW1)"
+    category: "Bass"
+    command: "000126"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "! Stinky Bass !"
+    category: "Bass"
+    command: "000265"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Vogue Bass"
+    category: "Bass"
+    command: "00026F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Fretless"
+    category: "Bass"
+    command: "000273"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Pound Bass"
+    category: "Bass"
+    command: "000219"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "{POP} House Bass"
+    category: "Bass"
+    command: "000229"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Upright Bass"
+    category: "Bass"
+    command: "00022F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "Bass Drum Bass"
+    category: "Bass"
+    command: "000205"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank C"
+    name: "__Kleer_Bass__"
+    category: "Bass"
+    command: "00023E"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Slang Bass"
+    category: "Bass"
+    command: "00037B"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Super Slammer"
+    category: "Bass"
+    command: "00037E"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Dark Moog"
+    category: "Bass"
+    command: "000314"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Drub Square"
+    category: "Bass"
+    command: "000315"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Savage Squares"
+    category: "Bass"
+    command: "00032C"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Mr. Impact"
+    category: "Bass"
+    command: "000305"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Zapper Bass"
+    category: "Bass"
+    command: "00033F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Program"
+    bank: "Program Bank D"
+    name: "Analog Bass  SW1"
+    category: "Bass"
+    command: "000345"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Virtual Joystick"
+    category: "Drums/Special FX"
+    command: "00001D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Jungle Predator"
+    category: "Drums/Special FX"
+    command: "00003D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "TheFinalFrontier"
+    category: "Drums/Special FX"
+    command: "00017D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "[Unhappy=Planet]"
+    category: "Drums/Special FX"
+    command: "00011D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "L/R WACKO Kit"
+    category: "Drums/Special FX"
+    command: "00020D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Seance Spirits"
+    category: "Drums/Special FX"
+    command: "00024D"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "One Finger 4 SFX"
+    category: "Drums/Special FX"
+    command: "00037D"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "#Splits4SciFi#"
+    category: "Drums/Special FX"
+    command: "00034D"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "The Mallet Men"
+    category: "Bell & Mallet"
+    command: "00011F"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Spectrum Bells"
+    category: "Bell & Mallet"
+    command: "00015F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Chorus Bell"
+    category: "Bell & Mallet"
+    command: "00027F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Mystical Warrior"
+    category: "Bell & Mallet"
+    command: "00020F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Bellish Stuff"
+    category: "Bell & Mallet"
+    command: "00022F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Serengeti"
+    category: "Bell & Mallet"
+    command: "00024F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Kalimba Simba"
+    category: "Bell & Mallet"
+    command: "00034F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "~Secret~Garden~"
+    category: "Breathy/Airy"
+    command: "00001A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "DurangosDaughter"
+    category: "Breathy/Airy"
+    command: "00002A"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Orbital Voices"
+    category: "Breathy/Airy"
+    command: "00003A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "{{Cyber-Visual}}"
+    category: "Breathy/Airy"
+    command: "00017A"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Luna Breath"
+    category: "Breathy/Airy"
+    command: "000125"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Rising Tides"
+    category: "Breathy/Airy"
+    command: "00014A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Choir of the Sun"
+    category: "Breathy/Airy"
+    command: "00015A"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Antarctic Night"
+    category: "Breathy/Airy"
+    command: "00021A"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Heaven Smiles"
+    category: "Breathy/Airy"
+    command: "00024A"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Solar Bell Pad"
+    category: "Breathy/Airy"
+    command: "00025A"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Closest Cloud"
+    category: "Breathy/Airy"
+    command: "00030A"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Polaris"
+    category: "Keyboard"
+    command: "000335"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "SuperNightTines"
+    category: "Keyboard"
+    command: "000123"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "EAuditorium+MIDI"
+    category: "Keyboard"
+    command: "000203"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Winds of Victory"
+    category: "Motion Synth"
+    command: "00007D"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Dragon's World"
+    category: "Motion Synth"
+    command: "000012"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank A"
+    name: "Vox Morphing"
+    category: "Motion Synth"
+    command: "000002"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "new silverware"
+    category: "Motion Synth"
+    command: "000175"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "=Dream Theatre="
+    category: "Motion Synth"
+    command: "000122"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Virtual Vortex"
+    category: "Motion Synth"
+    command: "000142"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Magical Organ"
+    category: "Motion Synth"
+    command: "00014F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "Ghostly Spectrum"
+    category: "Motion Synth"
+    command: "000152"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Nemo"
+    category: "Motion Synth"
+    command: "00027D"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "UndeWater*Parade"
+    category: "Motion Synth"
+    command: "000202"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Bad Science"
+    category: "Motion Synth"
+    command: "00022B"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Bellmove"
+    category: "Motion Synth"
+    command: "00023F"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Relaxation"
+    category: "Motion Synth"
+    command: "000252"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Any Dynamic"
+    category: "Motion Synth"
+    command: "00025C"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Forever Waiting"
+    category: "Motion Synth"
+    command: "000372"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Wavestation Pad"
+    category: "Motion Synth"
+    command: "000332"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank B"
+    name: "MondoSplatBass!"
+    category: "Bass"
+    command: "000134"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Obesity Bass"
+    category: "Bass"
+    command: "00022E"
+    filename: null
+    score: 3
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Flanged DDL Bass"
+    category: "Bass"
+    command: "000209"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Holy Phat!"
+    category: "Bass"
+    command: "000327"
+    filename: null
+    score: 2
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Asteroid Orbits"
+    category: "Complex"
+    command: "000215"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Underwater Chasm"
+    category: "Complex"
+    command: "000245"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Lost Knowledge"
+    category: "Complex"
+    command: "000375"
+    filename: null
+    score: 5
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank D"
+    name: "Marvel Starship"
+    category: "Complex"
+    command: "000305"
+    filename: null
+    score: 4
+  - device: "Tr-Rack"
+    mode: "Combi"
+    bank: "Combi Bank C"
+    name: "Free Fall"
+    category: "Pad & Lead"
+    command: "00020C"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Eurozone"
+    category: "Arp"
+    command: "0128"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "TB Mainiac PM"
+    category: "Arp"
+    command: "0105"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PinCode"
+    category: "Arp"
+    command: "027E"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "WaveSequence PM"
+    category: "Arp"
+    command: "022A"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "BreakdownArp PM"
+    category: "Arp"
+    command: "0208"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "LilPopDaWorld AL"
+    category: "Arp"
+    command: "0261"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "BottomFeeder PS"
+    category: "Sound FX"
+    command: "0155"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "FlyBy PS"
+    category: "Sound FX"
+    command: "0201"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "HypaMeltDownz PM"
+    category: "Sound FX"
+    command: "0228"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "HugeManna PS"
+    category: "Synth Pad"
+    command: "016A"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "SpaceOboes PS"
+    category: "Synth Pad"
+    command: "016D"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "CylleString PS"
+    category: "Synth Pad"
+    command: "016F"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "StringTheory PS"
+    category: "Synth Pad"
+    command: "017A"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "StellarPad"
+    category: "Synth Pad"
+    command: "013A"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "GrandFinale1 PS"
+    category: "Synth Pad"
+    command: "015C"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "FaeryCave DC"
+    category: "Synth Pad"
+    command: "0266"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "TearsInRain DC"
+    category: "Synth Pad"
+    command: "0270"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PitchPad PM"
+    category: "Synth Pad"
+    command: "0219"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "ProggyBrkDwn PS"
+    category: "Synth Pad"
+    command: "0205"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "MwhlFeedbacker"
+    category: "Synth Poly"
+    command: "0124"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SpaceBleep PM"
+    category: "Synth Poly"
+    command: "020E"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Torched PS"
+    category: "Synth Lead"
+    command: "0165"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ModWheelSync PM"
+    category: "Synth Lead"
+    command: "0104"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Hop1Lead"
+    category: "Synth Lead"
+    command: "012D"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ArpProSoloist"
+    category: "Synth Lead"
+    command: "013F"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Stabolicious PS"
+    category: "Synth Lead"
+    command: "0154"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SQ PotLid PM"
+    category: "Synth Lead"
+    command: "021A"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "CleanDutch AL"
+    category: "Synth Lead"
+    command: "025F"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Synchromatic1 PS"
+    category: "Motion Synth"
+    command: "0167"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Col.BatGuano PS"
+    category: "Motion Synth"
+    command: "016C"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "FreeClimber PS"
+    category: "Motion Synth"
+    command: "0176"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ModularClocks"
+    category: "Motion Synth"
+    command: "0103"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "VelEvoPad"
+    category: "Motion Synth"
+    command: "0135"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Shufflin DF"
+    category: "Motion Synth"
+    command: "0109"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "OcatveMangle PS"
+    category: "Motion Synth"
+    command: "015D"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SpaceVoyageTC3"
+    category: "Motion Synth"
+    command: "0277"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "SofteePiano"
+    category: "Keyboard"
+    command: "0131"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Balladeer"
+    category: "Keyboard"
+    command: "0134"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Wurlygig"
+    category: "Keyboard"
+    command: "0137"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Vibes"
+    category: "Keyboard"
+    command: "0139"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Ark EP"
+    category: "Keyboard"
+    command: "0273"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "BitXBowl DC"
+    category: "DrumPerc"
+    command: "026E"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "AmazonNatives"
+    category: "DrumPerc"
+    command: "0279"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "BangaDrumBass PM"
+    category: "DrumPerc"
+    command: "0236"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "AlaskaSplitLoC"
+    category: "Classic"
+    command: "0145"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "JumpIt!"
+    category: "Classic"
+    command: "0275"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SwellSaw"
+    category: "Classic"
+    command: "0278"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "KarlosWhey"
+    category: "Classic"
+    command: "027C"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "FritzTropolis PS"
+    category: "Classic"
+    command: "0202"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PitchieStabba PM"
+    category: "Classic"
+    command: "0225"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SimpleRiff"
+    category: "Classic"
+    command: "025B"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "SygnWave DF"
+    category: "Bell"
+    command: "0111"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "AncientBells"
+    category: "Bell"
+    command: "013E"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "JonnaBells"
+    category: "Bell"
+    command: "0272"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PinPrick PM"
+    category: "Bell"
+    command: "0210"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "WobblyDub PM"
+    category: "Bass"
+    command: "0101"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Yuyuyu PS"
+    category: "Bass"
+    command: "0170"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Churn PS"
+    category: "Bass"
+    command: "0172"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "TwinPeaks PS"
+    category: "Bass"
+    command: "0174"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Gojira Breth PS"
+    category: "Bass"
+    command: "0175"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "MotorOyl PS"
+    category: "Bass"
+    command: "0179"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Spelunkatron PS"
+    category: "Bass"
+    command: "017E"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ChubbyBass DF"
+    category: "Bass"
+    command: "010D"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "NotSubtle DF"
+    category: "Bass"
+    command: "0110"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "CubedBass DF"
+    category: "Bass"
+    command: "0112"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ModularResobass"
+    category: "Bass"
+    command: "012A"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "SynthFretless"
+    category: "Bass"
+    command: "012B"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "OldSchoolR&B"
+    category: "Bass"
+    command: "0143"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "TaurusBass"
+    category: "Bass"
+    command: "0146"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "PoserBass"
+    category: "Bass"
+    command: "014C"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Metallo2 PS"
+    category: "Bass"
+    command: "0153"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank A"
+    name: "LogDrumBass PS"
+    category: "Bass"
+    command: "0157"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "SpeakinModWBasPM"
+    category: "Bass"
+    command: "020C"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "DubBass1 PM"
+    category: "Bass"
+    command: "020D"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "R&B Bass PM"
+    category: "Bass"
+    command: "0214"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "GrowLie Dub PM"
+    category: "Bass"
+    command: "0215"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "ThroatyDub PM"
+    category: "Bass"
+    command: "021F"
+    filename: null
+    score: 5
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PercussiveDub PM"
+    category: "Bass"
+    command: "0221"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "TalkinNonsencePM"
+    category: "Bass"
+    command: "0229"
+    filename: null
+    score: 3
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "LeagueBass"
+    category: "Bass"
+    command: "025C"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Pizz-a-Cake PM"
+    category: "String"
+    command: "0212"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Ambient Arp"
+    category: "Arp"
+    command: "000120"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Arps Of Joy"
+    category: "Arp"
+    command: "00020B"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Dream Arp"
+    category: "Arp"
+    command: "000211"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Music Box"
+    category: "Arp"
+    command: "00021F"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Orange Nightmare"
+    category: "Arp"
+    command: "00025A"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Pad 3SawDnsAftBP"
+    category: "Synth Pad"
+    command: "000170"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Pad Sawdense"
+    category: "Synth Pad"
+    command: "000171"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Thera Atlantis"
+    category: "Synth Pad"
+    command: "00011D"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "GIL Deep Plane"
+    category: "Synth Pad"
+    command: "000104"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Lost At Sea"
+    category: "Synth Pad"
+    command: "000136"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Epic Atmosphere"
+    category: "Synth Pad"
+    command: "000106"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Analog Separatn"
+    category: "Synth Pad"
+    command: "000163"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Catharsis"
+    category: "Synth Pad"
+    command: "000273"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Reminiscent"
+    category: "Synth Pad"
+    command: "00027E"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Floating Ether"
+    category: "Synth Pad"
+    command: "000216"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Rich Pad"
+    category: "Synth Pad"
+    command: "000223"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PleasureDome"
+    category: "Synth Pad"
+    command: "00025B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "PWM Pad"
+    category: "Synth Pad"
+    command: "00025C"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Ponderosa"
+    category: "Synth Pad"
+    command: "000300"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Ambi Sludge Pro"
+    category: "Synth Pad"
+    command: "000373"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Millenia"
+    category: "Synth Pad"
+    command: "00037C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Welsh Synthesis"
+    category: "Synth Pad"
+    command: "000319"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Ural Myst"
+    category: "Synth Pad"
+    command: "000324"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Wyoming LSD"
+    category: "Synth Pad"
+    command: "000332"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Historical Orleo"
+    category: "Synth Pad"
+    command: "000348"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Sinistrone Soup"
+    category: "Synth Pad"
+    command: "00034C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Forestfull"
+    category: "Sound FX"
+    command: "000115"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Hovercraft"
+    category: "Sound FX"
+    command: "000132"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "RadiophonicOrgan"
+    category: "Sound FX"
+    command: "00025D"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Solarius"
+    category: "Sound FX"
+    command: "000362"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Swamp Satyr"
+    category: "Sound FX"
+    command: "00035F"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Triangle Motion"
+    category: "Motion Synth"
+    command: "000176"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "TimeBender"
+    category: "Motion Synth"
+    command: "00015A"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Epic Flutter"
+    category: "Motion Synth"
+    command: "000214"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "FloatingOnWaves"
+    category: "Motion Synth"
+    command: "000217"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Triple Wavetable"
+    category: "Motion Synth"
+    command: "000203"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Glassy Drops"
+    category: "Motion Synth"
+    command: "000238"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Olympius"
+    category: "Motion Synth"
+    command: "000310"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "StringSectSwell"
+    category: "String"
+    command: "00015F"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Gas,GrassOrBrass"
+    category: "String"
+    command: "000251"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Bass SubOsc"
+    category: "Bass"
+    command: "000165"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "3 Osc BassSynth"
+    category: "Bass"
+    command: "000103"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "ArtilleryBass"
+    category: "Bass"
+    command: "000143"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "AyeEyeGuy"
+    category: "Bass"
+    command: "000144"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "FestaBass"
+    category: "Bass"
+    command: "000146"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "FlintTinder"
+    category: "Bass"
+    command: "000147"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "KnockDown Bass"
+    category: "Bass"
+    command: "00014C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "OpticalBurn"
+    category: "Bass"
+    command: "000150"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Cone Blown"
+    category: "Bass"
+    command: "000274"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Dirty Basstard"
+    category: "Bass"
+    command: "00020F"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Round Sub"
+    category: "Bass"
+    command: "00023D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Harding Bass"
+    category: "Bass"
+    command: "000253"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "LastTrain2Bass"
+    category: "Bass"
+    command: "000254"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "StankFunk Bass"
+    category: "Bass"
+    command: "00025F"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Cobra Duobass"
+    category: "Bass"
+    command: "000306"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Season 3 Bass"
+    category: "Bass"
+    command: "00033D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "AeonBass"
+    category: "Bass"
+    command: "00034B"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Lazybass"
+    category: "Bass"
+    command: "00035E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Ring Dyn Ambient"
+    category: "Bell"
+    command: "000174"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "G.I.L.s Memories"
+    category: "Bell"
+    command: "00017B"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Death of a King"
+    category: "Bell"
+    command: "000105"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Eerie ModW^"
+    category: "Bell"
+    command: "000213"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "FM Bells"
+    category: "Bell"
+    command: "000250"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Eighties Organ"
+    category: "Classic"
+    command: "000167"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "OperatahBass"
+    category: "Classic"
+    command: "000107"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "PastelShores"
+    category: "Classic"
+    command: "000152"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Supertanker"
+    category: "Classic"
+    command: "000157"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Oldie Mogie"
+    category: "Classic"
+    command: "000220"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Cocteaul Choire1"
+    category: "Classic"
+    command: "00024C"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Cocteaul Choire2"
+    category: "Classic"
+    command: "00024D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Vox Humana A"
+    category: "Classic"
+    command: "000261"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Mesc Uni Drums"
+    category: "DrumPerc"
+    command: "00037E"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Aetherphone"
+    category: "Keyboard"
+    command: "000102"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Mirage"
+    category: "Keyboard"
+    command: "000137"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Erosion"
+    category: "Keyboard"
+    command: "000129"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "KlyMaxx"
+    category: "Keyboard"
+    command: "00014B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Tasty Chorder"
+    category: "Keyboard"
+    command: "000243"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Dystopian"
+    category: "Synth Poly"
+    command: "000100"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "HardSync Lead"
+    category: "Synth Lead"
+    command: "00016D"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "From the Stars"
+    category: "Synth Lead"
+    command: "00012C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Snake Charmer"
+    category: "Synth Lead"
+    command: "00013B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Dirt Guitar Lead"
+    category: "Synth Lead"
+    command: "00020E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Dukey Lead"
+    category: "Synth Lead"
+    command: "000212"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Tiny Moo"
+    category: "Synth Lead"
+    command: "00022B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "4>8>12 UnisonPWM"
+    category: "Synth Lead"
+    command: "000206"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Feed Me Wavesap"
+    category: "Synth Lead"
+    command: "000318"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Oxford Dreams"
+    category: "Synth Lead"
+    command: "000323"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Oxford Manor"
+    category: "Synth Lead"
+    command: "000357"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Buzzy Brass"
+    category: "Synth Poly"
+    command: "000101"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Bite Poly"
+    category: "Synth Poly"
+    command: "000166"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Eighties Brass"
+    category: "Synth Poly"
+    command: "000168"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Glassy Strider"
+    category: "Synth Poly"
+    command: "00017C"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Florist Study"
+    category: "Synth Poly"
+    command: "000114"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "JnvernesSyntShop"
+    category: "Synth Poly"
+    command: "000118"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Bathysphere"
+    category: "Synth Poly"
+    command: "000122"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Beneath the Wave"
+    category: "Synth Poly"
+    command: "000123"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Deja Vu Feeling"
+    category: "Synth Poly"
+    command: "000124"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Lace Timbre"
+    category: "Synth Poly"
+    command: "000134"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Life as a Bee"
+    category: "Synth Poly"
+    command: "000135"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Techno Utopia"
+    category: "Synth Poly"
+    command: "00013E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Vanishing Point"
+    category: "Synth Poly"
+    command: "000141"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "BigHyper"
+    category: "Synth Poly"
+    command: "000145"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Gleamers"
+    category: "Synth Poly"
+    command: "000148"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Grey Havens"
+    category: "Synth Poly"
+    command: "000149"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank A"
+    name: "Simple & Sublime"
+    category: "Synth Poly"
+    command: "000109"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Fifths"
+    category: "Synth Poly"
+    command: "000215"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Icicle Warmth"
+    category: "Synth Poly"
+    command: "00021C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Little Strike"
+    category: "Synth Poly"
+    command: "00021E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Silky Retro Syn"
+    category: "Synth Poly"
+    command: "000224"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "Soft OB"
+    category: "Synth Poly"
+    command: "000226"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "80s Bell Patch"
+    category: "Synth Poly"
+    command: "000207"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "80's Digi-Syn"
+    category: "Synth Poly"
+    command: "000208"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "VipeBuzz Big"
+    category: "Synth Poly"
+    command: "000365"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Atmy Synt"
+    category: "Synth Poly"
+    command: "000366"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Juniper"
+    category: "Synth Poly"
+    command: "000375"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Lifespan 75"
+    category: "Synth Poly"
+    command: "00037A"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Simple Things"
+    category: "Synth Poly"
+    command: "000313"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Rusty Soul"
+    category: "Synth Poly"
+    command: "000321"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Fantasoba"
+    category: "Synth Poly"
+    command: "000328"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Glory Jam"
+    category: "Synth Poly"
+    command: "00032C"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Starlooper"
+    category: "Synth Poly"
+    command: "000341"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Katjesdrop"
+    category: "Synth Poly"
+    command: "00034E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Icepalace"
+    category: "Synth Poly"
+    command: "000355"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Majestic Wolharp"
+    category: "Synth Poly"
+    command: "000359"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Rigoheim"
+    category: "Synth Poly"
+    command: "00035D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Americana"
+    category: "Synth Poly"
+    command: "000360"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Dream Plants"
+    category: "Synth Poly"
+    command: "000361"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Sesqua Valley"
+    category: "Synth Poly"
+    command: "000305"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Rain Shadow VIP"
+    category: "Synth Poly"
+    command: "000333"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Manta Day"
+    category: "Synth Poly"
+    command: "000336"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Big Splash Snug"
+    category: "Synth Poly"
+    command: "00032E"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Eomius Belay"
+    category: "Synth Poly"
+    command: "000327"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Ravens Jazz"
+    category: "Synth Poly"
+    command: "000316"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank C"
+    name: "Artic Liqorish"
+    category: "Synth Poly"
+    command: "000315"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Buzzy Brass"
+    category: "Layer"
+    command: "000101"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Regeneration"
+    category: "Layer"
+    command: "000171"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Revised Hope"
+    category: "Layer"
+    command: "000173"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "The Good Stuff"
+    category: "Layer"
+    command: "00017A"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Dessert Springs"
+    category: "Layer"
+    command: "00010D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Donker Moeras"
+    category: "Layer"
+    command: "00010E"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Night Mood"
+    category: "Layer"
+    command: "000112"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Pattern Bay"
+    category: "Layer"
+    command: "000114"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Pensive Planets"
+    category: "Layer"
+    command: "000115"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Puppy Hotel"
+    category: "Layer"
+    command: "000116"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Twirly Mallets"
+    category: "Layer"
+    command: "00011C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "6 Osc Bass"
+    category: "Layer"
+    command: "00011F"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Arp Triplet"
+    category: "Layer"
+    command: "000124"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "FM Bell Layer"
+    category: "Layer"
+    command: "000104"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Bell Waves"
+    category: "Layer"
+    command: "000128"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Big (-_-) Poly"
+    category: "Layer"
+    command: "000129"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "ChimEPad"
+    category: "Layer"
+    command: "00012B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Dirty Wiper"
+    category: "Layer"
+    command: "00012C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Echo Keys"
+    category: "Layer"
+    command: "00012E"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Film Score Epic"
+    category: "Layer"
+    command: "000130"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Formant Peaks"
+    category: "Layer"
+    command: "000131"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Humana Vox"
+    category: "Layer"
+    command: "000134"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Moody Pad"
+    category: "Layer"
+    command: "00013B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Noise Nirvana"
+    category: "Layer"
+    command: "00013C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Phased Delight"
+    category: "Layer"
+    command: "000141"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Pick a Pad"
+    category: "Layer"
+    command: "000142"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Plucka Bed"
+    category: "Layer"
+    command: "000143"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Refractions"
+    category: "Layer"
+    command: "000147"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Ricochet Pad"
+    category: "Layer"
+    command: "000148"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Seismic Lights"
+    category: "Layer"
+    command: "00014B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Spiked"
+    category: "Layer"
+    command: "00014E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Tape Choir"
+    category: "Layer"
+    command: "000108"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Stringy Fifths"
+    category: "Layer"
+    command: "000150"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Super Nasty Lead"
+    category: "Layer"
+    command: "000152"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Tyrell Brass"
+    category: "Layer"
+    command: "000155"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Windy Pad    015"
+    category: "Layer"
+    command: "000158"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Coming Aboard"
+    category: "Layer"
+    command: "000160"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank A"
+    name: "Discovery"
+    category: "Layer"
+    command: "000161"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Eighties Brass"
+    category: "Layer"
+    command: "000201"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Massiv Strings"
+    category: "Layer"
+    command: "000268"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Oranic"
+    category: "Layer"
+    command: "00026D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Start The Rave"
+    category: "Layer"
+    command: "000272"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Sunrise Summit"
+    category: "Layer"
+    command: "000273"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Unicorn Dreams"
+    category: "Layer"
+    command: "000275"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Violated"
+    category: "Layer"
+    command: "000277"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Claw Bass    GIL"
+    category: "Layer"
+    command: "00020C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Voice of Summit"
+    category: "Layer"
+    command: "000278"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "InTheGloaming"
+    category: "Layer"
+    command: "00027C"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Zen Orbit"
+    category: "Layer"
+    command: "00027F"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Full Spectrum"
+    category: "Layer"
+    command: "000210"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Twilight     GIL"
+    category: "Layer"
+    command: "00021A"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Warm Wind    GIL"
+    category: "Layer"
+    command: "00021C"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Carl's Tapes"
+    category: "Layer"
+    command: "000221"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "City Maps"
+    category: "Layer"
+    command: "000224"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Kitro"
+    category: "Layer"
+    command: "000229"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "To the Wind"
+    category: "Layer"
+    command: "000230"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Animus"
+    category: "Layer"
+    command: "000231"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Cloud Cover"
+    category: "Layer"
+    command: "000236"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Drift On"
+    category: "Layer"
+    command: "00023B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "FloatingLanterns"
+    category: "Layer"
+    command: "00023E"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "GooseBumps"
+    category: "Layer"
+    command: "000240"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Pomp Comp"
+    category: "Layer"
+    command: "000247"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "PowerSuit"
+    category: "Layer"
+    command: "000248"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Researching"
+    category: "Layer"
+    command: "00024B"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Imperfect 5ths"
+    category: "Layer"
+    command: "000208"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "The Forge"
+    category: "Layer"
+    command: "000251"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Zeus Fanfare"
+    category: "Layer"
+    command: "000256"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Alva Bass Pile"
+    category: "Layer"
+    command: "000257"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Astral Duves"
+    category: "Layer"
+    command: "000259"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Big Romance"
+    category: "Layer"
+    command: "00025B"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "City Of Monica"
+    category: "Layer"
+    command: "00025D"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Cocteaul Hour"
+    category: "Layer"
+    command: "00025E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Dueling Arps"
+    category: "Layer"
+    command: "000261"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank B"
+    name: "Dyno My Piano"
+    category: "Layer"
+    command: "000262"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Wooden Bridge"
+    category: "Layer"
+    command: "000364"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Sustenance"
+    category: "Layer"
+    command: "000365"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Fuzzy Logic"
+    category: "Layer"
+    command: "000368"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Bastian Machine"
+    category: "Layer"
+    command: "00036A"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Smoke The Pipe"
+    category: "Layer"
+    command: "00036C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Crustacian"
+    category: "Layer"
+    command: "00036F"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Gristling Throb"
+    category: "Layer"
+    command: "000370"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Fresh Milk"
+    category: "Layer"
+    command: "000371"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Wired Harmonium"
+    category: "Layer"
+    command: "000372"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Slow Arp      DN"
+    category: "Layer"
+    command: "000374"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "/_\\"
+    category: "Layer"
+    command: "000376"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Nara"
+    category: "Layer"
+    command: "000377"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Hold"
+    category: "Layer"
+    command: "000379"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Alba"
+    category: "Layer"
+    command: "00037A"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Jima"
+    category: "Layer"
+    command: "00037E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Miya"
+    category: "Layer"
+    command: "00037F"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Degraded Tape"
+    category: "Layer"
+    command: "00030E"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Introspection"
+    category: "Layer"
+    command: "00031A"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Lady Bug"
+    category: "Layer"
+    command: "00031C"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Longing"
+    category: "Layer"
+    command: "00031E"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Noble Cause"
+    category: "Layer"
+    command: "000327"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Aurora Borealis"
+    category: "Layer"
+    command: "000304"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Racing Dolphins"
+    category: "Layer"
+    command: "00032A"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Secret Mission"
+    category: "Layer"
+    command: "00032E"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Snowy Owl"
+    category: "Layer"
+    command: "000330"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Sundown Arp"
+    category: "Layer"
+    command: "000334"
+    filename: null
+    score: 2
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Tundra"
+    category: "Layer"
+    command: "000338"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Urban Decay"
+    category: "Layer"
+    command: "000339"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Water Dragon"
+    category: "Layer"
+    command: "00033A"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Wild Horses"
+    category: "Layer"
+    command: "00033B"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Winged Migration"
+    category: "Layer"
+    command: "00033D"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Altered Arpeggio"
+    category: "Layer"
+    command: "000340"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Frozen Motion"
+    category: "Layer"
+    command: "000353"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Layer Pad"
+    category: "Layer"
+    command: "000357"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Moving Stab"
+    category: "Layer"
+    command: "000358"
+    filename: null
+    score: 3
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Silk Pad"
+    category: "Layer"
+    command: "00035D"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Two Friends"
+    category: "Layer"
+    command: "00035F"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Window Tears"
+    category: "Layer"
+    command: "000360"
+    filename: null
+    score: 5
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Leave The Latch"
+    category: "Layer"
+    command: "000361"
+    filename: null
+    score: 4
+  - device: "Summit"
+    mode: "Multi"
+    bank: "Bank C"
+    name: "Bubbling Vista"
+    category: "Layer"
+    command: "000363"
+    filename: null
+    score: 4
+  - device: "Mininova"
+    mode: "Single"
+    bank: "ChuckieSoundpack"
+    name: "006 CHK Aftermath.syx"
+    category: null
+    command: "null"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "ChuckieSoundpack"
+    name: "013 CHK Dirty Riser.syx"
+    category: null
+    command: "null"
+    filename: null
+    score: 2
+  - device: "Mininova"
+    mode: "Single"
+    bank: "ChuckieSoundpack"
+    name: "015 CHK Space Chain.syx"
+    category: null
+    command: "null"
+    filename: null
+    score: 1
+  - device: "Mininova"
+    mode: "Single"
+    bank: "ChuckieSoundpack"
+    name: "016 CHK Rock Solid.syx"
+    category: null
+    command: "null"
+    filename: null
+    score: 3
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Top40"
+    name: "BA FM-Bs.syx"
+    category: "Bass"
+    command: "000000"
+    filename: "202 [000000,Bass] BA FM-Bs.syx"
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Analog Pad 2"
+    category: "Synth Pad"
+    command: "5031"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Analog Pad 1"
+    category: "Synth Pad"
+    command: "500B"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Glass Pad"
+    category: "Synth Pad"
+    command: "5037"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "JP-8 Pad"
+    category: "Synth Pad"
+    command: "517A"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Mighty Pad"
+    category: "Synth Pad"
+    command: "5014"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Reso Pad"
+    category: "Synth Pad"
+    command: "5038"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Fantasia JV"
+    category: "Synth Lead"
+    command: "501B"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Beauty Vox"
+    category: "Voice"
+    command: "5153"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "GlassVoices"
+    category: "Voice"
+    command: "5156"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "New Age Vox"
+    category: "Voice"
+    command: "5151"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Pvox Oooze"
+    category: "Voice"
+    command: "5155"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Vento Voxx"
+    category: "Voice"
+    command: "5154"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Pan Pipe"
+    category: "Woodwinds"
+    command: "5005"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Whistle"
+    category: "Woodwinds"
+    command: "5174"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Whistle Lead"
+    category: "Woodwinds"
+    command: "502F"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Ocarina"
+    category: "Woodwinds"
+    command: "516D"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "FlutePiccolo"
+    category: "Woodwinds"
+    command: "516B"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Flute mod"
+    category: "Woodwinds"
+    command: "516C"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "BrightStrngs"
+    category: "String"
+    command: "514A"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Harp"
+    category: "String"
+    command: "5142"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "JP-8 Strings"
+    category: "String"
+    command: "514E"
+    filename: null
+    score: 5
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Slow Strings"
+    category: "String"
+    command: "5148"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "String Synth"
+    category: "String"
+    command: "514F"
+    filename: null
+    score: 5
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "E.Organ 1"
+    category: "Organ"
+    command: "511B"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Pipe Organ 1"
+    category: "Organ"
+    command: "5118"
+    filename: null
+    score: 5
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Dig Rhodes 2"
+    category: "Keyboard"
+    command: "510C"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "El.Piano"
+    category: "Keyboard"
+    command: "501D"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Stratosphere"
+    category: "Guitar"
+    command: "5034"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Stratus"
+    category: "Guitar"
+    command: "5129"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Syn Guitar"
+    category: "Guitar"
+    command: "512E"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset B Bank"
+    name: "Steel Drum"
+    category: "Drum"
+    command: "5170"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Tria Bells"
+    category: "Chromatic Percussion"
+    command: "5022"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Vibrobell"
+    category: "Chromatic Percussion"
+    command: "5117"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Warm Vibe"
+    category: "Chromatic Percussion"
+    command: "5114"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Wave Bells 2"
+    category: "Chromatic Percussion"
+    command: "502E"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Analog Bs 1"
+    category: "Bass"
+    command: "5134"
+    filename: null
+    score: 5
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Analog Bs 2"
+    category: "Bass"
+    command: "5023"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Fretless"
+    category: "Bass"
+    command: "5130"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Rubber Bs 2"
+    category: "Bass"
+    command: "513E"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "Rubber Bs 1"
+    category: "Bass"
+    command: "513D"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Internal Bank"
+    name: "Rubber Bs 3"
+    category: "Bass"
+    command: "500D"
+    filename: null
+    score: 3
+  - device: "JV-880"
+    mode: "Patch"
+    bank: "Preset A Bank"
+    name: "St Fretless"
+    category: "Bass"
+    command: "5131"
+    filename: null
+    score: 2
+  - device: "JV-880"
+    mode: "Performance"
+    bank: "Internal Bank"
+    name: "Analog Pad"
+    category: "Unknown"
+    command: "5002"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Performance"
+    bank: "Internal Bank"
+    name: "Ice Church"
+    category: "Unknown"
+    command: "500C"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Performance"
+    bank: "Internal Bank"
+    name: "House Hammer"
+    category: "Unknown"
+    command: "500E"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Performance"
+    bank: "Internal Bank"
+    name: "Movie Stab"
+    category: "Unknown"
+    command: "500B"
+    filename: null
+    score: 4
+  - device: "JV-880"
+    mode: "Performance"
+    bank: "Preset A Bank"
+    name: "Perc Strings"
+    category: "Unknown"
+    command: "510E"
+    filename: null
+    score: 3

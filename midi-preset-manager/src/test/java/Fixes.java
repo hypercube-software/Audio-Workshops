@@ -2,8 +2,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.config.ConfigError;
 import com.hypercube.mpm.config.Favorites;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -26,12 +26,13 @@ public class Fixes {
         try {
             var favorties = mapper.readValue(new File("favorite-patches.yaml"), Favorites.class);
             favorties.getFavorites()
-                    .forEach(f -> {
-                        var d = midiDeviceLibrary.getDevice(f.getDevice())
+                    .forEach(patch -> {
+                        var d = midiDeviceLibrary.getDevice(patch.getDevice())
                                 .get();
-                        String def = f.getCommand() + " | " + f.getCategory() + " | " + f.getName();
-                        MidiDevicePreset preset = MidiDevicePreset.of(d.getPresetFormat(), def);
-                        f.setCommand(preset.command());
+                        if (d.getPresetFormat() == MidiBankFormat.NO_BANK_PRG) {
+                            String cmd = "%02X".formatted(Integer.parseInt(patch.getCommand()));
+                            patch.setCommand(cmd);
+                        }
                     });
             mapper.writeValue(new File("favorite-patches-fixed.yaml"), favorties);
         } catch (IOException e) {
