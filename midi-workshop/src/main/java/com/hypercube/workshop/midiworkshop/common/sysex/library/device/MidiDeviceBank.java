@@ -35,7 +35,7 @@ public class MidiDeviceBank {
     /**
      * Which presets are available in this command
      */
-    private List<String> presets = new ArrayList<>();
+    private List<MidiDevicePreset> presets = new ArrayList<>();
 
     public int getZeroBasedChannel() {
         return channel - 1;

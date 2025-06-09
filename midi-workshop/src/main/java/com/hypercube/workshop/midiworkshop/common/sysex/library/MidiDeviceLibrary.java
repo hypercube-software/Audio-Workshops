@@ -9,14 +9,12 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.common.sysex.yaml.CommandMacroDeserializer;
-import com.hypercube.workshop.midiworkshop.common.sysex.yaml.IntegerDeserializer;
-import com.hypercube.workshop.midiworkshop.common.sysex.yaml.MidiPresetCategoryDeserializer;
-import com.hypercube.workshop.midiworkshop.common.sysex.yaml.MidiPresetDomainDeserializer;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +63,7 @@ public class MidiDeviceLibrary {
         }
         if (libraryFolder.exists()) {
             log.info("Loading midi device library from %s...".formatted(libraryFolder.toString()));
-            try (Stream<MidiDeviceDefinition> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
+            try (Stream<File> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
                     .filter(p -> p.getFileName()
                             .toString()
                             .endsWith(".yml") || p.getFileName()
@@ -73,18 +71,18 @@ public class MidiDeviceLibrary {
                             .endsWith(".yaml"))
                     .sorted(Comparator.comparing(Path::getFileName)
                             .reversed())
-                    .map(Path::toFile)
-                    .map(this::loadMidiDeviceDefinition)) {
-                midiDeviceDefinitionStream
-                        .forEach(m -> {
-                            var d = devices.get(m.getDeviceName());
-                            if (d != null) {
-                                d = mergeDevices(d, m);
-                            } else {
-                                d = m;
-                            }
-                            devices.put(m.getDeviceName(), d);
-                        });
+                    .map(Path::toFile)) {
+                List<File> orderedDefinitions = midiDeviceDefinitionStream.toList();
+                orderedDefinitions.forEach(file -> {
+                    MidiDeviceDefinition m = loadMidiDeviceDefinition(devices, file);
+                    var d = devices.get(m.getDeviceName());
+                    if (d != null) {
+                        d = mergeDevices(d, m);
+                    } else {
+                        d = m;
+                    }
+                    devices.put(m.getDeviceName(), d);
+                });
 
             } catch (IOException e) {
                 throw new MidiConfigError("Unable to read library folder:" + libraryFolder.toString());
@@ -129,10 +127,11 @@ public class MidiDeviceLibrary {
                             }
                             String presetName = "@" + patchPath.getFileName()
                                     .toString();
+                            MidiDevicePreset preset = MidiDevicePreset.of(midiDeviceDefinition.getPresetFormat(), presetName);
                             if (!bank.getPresets()
-                                    .contains(presetName)) {
+                                    .contains(preset)) {
                                 bank.getPresets()
-                                        .add(presetName);
+                                        .add(preset);
                             }
                         }
                     }
@@ -298,16 +297,18 @@ public class MidiDeviceLibrary {
     /**
      * Load the YAML file dedicated to a specific midi device in the library
      *
+     * @param devices
      * @param midiDeviceFile Configuration file for the device (in YAML)
      * @return the definition including macros
      */
-    private MidiDeviceDefinition loadMidiDeviceDefinition(File midiDeviceFile) {
+    private MidiDeviceDefinition loadMidiDeviceDefinition(Map<String, MidiDeviceDefinition> devices, File midiDeviceFile) {
         log.debug("Load " + midiDeviceFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
             module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(midiDeviceFile));
             module.addDeserializer(MidiPresetCategory.class, new MidiPresetCategoryDeserializer());
+            module.addDeserializer(MidiDevicePreset.class, new MidiDevicePresetDeserializer(devices));
             module.addDeserializer(MidiPresetDomain.class, new MidiPresetDomainDeserializer(midiDeviceFile));
             module.addDeserializer(int.class, new IntegerDeserializer());
 

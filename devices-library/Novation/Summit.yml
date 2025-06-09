@@ -33,7 +33,7 @@ macros:
 
 deviceModes:
 
-  SingleMode:
+  Single:
     command: singeMode()
     queryName: PatchName()
     banks:
@@ -65,7 +65,7 @@ deviceModes:
       - String
       - External Input
       - Vocoder/Tune
-  MultiMode:
+  Multi:
     command: multiMode()
     queryName: MultiName()
     banks:

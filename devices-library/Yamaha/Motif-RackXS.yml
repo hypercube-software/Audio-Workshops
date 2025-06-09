@@ -87,7 +87,7 @@ mappers:
         offset: $16
         size: 20
 deviceModes:
-  #MultiMode:
+  #Multi:
   #  command: setMultiMode()
   #  queryName: MultiName()
   #  banks:
@@ -95,7 +95,7 @@ deviceModes:
   #    "User Multis":
   #      command: "$3F44" # work only with firmware 1.02+
   #      presetDomain: 0-127
-  VoiceMode:
+  Voice:
     command: setVoiceMode()
     queryName: PatchName()
     banks:

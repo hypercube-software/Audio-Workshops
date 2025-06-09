@@ -1,18 +1,26 @@
 ---
 selectedPatches:
-  - device: "TG-500"
-    mode: "VoiceMode"
-    bank: "Top40"
-    name: "AP Grand.syx"
-    category: "Piano"
-    command: "000000"
-    filename: "000 [000000,Piano] AP Grand.syx"
-    score: 0
   - device: "TG-33"
-    mode: "VoiceMode"
+    mode: "Voice"
     bank: "Preset 2 Voices"
-    name: "BR*Anlog"
-    category: "Brass"
-    command: "0-5-39"
+    name: "BA:Pick"
+    category: "Bass"
+    command: "000514"
     filename: null
-    score: 4
+    score: 0
+  - device: "TG-500"
+    mode: "Voice"
+    bank: "Top40"
+    name: "BA FM-Bs.syx"
+    category: "Bass"
+    command: "000000"
+    filename: "202 [000000,Bass] BA FM-Bs.syx"
+    score: 0
+  - device: "Summit"
+    mode: "Single"
+    bank: "Bank B"
+    name: "10p Ice Pops"
+    category: "Keyboard"
+    command: "00026E"
+    filename: null
+    score: 0

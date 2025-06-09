@@ -10,7 +10,7 @@ macros:
   - "BankPatch(bank,prg)        : F0 002029 03017F 41 010000 bank prg F7"
   - "PatchName() : EditBuffer() : PatchMapper"
 deviceModes:
-  SingleMode:
+  Single:
     queryName: PatchName()
     banks:
       "Bank A":

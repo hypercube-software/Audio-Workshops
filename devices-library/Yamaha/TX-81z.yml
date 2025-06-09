@@ -64,13 +64,13 @@ categories:
 # - If the PrgChg match a performance, the TX81z switch to the performance mode
 # - If the PrgChg match a voice, the TX81z switch to the voice mode
 deviceModes:
-  PerformanceMode:
+  Performance:
     command: setModifedPrgChgTable()
     banks:
       "Performances":
         queryName: getPerformanceName()
         presetDomain: 32-55
-  SingleMode:
+  Single:
     command: setDefaultPrgChgTable()
     banks:
       "Bank Internal":

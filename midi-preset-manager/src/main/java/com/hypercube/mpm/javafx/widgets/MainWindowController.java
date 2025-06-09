@@ -21,6 +21,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
@@ -318,7 +319,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .flatMap(bank -> bank.getPresets()
                                 .stream()
                                 .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))
-                                .map(preset -> configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, bank.getName(), preset)))
+                                .map(preset ->
+                                        configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, bank.getName(), preset)))
                                 .filter(this::patchScoreMatches))
                         .sorted(Comparator.comparing(Patch::getName))
                         .toList();
@@ -332,58 +334,21 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         saveDeviceState();
     }
 
-    private Patch forgePatch(String deviceName, String currentModeName, String bankName, String patchDefinition) {
-        final String command;
-        final String category;
-        final String name;
-        final String filename;
-        if (patchDefinition.startsWith("@")) {
-            filename = patchDefinition.substring(1);
-            List<String> parts = Arrays.stream(patchDefinition.split("\\[|\\]"))
-                    .toList();
-            if (parts.size() == 3) {
-                String[] spec = parts.get(1)
-                        .trim()
-                        .split(",");
-                category = spec[spec.length - 1];
-                if (spec.length == 2) {
-                    command = spec[0];
-                } else {
-                    command = null;
-                }
-                name = parts.get(2)
-                        .trim();
-
-            } else {
-                category = null;
-                command = null;
-                name = patchDefinition.substring(1)
-                        .trim();
-            }
-        } else {
-            filename = null;
-            List<String> parts = Arrays.stream(patchDefinition.split("\\|"))
-                    .toList();
-            command = parts.get(0)
-                    .trim();
-            category = parts.get(1)
-                    .trim();
-            name = parts.get(2)
-                    .trim();
-        }
-        return new Patch(deviceName, currentModeName, bankName, name, category, command, filename, 0);
+    private Patch forgePatch(String deviceName, String currentModeName, String bankName, MidiDevicePreset preset) {
+        return new Patch(deviceName, currentModeName, bankName, preset.name(), preset.category(), preset.command(), preset.filename(), 0);
     }
 
     private boolean patchScoreMatches(Patch patch) {
         return patch.getScore() >= getModel().getCurrentPatchScoreFilter();
     }
 
-    private boolean patchNameMatches(String preset) {
+    private boolean patchNameMatches(MidiDevicePreset preset) {
         var model = getModel();
-        return model.getCurrentPatchNameFilter() == null || preset.contains(model.getCurrentPatchNameFilter());
+        return model.getCurrentPatchNameFilter() == null || preset.name()
+                .contains(model.getCurrentPatchNameFilter());
     }
 
-    private boolean patchCategoryMatches(String preset) {
+    private boolean patchCategoryMatches(MidiDevicePreset preset) {
         var model = getModel();
         return model.getCurrentDeviceState()
                 .getCurrentSelectedCategories()
@@ -391,7 +356,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 model.getCurrentDeviceState()
                         .getCurrentSelectedCategories()
                         .stream()
-                        .anyMatch(c -> preset.contains(c.name() + " |") || preset.contains(c.name() + "]"));
+                        .anyMatch(c -> c.name()
+                                .equals(preset.category()));
     }
 
     private void selectCurrentPatch(DeviceState deviceState) {
@@ -592,6 +558,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         var model = getModel();
         DeviceState deviceState = model.getDeviceStates()
                 .get(deviceName);
+        if (device.getDeviceModes()
+                .size() == 1 && deviceState
+                .getCurrentMode() == null) {
+            deviceState
+                    .setCurrentMode(device.getDeviceModes()
+                            .values()
+                            .stream()
+                            .toList()
+                            .getFirst()
+                            .getName());
+        }
         refreshModeCategoriesAndBanks(model, device, deviceState.getCurrentMode());
         restoreDeviceState(deviceState, model);
     }

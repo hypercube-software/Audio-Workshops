@@ -38,14 +38,14 @@ presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 
 deviceModes:
-  MultiMode:
+  Multi:
     command: setMultiMode()
     banks:
       "Preset 1 Multis":
         command: $0010
         queryName: getMultiName()
         presetDomain: 64-79
-  VoiceMode:
+  Voice:
     command: setVoiceMode()
     banks:
       "Preset 1 Voices":

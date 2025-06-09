@@ -34,7 +34,7 @@ decodingKey:
 # NOTE: Quadrasynth needs to be in GM Mode OFF to accept "SelectBank" messages
 #
 deviceModes:
-  ProgramMode:
+  Program:
     command: setModeProgram()
     queryName: PatchName()
     banks:
@@ -84,7 +84,7 @@ deviceModes:
       - "Sound FX"
       - "Rythms"
       - "Custom"
-  MixMode:
+  Mix:
     command: setModeMix()
     queryName: NewMixDumpRequest()
     banks:

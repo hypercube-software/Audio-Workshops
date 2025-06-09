@@ -173,9 +173,9 @@ public class MidiPresetBuilder {
      * @throws InvalidMidiDataException
      */
     private static Stream<MidiMessage> parsePresetSelectCommand(int zeroBasedChannel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String definition) {
-        Matcher matcher = PRESET_REGEXP.matcher(definition);
-        if (matcher.find()) {
-            List<Integer> ids = preparePresetSelectIdentifiers(matcher);
+
+        List<Integer> ids = preparePresetSelectIdentifiers(midiBankFormat, definition);
+        if (!ids.isEmpty()) {
             int zeroBasedProgram = getProgramNumber(presetNumbering, ids);
             try {
                 return switch (midiBankFormat) {
@@ -189,8 +189,9 @@ public class MidiPresetBuilder {
             } catch (InvalidMidiDataException e) {
                 throw new MidiError(e);
             }
+        } else {
+            throw new MidiConfigError("Unexpected preset select command: " + definition);
         }
-        throw new MidiConfigError("Unexpected preset select command: " + definition);
     }
 
     private static int getProgramNumber(MidiPresetNumbering presetNumbering, List<Integer> ids) {
@@ -268,15 +269,40 @@ public class MidiPresetBuilder {
      *
      * @return A list of identifiers, the last one is always the program change
      */
-    private static List<Integer> preparePresetSelectIdentifiers(Matcher matcher) {
-        String id1 = matcher.group("id1");
-        String id2 = matcher.group("id2");
-        String id3 = matcher.group("id3");
-        List<Integer> ids = Stream.of(id1, id2, id3)
-                .filter(id -> id != null)
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-        return ids;
+    private static List<Integer> preparePresetSelectIdentifiers(MidiBankFormat midiBankFormat, String definition) {
+        int expectedSize = switch (midiBankFormat) {
+            case NO_BANK_PRG -> 2;
+            case BANK_MSB_PRG -> 4;
+            case BANK_LSB_PRG -> 4;
+            case BANK_MSB_LSB_PRG -> 6;
+            case BANK_PRG_PRG -> 4;
+        };
+        if (!definition.contains("-") && definition.length() == expectedSize) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = 0; i < definition.length(); i += 2) {
+                String hexPair = definition.substring(i, i + 2);
+                try {
+                    result.add(Integer.parseInt(hexPair, 16));
+                } catch (NumberFormatException e) {
+                    throw new MidiConfigError("Unable to parse hexadecimal command definition:" + definition);
+                }
+            }
+            return result;
+        } else {
+            Matcher matcher = PRESET_REGEXP.matcher(definition);
+            if (matcher.find()) {
+                String id1 = matcher.group("id1");
+                String id2 = matcher.group("id2");
+                String id3 = matcher.group("id3");
+                List<Integer> ids = Stream.of(id1, id2, id3)
+                        .filter(id -> id != null)
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+                return ids;
+            } else {
+                throw new MidiConfigError("Unable to parse command definition:" + definition);
+            }
+        }
     }
 
     private static Stream<MidiMessage> parseMidiCommand(String definition) {

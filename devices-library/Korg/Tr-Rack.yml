@@ -37,7 +37,7 @@ decodingKey:
 # Banks are listed in manual page 37
 #
 deviceModes:
-  ProgramMode:
+  Program:
     command: ModeChange( $2 )
     queryName: PatchName()
     banks:
@@ -71,7 +71,7 @@ deviceModes:
       - Sound FX
       - Drums / Perc
 
-  CombiMode:
+  Combi:
     command: ModeChange( $0 )
     queryName: CombiName()
     banks:

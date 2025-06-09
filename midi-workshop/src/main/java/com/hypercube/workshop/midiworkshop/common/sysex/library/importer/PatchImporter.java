@@ -53,6 +53,11 @@ public class PatchImporter {
                         .trim();
                 completeName = completeName.replace("/", "-")
                         .replace(":", "-")
+                        .replace("->", "➡")
+                        .replace("<-", "⬅")
+                        .replace("?", "❓")
+                        .replace("  ", " ")
+                        .replace("  ", " ")
                         .replace("\"", "'");
                 File destFile = new File(midiDeviceDefinition.getDefinitionFile()
                         .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), ctx.mode()

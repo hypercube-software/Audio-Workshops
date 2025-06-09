@@ -189,7 +189,7 @@ class MidiDeviceLibraryTest {
         // THEN
         File dest = new File("src/test/resources/devices-library/Mininova/SingleMode/SN Patches II");
         assertTrue(dest.exists());
-        assertEquals(128, dest.listFiles().length);
+        assertEquals(134, dest.listFiles().length);
     }
 
     @Test

@@ -39,7 +39,7 @@ decodingKey:
 # The following is the result of a "brute force scan" on a ION firmware 1.10
 #
 deviceModes:
-  ProgramMode:
+  Program:
     queryName: PatchName(bankLSB,program)
     banks:
       "Red Bank":

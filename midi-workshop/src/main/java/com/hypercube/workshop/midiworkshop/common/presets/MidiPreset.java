@@ -95,13 +95,13 @@ public final class MidiPreset {
         };
     }
 
-    public String getConfig() {
+    public String getCommand() {
         return switch (midiBankFormat) {
-            case NO_BANK_PRG -> "%d".formatted(getLastProgram());
-            case BANK_MSB_PRG -> "%d-%d".formatted(getBankMSB(), getLastProgram());
-            case BANK_LSB_PRG -> "%d-%d".formatted(getBankLSB(), getLastProgram());
-            case BANK_MSB_LSB_PRG -> "%d-%d-%d".formatted(getBankMSB(), getBankLSB(), getLastProgram());
-            case BANK_PRG_PRG -> "%d-%d".formatted(getFirstProgram(), getLastProgram());
+            case NO_BANK_PRG -> "%02X".formatted(getLastProgram());
+            case BANK_MSB_PRG -> "%02X%02X".formatted(getBankMSB(), getLastProgram());
+            case BANK_LSB_PRG -> "%02X%02X".formatted(getBankLSB(), getLastProgram());
+            case BANK_MSB_LSB_PRG -> "%02X%02X%02X".formatted(getBankMSB(), getBankLSB(), getLastProgram());
+            case BANK_PRG_PRG -> "%02X%02X".formatted(getFirstProgram(), getLastProgram());
         };
     }
 

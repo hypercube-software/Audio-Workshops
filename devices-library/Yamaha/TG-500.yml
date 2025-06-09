@@ -51,7 +51,7 @@ categories:
 # So we use fallBackQueryName to get the name of the drum voice
 #
 deviceModes:
-  VoiceMode:
+  Voice:
     queryName: PatchName()
     banks:
       "Internal 1 Voices":
@@ -96,7 +96,7 @@ deviceModes:
         command: "$0011"
         queryName: DrumPatchName()
         presetDomain: 63
-  PerformanceMode:
+  Performance:
     queryName: PerformanceName()
     banks:
       "Internal 1 Performance":

@@ -17,6 +17,7 @@ public class RecordedSynthNote {
     private MidiZone velocity;
     private MidiZone ccValue;
     private MidiZone note;
+    @Builder.Default
     private int controlChange = MidiPreset.NO_CC;
     private float releaseTimeInSec;
     private MidiPreset preset;

@@ -46,7 +46,7 @@ macros:
 # Categories found in manual page 24
 #
 deviceModes:
-  PerformanceMode:
+  Performance:
     command: setPerformanceMode()
     queryName: PerformanceName()
     banks:
@@ -80,7 +80,7 @@ deviceModes:
       - "Combination"
       - "Material Wave"
       - "Sequence"
-  XGMode:
+  XG:
     command: setMode($01)
     queryName: XG Multi Part Data($00)
     banks:

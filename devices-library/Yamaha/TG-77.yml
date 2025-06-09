@@ -85,7 +85,7 @@ macros:
   - "InternalVoiceName(program): REQ('LM  8101VC', $00, program): YamahaVoiceMapper"
 
 deviceModes:
-  VoiceMode:
+  Voice:
     command: setProgramChangeModeDIRECT()
     banks:
       "Preset 1 Voices":

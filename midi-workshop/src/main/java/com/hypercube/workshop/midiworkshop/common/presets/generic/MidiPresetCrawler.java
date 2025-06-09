@@ -16,12 +16,14 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevic
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.ExtractedFields;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.SysexMessage;
 import java.io.BufferedReader;
@@ -39,6 +41,25 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+/**
+ * The MidiPresetCrawler is able to query a Midi device to retrieve various fields for all patches
+ * <p>The whole process can take time but at the end, you can generate the list of patches automatically</p>
+ * <ul>
+ *     <li>The Midi device has to provide the required fields through sysex responses: patch name, patch category</li>
+ *     <li>The extraction is performed by {@link MidiResponseMapper}</li>
+ *     <li>Categories don't have to be strings, a simple byte will point to {@link MidiDeviceDefinition#getCategories()}</li>
+ * </ul>
+ * The caller will receive all the {@link MidiPreset} through the functional interface {@link MidiPresetConsumer}
+ * <ul>
+ *     <li>{@link MidiPreset#getId()} provides the {@link MidiPresetIdentity} of a patch: device,mode,bank,name and category</li>
+ *     <li>{@link MidiPreset#getCommands()} provides the list of {@link MidiMessage} to select the preset on the device</li>
+ * </ul>
+ * When the device does not support patch names in Sysex, we can rely on hardcoded lists.
+ * <ul>
+ *     <li>This is the case for sound canvas devices. We use {@link MidiPresetNaming#SOUND_CANVAS} in this case</li>
+ *     <li>Other devices are not supported</li>
+ * </ul>
+ */
 @Slf4j
 public class MidiPresetCrawler {
     private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
@@ -138,7 +159,7 @@ public class MidiPresetCrawler {
                                 log.info("Bank  name : " + midiPresetIdentity.bankName());
                                 log.info("Patch name : " + midiPresetIdentity.name());
                                 log.info("Category   : " + midiPresetIdentity.category());
-                                log.info("Preset     : " + midiPreset.getConfig());
+                                log.info("Preset     : " + midiPreset.getCommand());
                                 log.info("");
                                 midiPreset.setId(midiPresetIdentity);
                                 midiPresetConsumer.onNewMidiPreset(device, midiPreset);

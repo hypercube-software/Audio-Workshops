@@ -184,7 +184,7 @@ public class SysExCLI {
                 String escapedName = identity.name()
                         .replace("\"", "\\\"")
                         .replace("\\", "\\\\");
-                out.println("        - \"%s | %s | %s\"".formatted(midiPreset.getConfig(), identity
+                out.println("        - \"%s | %s | %s\"".formatted(midiPreset.getCommand(), identity
                         .category(), escapedName));
                 out.flush();
                 previous.set(midiPreset);

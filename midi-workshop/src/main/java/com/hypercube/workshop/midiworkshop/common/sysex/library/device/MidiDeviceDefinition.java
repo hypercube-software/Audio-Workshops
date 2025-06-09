@@ -36,7 +36,6 @@ public class MidiDeviceDefinition {
     private int modeLoadTimeMs = 1000;
     private MidiDeviceDecodingKey decodingKey;
     private List<CommandMacro> macros = new ArrayList<>();
-    private List<String> presets = new ArrayList<>();
     private List<MidiPresetCategory> categories = new ArrayList<>();
     private Map<String, MidiDeviceMode> deviceModes = new HashMap<>();
     private Map<String, MidiResponseMapper> mappers = new HashMap<>();

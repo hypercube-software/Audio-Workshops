@@ -41,7 +41,6 @@ public class FFTCalculator implements DFTCalculator, AutoCloseable {
     private static final int REAL = 0;
     private static final int IMAG = 1;
     private static int windowSize;
-    @Getter
     private List<DFTResult>[] magnitudes;
 
     public FFTCalculator(PCMBufferFormat format, DFTWindowGenerator dftWindowGenerator) {

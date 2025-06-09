@@ -39,7 +39,7 @@ presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 
 deviceModes:
-  VoiceMode:
+  Voice:
     banks:
       "Voices":
         queryName: getVoiceName()

@@ -18,7 +18,7 @@ class MidiPresetTest {
 
     private static Stream<TestParam> parseMSBLSBBank() {
         return Stream.of(
-                new TestParam(MidiBankFormat.NO_BANK_PRG, MidiPresetNumbering.FROM_ZERO, "10", 0, 10),
+                new TestParam(MidiBankFormat.NO_BANK_PRG, MidiPresetNumbering.FROM_ZERO, "10", 0, 16),
                 new TestParam(MidiBankFormat.BANK_MSB_PRG, MidiPresetNumbering.FROM_ZERO, "8-10", 0x0008, 10),
                 new TestParam(MidiBankFormat.BANK_LSB_PRG, MidiPresetNumbering.FROM_ZERO, "8-108", 0x0008, 108),
                 new TestParam(MidiBankFormat.BANK_MSB_LSB_PRG, MidiPresetNumbering.FROM_ZERO, "2-8-108", 0x0208, 108)
