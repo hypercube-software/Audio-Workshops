@@ -63,12 +63,15 @@ public abstract class Controller<T extends Node, M> {
         }
     }
 
-
     public <E extends Event> void addEventListener(Class<E> eventClass, EventHandler<E> callback) {
-        getView().addEventHandler(EventHelper.getEventType(eventClass), callback);
+        if (ControllerHelper.isNonSceneBuilderLaunch()) {
+            getView().addEventHandler(EventHelper.getEventType(eventClass), callback);
+        }
     }
 
     public <E extends Event> void fireEvent(Class<E> eventClass, Object... args) {
-        getView().fireEvent(EventHelper.forge(eventClass, getView(), getView(), args));
+        if (ControllerHelper.isNonSceneBuilderLaunch()) {
+            getView().fireEvent(EventHelper.forge(eventClass, getView(), getView(), args));
+        }
     }
 }

@@ -28,6 +28,7 @@ public class JavaFXApplication extends Application {
         applicationContext = new SpringApplicationBuilder().sources(MidiPresetManagerApplication.class)
                 .build()
                 .run();
+        ControllerHelper.setNonSceneBuilderLaunch(true);
         ControllerHelper.setSpringContext(applicationContext);
     }
 

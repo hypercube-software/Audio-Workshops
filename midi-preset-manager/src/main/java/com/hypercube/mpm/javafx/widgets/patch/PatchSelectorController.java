@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableCell;
@@ -18,6 +17,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 
@@ -104,11 +105,11 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         return Integer.parseInt(scoreFilter.getScore());
     }
 
-    public void onMouseClicked(Event event) {
+    public void onMouseClicked(MouseEvent event) {
         onSelectedItemChange();
     }
 
-    public void onKeyReleased(Event event) {
+    public void onKeyReleased(KeyEvent event) {
         onSelectedItemChange();
     }
 

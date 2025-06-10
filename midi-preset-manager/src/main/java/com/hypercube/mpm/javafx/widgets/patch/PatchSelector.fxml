@@ -4,8 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root styleClass="header" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
-         xmlns:fx="http://javafx.com/fxml/1">
+<fx:root styleClass="header" type="GridPane" xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml">
     <columnConstraints>
         <ColumnConstraints minWidth="10.0"/>
     </columnConstraints>
@@ -16,7 +16,8 @@
     <children>
         <HBox alignment="CENTER" spacing="10.0" GridPane.hgrow="ALWAYS">
             <children>
-                <Label text="Patches:"/>
+                <PatchScore fx:id="scoreFilter" alignment="CENTER" score="${controller.model.currentPatchScoreFilter}"/>
+                <Label text="Patch name:"/>
                 <TextField fx:id="searchBox" disable="false" editable="true" HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets/>
@@ -25,7 +26,6 @@
                         <Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
                     </opaqueInsets>
                 </TextField>
-                <PatchScore fx:id="scoreFilter" alignment="CENTER" score="${controller.model.currentPatchScoreFilter}"/>
             </children>
             <GridPane.margin>
                 <Insets left="5.0" right="10.0"/>

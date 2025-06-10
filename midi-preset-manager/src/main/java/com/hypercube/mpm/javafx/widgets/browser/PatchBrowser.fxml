@@ -1,48 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.hypercube.mpm.javafx.widgets.attribute.AttributeSelector?>
-<?import com.hypercube.mpm.javafx.widgets.patch.PatchSelector?>
+<?import com.hypercube.mpm.javafx.widgets.attribute.*?>
+<?import com.hypercube.mpm.javafx.widgets.patch.*?>
 <?import javafx.scene.layout.*?>
-<fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane"
-         xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+
+<fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <AttributeSelector dataSource="controller.model.devices" minHeight="-Infinity" minWidth="-Infinity"
-                           title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
+        <AttributeSelector dataSource="controller.model.devices" minHeight="-Infinity" minWidth="-Infinity" title="Device" GridPane.columnIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS" />
         <GridPane GridPane.columnIndex="1">
-            <AttributeSelector dataSource="controller.model.deviceModes"
-                               selectedItems="controller.model.currentDeviceState.currentMode"
-                               maxHeight="200.0" minWidth="-Infinity"
-                               title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="NEVER"/>
-            <AttributeSelector dataSource="controller.model.modeBanks"
-                               selectedItems="controller.model.currentDeviceState.currentBank"
-                               allowDrop="true"
-                               acceptedFileTypes="syx,mid"
-                               minWidth="-Infinity" title="Mode Bank"
-                               GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+            <AttributeSelector dataSource="controller.model.deviceModes" maxHeight="301.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="144.0" prefWidth="248.0" selectedItems="controller.model.currentDeviceState.currentMode" title="Mode" GridPane.hgrow="NEVER" GridPane.rowIndex="0" />
+            <AttributeSelector acceptedFileTypes="syx,mid" allowDrop="true" dataSource="controller.model.modeBanks" minWidth="-Infinity" selectedItems="controller.model.currentDeviceState.currentBank" title="Mode Bank" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
             <columnConstraints>
-                <ColumnConstraints/>
+                <ColumnConstraints />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints/>
-                <RowConstraints/>
+                <RowConstraints />
+                <RowConstraints />
             </rowConstraints>
         </GridPane>
-        <AttributeSelector allowMultiSelection="true"
-                           itemType="com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory"
-                           dataSource="controller.model.modeCategories"
-                           selectedItems="controller.model.currentDeviceState.currentSelectedCategories"
-                           labelMethod="name"
-                           minWidth="-Infinity" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER"
-                           GridPane.vgrow="ALWAYS"/>
-        <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>
+        <AttributeSelector allowMultiSelection="true" dataSource="controller.model.modeCategories" itemType="com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory" labelMethod="name" minWidth="-Infinity" selectedItems="controller.model.currentDeviceState.currentSelectedCategories" title="Categories" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS" />
+        <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
     </children>
     <columnConstraints>
-        <ColumnConstraints/>
-        <ColumnConstraints/>
-        <ColumnConstraints maxWidth="250"/>
-        <ColumnConstraints minWidth="700"/>
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints maxWidth="250" />
+        <ColumnConstraints minWidth="700" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
+        <RowConstraints />
     </rowConstraints>
 </fx:root>

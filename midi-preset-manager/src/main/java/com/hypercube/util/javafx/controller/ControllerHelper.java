@@ -20,6 +20,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class ControllerHelper {
     @Getter
     @Setter
+    private static boolean nonSceneBuilderLaunch = false;
+
+    @Getter
+    @Setter
     private static ConfigurableApplicationContext springContext;
 
     public static <T extends Node> T loadFXML(T widget) {
@@ -31,14 +35,27 @@ public class ControllerHelper {
         var viewClass = widget.getClass();
         var loader = new FXMLLoader(viewClass.getResource(viewClass.getSimpleName() + ".fxml"));
         try {
+            Controller<T, ?> controllerInstance = null;
             if (springContext != null) {
-                Controller<T, ?> controllerInstance = (Controller<T, ?>) springContext
+                controllerInstance = (Controller<T, ?>) springContext
                         .getAutowireCapableBeanFactory()
                         .createBean(Class.forName(controller));
-                loader.setController(controllerInstance);
-                controllerInstance.setView(widget);
-                widget.setUserData(controllerInstance);
+            } else {
+                controllerInstance = (Controller<T, ?>) Class.forName(controller)
+                        .getConstructor()
+                        .newInstance();
             }
+            if (!nonSceneBuilderLaunch) {
+                System.out.println("==============================================================");
+                System.out.println("SceneBuilder context");
+                System.out.println("View      : " + widget.getClass()
+                        .getName());
+                System.out.println("Controller: " + controller);
+                System.out.println("==============================================================");
+            }
+            loader.setController(controllerInstance);
+            controllerInstance.setView(widget);
+            widget.setUserData(controllerInstance);
             loader.setRoot(widget);
             T view = loader.load();
             assert (view == widget);

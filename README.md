@@ -21,7 +21,7 @@ Topics covered:
 
 - Midi Sequencer with various clock implementations
 - Various Memory maps are provided: **Boss DS-330** (= Sound Canvas), **Roland D-70**
-- SysEx are available for various devices allopwing full backup/restore:
+- SysEx are available for various devices allowing full backup/restore:
   - **Yamaha TG-33**
   - **Yamaha TG-77**
   - **Yamaha TG-500**

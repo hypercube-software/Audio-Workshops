@@ -13,16 +13,13 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -217,11 +214,13 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         }
     }
 
-    public void onMouseClicked(Event event) {
+    @FXML
+    public void onMouseClicked(MouseEvent event) {
         onSelectedItemChange();
     }
 
-    public void onKeyReleased(Event event) {
+    @FXML
+    public void onKeyReleased(KeyEvent event) {
         onSelectedItemChange();
     }
 
