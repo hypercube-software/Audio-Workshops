@@ -10,6 +10,8 @@ import javafx.scene.Scene;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,9 +49,31 @@ public class PropertiesHelper implements SceneListener {
      * @param property
      */
     public void declareListener(String propertyName, StringProperty property) {
-        ChangeListener<String> stringChangeListener = (observableValue, oldValue, newValue) -> view.getController()
-                .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+        final Method m = getEventHandler(propertyName);
+        ChangeListener<String> stringChangeListener = (observableValue, oldValue, newValue) -> {
+            view.getCtrl()
+                    .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+            try {
+                if (m != null) {
+                    m.invoke(view.getCtrl(), oldValue, newValue);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+            }
+        };
         listeners.add(new PropertyListener(propertyName, property, stringChangeListener));
+    }
+
+    private Method getEventHandler(String propertyName) {
+        Method eventHandlerMethod = null;
+        try {
+            String methodName = "on" + propertyName.substring(0, 1)
+                    .toUpperCase() + propertyName.substring(1) + "Change";
+            eventHandlerMethod = view.getCtrl()
+                    .getClass()
+                    .getMethod(methodName, String.class, String.class);
+        } catch (NoSuchMethodException e) {
+        }
+        return eventHandlerMethod;
     }
 
     public void onSceneChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -62,14 +86,14 @@ public class PropertiesHelper implements SceneListener {
 
     public void onSceneAttach(Scene newValue) {
         attachPropertyListener();
-        if (view.getController() instanceof SceneListener l) {
+        if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneAttach(newValue);
         }
     }
 
     public void onSceneDetach(Scene oldValue) {
         detatchPropertyListener();
-        if (view.getController() instanceof SceneListener l) {
+        if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneDetach(oldValue);
         }
     }

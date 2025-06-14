@@ -62,9 +62,9 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
         colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
-        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("controller.model.currentPatchNameFilterProperty");
-        ObservableValue<List<Patch>> patchesProperty = resolvePath("controller.model.currentDeviceState.currentSearchOutputProperty");
-        SimpleObjectProperty<Patch> currentPatchProperty = resolvePath("controller.model.currentDeviceState.currentPatchProperty");
+        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilterProperty");
+        ObservableValue<List<Patch>> patchesProperty = resolvePath("model.currentDeviceState.currentSearchOutputProperty");
+        SimpleObjectProperty<Patch> currentPatchProperty = resolvePath("model.currentDeviceState.currentPatchProperty");
         patchList.itemsProperty()
                 .bind(patchesProperty);
         searchBox.textProperty()
@@ -123,6 +123,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
                 .map(Patch::getName)
                 .collect(Collectors.joining(",")));
 
-        fireEvent(SelectionChangedEvent.class, "controller.model.patches", List.of(), patches);
+        fireEvent(SelectionChangedEvent.class, "model.patches", List.of(), patches);
     }
 }

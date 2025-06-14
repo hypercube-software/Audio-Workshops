@@ -205,6 +205,16 @@ F7   :Sysex END
 
 👉 Note the presence of **Little endian** values: LSB first, MSB last. For instance **Major Version** value is `0x0001`, not `0x0100`
 
+# Devices Library
+
+I spend a considerable amount of my time to build this, hoping it will be helpful for those like me who are using (vintage) hardware devices.
+
+The main idea of the **Device Library** is to define what is important about a hardware device in a single YAML file.
+
+- This file can be easily read in any programming language
+- It contains the SYSEX spec of the device
+- It define how the device select patches and beleive me there are a lot of ways 
+
 # Roland
 
 Roland provides a relative good amount of information regarding their SysEx. 

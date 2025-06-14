@@ -10,5 +10,5 @@ import javafx.scene.Node;
  * @param <C> Type used for the controller bound to this widget
  */
 public interface View<C extends Controller<?, ?>> {
-    C getController();
+    C getCtrl();
 }

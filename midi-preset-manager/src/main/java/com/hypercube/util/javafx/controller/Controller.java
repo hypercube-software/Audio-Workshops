@@ -57,7 +57,7 @@ public abstract class Controller<T extends Node, M> {
         ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(path);
         try {
-            return (P) expression.getValue(getView());
+            return (P) expression.getValue(this);
         } catch (SpelEvaluationException e) {
             throw new RuntimeException("Unable to resolve path " + path, e);
         }

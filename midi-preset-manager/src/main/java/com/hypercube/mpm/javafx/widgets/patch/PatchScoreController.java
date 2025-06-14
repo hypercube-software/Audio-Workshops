@@ -4,7 +4,6 @@ import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
-import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
@@ -69,11 +68,9 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
                 .forEach(index ->
                         stars.get(index)
                                 .setOnMouseClicked(e -> onMouseClick(index)));
-        getView().scoreProperty()
-                .addListener(this::onScoreChange);
     }
 
-    private void onScoreChange(Observable observable) {
+    public void onScoreChange(String oldValue, String newValue) {
         updateScore(getScore());
     }
 

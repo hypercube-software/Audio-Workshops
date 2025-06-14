@@ -8,5 +8,7 @@
     - [Concepts](audio-dsp.md)
     - [Audio Formats](audio-formats.md)
     - [Java Synth](audio-sine.md)
+- JavaFX
+    - [Deep Introduction](JavaFX.md)
 - [Resources](resource.md)
 - [Github Repo](https://github.com/hypercube-software/Audio-Workshops)

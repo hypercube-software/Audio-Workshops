@@ -4,14 +4,12 @@ import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
-import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,49 +38,58 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     private List<String> acceptedFileTypes = List.of();
 
-    @Override
-    public void onPropertyChange(View<?> widget, String property, ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        super.onPropertyChange(widget, property, observable, oldValue, newValue);
-        if (property.equals("dataSource")) {
-            // The dataSource is changed, we bound the corresponding property to the ListView
-            SimpleListProperty<String> prop = resolvePath(newValue + "Property");
-            attributes.itemsProperty()
-                    .bind(prop);
-        } else if (property.equals("allowMultiSelection")) {
-            attributes.getSelectionModel()
-                    .setSelectionMode(Boolean.parseBoolean(newValue) ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
-        } else if (property.equals("selectedIndexes")) {
-            Property<?> selectedIndexesProperty = resolvePath(newValue + "Property");
-            selectedIndexesProperty.addListener(this::onModelSelectedIndexesChange);
-        } else if (property.equals("selectedItems")) {
-            Property<?> selectedItemsProperty = resolvePath(newValue + "Property");
-            selectedItemsProperty.addListener(this::onModelSelectedItemsChange);
-        } else if (property.equals("title")) {
-            label.setText(newValue);
-        } else if (property.equals("allowDrop")) {
-            if (newValue.equals("true")) {
-                attributes.setOnDragOver(this::onDragOver);
-                attributes.setOnDragEntered(this::onDragEntered);
-                attributes.setOnDragExited(this::onDragExited);
-                attributes.setOnDragDropped(this::onDragDropped);
-            }
-        } else if (property.equals("acceptedFileTypes")) {
-            acceptedFileTypes = Optional.ofNullable(getView().getAcceptedFileTypes())
-                    .map(str ->
-                            Arrays.stream(str
-                                            .split(","))
-                                    .map(String::toLowerCase)
-                                    .toList())
-                    .orElse(List.of());
-        } else if (property.equals("labelMethod")) {
-            try {
-                Class<?> clazz = Class.forName(getView().getItemType());
-                attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public void onDataSourceChange(String oldValue, String newValue) {
+        // The dataSource is changed, we bound the corresponding property to the ListView
+        SimpleListProperty<String> prop = resolvePath(newValue + "Property");
+        attributes.itemsProperty()
+                .bind(prop);
+    }
 
+    public void onAllowMultiSelection(String oldValue, String newValue) {
+        attributes.getSelectionModel()
+                .setSelectionMode(Boolean.parseBoolean(newValue) ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+    }
+
+    public void onSelectedIndexes(String oldValue, String newValue) {
+        Property<?> selectedIndexesProperty = resolvePath(newValue + "Property");
+        selectedIndexesProperty.addListener(this::onModelSelectedIndexesChange);
+    }
+
+    public void onSelectedItems(String oldValue, String newValue) {
+        Property<?> selectedItemsProperty = resolvePath(newValue + "Property");
+        selectedItemsProperty.addListener(this::onModelSelectedItemsChange);
+    }
+
+    public void onTitleChange(String oldValue, String newValue) {
+        label.setText(newValue);
+    }
+
+    public void onAllowDropChange(String oldValue, String newValue) {
+        if (newValue.equals("true")) {
+            attributes.setOnDragOver(this::onDragOver);
+            attributes.setOnDragEntered(this::onDragEntered);
+            attributes.setOnDragExited(this::onDragExited);
+            attributes.setOnDragDropped(this::onDragDropped);
+        }
+    }
+
+    public void onAcceptedFileTypesChange(String oldValue, String newValue) {
+        acceptedFileTypes = Optional.ofNullable(getView().getAcceptedFileTypes())
+                .map(str ->
+                        Arrays.stream(str
+                                        .split(","))
+                                .map(String::toLowerCase)
+                                .toList())
+                .orElse(List.of());
+    }
+
+    public void onLabelMethod(String oldValue, String newValue) {
+        try {
+            Class<?> clazz = Class.forName(getView().getItemType());
+            attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void onDragDropped(DragEvent event) {

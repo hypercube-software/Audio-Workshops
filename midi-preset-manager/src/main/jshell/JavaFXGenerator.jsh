@@ -77,7 +77,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
 
         String installPropertiesListeners = widgetProperties.stream()
                 .map(propertyName -> """
-                                             propertiesHelper.declareListener("@@NAME@@",@@NAME@@Property());
+                                                 propertiesHelper.declareListener("@@NAME@@",@@NAME@@Property());
                                      """.replace("@@NAME@@", propertyName))
                 .collect(Collectors.joining());
 
@@ -100,12 +100,14 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
 
                     public @@CLS@@() {
                         ControllerHelper.loadFXML(this);
-                        propertiesHelper.installSceneObserver();
+                        if (ControllerHelper.isNonSceneBuilderLaunch()) {
+                            propertiesHelper.installSceneObserver();
                 @@LISTENERS@@
+                        }
                     }
 
                     @Override
-                    public @@CLS@@Controller getController() {
+                    public @@CLS@@Controller getCtrl() {
                         return ControllerHelper.getController(this);
                     }
 

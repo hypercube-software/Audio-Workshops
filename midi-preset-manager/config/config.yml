@@ -1,26 +1,34 @@
 ---
 selectedPatches:
-  - device: "TG-33"
-    mode: "Voice"
-    bank: "Preset 2 Voices"
-    name: "BA:Pick"
-    category: "Bass"
-    command: "000514"
-    filename: null
-    score: 0
-  - device: "TG-500"
-    mode: "Voice"
-    bank: "Top40"
-    name: "BA FM-Bs.syx"
-    category: "Bass"
-    command: "000000"
-    filename: "202 [000000,Bass] BA FM-Bs.syx"
-    score: 0
-  - device: "Summit"
-    mode: "Single"
-    bank: "Bank B"
-    name: "10p Ice Pops"
-    category: "Keyboard"
-    command: "00026E"
-    filename: null
-    score: 0
+- device: "TG-33"
+  mode: "Voice"
+  bank: "Preset 2 Voices"
+  name: "BA:Pick"
+  category: "Bass"
+  command: "000514"
+  filename: null
+  score: 0
+- device: "TG-500"
+  mode: "Voice"
+  bank: "Top40"
+  name: "BA FM-Bs.syx"
+  category: "Bass"
+  command: "000000"
+  filename: "202 [000000,Bass] BA FM-Bs.syx"
+  score: 0
+- device: "Summit"
+  mode: "Single"
+  bank: "Bank B"
+  name: "10p Ice Pops"
+  category: "Keyboard"
+  command: "00026E"
+  filename: null
+  score: 0
+- device: "Mininova"
+  mode: "Single"
+  bank: "Bank A"
+  name: "AlaskaSplitLoC"
+  category: "Classic"
+  command: "0145"
+  filename: null
+  score: 2
