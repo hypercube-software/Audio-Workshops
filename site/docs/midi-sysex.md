@@ -202,7 +202,7 @@ This mean the checksum is performed on `00000000 00000110` only.
 
 Most devices keep things simple using only 7 bits of their memory to fit the restriction of MIDI SysEx. So what you receive is directly readable.
 
-Unfortunately not all of them do that. So you have to convert 7 data to 8 bit data using a **Decoding Key** to retrieve a meaningful memory structure.
+Unfortunately not all of them do that. So you have to convert 7 bit data to 8 bit data using a **Decoding Key** to retrieve a meaningful memory structure.
 
 - The key is provided in the device documentation, for instance in Korg TR-Rack MIDI spec
 - Sometimes the key is completely wrong, for instance in Alesis QS6.1 service manual. In this case this is a nightmare.
@@ -230,7 +230,7 @@ decodingKey:
 - We name those 7 memory bytes A,B,C,D,E,F,G
 - We name each of their bit from left to right 7,6,5,4,3,2,1,0
 - This is called "MSB first" notation.
-- You have also "LSB first" notation where 0 is the first bit on the right
+- You have also "LSB first" notation where 0 is the first bit on the left
 
 So when you read the decoding key:
 
@@ -772,12 +772,16 @@ This device does not understand the bank select MIDI message, so if you plan to 
 
 - The default Program Change table give you only acces to bank I,A,B,C
 - You need to make another one to access to bank D and Performances !
-- So if you want to select ANY patch, you need to send a SYEX to redefined the program change table 
 
-Something like this:
+So if you want to select ANY patch, you need to send a SYEX to redefined the program change table. Something like this:
 
 ```
-F0 43 00 7E 02 0A 'LM  8976S1' 01 00 01 01 01 02 01 03 01 04 01 05 01 06 01 07 01 08 01 09 01 0A 01 0B 01 0C 01 0D 01 0E 01 0F 01 10 01 11 01 12 01 13 01 14 01 15 01 16 00 17 00 18 00 19 00 1A 00 1B 00 1C 00 1D 00 1E 00 1F 01 20 01 21 01 22 01 23 01 24 01 25 01 26 01 27 01 28 01 29 01 2A 01 2B 01 2C 01 2D 01 2E 01 2F 01 30 01 31 01 32 01 33 01 34 01 35 01 36 01 37 00 38 00 39 00 3A 00 3B 00 3C 00 3D 00 3E 00 3F 00 40 00 41 00 42 00 43 00 44 00 45 00 46 00 47 00 48 00 49 00 4A 00 4B 00 4C 00 4D 00 4E 00 4F 00 50 00 51 00 52 00 53 00 54 00 55 00 56 00 57 00 58 00 59 00 5A 00 5B 00 5C 00 5D 00 5E 00 5F 00 60 00 61 00 62 00 63 00 64 00 65 00 66 00 67 00 68 00 69 00 6A 00 6B 00 6C 00 6D 00 6E 00 6F 00 70 00 71 00 72 00 73 00 74 00 75 00 76 00 77 00 78 00 79 00 7A 00 7B 00 7C 00 7D 00 7E 00 7F CK266 F7
+F0 43 00 7E 02 0A 'LM  8976S1' 01 00 01 01 01 02 01 03 01 04 01 05 01 06 01 07 01 08 01 09 01 0A 01 0B 01 0C 01 0D 01 0E 01 0F 01 10 01 
+11 01 12 01 13 01 14 01 15 01 16 00 17 00 18 00 19 00 1A 00 1B 00 1C 00 1D 00 1E 00 1F 01 20 01 21 01 22 01 23 01 24 01 25 01 26 01 27 01
+28 01 29 01 2A 01 2B 01 2C 01 2D 01 2E 01 2F 01 30 01 31 01 32 01 33 01 34 01 35 01 36 01 37 00 38 00 39 00 3A 00 3B 00 3C 00 3D 00 3E 00
+3F 00 40 00 41 00 42 00 43 00 44 00 45 00 46 00 47 00 48 00 49 00 4A 00 4B 00 4C 00 4D 00 4E 00 4F 00 50 00 51 00 52 00 53 00 54 00 55 00
+56 00 57 00 58 00 59 00 5A 00 5B 00 5C 00 5D 00 5E 00 5F 00 60 00 61 00 62 00 63 00 64 00 65 00 66 00 67 00 68 00 69 00 6A 00 6B 00 6C 00
+6D 00 6E 00 6F 00 70 00 71 00 72 00 73 00 74 00 75 00 76 00 77 00 78 00 79 00 7A 00 7B 00 7C 00 7D 00 7E 00 7F CK266 F7
 ```
 
 Wonderful isn't it ? Our **MPM** (Midi Patch Manager) handle this can of craziness.
@@ -786,7 +790,7 @@ Wonderful isn't it ? Our **MPM** (Midi Patch Manager) handle this can of crazine
 
 Novation does not provide SysEx specification for their latest devices.
 
-- They rely a lot on NRPN messages instead which is a good idea, but only to **write** into the device memory
+- They rely a lot on NRPN messages instead, which is a good idea to **write** into the device memory. But how to **read** ?
 - Fortunately SysEx have been discovered to **read** the memory of the devices
 
 ```
@@ -806,6 +810,8 @@ COMMAND = depend on the device
 ```
 
 ## Mininova
+
+This device is one of those where all patches are in EEPROM so you can override everything. Fortunately a factory reset will return the patches to their default.
 
 The COMMAND to request a patch memory is:
 
@@ -832,23 +838,59 @@ F0 002029 03017F 41 010000 01 00 F7
 F0 002029 03017F 41 010000 02 01 F7 
 ```
 
+The COMMAND to reboot the device in Firmware mode is:
+
+```
+F0 00 20 29 00 71 00 1E 00 00 01 01 06 09 F7
+```
+
+⚠️ This command will turn off the MIDI driver "Mininova" and start as special one called "Novation Mininova". It's like the Mininova change its USB ID.
+
+This special mode is useful if you plan to do a factory reset.
+
 ## Summit
+
+There is no official documentation for SysEx. Someone found a way to reverse it [here](https://docs.google.com/spreadsheets/d/1l2pmChldan5rKX16_9F1Q6kN67XePRF1hlxebOXR3lk/edit?gid=241618355#gid=241618355).
 
 The COMMAND to request a patch memory is:
 
 ```
-F0 002029 01 11 0133 40 000000 bank prg F7
+0133 40 000000 bank prg
 
 bank 00 prg 00 => Edit Buffer
 bank [1-4], prg [0-127] => Patches
 ```
 
+Example to get the Edit buffer::
+
+```
+F0 002029 01 11 0133 40 000000 00 00 F7
+```
+
 The COMMAND to request a multi memory is:
 
 ```
-F0 002029 01 11 0133 43 000000 bank prg F7
+0133 43 000000 bank prg
 bank 00 prg 00 => Edit Buffer for Multi
 bank [1-4], prg [0-127] => Multi
+```
+
+Example to get the Multi of bank 1, prg 2:
+
+```
+F0 002029 01 11 0133 42 000000 01 02 F7
+```
+
+THE COMMAND to request the multi edit buffer is:
+
+```
+0133 43 000000 00 00
+```
+
+Example:
+
+```
+F0 002029 01 11 0133 42 000000 00 00 F7
 ```
 
 # Alesis
@@ -913,7 +955,7 @@ The main idea of the **Device Library** is to define what is important about a h
 
 - This file can be easily read in any programming language
 - It contains the SYSEX spec of the device including the "decoding key" to convert 7 bit MIDI data to 8 bit data.
-- It define how the device select patches and, believe me, there are a lot of ways 🤭
+- It defines how the device select patches and, believe me, there are a lot of ways 🤭
 
 Optionally, it is possible to override such file in order to separate what is dependent of your configuration and what is not.
 
@@ -922,10 +964,17 @@ Optionally, it is possible to override such file in order to separate what is de
 
 In the same spirit you can add another file for the presets:
 
-- For a given `Mininova.yaml` we define a `Mininva-presets.yaml` to add the list of the thousands of patches for the device
+- For a given `Mininova.yaml` we define a `Mininova-presets.yaml` to add the list of thousands device patches
 - In this way we can auto-generate the preset list without touching the core specification of the device
+- You can make your own list in another file like `Mininova-user-presets.yaml` 
 
 At runtime, when the API load the library, those 3 files will be merged together providing everything required by the applciation.
+
+## SysEx patches
+
+The library allow you to store SysEx patches in a specific folder in `.MID` or `.SYX`
+
+The API will glue them together with the regular ones in YAML.
 
 ## Macros
 
@@ -965,6 +1014,193 @@ macros:
 ```
 
 👉 Take a look on the MBT manual to learn more.
+
+## Patches
+
+The library provide all the necessary to query patches on a device:
+
+Mode
+
+- The device **mode** distinguish banks. Typically "Multi mode" or "Voice mode". You have often a button for it on the front panel of the device.
+- The mode have a **mode select** command which is often a SysEx.
+
+Bank
+
+- The **bank** contains patches and belongs to a mode. It has a **bank select** command.
+- The bank have a **preset domain**. It is simply a range of numbers pointing to a patch.
+- The bank have a specific query to retrieve the name of a patch
+
+Patch
+
+- A **patch** belongs to a bank. It has a **program change** command. It also belongs to a category.
+
+Category
+
+- **Categories** belongs to the device but you can also have categories per mode.
+- A **category** can use aliases when it is not available in the device memory. This is often the case for Yamaha. They use codes in the patch name.
+
+How to select a preset ? The `presetFormat` is used for that.
+
+```
+NO_BANK_PRG      : Does not send bank select, send only Program Change
+BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
+BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
+BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+```
+
+Here an example for the Yamaha TG-33:
+
+```yaml
+presetFormat: BANK_MSB_LSB_PRG
+deviceModes:
+  Multi:
+    command: setMultiMode()
+    banks:
+      "Preset 1 Multis":
+        command: $0010
+        queryName: getMultiName()
+        presetDomain: 64-79
+  Voice:
+    command: setVoiceMode()
+    banks:
+      "Preset 1 Voices":
+        command: $0002
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Preset 2 Voices":
+        command: $0005
+        queryName: getVoiceName()
+        presetDomain: 0-63
+      "Internal Voices":
+        command: $0000
+        queryName: getVoiceName()
+        presetDomain: 0-63
+    categories:
+      - "Piano: AP"
+      - "Keyboard: KY"
+      - "Brass: BR"
+      - "Wind: WN"
+      - "String: ST"
+      - "Guitar: GT"
+      - "Bass: BA"
+      - "Ensemble: ME"
+      - "Organ: OR"
+      - "Ethnic: FI"
+      - "Synth Pad: SP"
+      - "Synth Lead: SL"
+      - "Synth Comp: SC"
+      - "Combination : CO"
+      - "Choir: CH"
+      - "Chromatic Percussion: TP"
+      - "Drum: DR"
+      - "Percussion: MI"
+      - "Sound FX: SE"
+      - "Sequence: SQ"
+```
+
+Because we are using `BANK_MSB_LSB_PRG`, the bank select command will use 2 bytes: 
+
+```yaml
+command: $0005 
+# $00 = BANK SELECT MSB
+# $05 = BANK SELECT LSB
+```
+
+## Mappers
+
+Mappers is one of the best feature of the library. This is a way to EXTRACT fields from a SysEx response.
+
+Our `MidiPresetCrawler` use this to generate automatically the presets of a device.
+
+Unfortunately this does not work for all devices because some of them (Roland Sound Canvas) does not provide patch names in the SysEx responses.
+
+`presetNaming` indicate if we can use mappers or not:
+
+```
+STANDARD     : it is possible to get the patch name with SysEx
+SOUND_CANVAS : Patch names are hardcoded in java application
+```
+
+Here an example for the Novation Summit:
+
+```yaml
+presetNaming: STANDARD
+mappers:
+  PatchMapper:
+    fields:
+      name:
+        type: STRING
+        offset: $0F
+        size: 16
+      category:
+        type: CATEGORY
+        offset: $1F
+```
+
+The mapper is bound a specific macro like this:
+
+```yaml
+macros:
+  - "EditBuffer()               : F0 002029 03017F 40 000000 00 00 F7"
+  # bank is [1,3] , prg is in [0,127]
+  - "BankPatch(bank,prg)        : F0 002029 03017F 41 010000 bank prg F7"
+  - "PatchName() : EditBuffer() : PatchMapper"
+```
+
+So when we query the macro `PatchName()` the message `F0 002029 03017F 40 000000 00 00 F7` will be send to the device and the mapper `PatchMapper` will scan the response.
+
+- At offset `$1F` we should found a byte containing the code of a category
+- At offset `$0F` we should found 16 bytes for the name of the current patch
+
+Of course the category code must be an existing category index:
+
+```yaml
+categories:
+  - None # match category code 0
+  - Arp  # match category code 1
+  - Bass # match category code 2
+  - Bell # ...
+  - Classic
+  - DrumPerc
+  - Keyboard
+  - Synth Lead
+  - Motion Synth
+  - Synth Pad
+  - Synth Poly
+  - Sound FX
+  - String
+  - External Input
+  - Vocoder/Tune
+```
+
+$05 is intended to be `DrumPerc`
+
+Sometimes the patch name is in a weird format. This is the case with Alesis. they are stored in LSB first. here how to extract the name:
+
+```yaml
+      name:
+        type: ALESIS_STRING
+        unit: BIT
+        offset: 8
+        size: 10
+```
+
+By default the offset is in bytes, but here we change the unit to BIT to indicate we want to read the `ALESIS_STRING` bit per bit (in reverse order) at bit `$8`. The size remain in bytes.
+
+In the same spirit we can extract a category code from only 6 bits:
+
+```yaml
+      category:
+        type: CATEGORY
+        unit: BIT
+        lsbFirst: true
+        offset: 81
+        size: 6
+```
+
+Here we jump at bit 81 to read 6 bits in reverse order.
+
+As you can see Mappers are very powerful but require a good understanding of the memory layout of the device.
 
 # Memory Maps
 
