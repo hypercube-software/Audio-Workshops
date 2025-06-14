@@ -7,11 +7,44 @@ This is a very special kind of MIDI messages which open the door to vendor speci
 
 Unfortunately, most messages are not properly documented so this area requires a lot of **reverse engineering**.
 
+# JDK Bugs
+
+If things was not already hard, we have also hidden bugs in some JDK related to receiving or sending SysEx.
+
+- The bugs are all about long SysEx messages and how big is the OS driver buffer for the device.
+- Basically some JDK are not happy when the OS driver decide to deliver a SysEx in multiple chunk of bytes.
+
+Here what to know:
+
+- There is an insane bug receiving big SysEx in `javax.sound.midi.MidiMessage` if it is too big for the OS driver
+  - `javax.sound.midi.MidiMessage#getMessage()` give you a WRONG byte buffer with a FAKE final 0xF7 !
+  - Fortunately `javax.sound.midi.SysexMessage#getData()` give you the right buffer so it is possible to understand you are receiving a **partial SysEX**
+  - 👉 Our class `SysExMidiListener` take care of reconstructing the complete SysEx for you so you don't have to worry about all of this.
+- Below JDK 23, sending big SysEx to a device may also send garbage. It happened to me with a Yamaha TG-500
+  - Actually I compile in JDK 21 because of the mixture JavaFX/SceneBuilder/Intelliji/SpringBoot
+  - But at runtime, the application should run in JDK 23
+
 # Overview
 
-## Basic
+## Hexadecimal
 
-A SysEx is a train of bytes delimited by `0xF0` and `0xF7`.
+I hope you are fluent in Hexadecimal, because SysEx use them a lot.
+
+- Hexadecimal is a different way to describe numbers using 16 symbols instead of 10.
+- **Decimal** use 0,1,2,3,4,5,6,7,8,9
+- **Hexadecimal** use 0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F
+- Using both at the same time can be confusing. 10 in hexadecimal is not the same than 10 in decimal.
+  - `$` and `0x` are often used to indicate an Hexadecimal number
+  - Some device manuals don't use such prefixes so it is very easy to do mistakes
+- Hexadecimal is great because one symbol take exactly 4 bits. It is called a **Nibble**.
+- Expressing SysEx payloads in decimal would be a nightmare compared to Hexadecimal.
+
+## Basics
+
+A SysEx is a train of bytes delimited by `0xF0` and `0xF7`. 
+
+- ⚠️The content NEVER use the first bit on the left, which is called MSB (Most significant bit). It has to be 0.
+- You have the guaranty that all bytes in the content are in the range `[0-127]` or `[0x00-0x7F]`
 
 ```
 F0 .... content .... F7
@@ -19,20 +52,20 @@ F0: SysEx START
 F7: SysEx END
 ```
 
-## Standard
+## The standard
 
 There is a subset of messages which are part of the standard MIDI specification. 
 
-- **Non-Real Time** SysEx header: `F0 7E`
-- **Real-Time** SysEx header: `F0 7F`
-- **Reserved for non-commercial use**: `F0 7D`
+- **Non-Real Time**: `F0 7E ... F7`
+- **Real-Time** : `F0 7F ... F7`
+- **Reserved for non-commercial use**: `F0 7D ... F7`
 
 The overall format is:
 
 ```
 F0 hh ii cc .... F7
-hh: header (7E, 7F or 7D)
-ii: DEVICE ID, 7F = broadcast
+hh: header (7E, 7F or 7D) for (Non-real time,real-time, reserved)
+ii: DEVICE ID, 7F = broadcast/any
 cc: Command
 ```
 
@@ -83,6 +116,7 @@ Examples:
 - **Roland** is `0x41`
 - **Korg** is `0x42`
 - **Behringer** is `0x00 0x20 0x32`
+- **Novation** is `0x00 0x20 0x29`
 
 You can found various manufacturer lists on the Internet: [here](http://midi.teragonaudio.com/tech/midispec/id.htm), [here](https://electronicmusic.fandom.com/wiki/List_of_MIDI_Manufacturer_IDs) and [here](https://studiocode.dev/doc/midi-manufacturers/).
 
@@ -123,6 +157,122 @@ F0 7E 00 06 02 47 25 00 19 00 01 00 00 00 00 12 7F 7F 41 31 32 31 30 31 31 35 35
 ```
 
 👉 Unfortunately this message is not always recognized.
+
+## Edit Buffer
+
+It is important to understand how devices handle their memory:
+
+- Read Only Factory patches are in [ROM](https://en.wikipedia.org/wiki/Read-only_memory)
+- Writeable Factory patches are in [EEPROM](https://en.wikipedia.org/wiki/EEPROM)
+- Unsaved modifications are in [RAM](https://en.wikipedia.org/wiki/Random-access_memory)
+
+When you select a patch from the factory patches, the device **copy** its content from ROM to RAM. This is commonly called the **Edit Buffer**
+
+- If you **turn off** the device, the Edit Buffer is lost because it is in RAM
+- Most of the time, the device offer you to **store** the Edit Buffer into an EEPROM slot
+- Once saved, the EEPROM keep its content even the device is turned off.
+- Some old devices need a CR2032 battery to keep EEPROM data.
+
+How ROM/EEPROM/RAM is used depend on the device.
+
+- Sometimes all factory patches are in EEPROM, sometimes only part of them. Typically the "User bank" is an EEPROM.
+- Sometimes the device use 2 Edit buffers, one for regular patches, and another for drum patches.
+- Sometimes the edit buffer is not immediately overriden when you change a patch, so it can be confusing.
+
+👉 SysEx messages are used to read or write from/into EEPROM or RAM chips.
+
+## Checksums
+
+Some brands (Roland) use a checksum inside the SysEx message. This is not something hard to handle but you need to take care of this:
+
+- A checksum is a number which must be added to the content of the SysEx in order to make 0. If not, a transmission error is detected.
+- If your checksum is wrong, the device will never accept your message
+- You need to know which portion of the payload is subject to the checksum, it is not always the same unfortunately
+- Some checksum are more complex to compute than a simple addition, they involve XOR operation (bit inversion)
+
+It is very handy to describe a checksum like this: `CK8`. It means "build a checksum with the last 8 bytes"
+
+```
+F041104611 00000000 00000110 CK8 F7
+```
+
+This mean the checksum is performed on `00000000 00000110` only.
+
+## Decoding Key
+
+Most devices keep things simple using only 7 bits of their memory to fit the restriction of MIDI SysEx. So what you receive is directly readable.
+
+Unfortunately not all of them do that. So you have to convert 7 data to 8 bit data using a **Decoding Key** to retrieve a meaningful memory structure.
+
+- The key is provided in the device documentation, for instance in Korg TR-Rack MIDI spec
+- Sometimes the key is completely wrong, for instance in Alesis QS6.1 service manual. In this case this is a nightmare.
+
+A decoding key looks like this:
+
+```yaml
+# Korg TR-Rack decoding key
+decodingKey:
+  start: 6
+  end: 1
+  key:
+    - 0 G7 F7 E7 D7 C7 B7 A7
+    - 0 A6 A5 A4 A3 A2 A1 A0
+    - 0 B6 B5 B4 B3 B2 B1 B0
+    - 0 C6 C5 C4 C3 C2 C1 C0
+    - 0 D6 D5 D4 D3 D2 D1 D0
+    - 0 E6 E5 E4 E3 E2 E1 E0
+    - 0 F6 F5 F4 F3 F2 F1 F0
+    - 0 G6 G5 G4 G3 G2 G1 G0
+```
+
+8 bytes of MIDI contain 7 bytes of device memory. So the decoding operate 8 bytes after 8 bytes. Reading 56 significant bits.
+
+- We name those 7 memory bytes A,B,C,D,E,F,G
+- We name each of their bit from left to right 7,6,5,4,3,2,1,0
+- This is called "MSB first" notation.
+- You have also "LSB first" notation where 0 is the first bit on the right
+
+So when you read the decoding key:
+
+- `0 G7 F7 E7 D7 C7 B7 A7` means the very first MIDI byte contains the most significant bits of the next 7 device memory bytes.
+-  `0` is here to say "this bit irrelevant" because MIDI SysEx bytes use only 7 bits of data.
+- `0 A6 A5 A4 A3 A2 A1 A0` means the second MIDI byte contains 7 bit of the first byte in the device memory. So the first bit is missing and can be found in the previous MIDI byte.
+- ...
+
+What you want is to reconstruct the device memory which is:
+
+```
+A7 A6 A5 A4 A3 A2 A1 A0
+B7 B6 B5 B4 B3 B2 B1 B0
+C7 C6 C5 C4 C3 C2 C1 C0
+D7 D6 D5 D4 D3 D2 D1 D0
+E7 E6 E5 E4 E3 E2 E1 E0
+F7 F6 F5 F4 F3 F2 F1 F0
+G7 G6 G5 G4 G3 G2 G1 G0
+```
+
+Our method `ManufacturerSysExParser#unpackMidiBuffer()` implement the algorithm to decode all of this.
+
+The decoding key can be horrible, this is the case of the Alesis QS6.1. I successfully reverted it after hours of trial and errors:
+
+```yaml
+decodingKey:
+  start: 7
+  end: 1
+  key:
+    - 0 A1 A2 A3 A4 A5 A6 A7
+    - 0 B2 B3 B4 B5 B6 B7 A0
+    - 0 C3 C4 C5 C6 C7 B0 B1
+    - 0 D4 D5 D6 D7 C0 C1 C2
+    - 0 E5 E6 E7 D0 D1 D2 D3
+    - 0 F6 F7 E0 E1 E2 E3 E4
+    - 0 G7 F0 F1 F2 F3 F4 F5
+    - 0 G0 G1 G2 G3 G4 G5 G6
+```
+
+The manual was wrong:
+
+![image-20250614202114785](assets/image-20250614202114785.png)
 
 # Uncharted territory
 
@@ -204,16 +354,6 @@ F7   :Sysex END
 ```
 
 👉 Note the presence of **Little endian** values: LSB first, MSB last. For instance **Major Version** value is `0x0001`, not `0x0100`
-
-# Devices Library
-
-I spend a considerable amount of my time to build this, hoping it will be helpful for those like me who are using (vintage) hardware devices.
-
-The main idea of the **Device Library** is to define what is important about a hardware device in a single YAML file.
-
-- This file can be easily read in any programming language
-- It contains the SYSEX spec of the device
-- It define how the device select patches and beleive me there are a lot of ways 
 
 # Roland
 
@@ -319,7 +459,25 @@ Most of the time they will describe precisely the first memory section, without 
 
 # AKAI
 
-AKAI doesn't provide a lot of information. This is the worst case. You can dump the memory with a SysEx but you have to understand yourself the layout.
+AKAI doesn't provide a lot of information. This is the worst case. You can dump the memory with a SysEx but you have to understand yourself the layout
+
+## MPK
+
+Here how to query a MPK-249 or a MPK-261
+
+```
+F0 47 dd dd 20 00 03 ss aa aa F7
+example:
+F0 47 00 25 20 00 03 50 00 18 F7
+
+F0 : SysEx START
+47 : AKAI
+dd : 00 24 : MPK-249
+dd : 00 25 : MPK-261
+ss : how many bytes to read
+aa : where to read in memory
+F7 : Sysex END
+```
 
 # Behringer
 
@@ -472,6 +630,10 @@ F0         : SysEx START
 ...
 ```
 
+## Decoding Key
+
+Some vintage devices like the TR-Rack, use all 8 bits of their memory which is not compatible with the 7 bit requirement of SysEx. So the SysEx must use an encoding to convert a stream of bytes. This was explained earlier in the chapter [Decoding Key](#decoding-key)
+
 # Yamaha
 
 ## Jargon
@@ -504,6 +666,14 @@ F0 43 2c 20 7A <IDENTIFIER> 0000000000000000000000000000 <MEMORY TYPE> <MEMORY N
 ```
 
 ## TG-500
+
+The TG-500 (rack version of the SY-85) is weird because it uses **2 edit buffers**: one for voices and one for drums.
+
+- If you select a normal voice and ask for the drum edit buffer you won't get any response
+- You have to select the right edit buffer given the current patch
+- How to know if the current patch is a voice or a drum ? 
+  - Voice 63 is ALWAYS a drum. that's all.
+  - Voices from 0-62 are regular voices
 
 | Bulk request type | Identifier   | memory type       | memory number |
 | ----------------- | ------------ | ----------------- | ------------- |
@@ -598,16 +768,178 @@ F0 43 20 7E LM  8976AE           F7
 => Request a Bulk Dump for device 0x20 of the "SCED"
 ```
 
-# Midi Library
+This device does not understand the bank select MIDI message, so if you plan to scan all patches programmatically, it's gonna be fun:
 
-Since dealing with SysEx is very painfull, we provide two Java classes to help:
+- The default Program Change table give you only acces to bank I,A,B,C
+- You need to make another one to access to bank D and Performances !
+- So if you want to select ANY patch, you need to send a SYEX to redefined the program change table 
+
+Something like this:
+
+```
+F0 43 00 7E 02 0A 'LM  8976S1' 01 00 01 01 01 02 01 03 01 04 01 05 01 06 01 07 01 08 01 09 01 0A 01 0B 01 0C 01 0D 01 0E 01 0F 01 10 01 11 01 12 01 13 01 14 01 15 01 16 00 17 00 18 00 19 00 1A 00 1B 00 1C 00 1D 00 1E 00 1F 01 20 01 21 01 22 01 23 01 24 01 25 01 26 01 27 01 28 01 29 01 2A 01 2B 01 2C 01 2D 01 2E 01 2F 01 30 01 31 01 32 01 33 01 34 01 35 01 36 01 37 00 38 00 39 00 3A 00 3B 00 3C 00 3D 00 3E 00 3F 00 40 00 41 00 42 00 43 00 44 00 45 00 46 00 47 00 48 00 49 00 4A 00 4B 00 4C 00 4D 00 4E 00 4F 00 50 00 51 00 52 00 53 00 54 00 55 00 56 00 57 00 58 00 59 00 5A 00 5B 00 5C 00 5D 00 5E 00 5F 00 60 00 61 00 62 00 63 00 64 00 65 00 66 00 67 00 68 00 69 00 6A 00 6B 00 6C 00 6D 00 6E 00 6F 00 70 00 71 00 72 00 73 00 74 00 75 00 76 00 77 00 78 00 79 00 7A 00 7B 00 7C 00 7D 00 7E 00 7F CK266 F7
+```
+
+Wonderful isn't it ? Our **MPM** (Midi Patch Manager) handle this can of craziness.
+
+# Novation
+
+Novation does not provide SysEx specification for their latest devices.
+
+- They rely a lot on NRPN messages instead which is a good idea, but only to **write** into the device memory
+- Fortunately SysEx have been discovered to **read** the memory of the devices
+
+```
+F0 bb bb bb dd dd cc ..COMMAND.. F7
+bb = brand = 00 20 29 = Novation
+dd = device
+    01 11 = Summit
+    03 01 = Mininova
+    01 20 = SuperNova
+    01 21 = Nova
+    33 00 = Bass station II
+    03 03 = automap SLMKII
+    02 0C = Launchpad X
+    01 60 = Circuit
+cc = device id (7F = any)
+COMMAND = depend on the device
+```
+
+## Mininova
+
+The COMMAND to request a patch memory is:
+
+```
+40 tt 00 00 bb pp
+tt = type of patch 00=current edit buffer 01=ROM memory
+bb = bank number 00 for edit buffer, [1-3] otherwise
+pp = patch number [0-127]
+```
+
+Query the edit buffer:
+
+```
+F0 002029 03017F 40 000000 00 00 F7
+```
+
+Query bank patches:
+
+```
+F0 002029 03017F 41 010000 bank prg F7
+# query patch 0 of bank 1
+F0 002029 03017F 41 010000 01 00 F7 
+# query patch 1 of bank 2
+F0 002029 03017F 41 010000 02 01 F7 
+```
+
+## Summit
+
+The COMMAND to request a patch memory is:
+
+```
+F0 002029 01 11 0133 40 000000 bank prg F7
+
+bank 00 prg 00 => Edit Buffer
+bank [1-4], prg [0-127] => Patches
+```
+
+The COMMAND to request a multi memory is:
+
+```
+F0 002029 01 11 0133 43 000000 bank prg F7
+bank 00 prg 00 => Edit Buffer for Multi
+bank [1-4], prg [0-127] => Multi
+```
+
+# Alesis
+
+Alesis devices use all 8 bits of their memory which is not compatible with the 7 bit requirement of SysEx. So the SysEx must use an encoding to convert a stream of bytes. This was explained earlier in the chapter [Decoding Key](decoding-key)
+
+## QS6.1
+
+Get the current patch:
+
+```
+F0 00 00 0E 0E 03 00 F7
+```
+
+Get the current mix:
+
+```
+F0 00 00 0E 0E 0F 64 F7
+```
+
+The QS6.1 decoding key is wrong in the service manual. 
+
+The memory layout is not limited to bytes. It is very compact so you need to read or write bit per bit. Very painfull.
+
+## Micron
+
+No SysEx specification for this device unfortunately. BUT, you can found a perl script written by Bret Victor himself in 2004 when he invented the Micron.
+
+This script is called `ion_program_decoder.pl` and contains precious informations on the SysEx for the ION which is the big brother of the Micron (same device, more buttons).
+
+💀How the Micron handle banks is insane.
+ - On the device and in the manual there is PURPOSELY NO BANK CONCEPT (see chapter 18 page 31 'store a copy ?')
+ - There is absolutely no official information on the real midi banks (Red,Green,Blue,Yellow,Edit terminology)
+ - The mapping between the device memory and the control change contains holes !
+ - So to get the complete list you have to brute force the 127 programs and see if the device respond to SYSEX
+
+| Bank Name | Bank Select Number | Valid Program Change |
+| --------- | ------------------ | -------------------- |
+| Red       | 0                  | 10-92;94-127         |
+| Green     | 1                  | 0-127                |
+| Blue      | 2                  | 0-127                |
+| Yellow    | 3                  | 0-127                |
+| Edit      | 4                  | 0-66;68;70-95        |
+
+Get the current patch:
+
+```
+F0 00 00 0E 26 41 bank 00 prg F7
+bank 0=Red, bank 1=Green, bank 2=Blue, bank 3=Yellow (user), bank 4=Edit bank
+prg = [0-3] for edit bank, [0-127] otherwise
+```
+
+Like the QS6.1 a **decoding key** must be used. The Micron key is very standard, in fact, it is the same than the Korg TR-rack whereas the QS6.1 key is pure madness.
+
+# Devices Library
+
+I spend a considerable amount of my time to build this, hoping it will be helpful for those like me who are using (vintage) hardware devices.
+
+## Main idea
+
+The main idea of the **Device Library** is to define what is important about a hardware device in a single YAML file.
+
+- This file can be easily read in any programming language
+- It contains the SYSEX spec of the device including the "decoding key" to convert 7 bit MIDI data to 8 bit data.
+- It define how the device select patches and, believe me, there are a lot of ways 🤭
+
+Optionally, it is possible to override such file in order to separate what is dependent of your configuration and what is not.
+
+- For a given `Mininova.yaml` we define a `Mininova-user.yaml` to specify the MIDI ports of the device
+- In this way you can install the latest library update without loosing your MIDI ports
+
+In the same spirit you can add another file for the presets:
+
+- For a given `Mininova.yaml` we define a `Mininva-presets.yaml` to add the list of the thousands of patches for the device
+- In this way we can auto-generate the preset list without touching the core specification of the device
+
+At runtime, when the API load the library, those 3 files will be merged together providing everything required by the applciation.
+
+## Macros
+
+Since dealing with SysEx is very painful, we provide two Java classes to help:
 
 - `SysExBuilder` is able to parse strings containing complex payloads, including ranges, strings and macro. It produces real MidiEvents ready to be sent.
-- `MidiLibrary` is able to provide a library of queries for various midi devices. 
+- `MidiLibrary` is the core API for the device library. It read the YAML from disk and send/receive messages from/to the devices
 
 Both works together to let you query various midi devices without too much pain.
 
-We made an separate maven project called **MBT (Midi-Backup-Translator)** based on those two classes to give you an example of what you can do.
+We made 2 maven projects to demonstrate the use of the library:
+
+- **MBT (Midi-Backup-Translator)** based on those two classes to give you an example of what you can do. It is a simple CLI.
+- **MPM (Midi-Preset-Manager)** is a much more complex application with UI in JavaFX to manage the presets of all your devices
 
 Here an typical definition of a Midi device in the library for the `Yamaha TG-500`:
 
@@ -634,13 +966,15 @@ macros:
 
 👉 Take a look on the MBT manual to learn more.
 
-# Synth internals
+# Memory Maps
 
 ## Overview
 
-Our Midi Library is fine if you plan to do Backup and Restore queries, but when it comes to make a real synth editor, you need to understand every bit of the SysEx response. This is where you need a real memory map of the synth given a SysEx.
+Our Device Library is fine if you plan to do Backup and Restore queries, but when it comes to make a real synth editor, you need to understand every bit of the SysEx response. This is where you need a real memory map of the synth given a SysEx.
 
-👉 Actually the Midi Library is independent of the following API, but things will change in the future.
+👉 Actually the Device Library is independent of the following API, but things will change in the future.
+
+👉 All of this API is actually in pause because the device library is much more important to my use right now.
 
 We need many things to handle SysEx:
 
@@ -873,16 +1207,16 @@ The Dump display addresses in **normal** and **packed** format, followed by the 
 
 👉Given this dump, you can easily compare what you read with what the device manual tells you.
 
-# SysEx parser
+## SysEx parser
 
 As an example, we provide a SysEx parser in the CLI with the command "parse".
 
-## FORCE_DEVICE
+### FORCE_DEVICE
 
 - Because Roland use the same model ID for many Sound Canvas, you have to use `-DFORCE_DEVICE` to specify the right model.
 - If the device is not a Sound Canvas, you don't need this setting
 
-## parse
+### parse
 
 This command is able to parse a SysEx file and dump the corresponding device memory.
 
