@@ -2,10 +2,12 @@
 
 This is a very special kind of MIDI messages which open the door to vendor specific content.
 
-- They can be used to save and restore the settings of a device
+- They can be used to **save** and **restore** the settings of a device
 - They can be used to modify settings which are not visible on the front panel of the device
 
 Unfortunately, most messages are not properly documented so this area requires a lot of **reverse engineering**.
+
+👉 I built an API to handle all of this complexity. See chapter [Devices Library](#devices-library)
 
 # JDK Bugs
 
@@ -947,20 +949,30 @@ Like the QS6.1 a **decoding key** must be used. The Micron key is very standard,
 
 # Devices Library
 
-I spend a considerable amount of my time to build this, hoping it will be helpful for those like me who are using (vintage) hardware devices.
+I spend a considerable amount of my time to build this, hoping it will be helpful for those like me, who are using (vintage) hardware devices.
 
 ## Main idea
 
-The main idea of the **Device Library** is to define what is important about a hardware device in a single YAML file.
+The main idea of the **Devices Library** is to define what is important about an hardware device in a single YAML file.
 
 - This file can be easily read in any programming language
 - It contains the SYSEX spec of the device including the "decoding key" to convert 7 bit MIDI data to 8 bit data.
 - It defines how the device select patches and, believe me, there are a lot of ways 🤭
+- It resolves the lack of information on SysEx which can be found here and there.
 
-Optionally, it is possible to override such file in order to separate what is dependent of your configuration and what is not.
+Optionally, it is possible to override such file in order to separate what is **dependent of your own setup** and what is not.
 
 - For a given `Mininova.yaml` we define a `Mininova-user.yaml` to specify the MIDI ports of the device
 - In this way you can install the latest library update without loosing your MIDI ports
+
+Here a typical example: `DS-330-user.yml`
+
+```yaml
+deviceName: "DS-330"
+brand: "Boss"
+inputMidiDevice: "2- MIDISPORT Uno In"
+outputMidiDevice: "2- MIDISPORT Uno Out"
+```
 
 In the same spirit you can add another file for the presets:
 
@@ -970,18 +982,14 @@ In the same spirit you can add another file for the presets:
 
 At runtime, when the API load the library, those 3 files will be merged together providing everything required by the applciation.
 
-## SysEx patches
-
-The library allow you to store SysEx patches in a specific folder in `.MID` or `.SYX`
-
-The API will glue them together with the regular ones in YAML.
+👉 Take a look on the file `devices-library/Template.yml` to have more insights.
 
 ## Macros
 
 Since dealing with SysEx is very painful, we provide two Java classes to help:
 
 - `SysExBuilder` is able to parse strings containing complex payloads, including ranges, strings and macro. It produces real MidiEvents ready to be sent.
-- `MidiLibrary` is the core API for the device library. It read the YAML from disk and send/receive messages from/to the devices
+- `MidiLibrary` is the core API for the devices library. It read the YAML from disk and send/receive messages from/to the devices
 
 Both works together to let you query various midi devices without too much pain.
 
@@ -1017,6 +1025,8 @@ macros:
 
 ## Patches
 
+### Factory patches
+
 The library provide all the necessary to query patches on a device:
 
 Mode
@@ -1046,6 +1056,7 @@ NO_BANK_PRG      : Does not send bank select, send only Program Change
 BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
 BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
 BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
+BANK_PRG_PRG     : Send 2 Program Change. This weird mode is used in the Yamaha TG-77
 ```
 
 Here an example for the Yamaha TG-33:
@@ -1105,6 +1116,36 @@ command: $0005
 # $00 = BANK SELECT MSB
 # $05 = BANK SELECT LSB
 ```
+
+### SysEx patches
+
+The devices library support **external patches** in SysEx format.
+
+- Each file is supposed to be a single patch
+- We provide an importer to extract patches from SysEx banks in `.MID` or `.SYX`
+- The SysEx is supposed to modify only the device edit buffer (see chapter [overrides](#overrides))
+
+They must be placed in the right folder:
+
+```
+library root/brand/device name/mode name/brank name/patch1.syx
+library root/brand/device name/mode name/brank name/patch2.syx
+library root/brand/device name/mode name/brank name/...
+library root/brand/device name.yaml
+```
+
+The name of the SysEx is very important: `prefix [spec] name.syx` and `spec` can be `[command,category]` or just [category]`
+
+```
+000 [000000,Piano] AP Grand.syx
+044 [000000,String] ST Treml.syx
+258 [004000,Organ] OR Rock.syx
+3F00-024 [Synth Comping] Nble.syx
+```
+
+- `prefix` is just informative and can help to sort patches
+- `command` is optional and used to enforce a specific edit buffer in the device selecting a factory patch (performance, multi, voice...)
+- `category` should match one of the category defined in the YAML file.
 
 ## Mappers
 
@@ -1202,15 +1243,151 @@ Here we jump at bit 81 to read 6 bits in reverse order.
 
 As you can see Mappers are very powerful but require a good understanding of the memory layout of the device.
 
+## Overrides
+
+This is **unique feature** is very handy: the ability to **modify imported SysEx** banks in order to operate ONLY on the device **edit buffer**.
+
+- Most SysEx are delivered as `.MID` or `.SYX` files and contains MIDI messages that modify the EEPROM of the device.
+- In 80s it was great but in 2025 with infinite storage in our PC this is not what we want
+- What we want is to store patches on hard drive and override ONLY the Edit Buffer in device RAM.
+- The Overrides do that. 
+
+The class `PatchImporter` use those overrides to import patch banks into the library. As an example you can take a look on `MidiPresetCrawler` to see how it is used.
+
+### Offsets
+
+Here an example for the Novation Mininova:
+
+```yaml
+patchOverrides:
+  - name: Default
+    overrides:
+      - offset: $07 # Edit Buffer message
+        value: 00
+      - offset: $0B # BANK
+        value: 00
+      - offset: $0C # PRG
+        value: 00
+```
+
+This override modify 3 bytes in the payload to force the message to modify only the edit buffer. Of course this requires a deep understanding of the message structure.
+
+### Condition
+
+Sometimes the override is conditional because you can have multiple kind of messages. This is the case for the Yamaha TG-500:
+
+```yaml
+condition:
+      offset: $06
+      value: "'LM  0065DR'" # Drum Voice Patch
+```
+
+Here we check if the payload contains `LML  0065DR` at offset `$06`. If it is the case, the override is performed.
+
+### Mode
+
+Sometimes you need to force a specific mode. Remember patches belongs to a bank and banks belongs to a device mode.
+
+```yaml
+patchOverrides:
+  - name: Performances
+    mode: PerformanceMode
+```
+
+This will import the SysEx file in the right folder in the library
+
+### Command
+
+In the same spirit than `mode`, you can force a specific command to be executed before the SysEx patch is send (This does not happen during import of course)
+
+```yaml
+patchOverrides:
+  - name: Performances
+    command: $004000
+```
+
+For the Yamaha TG-500, we use `BANK_MSB_LSB_PRG` so `$004000` mean:
+
+- Send a bank select MSB: `$00`
+- Send a bank select LSB: `$40`
+- Send a control change: `$00`
+
+This command will select the first performance in order to switch the device in performance mode. If we skip this step, the edit buffer will not match the one in the SysEx (here `'LM  0065PF'`).
+
+### Checksum
+
+Since we modify the payload, the checksum need to be recomputed.
+
+```yaml
+ - offset: $ED
+   value: CK231 # Checksum
+```
+
+Here we know the checksum is at position $ED and we instruct to compute it with the 231 previous bytes.
+
+### Example
+
+Here a complex example for the Yamaha TG-500. This device use multiple edit buffers so it is very complex.
+
+- We define 3 different overrides conditioned to specific values in the payload: **Performance**, **Normal Voices** or **Drum Voices**
+- When one of those overrides matches, it enforces the right Edit Buffer with a `command`
+  - `$004000` select the first performance
+  - `$000000` select the first voice
+  - `$00003F` select the first drum kit
+- Finally the checksum is updated
+
+```yaml
+patchOverrides:
+  - name: Performances
+    mode: PerformanceMode
+    command: $004000
+    condition:
+      offset: $06
+      value: "'LM  0065PF'" # Performance Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $1F
+        value: $00 # memory number
+      - offset: $120
+        value: CK282 # Checksum
+  
+  - name: Voices
+    mode: VoiceMode
+    command: $000000
+    condition:
+      offset: $06
+      value: "'LM  0065VC'" # Voice Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $1F
+        value: $00 # memory number
+      - offset: $ED
+        value: CK231 # Checksum
+  
+  - name: Drum Voices
+    mode: VoiceMode
+    command: $00003F
+    condition:
+      offset: $06
+      value: "'LM  0065DR'" # Drum Voice Patch
+    overrides:
+      - offset: $1E
+        value: $7F # memory type: Edit Buffer
+      - offset: $2C3
+        value: CK701 # Checksum
+```
+
 # Memory Maps
 
 ## Overview
 
-Our Device Library is fine if you plan to do Backup and Restore queries, but when it comes to make a real synth editor, you need to understand every bit of the SysEx response. This is where you need a real memory map of the synth given a SysEx.
+Our Devices Library is fine if you plan to do Backup and Restore queries, but when it comes to make a real synth editor, you need to understand every bit of the SysEx response. This is where you need a real memory map of the synth given a SysEx.
 
-👉 Actually the Device Library is independent of the following API, but things will change in the future.
+👉 Actually the Devices Library is independent of the following API, but things will change in the future.
 
-👉 All of this API is actually in pause because the device library is much more important to my use right now.
+👉 All of this API is actually in pause because the devices library is much more important to my use right now.
 
 We need many things to handle SysEx:
 

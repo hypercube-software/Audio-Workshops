@@ -6,7 +6,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Describe a factory patch which can be selected via program change or a SysEx patch which can be loaded from disk
+ */
 public record MidiDevicePreset(String name, String command, String category, String filename) {
+    /**
+     * Typical definition found in YAML are:
+     * <ul>
+     *     <li>"0000 | Piano | PureStereo"</li>
+     *     <li>"@filename where filename is "prefix [command,category] name.syx" or "prefix [category] name.syx"</li>
+     * </ul>
+     */
     public static MidiDevicePreset of(MidiBankFormat midiBankFormat, String definition) {
         final String command;
         final String category;

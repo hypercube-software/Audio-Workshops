@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The Midi device library store all known settings for a given device. This make project settings small and not redundant
+ * The Midi devices library store all known settings for a given device. This make project settings small and not redundant
  * <lu>
  * <li>By default, it is located in the same folder as the JAR or the EXE</li>
  * <li>You can override this using the environment variable MDL_FOLDER</li>
@@ -62,13 +62,16 @@ public class MidiDeviceLibrary {
             libraryFolder = libraryFolder2;
         }
         if (libraryFolder.exists()) {
-            log.info("Loading midi device library from %s...".formatted(libraryFolder.toString()));
+            log.info("Loading midi devices library from %s...".formatted(libraryFolder.toString()));
             try (Stream<File> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
                     .filter(p -> p.getFileName()
                             .toString()
                             .endsWith(".yml") || p.getFileName()
                             .toString()
                             .endsWith(".yaml"))
+                    .filter(p -> !p.getFileName()
+                            .toString()
+                            .equals("Template.yml"))
                     .sorted(Comparator.comparing(Path::getFileName)
                             .reversed())
                     .map(Path::toFile)) {

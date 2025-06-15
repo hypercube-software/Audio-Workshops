@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * A Project device is defined outside the midi device library and can override various settings
+ * A Project device is defined outside the midi devices library and can override various settings
  * <p>Typically it is stored in a "project folder" and you can define many whereas the folder of the device library is unique</p>
  *
  * @see MidiDeviceDefinition

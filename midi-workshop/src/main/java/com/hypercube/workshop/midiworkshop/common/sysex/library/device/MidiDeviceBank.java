@@ -16,11 +16,12 @@ public class MidiDeviceBank {
      */
     private String name;
     /**
-     * Command to activate the command in the device
+     * Command to activate the bank in the device
      */
     private String command;
     /**
-     * Command to retreive the edit buffer and retreive the patch name
+     * Command to retrieve the edit buffer and retrieve the patch name
+     * <p>Override the one defined in the mode in {@link MidiDeviceMode#queryName}</p>
      */
     private String queryName;
     /**

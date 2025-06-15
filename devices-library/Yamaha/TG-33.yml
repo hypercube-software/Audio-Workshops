@@ -3,6 +3,9 @@
 #
 deviceName: "TG-33"
 brand: "Yamaha"
+presetFormat: BANK_MSB_LSB_PRG
+presetNumbering: FROM_ZERO
+presetNaming: STANDARD
 macros:
   - "System Data()       : 0001B : F0 43 20 7E 'LM  0012SY' F7"
   - "Multi Internal()    : 00D12 : F0 43 20 7E 'LM  0012MU' F7"
@@ -15,27 +18,6 @@ macros:
   - "setMultiMode()      : setRemote($07)"
   - "getVoiceName()      : Voice Edit Buffer() : YamahaVoiceMapper"
   - "getMultiName()      : Multi Edit Buffer() : YamahaMultiMapper"
-
-#
-# Select how to send bank select messages to the device:
-# ------------------------------------------------------
-# NO_BANK_PRG      : Does not send bank select, send only Program Change
-# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
-# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
-# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
-# BANK_PRG_PRG     : Send 2 Program Changes (used by Yamaha TG-77 in 'direct mode')
-#
-presetFormat: BANK_MSB_LSB_PRG
-#
-# FROM_ONE : preset number start from 1, it will be converted to n-1
-# FROM_ZERO: preset number will be sent "as is"
-#
-presetNumbering: FROM_ZERO
-#
-# STANDARD     : it is possible to get the patch name with SysEx
-# SOUND_CANVAS : Patch names are hardcoded in java application
-#
-presetNaming: STANDARD
 
 deviceModes:
   Multi:

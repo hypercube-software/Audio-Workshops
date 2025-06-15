@@ -1,10 +1,10 @@
 # Sine
 
-our very first code to generate sound
+Our very first code to generate sound
 
 # Java Audio API
 
-The Java Audio API is in the package `avax.sound` and it is provided by the JDK. There is no need to use an external
+The Java Audio API is in the package `javax.sound` and it is provided by the JDK. There is no need to use an external
 library.
 
 ## Wrap it !

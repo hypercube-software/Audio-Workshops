@@ -3,6 +3,9 @@
 #
 deviceName: "QS6.1"
 brand: "Alesis"
+presetFormat: BANK_MSB_PRG
+presetNumbering: FROM_ZERO
+presetNaming: STANDARD
 macros:
   - "PatchName()             :       : F0 00 00 0E 0E 03 00 F7 : AlesisProgramMapper"
   - "NewMixDumpRequest()     :       : F0 00 00 0E 0E 0F 64 F7 : AlesisMixMapper"
@@ -115,25 +118,7 @@ deviceModes:
       "CARD-A Hip-Hop":
         command: 5
         presetDomain: 0-127
-#
-# Select how to send bank select messages to the device:
-# ------------------------------------------------------
-# NO_BANK_PRG      : Does not send bank select, send only Program Change
-# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
-# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
-# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
-#
-presetFormat: BANK_MSB_PRG
-#
-# FROM_ONE : preset number start from 1, it will be converted to n-1
-# FROM_ZERO: preset number will be sent "as is"
-#
-presetNumbering: FROM_ZERO
-#
-# STANDARD     : it is possible to get the patch name with SysEx
-# SOUND_CANVAS : Patch names are hardcoded in java application
-#
-presetNaming: STANDARD
+
 #
 # Mappers to extract patch names
 #

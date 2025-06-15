@@ -31,9 +31,9 @@ There are two main families of frameworks:
 | [Swing](https://en.wikipedia.org/wiki/Swing_(Java))          | Imperative  |                      | Java                | JVM              | 1996 |
 | [Carbon](https://en.wikipedia.org/wiki/Carbon_(API))         | Imperative  |                      | C/C++               | OSX              | 1999 |
 | [Cocoa](https://en.wikipedia.org/wiki/Cocoa_(API))           | Imperative  |                      | Objective-C         | OSX              | 2001 |
+| [Flex](https://en.wikipedia.org/wiki/Apache_Flex)            | Declarative | MXML                 | ActionScript        | Flash            | 2004 |
 | [jQuery](https://en.wikipedia.org/wiki/JQuery)               | Imperative  |                      | Javascript          | Browser          | 2006 |
 | [WPF](https://en.wikipedia.org/wiki/Windows_Presentation_Foundation) | Declarative | XAML                 | C#                  | Windows          | 2006 |
-| [Flex](https://en.wikipedia.org/wiki/Apache_Flex)            | Declarative | MXML                 | ActionScript        | Flash            | 2004 |
 | [JavaFX](https://en.wikipedia.org/wiki/JavaFX)               | Declarative | FXML                 | Java                | JVM              | 2008 |
 | [AngularJS](https://en.wikipedia.org/wiki/AngularJS)         | Declarative | HTML                 | Javascript          | Browser          | 2010 |
 | [ReactJS](https://en.wikipedia.org/wiki/React_(software))    | Declarative | JSX                  | JavaScript          | Browser          | 2013 |
@@ -77,7 +77,9 @@ So if you plan to edit your FXML and of course, you are using components defined
 ![image-20250611225130463](assets/image-20250611225130463.png)
 
 ```
-The plugin SceneBuilder requires that the IDE run in a "compatible" JDK which can load your custom component, because precisely it relies on compiled components. Let say you work on Intelliji 2025.1.2 which is based on JDK 21. Can you work on JDK 24 JavaFX Component ? Nope.
+The plugin SceneBuilder requires that the IDE run in a "compatible" JDK which can load your custom component, because precisely 
+it relies on compiled components. Let say you work on Intelliji 2025.1.2 which is based on JDK 21. 
+Can you work on JDK 24 JavaFX Component ? Nope.
 ```
 
 ### Bad MVC
@@ -135,7 +137,7 @@ The main issue is the following:
 
 - In order to be notified of any change in a data object, the framework has to implement an entire notification system on top of the core language
 - It is a real pity that none of our favorite languages provide those features out of the box
-- Since Java has only non-observable properties (getters and setters), we need to write a observable one
+- Since Java has only non-observable properties (getters and setters), we need to write an observable one
 - At the end, your data object will be a real mess
 
 A single read-only observable property require all of this:
@@ -191,7 +193,7 @@ My personal contribution to resolve all of this will be to use  [bytebuddy](http
 
 ### Bloated Events
 
-There is a good reason for the existence of `EventType` in JavaFX but man.... this is so ugly. In order to create you custom event you have to:
+There is a good reason for the existence of `EventType` in JavaFX but man.... this is so ugly. In order to create your custom event you have to:
 
 - Create a class inhering from `javafx.event.Event`
 - Create an `javafx.event.EventType` with a unique name (a string)
@@ -247,14 +249,16 @@ Because C# provides the concept of ["partial" classes](https://en.wikibooks.org/
 ⚠️Now back to JavaFX, can Java do the same ? Nope. So it is impossible to convert the FXML to a Java class and at the same time write a controller which is also this class. **They had to choose one or the other and they choose... the wrong one !**
 
 ```
-JavaFX does not compile the FXML into a real Java class. This is a major design flaw. An FXML file does not inherit from a Button or a Window. The Controller does. Only the controller have a real existence as a Java Class. When SceneBuilder load a custom component, it loads a controller which is ALSO a javafx.scene.Node. This will cause issues.
+JavaFX does not compile the FXML into a real Java class. This is a major design flaw. An FXML file does not inherit from a Button or a Window. 
+The Controller does. Only the controller have a real existence as a Java Class. 
+When SceneBuilder load a custom component, it loads a controller which is ALSO a javafx.scene.Node. This will cause issues.
 ```
 
 Entering the **FXMLLoader**: this is the class that try to "fix" this irreconcilable situation.
 
 `FXMLLoader` operate in two "modes" but only one is really the right one:
 
-- If you are using `<AnchorPane ...>` as root tag in FXML prepare to pain. Things will never works properly.
+- If you are using `<AnchorPane ...>` as root tag in FXML prepare for pain. Things will never works properly.
 - If you are using `<fx:root type="AnchorPane " ... >` as root tag in FXML things will work properly.
 - I don't even talk about `<fx:include>` which is incompatible with `<fx:root>` syntax.
 

@@ -71,8 +71,7 @@ This clock uses the JDK `System.nanoTime()` to build a decent clock pulse in an 
 ⚠️ You may be tempted to use `LockSupport.parkNanos`. I invite you to try. This does not work. The latency involved by
 this call will destroy your accuracy.
 
-This implementation is really tricky and a little bit experimental: we must take into account the cost of sending the *
-*0xF8**, called `avgSendDurationInNanoSec`, this is why you will see a method `calibrate()`:
+This implementation is really tricky and a little bit experimental: we must take into account the cost of sending the **0xF8**, called `avgSendDurationInNanoSec`, this is why you will see a method `calibrate()`:
 
 ```java
 private void calibrate() {
