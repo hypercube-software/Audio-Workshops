@@ -651,6 +651,10 @@ Sometimes, the multi mode and the performance mode are the same:
 - The TX-81z for instance, use Performance mode to talk about Multi mode
 - The TG-33 talk about Multi-mode only
 
+## Manuals
+
+Yamaha did a fantastic job to provide all manuals for all devices including the old ones. You can get them in their library [here](https://usa.yamaha.com/support/manuals/index.html).
+
 ## Overview
 
 Yamaha bulk requests are typed with ASCII identifiers like  `LM  0066SY`, `LM  0065VC` or `LM  0065DR`
@@ -677,18 +681,18 @@ The TG-500 (rack version of the SY-85) is weird because it uses **2 edit buffers
   - Voice 63 is ALWAYS a drum. that's all.
   - Voices from 0-62 are regular voices
 
-| Bulk request type | Identifier   | memory type       | memory number |
-| ----------------- | ------------ | ----------------- | ------------- |
-| Normal Voice      | `LM  0065VC` | 0x00: internal 1  | 0-62          |
-|                   |              | 0x03: internal 2  | 0-62          |
-|                   |              | 0x7F: edit buffer | 0-62          |
-| Drum Voice        | `LM  0065DR` | 0x00: internal 1  | 63            |
-|                   |              | 0x03: internal 2  | 63            |
-|                   |              | 0x7F: edit buffer | 63            |
-| Performance       | `LM  0065PF` | 0x00              | 0-63          |
-| Multi             | `LM  0065MU` | 0x00              | 0-9           |
-| System setup      | `LM  0066SY` | 0x00              | 0             |
-| Sample            | `LM  0040SA` | 0x00              | 0-63          |
+| Bulk request type | Identifier   | memory type         | memory number |
+| ----------------- | ------------ | ------------------- | ------------- |
+| Normal Voice      | `LM  0065VC` | `0x00`: internal 1  | 0-62          |
+|                   |              | `0x03`: internal 2  | 0-62          |
+|                   |              | `0x7F`: edit buffer | 0-62          |
+| Drum Voice        | `LM  0065DR` | `0x00`: internal 1  | 63            |
+|                   |              | `0x03`: internal 2  | 63            |
+|                   |              | `0x7F`: edit buffer | 63            |
+| Performance       | `LM  0065PF` | `0x00`              | 0-63          |
+| Multi             | `LM  0065MU` | `0x00`              | 0-9           |
+| System setup      | `LM  0066SY` | `0x00`              | 0             |
+| Sample            | `LM  0040SA` | `0x00`              | 0-63          |
 
 Payload Example:
 
@@ -787,6 +791,112 @@ F0 43 00 7E 02 0A 'LM  8976S1' 01 00 01 01 01 02 01 03 01 04 01 05 01 06 01 07 0
 ```
 
 Wonderful isn't it ? Our **MPM** (Midi Patch Manager) handle this can of craziness.
+
+## CS1x
+
+This device uses 3 modes:
+
+- **Performance**: use keyboard split or stacked sounds
+- **XG** or **Multi**: you play up to 16 sounds per MIDI channel
+- **TG300B**: General Midi standard to play midi files
+
+⚠️Sadly there is no "Voice Mode" where you can just audit all possible patches.
+
+The CS1x is a strange beast because it uses the **same model ID than the Yamaha  QS-300** but have a different memory content at the same time.
+
+- "Native" SysEx requests use the QS-300 model ID `0x4B`
+- "XG" Dump requests use the XG model ID `0x4C`
+
+SysEx specification is available in page 21 of the document "CS1X DATA LIST" which can be downloaded from the Yamaha library [here](https://usa.yamaha.com/files/download/other_assets/9/318059/CS1xE2.pdf). Unfortunately it is not very clear to read.
+
+The overall format looks like this:
+
+```bash
+F0 ii td mm aa aa aa F7
+
+ii = Yamaha identifier = $43
+t  = request type: 
+	0 = Dump update
+	1 = Parameter update
+	2 = Dump request
+	3 = Parameter request	
+d  = device id = 0
+mm =  model id
+	$4B = Native, CS1X, performance mode
+	$4C = XG, multi mode
+
+aa = memory address
+
+F043104B ... F7 # typical performance command
+F043204C ... F7 # typical multi command
+```
+
+The memory layout for **performance mode** looks like this (See table `<2-1>` in the manual):
+
+```
+SYSTEM 
+50 00 00 CS1x System
+
+Current Performance (Edit buffer)
+60 00 00 Current Performance Common
+60 01 00 Current Performance Layer1
+60 02 00 Current Performance Layer1
+60 03 00 Current Performance Layer1
+60 04 00 Current Performance Layer1
+
+User Performance 1 
+70 00 00 User Performance Common
+71 00 00 User Performance Layer1
+72 00 00 User Performance Layer2
+73 00 00 User Performance Layer3
+74 00 00 User Performance Layer4
+...
+User Performance 128
+70 7F 00 User Performance Common
+71 7F 00 User Performance Layer1
+72 7F 00 User Performance Layer2
+73 7F 00 User Performance Layer3
+74 7F 00 User Performance Layer4
+```
+
+The memory layout for multi mode looks like this (See table `<1-1>` in the manual)::
+
+```
+MULTI PART 
+08 00 00 Multi Part 1
+...
+08 0F 00 Multi Part 16
+08 10 00 Reserved
+```
+
+Here some examples:
+
+```bash
+# change mode
+# See table <2-2> in the manual
+F043104B 50 00 06 mode F7
+mode: 
+	$03 = Performance mode
+	$01 = XG mode (Multi)
+
+# Edit buffer for Performance (Common parameters including performance name)
+# Table <2-3> in the manual
+F043204B 60 00 00 F7
+
+# Edit buffer for Performance layer
+# Table <2-4> in the manual
+F043204B 60 layer 00 F7
+layer: [1-4]
+
+# Edit buffer for Multi part
+# Table <1-5> in the manual
+F043204C 08 part 00 F7
+part: [0-15], the midi channel
+```
+
+Having fun: 
+
+Since this device don't have a "Voice Mode", I made a `CS1XPresetGenerator` to generate SysEx for all possible voices of the device. Using MPM (Midi Preset Manager) it is now possible to audit all voices of the CS1x. I invite you to take a look on this class.
 
 # Novation
 

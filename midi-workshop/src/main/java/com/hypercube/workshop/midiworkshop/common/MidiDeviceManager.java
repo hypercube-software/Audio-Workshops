@@ -18,7 +18,9 @@ public class MidiDeviceManager {
 
     public void collectDevices() {
         if (!isJdkVersionAtLeast(23)) {
-            throw new MidiError("Your JDK is too old and contains serious MIDI bugs, please upgrade to 23+. Current version is: " + System.getProperty("java.version"));
+            log.error("===================================================================================================");
+            log.error("Your JDK is too old and contains serious MIDI bugs, please upgrade to 23+. Current version is: " + System.getProperty("java.version"));
+            log.error("===================================================================================================");
         }
         inputs.clear();
         outputs.clear();

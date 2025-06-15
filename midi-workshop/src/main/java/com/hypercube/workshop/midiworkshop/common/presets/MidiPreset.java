@@ -162,7 +162,7 @@ public final class MidiPreset {
     @Override
     public String toString() {
         return "MidiPreset[" +
-                "title=" + id + ", " +
+                "id=" + id + ", " +
                 "channel=" + zeroBasedChannel + ", " +
                 "commands=" + commands + ", " +
                 "controlChanges=" + controlChanges + ", " +

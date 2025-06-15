@@ -32,3 +32,11 @@ selectedPatches:
   command: "0145"
   filename: null
   score: 2
+- device: "DS-330"
+  mode: "GS Standard"
+  bank: "SC Variation 8"
+  name: "Ukulele"
+  category: "Guitar"
+  command: "0818"
+  filename: null
+  score: 0
