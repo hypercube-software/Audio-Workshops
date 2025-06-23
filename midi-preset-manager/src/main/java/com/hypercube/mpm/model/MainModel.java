@@ -15,8 +15,11 @@ import java.util.Map;
 @Setter
 public class MainModel {
     private List<String> devices = new ArrayList<>();
+    private List<String> midiInPorts = new ArrayList<>();
+    private List<String> midiThruPorts = new ArrayList<>();
     private List<String> deviceModes = new ArrayList<>();
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
+    private List<Integer> modeChannels = new ArrayList<>();
     private List<String> modeBanks = new ArrayList<>();
     private DeviceState currentDeviceState = new DeviceState();
     private String currentPatchNameFilter;

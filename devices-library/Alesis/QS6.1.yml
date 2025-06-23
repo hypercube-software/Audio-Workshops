@@ -40,6 +40,7 @@ deviceModes:
   Program:
     command: setModeProgram()
     queryName: PatchName()
+    midiChannels: 0
     banks:
       "User Bank":
         command: 0
@@ -90,6 +91,7 @@ deviceModes:
   Mix:
     command: setModeMix()
     queryName: NewMixDumpRequest()
+    midiChannels: 0
     banks:
       "User Bank":
         command: 0

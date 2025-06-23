@@ -44,6 +44,7 @@ decodingKey:
 deviceModes:
   Program:
     queryName: PatchName(bankLSB,program)
+    midiChannels: 0
     banks:
       "Red Bank":
         command: 0

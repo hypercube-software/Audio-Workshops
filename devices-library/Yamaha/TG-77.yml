@@ -90,6 +90,7 @@ macros:
 deviceModes:
   Voice:
     command: setProgramChangeModeDIRECT()
+    midiChannels: 0
     banks:
       "Preset 1 Voices":
         command: setVoiceBankPRESET1(program)

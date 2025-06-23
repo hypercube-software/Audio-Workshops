@@ -8,14 +8,6 @@ selectedPatches:
   command: "000514"
   filename: null
   score: 0
-- device: "TG-500"
-  mode: "Voice"
-  bank: "Top40"
-  name: "BA FM-Bs.syx"
-  category: "Bass"
-  command: "000000"
-  filename: "202 [000000,Bass] BA FM-Bs.syx"
-  score: 0
 - device: "Summit"
   mode: "Single"
   bank: "Bank B"
@@ -32,11 +24,27 @@ selectedPatches:
   command: "0145"
   filename: null
   score: 2
+- device: "JV-880"
+  mode: "Patch"
+  bank: "Internal Bank"
+  name: "A.Piano 3"
+  category: "Keyboard"
+  command: "5008"
+  filename: null
+  score: 0
+- device: "TG-500"
+  mode: "Voice"
+  bank: "Top40"
+  name: "BA Fingr.syx"
+  category: "Bass"
+  command: "000000"
+  filename: "033 [000000,Bass] BA Fingr.syx"
+  score: 0
 - device: "DS-330"
   mode: "GS Standard"
-  bank: "SC Variation 8"
-  name: "Ukulele"
-  category: "Guitar"
-  command: "0818"
+  bank: "SC"
+  name: "Strings"
+  category: "Ensemble"
+  command: "0030"
   filename: null
   score: 0

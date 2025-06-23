@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * {@link #drumKitNotes} if not empty, indicate this preset load a Drumkit
  */
 @Getter
-@EqualsAndHashCode(of = {"id.title", "commands", "controlChanges", "channel"})
+@EqualsAndHashCode(of = {"id"})
 public final class MidiPreset {
 
     public static final int BANK_SELECT_MSB = 0;
@@ -55,8 +55,8 @@ public final class MidiPreset {
      */
     private final MidiBankFormat midiBankFormat;
 
-    public MidiPreset(String deviceMode, String bank, String id, int zeroBasedChannel, List<MidiMessage> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
-        this.id = new MidiPresetIdentity(deviceMode, bank, id, null);
+    public MidiPreset(String deviceMode, String bank, String presetName, String presetCategory, int zeroBasedChannel, List<MidiMessage> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
+        this.id = new MidiPresetIdentity(deviceMode, bank, presetName, presetCategory);
         this.zeroBasedChannel = zeroBasedChannel;
         this.commands = commands;
         this.controlChanges = controlChanges;
@@ -67,8 +67,20 @@ public final class MidiPreset {
         }
     }
 
-    public MidiPreset(String deviceMode, String bankName, String id, int zeroBasedChannel, List<MidiMessage> commands, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
-        this.id = new MidiPresetIdentity(deviceMode, bankName, id, null);
+    public MidiPreset(String deviceMode, String bank, String presetName, int zeroBasedChannel, List<MidiMessage> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
+        this.id = new MidiPresetIdentity(deviceMode, bank, presetName, null);
+        this.zeroBasedChannel = zeroBasedChannel;
+        this.commands = commands;
+        this.controlChanges = controlChanges;
+        this.drumKitNotes = drumKitNotes;
+        this.midiBankFormat = midiBankFormat;
+        if (controlChanges == null) {
+            throw new MidiConfigError("ControlChanges cannot be null, use List.of(NO_CC)");
+        }
+    }
+
+    public MidiPreset(String deviceMode, String bankName, String presetName, int zeroBasedChannel, List<MidiMessage> commands, List<DrumKitNote> drumKitNotes, MidiBankFormat midiBankFormat) {
+        this.id = new MidiPresetIdentity(deviceMode, bankName, presetName, null);
         this.zeroBasedChannel = zeroBasedChannel;
         this.commands = commands;
         this.midiBankFormat = midiBankFormat;
@@ -76,8 +88,8 @@ public final class MidiPreset {
         this.drumKitNotes = drumKitNotes;
     }
 
-    public MidiPreset(String deviceMode, String bankName, String id, int zeroBasedChannel, List<MidiMessage> commands, MidiBankFormat midiBankFormat) {
-        this.id = new MidiPresetIdentity(deviceMode, bankName, id, null);
+    public MidiPreset(String deviceMode, String bankName, String presetName, int zeroBasedChannel, List<MidiMessage> commands, MidiBankFormat midiBankFormat) {
+        this.id = new MidiPresetIdentity(deviceMode, bankName, presetName, null);
         this.zeroBasedChannel = zeroBasedChannel;
         this.commands = commands;
         this.midiBankFormat = midiBankFormat;
@@ -102,6 +114,16 @@ public final class MidiPreset {
             case BANK_LSB_PRG -> "%02X%02X".formatted(getBankLSB(), getLastProgram());
             case BANK_MSB_LSB_PRG -> "%02X%02X%02X".formatted(getBankMSB(), getBankLSB(), getLastProgram());
             case BANK_PRG_PRG -> "%02X%02X".formatted(getFirstProgram(), getLastProgram());
+        };
+    }
+
+    public String getBankCommand() {
+        return switch (midiBankFormat) {
+            case NO_BANK_PRG -> "";
+            case BANK_MSB_PRG -> "%02X".formatted(getBankMSB());
+            case BANK_LSB_PRG -> "%02X".formatted(getBankLSB());
+            case BANK_MSB_LSB_PRG -> "%02X%02X".formatted(getBankMSB(), getBankLSB());
+            case BANK_PRG_PRG -> "%02X".formatted(getFirstProgram());
         };
     }
 

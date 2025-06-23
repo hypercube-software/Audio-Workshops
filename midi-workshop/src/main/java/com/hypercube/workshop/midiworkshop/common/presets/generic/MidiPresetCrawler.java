@@ -96,6 +96,10 @@ public class MidiPresetCrawler {
             out.open();
             for (var mode : device.getDeviceModes()
                     .values()) {
+                if (!mode.getName()
+                        .equals("XG")) {
+                    continue;
+                }
                 log.info("Set mode " + mode.getName());
                 // no command mean the device switch automatically to the right mode (Like Yamaha TG-500)
                 if (mode.getCommand() != null) {
@@ -138,10 +142,14 @@ public class MidiPresetCrawler {
                             wait("Wait patch change", device.getPresetLoadTimeMs());
                             MidiPresetIdentity midiPresetIdentity = null;
                             for (int retry = 0; retry < 2; retry++) {
-                                midiPresetIdentity = switch (device.getPresetNaming()) {
+                                MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
+                                midiPresetIdentity = switch (presetNaming) {
                                     case STANDARD ->
                                             getStandardPreset(mode, currentBankName, bankMSB, bankLSB, program, bankRequestSequence, out);
-                                    case SOUND_CANVAS -> getSoundCanvasPreset(device, mode, program, midiPreset);
+                                    case SOUND_CANVAS ->
+                                            getPredefinedPreset("sc/SoundCanvasPatches.txt", device, mode, program, midiPreset);
+                                    case YAMAHA_XG ->
+                                            getPredefinedPreset("xg/XGPatches.txt", device, mode, program, midiPreset);
                                 };
                                 if (midiPresetIdentity != null) {
                                     if (previousPatchIdentity != null && previousPatchIdentity.name()
@@ -260,11 +268,11 @@ public class MidiPresetCrawler {
         }
     }
 
-    private MidiPresetIdentity getSoundCanvasPreset(MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
-        int bankMSB = midiPreset.getBankMSB();
-        MidiDeviceBank bank = device.getBankByMSB("" + bankMSB)
-                .orElseThrow(() -> new MidiConfigError("Bank MSB %d not declared in presetBank section of decide '%'".formatted(bankMSB, device.getDeviceName())));
-        String presetName = getSoundCanvasPresetName(bankMSB, midiPreset.getBankLSB(), program).orElse("Unknown");
+    private MidiPresetIdentity getPredefinedPreset(String filename, MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
+        String bankCommand = midiPreset.getBankCommand();
+        MidiDeviceBank bank = device.getBankByCommand(bankCommand)
+                .orElseThrow(() -> new MidiConfigError("Bank command %s not declared in presetBank section of device '%s'".formatted(bankCommand, device.getDeviceName())));
+        String presetName = getPredefinedPresetName(filename, midiPreset.getBankMSB(), midiPreset.getBankLSB(), program).orElse("Unknown");
         MidiPresetCategory category = getSoundCanvasCategory(device, mode, program);
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
@@ -328,11 +336,11 @@ public class MidiPresetCrawler {
         return device.getCategory(mode, program / 8);
     }
 
-    private Optional<String> getSoundCanvasPresetName(int bankMSB, int bankLSB, int program) {
+    private Optional<String> getPredefinedPresetName(String presetList, int bankMSB, int bankLSB, int program) {
         String prefix = "%d-%d-%d ".formatted(bankMSB, bankLSB, program);
         URL resource = this.getClass()
                 .getClassLoader()
-                .getResource("sc/SoundCanvasPatches.txt");
+                .getResource(presetList);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
             return reader.lines()
                     .toList()
@@ -342,7 +350,7 @@ public class MidiPresetCrawler {
                     .flatMap(Optional::stream)
                     .findFirst();
         } catch (Exception e) {
-            throw new MidiConfigError("Erreur lors de la lecture de l'InputStream", e); // Gestion des exceptions améliorée
+            throw new MidiConfigError("Unable to open " + resource, e); // Gestion des exceptions améliorée
         }
     }
 

@@ -43,6 +43,7 @@ deviceModes:
   Program:
     command: ModeChange( $2 )
     queryName: PatchName()
+    midiChannels: 0
     banks:
       "Program Bank A":
         command: "$0000"
@@ -77,6 +78,7 @@ deviceModes:
   Combi:
     command: ModeChange( $0 )
     queryName: CombiName()
+    midiChannels: 0
     banks:
       "Combi Bank A":
         command: "$0000"

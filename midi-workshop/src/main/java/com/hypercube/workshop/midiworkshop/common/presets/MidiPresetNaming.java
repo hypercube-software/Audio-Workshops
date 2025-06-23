@@ -8,5 +8,9 @@ public enum MidiPresetNaming {
     /**
      * Preset names cannot be retrieved via MIDI, they need to be hardcoded
      */
-    SOUND_CANVAS
+    SOUND_CANVAS,
+    /**
+     * Preset names cannot be retrieved via MIDI, they need to be hardcoded
+     */
+    YAMAHA_XG
 }

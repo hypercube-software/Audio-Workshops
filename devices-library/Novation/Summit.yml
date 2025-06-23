@@ -39,6 +39,7 @@ deviceModes:
   Single:
     command: singeMode()
     queryName: PatchName()
+    midiChannels: 0
     banks:
       "Bank A":
         command: "$0001"
@@ -71,6 +72,7 @@ deviceModes:
   Multi:
     command: multiMode()
     queryName: MultiName()
+    midiChannels: 0
     banks:
       "Bank A":
         command: "$0001"

@@ -19,6 +19,7 @@ macros:
 deviceModes:
   GS Standard:
     command: ModeMultiGS()
+    midiChannels: 0-15
     banks:
       "SC":
         command: "0"

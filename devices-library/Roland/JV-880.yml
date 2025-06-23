@@ -25,6 +25,7 @@ deviceModes:
   Patch:
     command: setPatchMode()
     queryName: PatchName()
+    midiChannels: 0
     categories:
       - "Drum"
       - "Keyboard: Piano, Rhode,Grand"
@@ -54,6 +55,7 @@ deviceModes:
   Performance:
     command: setPerformanceMode()
     queryName: PerformanceName()
+    midiChannels: 0
     # In performance mode, channel 16 must be used to select performances
     banks:
       "Preset A Bank":

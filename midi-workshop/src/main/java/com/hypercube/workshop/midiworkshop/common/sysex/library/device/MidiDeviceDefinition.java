@@ -125,12 +125,11 @@ public class MidiDeviceDefinition {
         return Optional.ofNullable(mappers.get(mapperName));
     }
 
-    public Optional<MidiDeviceBank> getBankByMSB(String msb) {
+    public Optional<MidiDeviceBank> getBankByCommand(String command) {
         for (var mode : getDeviceModes().values()) {
             for (var bank : mode.getBanks()
                     .values()) {
-                if (bank.getCommand()
-                        .equals(msb)) {
+                if (command.equals(bank.getCommand()) || ("$" + command).equals(bank.getCommand())) {
                     return Optional.of(bank);
                 }
             }

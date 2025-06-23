@@ -83,6 +83,7 @@ deviceModes:
   Voice:
     command: setVoiceMode()
     queryName: PatchName()
+    midiChannels: 0
     banks:
       # PRE1-PRE8 , USR1-3, GM
       "Preset 1 Voices":

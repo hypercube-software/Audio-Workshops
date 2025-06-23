@@ -17,6 +17,7 @@ public class DeviceState {
     private String currentMode;
     private String currentBank;
     private Patch currentPatch;
+    private Integer currentChannel;
     private List<Patch> currentSearchOutput = new ArrayList<>();
     private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
     @NotObservable

@@ -22,6 +22,7 @@ macros:
 
 deviceModes:
   Voice:
+    midiChannels: 0
     banks:
       "Voices":
         queryName: getVoiceName()

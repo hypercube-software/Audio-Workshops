@@ -50,12 +50,14 @@ categories:
 deviceModes:
   Performance:
     command: setModifedPrgChgTable()
+    midiChannels: 0
     banks:
       "Performances":
         queryName: getPerformanceName()
         presetDomain: 32-55
   Single:
     command: setDefaultPrgChgTable()
+    midiChannels: 0
     banks:
       "Bank Internal":
         queryName: getVoiceName()
@@ -71,6 +73,7 @@ deviceModes:
         presetDomain: 96-127
   SingleModeD:
     command: setModifedPrgChgTable()
+    midiChannels: 0
     banks:
       "Bank D":
         queryName: getVoiceName()

@@ -75,25 +75,25 @@ public class MidiOutDevice extends AbstractMidiDevice {
                 });
     }
 
-    public void sendProgramChange(int prg) {
+    public void sendProgramChange(int channel, int prg) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.PROGRAM_CHANGE, prg, 0), NO_TIME_STAMP);
+            receiver.send(new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, prg, 0), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
     }
 
-    public void sendBankMSB(int bankMSB) {
+    public void sendBankMSB(int channel, int bankMSB) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, CC_BANK_SELECT_MSB, bankMSB), NO_TIME_STAMP);
+            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_MSB, bankMSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
     }
 
-    public void sendBankLSB(int bankLSB) {
+    public void sendBankLSB(int channel, int bankLSB) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, CC_BANK_SELECT_LSB, bankLSB), NO_TIME_STAMP);
+            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_LSB, bankLSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -161,7 +161,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
      * This is already done by javax.sound.midi.MidiDevice::close()
      */
     public void sendAllOff() {
-        IntStream.range(CC_BANK_SELECT_MSB, 16)
+        IntStream.range(0, 16)
                 .forEach(ch -> {
                     sendAllNoteOff(ch);
                     sendAllcontrollersOff(ch);

@@ -50,6 +50,10 @@ public class MidiPresetBuilder {
         return new MidiPreset(null, bankName, title, zeroBasedChannel, forgeCommands(device, zeroBasedChannel, bankMSB, bankLSB, program), List.of(), List.of(), device.getPresetFormat());
     }
 
+    public static MidiPreset parse(String bankName, String presetName, String presetCategory, MidiDeviceDefinition device, int zeroBasedChannel, int bankMSB, int bankLSB, int program) {
+        return new MidiPreset(null, bankName, presetName, presetCategory, zeroBasedChannel, forgeCommands(device, zeroBasedChannel, bankMSB, bankLSB, program), List.of(), List.of(), device.getPresetFormat());
+    }
+
     public static List<MidiMessage> forgeCommands(MidiDeviceDefinition device, MidiDeviceBank bank, int program) {
         MidiBankFormat midiBankFormat = device.getPresetFormat();
         String bankCommand = bank.getCommand();

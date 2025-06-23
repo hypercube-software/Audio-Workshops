@@ -22,6 +22,7 @@ macros:
 deviceModes:
   Multi:
     command: setMultiMode()
+    midiChannels: 0-15
     banks:
       "Preset 1 Multis":
         command: $0010
@@ -29,6 +30,7 @@ deviceModes:
         presetDomain: 64-79
   Voice:
     command: setVoiceMode()
+    midiChannels: 0
     banks:
       "Preset 1 Voices":
         command: $0002

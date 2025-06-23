@@ -156,15 +156,15 @@ public class ModelHelper {
         Class<?> fieldType = field.getType();
         if (fieldType == String.class) {
             return SimpleStringProperty.class;
-        } else if (fieldType == boolean.class || fieldType == Boolean.class) {
+        } else if (fieldType == boolean.class) {
             return SimpleBooleanProperty.class;
-        } else if (fieldType == int.class || fieldType == Integer.class) {
+        } else if (fieldType == int.class) {
             return SimpleIntegerProperty.class;
-        } else if (fieldType == long.class || fieldType == Long.class) {
+        } else if (fieldType == long.class) {
             return SimpleLongProperty.class;
-        } else if (fieldType == float.class || fieldType == Float.class) {
+        } else if (fieldType == float.class) {
             return SimpleFloatProperty.class;
-        } else if (fieldType == double.class || fieldType == Double.class) {
+        } else if (fieldType == double.class) {
             return SimpleDoubleProperty.class;
         } else if (fieldType == List.class || fieldType == ObservableList.class) {
             return SimpleListProperty.class;

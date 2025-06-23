@@ -6,10 +6,7 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import javafx.beans.Observable;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -45,17 +42,17 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 .bind(prop);
     }
 
-    public void onAllowMultiSelection(String oldValue, String newValue) {
+    public void onAllowMultiSelectionChange(String oldValue, String newValue) {
         attributes.getSelectionModel()
                 .setSelectionMode(Boolean.parseBoolean(newValue) ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
     }
 
-    public void onSelectedIndexes(String oldValue, String newValue) {
+    public void onSelectedIndexesChange(String oldValue, String newValue) {
         Property<?> selectedIndexesProperty = resolvePath(newValue + "Property");
         selectedIndexesProperty.addListener(this::onModelSelectedIndexesChange);
     }
 
-    public void onSelectedItems(String oldValue, String newValue) {
+    public void onSelectedItemsChange(String oldValue, String newValue) {
         Property<?> selectedItemsProperty = resolvePath(newValue + "Property");
         selectedItemsProperty.addListener(this::onModelSelectedItemsChange);
     }
@@ -83,7 +80,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 .orElse(List.of());
     }
 
-    public void onLabelMethod(String oldValue, String newValue) {
+    public void onLabelMethodChange(String oldValue, String newValue) {
         try {
             Class<?> clazz = Class.forName(getView().getItemType());
             attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
@@ -205,6 +202,9 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         } else if (observable instanceof StringProperty stringProperty) {
             String value = stringProperty.getValue();
             selectedItems = value == null ? List.of() : List.of(value);
+        } else if (observable instanceof ObjectProperty objectProperty) {
+            Object value = objectProperty.getValue();
+            selectedItems = value == null ? List.of() : List.of(value);
         } else if (observable instanceof SimpleListProperty simpleListProperty) {
             ObservableList<Object> value = simpleListProperty.getValue();
             selectedItems = value == null ? List.of() : value;
@@ -248,7 +248,6 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
 
-        fireEvent(SelectionChangedEvent.class, getView().dataSourceProperty()
-                .get(), indexes, items);
+        fireEvent(SelectionChangedEvent.class, getView().getId(), indexes, items);
     }
 }

@@ -6,6 +6,7 @@ import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
+import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
@@ -19,6 +20,7 @@ import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
@@ -42,17 +44,15 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     ProjectConfiguration cfg;
     @Autowired
     ConfigurationFactory configurationFactory;
+    @Autowired
+    MidiRouter midiRouter;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
-        getModel().setDevices(cfg.getMidiDeviceLibrary()
-                .getDevices()
-                .values()
-                .stream()
-                .map(MidiDeviceDefinition::getDeviceName)
-                .sorted()
-                .toList());
+        getModel().setDevices(buildDeviceList());
+        getModel().setMidiInPorts(buildMidiInPortsList());
+        getModel().setMidiThruPorts(buildMidiThruPortsList());
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
@@ -63,6 +63,60 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     initDeviceStateFromConfig(selectedPatch.getDevice(), selectedPatch);
                     sendPatchToDevice(selectedPatch);
                 });
+    }
+
+    /**
+     * When possible we replace the MIDI port name by a known device
+     */
+    private List<String> buildMidiInPortsList() {
+        return cfg.getMidiDeviceManager()
+                .getInputs()
+                .stream()
+                .map(port -> {
+                    for (var device : cfg.getMidiDeviceLibrary()
+                            .getDevices()
+                            .values()) {
+                        if (port.getName()
+                                .equals(device.getInputMidiDevice())) {
+                            return device.getDeviceName();
+                        }
+                    }
+                    return port.getName();
+                })
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * When possible we replace the MIDI port name by a known device
+     */
+    private List<String> buildMidiThruPortsList() {
+        return cfg.getMidiDeviceManager()
+                .getOutputs()
+                .stream()
+                .map(port -> {
+                    for (var device : cfg.getMidiDeviceLibrary()
+                            .getDevices()
+                            .values()) {
+                        if (port.getName()
+                                .equals(device.getOutputMidiDevice())) {
+                            return device.getDeviceName();
+                        }
+                    }
+                    return port.getName();
+                })
+                .sorted()
+                .toList();
+    }
+
+    private List<String> buildDeviceList() {
+        return cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .values()
+                .stream()
+                .map(MidiDeviceDefinition::getDeviceName)
+                .sorted()
+                .toList();
     }
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
@@ -99,30 +153,63 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void onSelectionChanged(SelectionChangedEvent selectionChangedEvent) {
-        log.info(selectionChangedEvent.getDataSource() + " changed ! " + selectionChangedEvent.getSelectedIndexes()
+        String widgetId = selectionChangedEvent.getWidgetId();
+        log.info(widgetId + " changed ! " + selectionChangedEvent.getSelectedIndexes()
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
-        if (selectionChangedEvent.getDataSource()
-                .endsWith(".devices")) {
+        if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_DEVICE)) {
             onDeviceChanged(selectionChangedEvent);
             refreshPatches();
-        } else if (selectionChangedEvent.getDataSource()
-                .endsWith(".deviceModes")) {
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_MODE)) {
             onModeChanged(selectionChangedEvent);
             refreshPatches();
-        } else if (selectionChangedEvent.getDataSource()
-                .endsWith(".modeCategories")) {
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL)) {
+            onChannelChanged(selectionChangedEvent);
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_CATEGORY)) {
             onCategoriesChanged(selectionChangedEvent);
             refreshPatches();
-        } else if (selectionChangedEvent.getDataSource()
-                .endsWith(".modeBanks")) {
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_BANK)) {
             onBankChanged(selectionChangedEvent);
             refreshPatches();
-        } else if (selectionChangedEvent.getDataSource()
-                .endsWith(".patches")) {
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_PATCH)) {
             onPatchChanged(selectionChangedEvent);
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS)) {
+            onPassThruChanged(selectionChangedEvent);
+        } else if (widgetId.equals(WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS)) {
+            onMasterInputChanged(selectionChangedEvent);
         }
+    }
+
+    private void onChannelChanged(SelectionChangedEvent selectionChangedEvent) {
+        var model = getModel();
+        Integer channel = selectionChangedEvent.getSelectedItems()
+                .stream()
+                .map(obj -> (Integer) obj)
+                .findFirst()
+                .orElse(null);
+        var state = model.getCurrentDeviceState();
+        if (state != null) {
+            state.setCurrentChannel(channel);
+        }
+        saveDeviceState();
+    }
+
+    private void onMasterInputChanged(SelectionChangedEvent selectionChangedEvent) {
+        String deviceOrPortName = selectionChangedEvent.getSelectedItems()
+                .stream()
+                .map(obj -> (String) obj)
+                .findFirst()
+                .orElse(null);
+        midiRouter.changeSource(deviceOrPortName);
+    }
+
+    private void onPassThruChanged(SelectionChangedEvent selectionChangedEvent) {
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems()
+                .stream()
+                .map(obj -> (String) obj)
+                .toList();
+        midiRouter.changeDestinations(selectedItems);
     }
 
     private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -187,7 +274,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 log.error("Patch file no longer exists: " + filename.getAbsolutePath());
             }
         } else {
-            MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), 0,
+            int channel = getChannel();
+            MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), channel,
                     device.getPresetFormat(),
                     device.getPresetNumbering(),
                     selectedPatch.getName(),
@@ -205,32 +293,39 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void selectEditBuffer(Patch selectedPatch, MidiDeviceDefinition device, MidiOutDevice port) {
         if (selectedPatch.getCommand() != null) {
             List<Integer> digits = forgeCommand(device.getPresetFormat(), selectedPatch.getCommand());
-            log.info("Select Edit Buffer with preset format %s: %s".formatted(device.getPresetFormat(), digits.stream()
+            int channel = getChannel();
+            log.info("Select Edit Buffer on channel %d with preset format %s: %s".formatted(channel, device.getPresetFormat(), digits.stream()
                     .map(v -> "$%02X".formatted(v))
                     .collect(Collectors.joining(","))));
             switch (device.getPresetFormat()) {
                 case NO_BANK_PRG -> {
-                    port.sendProgramChange(digits.getLast());
+                    port.sendProgramChange(channel, digits.getLast());
                 }
                 case BANK_MSB_PRG -> {
-                    port.sendBankMSB(digits.getFirst());
-                    port.sendProgramChange(digits.getLast());
+                    port.sendBankMSB(channel, digits.getFirst());
+                    port.sendProgramChange(channel, digits.getLast());
                 }
                 case BANK_LSB_PRG -> {
-                    port.sendBankLSB(digits.getFirst());
-                    port.sendProgramChange(digits.getLast());
+                    port.sendBankLSB(channel, digits.getFirst());
+                    port.sendProgramChange(channel, digits.getLast());
                 }
                 case BANK_MSB_LSB_PRG -> {
-                    port.sendBankMSB(digits.getFirst());
-                    port.sendBankLSB(digits.get(1));
-                    port.sendProgramChange(digits.getLast());
+                    port.sendBankMSB(channel, digits.getFirst());
+                    port.sendBankLSB(channel, digits.get(1));
+                    port.sendProgramChange(channel, digits.getLast());
                 }
                 case BANK_PRG_PRG -> {
-                    port.sendProgramChange(digits.getFirst());
-                    port.sendProgramChange(digits.getLast());
+                    port.sendProgramChange(channel, digits.getFirst());
+                    port.sendProgramChange(channel, digits.getLast());
                 }
             }
         }
+    }
+
+    private Integer getChannel() {
+        return Optional.ofNullable(getModel().getCurrentDeviceState()
+                        .getCurrentChannel())
+                .orElse(0);
     }
 
     public static List<Integer> forgeCommand(MidiBankFormat presetFormat, String hexString) {
@@ -393,6 +488,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             refreshModeCategoriesAndBanks(model, device, modeName);
             state.setCurrentSelectedCategories(List.of());
             state.setCurrentMode(modeName);
+            state.setCurrentChannel(0);
             state.setCurrentBank(null);
             state.setCurrentSearchOutput(null);
         } else {
@@ -411,14 +507,26 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .stream()
                     .sorted(Comparator.comparing(MidiPresetCategory::name))
                     .toList());
+            model.setModeChannels(mode.getChannels());
             model.setModeBanks(mode.getBanks()
-                    .keySet()
+                    .values()
                     .stream()
-                    .sorted()
+                    .sorted((b1, b2) -> {
+                        if (b1.getCommand() == null && b2.getCommand() != null) {
+                            return 1;
+                        } else if (b2.getCommand() == null && b1.getCommand() != null) {
+                            return -1;
+                        } else {
+                            return b1.getName()
+                                    .compareTo(b2.getName());
+                        }
+                    })
+                    .map(MidiDeviceBank::getName)
                     .toList());
         } else {
-            model.setModeCategories(null);
-            model.setModeBanks(null);
+            model.setModeCategories(List.of());
+            model.setModeBanks(List.of());
+            model.setModeChannels(List.of());
         }
     }
 
@@ -470,6 +578,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(deviceName)
                 .orElseThrow();
+        midiRouter.changeMainDestination(device);
         if (!model.getDeviceStates()
                 .containsKey(deviceName)) {
             initDeviceStateFromConfig(deviceName, null);
@@ -486,8 +595,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void dumpStates() {
         getModel().getDeviceStates()
                 .forEach(
-                        (key, source) -> log.info("[{}/{}] state: mode '{}' command '{}' categories '{}' patch '{}'",
-                                key, source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
+                        (key, source) -> log.info("[{}/{}] state: mode '{}' channel '{}'  command '{}' categories '{}' patch '{}'",
+                                key, source.getDeviceName(),
+                                source.getCurrentMode(),
+                                source.getCurrentChannel(),
+                                source.getCurrentBank(),
+                                source.getCurrentSelectedCategories(),
+                                source.getCurrentPatch()
                         ));
     }
 
@@ -496,7 +610,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         //dumpStates();
         var source = model.getCurrentDeviceState();
         if (source.getDeviceName() != null) {
-            log.info("Save {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch()
+            log.info("---------------------------------------------------------------------------------");
+            log.info("Save {} state: mode '{}' channel: '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(),
+                    source.getCurrentMode(),
+                    source.getCurrentChannel(),
+                    source.getCurrentBank(),
+                    source.getCurrentSelectedCategories(),
+                    source.getCurrentPatch()
             );
             var target = model.getDeviceStates()
                     .get(source.getDeviceName());
@@ -513,8 +633,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void restoreDeviceState(DeviceState source, MainModel target) {
         var current = target.getCurrentDeviceState();
-        log.info("Restore {} state: mode '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch());
-        log.info("Over    {} state: mode '{}' command '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), source.getCurrentBank(), current.getCurrentSelectedCategories(), current.getCurrentPatch());
+        log.info("Restore {} state: mode '{}' channel '{}' command '{}' categories '{}' patch '{}'", source.getDeviceName(), source.getCurrentMode(), source.getCurrentChannel(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch());
+        log.info("Over    {} state: mode '{}' channel '{}' command '{}' categories '{}' patch '{}'", current.getDeviceName(), current.getCurrentMode(), current.getCurrentChannel(), current.getCurrentBank(), current.getCurrentSelectedCategories(), current.getCurrentPatch());
         copyState(source, current);
     }
 
@@ -523,6 +643,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             target.setDeviceName(source.getDeviceName());
             target.setCurrentMode(source.getCurrentMode());
             target.setCurrentBank(source.getCurrentBank());
+            if (getModel().getModeChannels()
+                    .size() == 1) {
+                target.setCurrentChannel(0);
+            } else {
+                target.setCurrentChannel(source.getCurrentChannel());
+            }
             target.setMidiOutDevice(source.getMidiOutDevice());
             target.setCurrentSelectedCategories(source.getCurrentSelectedCategories());
             target.setCurrentSearchOutput(source.getCurrentSearchOutput());

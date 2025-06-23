@@ -52,6 +52,7 @@ deviceModes:
   Performance:
     command: setPerformanceMode()
     queryName: PerformanceName()
+    midiChannels: 0
     banks:
       "Performances":
         command: $3F40
@@ -85,96 +86,141 @@ deviceModes:
       - "Sequence"
   XG:
     command: setMode($01)
-    queryName: XG Multi Part Data($00)
+    midiChannels: 0-15
+    #queryName: XG Multi Part Data($00)
+    presetNaming: YAMAHA_XG
     banks:
       "XG 000":
         command: "$0000"
+        presetDomain: 0-127
       "XG 001 (KSP)":
         command: "$0001"
+        presetDomain: 0-7,11-12
       "XG 003 (Stereo)":
         command: "$0003"
+        presetDomain: 48-49,52
       "XG 006 (Single)":
         command: "$0006"
+        presetDomain: 39,60,80-81
       "XG 008 (Slow)":
         command: "$0008"
+        presetDomain: 40,44,48-49,80-81,102
       "XG 012 (Fast Decay)":
         command: "$000C"
+        presetDomain: 39,62,98
       "XG 014 (Double Attack)":
         command: "$000E"
-      "XG 016 (Bright)":
+        presetDomain: 98,102
+      "XG 016 (Bright 1)":
         command: "$0010"
-      "XG 017":
+        presetDomain: 24-25,52,56,58,87,89
+      "XG 017 (Bright 2)":
         command: "$0011"
-      "XG 018 (Dark)":
+        presetDomain: 56,89
+      "XG 018 (Dark 1)":
         command: "$0012"
-      "XG 019":
+        presetDomain: 0,4,26,33,38-39,57,63,80-81,89,98-99
+      "XG 019 (Dark 2)":
         command: "$0013"
+        presetDomain: 39,80-81,99
       "XG 020 (Resonant)":
         command: "$0014"
+        presetDomain: 38,62,81,95
       "XG 024 (Attack)":
         command: "$0018"
+        presetDomain: 17,38,48,62,81,85
       "XG 025 (Release)":
         command: "$0019"
-      "XG 027 (Rezo Sweep)":
+        presetDomain: 6,24,81
+      "XG 027 (Resonant Sweep)":
         command: "$001B"
+        presetDomain: 7,33,36,50,62,95,97
       "XG 028 (Muted)":
         command: "$001C"
+        presetDomain: 34,105
       "XG 032 (Detune 1)":
         command: "$0020"
+        presetDomain: 2,4-5,16-17,19,21-22,26-27,35-36,39,52,56,60,62,104
       "XG 033 (Detune 2)":
         command: "$0021"
+        presetDomain: 5,16-17,35
       "XG 034 (Detune 3)":
         command: "$0022"
+        presetDomain: 5,16,35
       "XG 035 (Octave 1)":
         command: "$0023"
+        presetDomain: 6,15-16,19,25,38,48,55,61,86,98,104
       "XG 036 (Octave 2)":
         command: "$0024"
+        presetDomain: 16
       "XG 037 (5th 1)":
         command: "$0025"
+        presetDomain: 16-17,60
       "XG 038 (5th 2)":
         command: "$0026"
+        presetDomain: 16
       "XG 039 (Bend)":
         command: "$0027"
-      "XG 040 (Tutti)":
+      "XG 040 (Tutti 1)":
         command: "$0028"
-      "XG 041":
+        presetDomain: 0,2,4-5,16,19-20,25,28,32-33,38-39,44,46,48-49,52,54,61,63,65-66,81,98-99
+      "XG 041 (Tutti 2)":
         command: "$0029"
-      "XG 042":
+        presetDomain: 0,2,5,25,28,30,39,48-49,54,61,63,66,82,98
+      "XG 042 (Tutti 3)":
         command: "$002A"
+        presetDomain: 5,48,61,98
       "XG 043 (Velo-Switch)":
         command: "$002B"
+        presetDomain: 24,28-29,33,37,65
       "XG 045 (Velo-Xfade)":
         command: "$002D"
-      "XG 064 (other wave)":
+        presetDomain: 4-5,11,28,32-33,48,62-63,96
+      "XG 064 (Other waves 1)":
         command: "$0040"
-      "XG 065":
+        presetDomain: 4,7,10,12,16,18-19,23,38-39,49-50,54-55,62-63,66,80,83-85,87-93,95-103,111,117-118
+      "XG 065 (Other waves 2)":
         command: "$0041"
-      "XG 066":
+        presetDomain: 7,16,18-19,31,33,38,49-50,80,82,84,87,89-90,92-93,96,98-99,101-102,117-118
+      "XG 066 (Other waves 3)":
         command: "$0042"
-      "XG 067":
+        presetDomain: 16,18,31,38,80,90-91,95-96,98-99,101-102,117
+      "XG 067 (Other waves 4)":
         command: "$0043"
-      "XG 068":
+        presetDomain: 16,90-91,98-99,101-102
+      "XG 068 (Other waves 5)":
         command: "$0044"
-      "XG 069":
+        presetDomain: 98,101-102
+      "XG 069 (Other waves 6)":
         command: "$0045"
-      "XG 070":
+        presetDomain: 98,102
+      "XG 070 (Other waves 7)":
         command: "$0046"
-      "XG 071":
+        presetDomain: 98,101
+      "XG 071 (Other waves 8)":
         command: "$0047"
-      "XG 072":
+        presetDomain: 98,101
+      "XG 072 (Other waves 9)":
         command: "$0048"
-      "XG 096":
+        presetDomain: 98
+      "XG 096 (Other instr 1)":
         command: "$0060"
-      "XG 097":
+        presetDomain: 14-15,24-25,35,38,81,100-101,104-105,107,111-112,115-116
+      "XG 097 (Other instr 2)":
         command: "$0061"
-      "XG 098":
+        presetDomain: 12,14-15,35,104-105,107,111-112,114
+      "XG 098 (Other instr 3)":
         command: "$0062"
-      "XG 099":
+        presetDomain: 12,105,112,114
+      "XG 099 (Other instr 4)":
         command: "$0063"
-      "XG 100":
+        presetDomain: 112
+      "XG 100 (Other instr 5)":
         command: "$0064"
-      "XG 101":
+        presetDomain: 112
+      "XG 101 (Other instr 6)":
         command: "$0065"
+        presetDomain: 112
       "XG SFX":
         command: "$4000"
       "PRE 00":
@@ -203,7 +249,23 @@ deviceModes:
         command: "$3F0B"
       "PRE 12 (Drum Kits)":
         command: "$3F0C"
-
+    categories:
+      - "Piano"
+      - "Chromatic Percussion"
+      - "Organ"
+      - "Guitar"
+      - "Bass"
+      - "Strings"
+      - "Ensemble"
+      - "Brass"
+      - "Reed"
+      - "Pipe"
+      - "Synth lead"
+      - "Synth Pad"
+      - "Synth SFX"
+      - "Ethnic"
+      - "Percussive"
+      - "Sound FX"
 #
 # Mappers to extract patch names
 #

@@ -3,6 +3,7 @@ package com.hypercube.mpm.javafx.widgets.patch;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
+import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
@@ -123,6 +124,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
                 .map(Patch::getName)
                 .collect(Collectors.joining(",")));
 
-        fireEvent(SelectionChangedEvent.class, "model.patches", List.of(), patches);
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, List.of(), patches);
     }
 }
