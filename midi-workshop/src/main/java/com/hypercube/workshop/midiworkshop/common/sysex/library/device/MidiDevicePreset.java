@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Describe a factory patch which can be selected via program change or a SysEx patch which can be loaded from disk
  */
-public record MidiDevicePreset(String name, String command, String category, String filename) {
+public record MidiDevicePreset(String name, String command, String category, String filename, List<String> drumMap) {
     /**
      * Typical definition found in YAML are:
      * <ul>
@@ -56,7 +57,7 @@ public record MidiDevicePreset(String name, String command, String category, Str
             name = parts.get(2)
                     .trim();
         }
-        return new MidiDevicePreset(name, normalizeCommand(midiBankFormat, command), category, filename);
+        return new MidiDevicePreset(name, normalizeCommand(midiBankFormat, command), category, filename, new ArrayList<>());
     }
 
     private static String normalizeCommand(MidiBankFormat midiBankFormat, String command) {

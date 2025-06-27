@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -94,7 +95,7 @@ public final class MidiPreset {
         this.commands = commands;
         this.midiBankFormat = midiBankFormat;
         this.controlChanges = List.of(NO_CC);
-        this.drumKitNotes = List.of();
+        this.drumKitNotes = new ArrayList<>();
     }
 
     public int getBank() {

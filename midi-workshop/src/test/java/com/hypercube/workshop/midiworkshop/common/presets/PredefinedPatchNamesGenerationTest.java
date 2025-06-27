@@ -2,7 +2,8 @@ package com.hypercube.workshop.midiworkshop.common.presets;
 
 import com.hypercube.workshop.midiworkshop.common.presets.steinberg.SteinbergScriptFileParser;
 import com.hypercube.workshop.midiworkshop.common.presets.yamaha.CS1XPresetsCSVParser;
-import com.hypercube.workshop.midiworkshop.common.presets.yamaha.XGSpecCSVParser;
+import com.hypercube.workshop.midiworkshop.common.presets.yamaha.XGSpecParser;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -47,15 +49,40 @@ class PredefinedPatchNamesGenerationTest {
         device.setPresetNaming(MidiPresetNaming.YAMAHA_XG);
         device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
         device.setPresetNumbering(MidiPresetNumbering.FROM_ZERO);
-        XGSpecCSVParser xgSpecCSVParser = new XGSpecCSVParser(device, new File("./src/test/resources/XG/XGspec2-00e.csv"));
-        List<String> lines = xgSpecCSVParser.parse()
+        XGSpecParser xgSpecParser = new XGSpecParser(device);
+
+        List<MidiPreset> midiPresets = xgSpecParser.parsePresets(new File("./src/test/resources/XG/XG-voices.htm"));
+        midiPresets.addAll(xgSpecParser.parseDrumKits(new File("./src/test/resources/XG/XG-drums.htm")));
+        List<String> lines = midiPresets
                 .stream()
                 .sorted(Comparator.comparing(MidiPreset::getBankMSB)
                         .thenComparing(MidiPreset::getBankLSB)
                         .thenComparing(MidiPreset::getLastProgram))
-                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getLastProgram(), p.getId()
-                        .name()))
+                .flatMap(p -> {
+                            String command = "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getLastProgram(), p.getId()
+                                    .name());
+                            List<String> result = new ArrayList<>();
+                            result.add(command);
+                            result.addAll(p.getDrumKitNotes()
+                                    .stream()
+                                    .map(n -> "    %d %s".formatted(n.note(), n.title()))
+                                    .toList());
+                            return result.stream();
+                        }
+                )
                 .toList();
-        Files.write(Path.of("./src/main/resources/xg/XGPatches.txt"), lines, StandardOpenOption.CREATE);
+        File dest = new File("./src/main/resources/xg/XGPatches.txt");
+        dest.delete();
+        Files.write(dest.toPath(), lines, StandardOpenOption.CREATE);
+        lines = xgSpecParser.parseBanks()
+                .stream()
+                .sorted(Comparator.comparing(MidiDeviceBank::getMSB)
+                        .thenComparing(MidiDeviceBank::getLSB)
+                        .thenComparing(MidiDeviceBank::getName))
+                .map(b -> b.getCommand() + " " + b.getName())
+                .toList();
+        dest = new File("./src/main/resources/xg/XGBanks.txt");
+        dest.delete();
+        Files.write(dest.toPath(), lines, StandardOpenOption.CREATE);
     }
 }

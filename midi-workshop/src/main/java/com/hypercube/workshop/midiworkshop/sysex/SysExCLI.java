@@ -1,11 +1,13 @@
 package com.hypercube.workshop.midiworkshop.sysex;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.common.presets.generic.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.common.presets.yamaha.CS1XPresetGenerator;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.Device;
@@ -16,8 +18,16 @@ import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.Memory
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
 import com.hypercube.workshop.midiworkshop.common.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.common.sysex.parser.SysExParser;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.mixin.MidiDeviceBankMixin;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.mixin.MidiDeviceDefinitionMixin;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.mixin.MidiDeviceModeMixin;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.serializer.MidiDevicePresetSerializer;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +46,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
 import static com.hypercube.workshop.midiworkshop.common.sysex.util.SysExConstants.SYSEX_IDENTITY_RESPONSE;
@@ -154,41 +164,51 @@ public class SysExCLI {
     @ShellMethod(value = "Use the device library to dump all presets names of a synth")
     public void dumpPresets(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
         MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
+        var mapper = new ObjectMapper(new YAMLFactory());
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+        mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
+        mapper.addMixIn(MidiDeviceDefinition.class, MidiDeviceDefinitionMixin.class);
+        mapper.addMixIn(MidiDeviceMode.class, MidiDeviceModeMixin.class);
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(MidiDevicePreset.class, new MidiDevicePresetSerializer());
+        mapper.registerModule(module);
         try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(deviceName)))) {
-            AtomicReference<MidiPreset> previous = new AtomicReference<>();
+            MidiDeviceDefinition devicePresets = new MidiDeviceDefinition();
             midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset) -> {
-                var prev = previous.get();
-                if (prev == null) {
-                    out.println("deviceName: " + device.getDeviceName());
-                    out.println("brand: " + device.getBrand());
-                    out.println("deviceModes: ");
-
+                devicePresets.setDeviceName(device.getDeviceName());
+                devicePresets.setBrand(device.getBrand());
+                String modeName = midiPreset.getId()
+                        .deviceMode();
+                String bankName = midiPreset.getId()
+                        .bankName();
+                MidiDeviceMode mode = devicePresets.getDeviceModes()
+                        .get(modeName);
+                if (mode == null) {
+                    mode = new MidiDeviceMode();
+                    mode.setName(modeName);
+                    devicePresets.getDeviceModes()
+                            .put(modeName, mode);
                 }
-                if (prev == null || !prev.getId()
-                        .deviceMode()
-                        .equals(midiPreset.getId()
-                                .deviceMode())) {
-                    out.println("  " + midiPreset.getId()
-                            .deviceMode() + ":");
-                    out.println("   banks:");
+                MidiDeviceBank bank = mode.getBank(bankName)
+                        .orElse(null);
+                if (bank == null) {
+                    bank = new MidiDeviceBank();
+                    bank.setName(bankName);
+                    mode.getBanks()
+                            .put(bankName, bank);
                 }
-                if (prev == null || !prev.getId()
-                        .bankName()
-                        .equals(midiPreset.getId()
-                                .bankName())) {
-                    out.println("    " + midiPreset.getId()
-                            .bankName() + ":");
-                    out.println("      presets:");
-                }
-                MidiPresetIdentity identity = midiPreset.getId();
-                String escapedName = identity.name()
-                        .replace("\"", "\\\"")
-                        .replace("\\", "\\\\");
-                out.println("        - \"%s | %s | %s\"".formatted(midiPreset.getCommand(), identity
-                        .category(), escapedName));
-                out.flush();
-                previous.set(midiPreset);
+                String command = midiPreset.getCommand();
+                List<String> drumMap = midiPreset.getDrumKitNotes()
+                        .stream()
+                        .map(drumKitNote -> "%02X | %s".formatted(drumKitNote.note(), drumKitNote.title()))
+                        .toList();
+                MidiDevicePreset midiDevicePreset = new MidiDevicePreset(midiPreset.getId()
+                        .name(), command, midiPreset.getId()
+                        .category(), "", drumMap);
+                bank.getPresets()
+                        .add(midiDevicePreset);
             });
+            mapper.writeValue(out, devicePresets);
         }
     }
 

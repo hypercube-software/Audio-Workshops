@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -63,9 +64,37 @@ import java.util.stream.IntStream;
 @Slf4j
 public class MidiPresetCrawler {
     private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
-    AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
-    int expectedResponseSize = 0;
-    ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
+    private final AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
+    private int expectedResponseSize = 0;
+    private ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
+    private final List<String> xgPresets;
+    private final List<String> scPresets;
+
+    public MidiPresetCrawler() {
+        xgPresets = loadXGPresets();
+        scPresets = loadSoundCanvasPreset();
+    }
+
+    private List<String> loadSoundCanvasPreset() {
+        return loadAllText("sc/SoundCanvasPatches.txt");
+    }
+
+    private List<String> loadXGPresets() {
+        return loadAllText("xg/XGPatches.txt");
+    }
+
+    private List<String> loadAllText(String resourcePath) {
+        URL resource = this.getClass()
+                .getClassLoader()
+                .getResource(resourcePath);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+            return reader.lines()
+                    .toList();
+        } catch (Exception e) {
+            throw new MidiConfigError("Unable to open " + resource, e); // Gestion des exceptions améliorée
+        }
+    }
+
 
     public void crawlAllPatches(String deviceName, MidiPresetConsumer midiPresetConsumer) {
         MidiDeviceLibrary library = new MidiDeviceLibrary();
@@ -139,17 +168,16 @@ public class MidiPresetCrawler {
                                 out.send(cm);
                             }
                             // let the time the edit buffer is completely set before querying it
-                            wait("Wait patch change", device.getPresetLoadTimeMs());
+                            //wait("Wait patch change", device.getPresetLoadTimeMs());
                             MidiPresetIdentity midiPresetIdentity = null;
+                            MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
                             for (int retry = 0; retry < 2; retry++) {
-                                MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
                                 midiPresetIdentity = switch (presetNaming) {
                                     case STANDARD ->
                                             getStandardPreset(mode, currentBankName, bankMSB, bankLSB, program, bankRequestSequence, out);
                                     case SOUND_CANVAS ->
-                                            getPredefinedPreset("sc/SoundCanvasPatches.txt", device, mode, program, midiPreset);
-                                    case YAMAHA_XG ->
-                                            getPredefinedPreset("xg/XGPatches.txt", device, mode, program, midiPreset);
+                                            getPredefinedPreset(scPresets, device, mode, program, midiPreset);
+                                    case YAMAHA_XG -> getPredefinedPreset(xgPresets, device, mode, program, midiPreset);
                                 };
                                 if (midiPresetIdentity != null) {
                                     if (previousPatchIdentity != null && previousPatchIdentity.name()
@@ -164,10 +192,18 @@ public class MidiPresetCrawler {
                                 log.error("Retry...");
                             }
                             if (midiPresetIdentity != null) {
+                                if (presetNaming != MidiPresetNaming.STANDARD) {
+                                    populateDrumKitMap(presetNaming, midiPreset);
+                                }
                                 log.info("Bank  name : " + midiPresetIdentity.bankName());
                                 log.info("Patch name : " + midiPresetIdentity.name());
                                 log.info("Category   : " + midiPresetIdentity.category());
                                 log.info("Preset     : " + midiPreset.getCommand());
+                                if (midiPreset.getDrumKitNotes()
+                                        .size() > 0) {
+                                    log.info("DrumMap    : " + midiPreset.getDrumKitNotes()
+                                            .size() + " notes");
+                                }
                                 log.info("");
                                 midiPreset.setId(midiPresetIdentity);
                                 midiPresetConsumer.onNewMidiPreset(device, midiPreset);
@@ -192,6 +228,31 @@ public class MidiPresetCrawler {
                 in.close();
             } catch (IOException e) {
                 throw new MidiError(e);
+            }
+        }
+    }
+
+    private void populateDrumKitMap(MidiPresetNaming presetNaming, MidiPreset midiPreset) {
+        String prefix = "%d-%d-%d".formatted(midiPreset.getBankMSB(), midiPreset.getBankLSB(), midiPreset.getLastProgram());
+        if (presetNaming == MidiPresetNaming.YAMAHA_XG) {
+            boolean inPreset = false;
+            for (int i = 0; i < xgPresets.size(); i++) {
+                String preset = xgPresets.get(i);
+                if (preset.startsWith(" ") && inPreset) {
+                    Pattern drumMapEntry = Pattern.compile("\s+([0-9]+)\s(.+)");
+                    Matcher m = drumMapEntry.matcher(preset);
+                    if (m.matches()) {
+                        int note = Integer.parseInt(m.group(1));
+                        String title = m.group(2);
+                        midiPreset.getDrumKitNotes()
+                                .add(new DrumKitNote(title, note));
+                    }
+                }
+                if (!preset.startsWith(" ") && preset.startsWith(prefix)) {
+                    inPreset = true;
+                } else if (!preset.startsWith(" ")) {
+                    inPreset = false;
+                }
             }
         }
     }
@@ -268,12 +329,12 @@ public class MidiPresetCrawler {
         }
     }
 
-    private MidiPresetIdentity getPredefinedPreset(String filename, MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
+    private MidiPresetIdentity getPredefinedPreset(List<String> presets, MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
         String bankCommand = midiPreset.getBankCommand();
         MidiDeviceBank bank = device.getBankByCommand(bankCommand)
                 .orElseThrow(() -> new MidiConfigError("Bank command %s not declared in presetBank section of device '%s'".formatted(bankCommand, device.getDeviceName())));
-        String presetName = getPredefinedPresetName(filename, midiPreset.getBankMSB(), midiPreset.getBankLSB(), program).orElse("Unknown");
-        MidiPresetCategory category = getSoundCanvasCategory(device, mode, program);
+        String presetName = getPredefinedPresetName(presets, midiPreset.getBankMSB(), midiPreset.getBankLSB(), program).orElse("Unknown");
+        MidiPresetCategory category = getCategoryFromProgram(device, mode, bank, program);
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
@@ -332,26 +393,19 @@ public class MidiPresetCrawler {
         }
     }
 
-    private MidiPresetCategory getSoundCanvasCategory(MidiDeviceDefinition device, MidiDeviceMode mode, int program) {
-        return device.getCategory(mode, program / 8);
+    private MidiPresetCategory getCategoryFromProgram(MidiDeviceDefinition device, MidiDeviceMode mode, MidiDeviceBank bank, int program) {
+        int categoryIndex = bank.getCategory() != null ? bank.getCategory() : program / 8;
+        return device.getCategory(mode, categoryIndex);
     }
 
-    private Optional<String> getPredefinedPresetName(String presetList, int bankMSB, int bankLSB, int program) {
+    private Optional<String> getPredefinedPresetName(List<String> presets, int bankMSB, int bankLSB, int program) {
         String prefix = "%d-%d-%d ".formatted(bankMSB, bankLSB, program);
-        URL resource = this.getClass()
-                .getClassLoader()
-                .getResource(presetList);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
-            return reader.lines()
-                    .toList()
-                    .stream()
-                    .filter(l -> l.startsWith(prefix))
-                    .map(this::parseEntry)
-                    .flatMap(Optional::stream)
-                    .findFirst();
-        } catch (Exception e) {
-            throw new MidiConfigError("Unable to open " + resource, e); // Gestion des exceptions améliorée
-        }
+        return presets
+                .stream()
+                .filter(l -> l.startsWith(prefix))
+                .map(this::parseEntry)
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
     private Optional<String> parseEntry(String soundCanvasPresetDefinition) {

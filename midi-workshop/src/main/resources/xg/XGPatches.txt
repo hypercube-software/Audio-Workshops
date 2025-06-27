@@ -305,7 +305,7 @@
 0-40-5 DX Phase Electric Piano
 0-40-6 Electric Harpsichord
 0-40-7 Cosmic Clavi
-0-40-16 "16+2""2/3"
+0-40-16 16+2"2/3
 0-40-19 Notre Dame
 0-40-20 Puff Organ
 0-40-24 Wayside
@@ -1030,3 +1030,1872 @@
 0-100-119 Reverse Tom 1
 0-101-112 Asian Bells
 0-101-119 Reverse Tom 2
+64-0-0 Cutting Noise
+64-0-1 Cutting Noise 2
+64-0-2 Distorted Cutting Noise
+64-0-3 String Slap
+64-0-4 Bass Slide
+64-0-5 Pick Scrape
+64-0-16 Flute Key Click
+64-0-32 Shower
+64-0-33 Thunder
+64-0-34 Wind
+64-0-35 Stream
+64-0-36 Bubble
+64-0-37 Feed
+64-0-38 Cave
+64-0-48 Dog
+64-0-49 Horse
+64-0-50 Bird Tweet 2
+64-0-51 Kitty
+64-0-52 Growl
+64-0-53 Haunted
+64-0-54 Ghost
+64-0-55 Maou
+64-0-56 Insects
+64-0-57 Bacteria
+64-0-64 Phone Call
+64-0-65 Door Squeak
+64-0-66 Door Slam
+64-0-67 Scratch Cut
+64-0-68 Scratch Split
+64-0-69 Wind Chime
+64-0-70 Telephone Ring 2
+64-0-71 Another Scratch
+64-0-72 Turn Table
+64-0-80 Car Engine Ignition
+64-0-81 Car Tires Squeal
+64-0-82 Car Passing
+64-0-83 Car Crash
+64-0-84 Siren
+64-0-85 Train
+64-0-86 Jet Plane
+64-0-87 Starship
+64-0-88 Burst
+64-0-89 Roller Coaster
+64-0-90 Submarine
+64-0-91 Connectivity
+64-0-92 Mystery
+64-0-93 Charging
+64-0-96 Laugh
+64-0-97 Scream
+64-0-98 Punch
+64-0-99 Heartbeat
+64-0-100 Footsteps
+64-0-101 Applause 2
+64-0-112 Machine Gun
+64-0-113 Laser Gun
+64-0-114 Explosion
+64-0-115 Firework
+64-0-116 Fireball
+126-0-0 SFX Kit 1
+    27 Insects
+    28 Bacteria
+    35 Cutting Noise
+    36 Cutting Noise 2
+    37 Distorted Cutting Noise
+    38 String Slap
+    39 Bass Slide
+    40 Pick Scrape
+    41 Telephone Ring 2
+    42 Another Scratch
+    43 Turn Table
+    44 Imbalance Kick
+    45 Justice Kick
+    46 Minimal Kick
+    47 Reso Noise Burst H
+    48 LFO Metal Attack H
+    49 Steel Conga H
+    50 Rate Down Snare H
+    51 Flute Key Click
+    52 Car Tires Squeal
+    53 Car Passing
+    54 Car Crash
+    55 Siren
+    56 Train
+    57 Jet Plane
+    58 Starship
+    59 Burst
+    60 Roller Coaster
+    61 Submarine
+    62 Connectivity
+    63 Mystery
+    64 Charging
+    65 Insensible Hah H
+    66 Robot 1 H
+    67 Shower
+    68 Thunder
+    69 Wind
+    70 Stream
+    71 Bubble
+    72 Feed
+    73 Cave
+    83 Machine Gun
+    84 Horse
+    85 Bird Tweet 2
+    86 Kitty
+    87 Growl
+    88 Haunted
+    89 Ghost
+    90 Maou
+126-0-1 SFX Kit 2
+    35 Phone Call
+    36 Door Squeak
+    37 Door Slam
+    38 Scratch Cut
+    39 Scratch H 3
+    40 Wind Chime
+    41 Heavy Techno Kick 4
+    42 Future Kick
+    43 Asian Kick
+    44 Electro Blip H
+    45 Wood Percussions H
+    46 Wood Door Open H
+    51 Car Engine Ignition
+    52 Cold Dry Snare 1
+    53 Slap Snare
+    54 Cold Dry Snare 2
+    55 Cold Dry Snare 3
+    56 Lo-Fi Metal Snare
+    57 Space Tambourine H
+    58 Ambient Cow Bell H
+    59 Chink Hat H
+    60 Coal Mine 1 H
+    61 Coal Mine 2 H
+    62 Hammer Hit 1 H
+    63 Hammer Hit 2 H
+    64 Hammer Hit 3 H
+    67 Laugh
+    68 Scream
+    69 Punch
+    70 Heart Beat
+    71 Foot Steps
+    72 Applause 2
+    73 Temple Gong H
+    84 Laser Gun
+    85 Explosion
+    86 Firework
+    87 Fireball
+126-0-16 Techno Kit K/S
+    35 Heavy Techno Kick 1
+    36 Heavy Techno Kick 2
+    37 Psychedelic Kick
+    38 Gate Tekno Kick
+    39 Rap Kick
+    40 Heavy Techno Kick 3
+    41 Vox Drum H
+    42 Android Walk 1 H
+    43 Android Walk 2 H
+    51 Radio Snare
+    52 Tunnel Ambient H
+    53 Vibraslap H
+    54 Gun Shot Slap H
+    55 Punch Snare H
+    56 Bomb Snare H
+    67 Hi Pitch Slap H
+    68 Hi Pitch Slap L
+    69 Rude Loop Cymbal H
+    70 Noise Burst H
+    71 Fizzer H
+    72 Lo-Fi Shaker H
+126-0-17 Techno Kit Hi
+    35 Hyper Tom H 1
+    36 Asian Tom H
+    37 Lo-Fi Tom H
+    38 Hyper Tom H 2
+    39 Flanged Tom H
+    40 Minimal Tom H
+    51 Pop Ambient H
+    67 Insensible Fuh H
+    68 Robot 2 H
+126-0-18 Techno Kit Lo
+    35 Hyper Tom L 1
+    36 Asian Tom L
+    37 Lo-Fi Tom L
+    38 Hyper Tom L 2
+    39 Flanged Tom L
+    40 Minimal Tom L
+    41 Vox Drum L
+    42 Android Walk 1 L
+    43 Android Walk 2 L
+    44 Electro Blip L
+    45 Wood Percussions L
+    46 Wood Door Open L
+    47 Reso Noise Burst L
+    48 LFO Metal Attack L
+    49 Steel Conga L
+    50 Rate Down Snare L
+    51 Pop Ambient L
+    52 Tunnel Ambient L
+    53 Vibraslap L
+    54 Gun Shot Slap L
+    55 Punch Snare L
+    56 Bomb Snare L
+    57 Space Tambourine L
+    58 Ambient Cow Bell L
+    59 Chink Hat L
+    60 Coal Mine 1 L
+    61 Coal Mine 2 L
+    62 Hammer Hit 1 L
+    63 Hammer Hit 2 L
+    64 Hammer Hit 3 L
+    65 Insensible Hah L
+    66 Robot 1 L
+    67 Insensible Fuh L
+    68 Robot 2 L
+    69 Rude Loop Cymbal L
+    70 Noise Burst L
+    71 Fizzer L
+    72 Lo-Fi Shaker L
+    73 Temple Gong L
+126-0-32 Sakura Kit
+    35 Dora
+    36 Tsuzumi Pon
+    37 Tsuzumi Pu
+    38 Tsuzumi Ta
+    39 Tsuzumi Chon
+    40 Tsuzumi Tsu
+    41 Shimetaiko Ten
+    42 Shimetaiko Tsu
+    43 Yagura Open
+    44 Ohdaiko Rim
+    45 Oriental Tambourine
+    46 Oriental Drum 1
+    47 Oriental Drum 2
+    48 Oriental Drum 3
+    49 Oriental Rim 1
+    50 Oriental Rim 2
+    51 Oriental Rim 3
+    52 Oriental Rim 4
+    53 Oriental Metal Rim 1
+    54 Oriental Metal Rim 2
+    55 Oriental Metal Rim 3
+    56 Oriental Metal Rim 4
+    57 Oriental Metal Rim 5
+    67 Bangzi
+    68 Muyu High
+    69 Muyu Mid-High
+    70 Muyu Mid
+    71 Muyu Mid-Low
+    72 Muyu Low
+126-0-33 Small Latin Kit
+    35 Latin Cymbal Short
+    36 Claves SL 1
+    37 Claves SL 2
+    38 Claves SL 3
+    39 Claves SL 4
+    40 Claves SL 5
+    41 Muted Percussion SL 1
+    42 Muted Percussion SL 2
+    43 Muted Percussion SL 3
+    44 Muted Percussion SL 4
+    45 Pandiero
+    46 Surdo Mute SL 1
+    47 Surdo Mute SL 2
+    48 Surdo Open SL
+    49 Surdo Rim SL
+    50 Tamborim Mute
+    51 Tamborim Open
+    52 TimbaleL Drum
+    53 TimbaleH Drum
+    54 TimbaleL Rim
+    55 TimbaleH Rim
+    56 Timbale Paila 1
+    57 Timbale Paila 2
+126-0-34 China Kit
+    35 Bangu
+    36 Dagu Mute
+    37 Dagu Heavy
+    38 Paigu High
+    39 Paigu Middle
+    40 Paigu Low
+    51 Zhongcha Mute
+    52 Zhongcha Open
+    53 Zhongluo Mute
+    54 Zhongluo Open
+    55 Xiaoluo Open
+    56 Xiaocha Mute
+    57 Xiaocha Open
+126-0-40 Live! AfroCuban Kit
+    14 Quinto Tip Stereo
+    15 Quinto Heel Stereo
+    16 Quinto Open Stereo
+    17 Quinto Mute Stereo
+    18 Quinto Slap Open Stereo
+    19 Quinto Slap Stereo
+    20 Quinto Slap Mute Stereo
+    21 Conga H Tip Stereo
+    22 Conga H Heel Stereo
+    23 Conga H Open Stereo
+    24 Conga H Mute Stereo
+    25 Conga H Slap Open Stereo
+    26 Conga H Slap Stereo
+    27 Conga H Slap Mute Stereo
+    28 Conga L Tip Stereo
+    29 Conga L Heel Stereo
+    30 Conga L Open Stereo
+    31 Conga L Mute Stereo
+    32 Conga L Slap Open Stereo
+    33 Conga L Slap Stereo
+    34 Conga L Slide Stereo
+    35 Bongo H Open 1 Finger Stereo
+    36 Bongo H Open 3 Finger Stereo
+    37 Bongo H Rim Stereo
+    38 Bongo H Tip Stereo
+    39 Bongo H Heel Stereo
+    40 Bongo H Slap Stereo
+    41 Bongo L Open 1 Finger Stereo
+    42 Bongo L Open 3 Finger Stereo
+    43 Bongo L Rim Stereo
+    44 Bongo L Tip Stereo
+    45 Bongo L Heel Stereo
+    46 Bongo L Slap Stereo
+    47 Timbale L Open Stereo
+    48 Timbale L Mute Stereo
+    49 Timbale L Rim Stereo
+    50 Timbale L Sidestick Stereo
+    51 Timbale L Roll Stereo
+    52 Timbale L Paila Stereo
+    53 Timbale H Open Stereo
+    54 Timbale H Mute Stereo
+    55 Timbale H Rim Stereo
+    56 Timbale H Sidestick Stereo
+    57 Timbale H Roll Stereo
+    58 Timbale H Paila Stereo
+    59 Cowbell Top Stereo
+    60 Cowbell End Stereo
+    61 Wood Block 1 H Stereo
+    62 Wood Block 1 L Stereo
+    63 Guiro Short Stereo
+    64 Guiro Long Stereo
+    65 Claves 1 Stereo
+    66 Vibraslap Small Stereo
+    67 Tambourine Stereo
+    68 Tambourine Shake Stereo
+    69 Pandeiro Mute / Open Stereo
+    70 Pandeiro Heel Stereo
+    71 Maracas 1 Stereo
+    72 Shaker Stereo
+    73 Cabasa Stereo
+    74 Cuica Mute Stereo
+    75 Cuica Open Stereo
+    76 Agogo H Open Stereo
+    77 Agogo H Mute Stereo
+    78 Agogo L Open Stereo
+    79 Agogo L Mute Stereo
+    80 Triangle Mute Stereo
+    81 Triangle Open Stereo
+    82 Samba Whistle H Stereo
+    83 Samba Whistle L Stereo
+126-0-41 Live! AfroCuban Kit 2
+    17 Surdo Hand Stereo
+    18 Surdo Rim Stereo
+    19 Surdo Open Stereo
+    20 Surdo Mute Stereo
+    21 Conga Mellow H Tip Stereo
+    22 Conga Mellow H Heel Stereo
+    23 Conga Mellow H Open Stereo
+    24 Conga Mellow H Mute Stereo
+    25 Conga Mellow H Slap Open Stereo
+    26 Conga Mellow H Slap Stereo
+    27 Conga Mellow H Slap Mute Stereo
+    28 Conga SubLow Tip Stereo
+    29 Conga SubLow Heel Stereo
+    30 Conga SubLow Open Stereo
+    31 Conga SubLow Mute Stereo
+    32 Conga SubLow Slap Open Stereo
+    33 Conga SubLow Slap Stereo
+    34 Conga SubLow Slide Stereo
+    35 Bongo H Open 1 Finger Stereo
+    36 Bongo H Open 3 Finger Stereo
+    37 Bongo H Rim Stereo
+    38 Bongo H Tip Stereo
+    39 Bongo H Heel Stereo
+    40 Bongo H Slap Stereo
+    41 Bongo L Open 1 Finger Stereo
+    42 Bongo L Open 3 Finger Stereo
+    43 Bongo L Rim Stereo
+    44 Bongo L Tip Stereo
+    45 Bongo L Heel Stereo
+    46 Bongo L Slap Stereo
+    47 Timbalito L Open Stereo
+    48 Timbalito L Mute Stereo
+    49 Timbalito L Rim Stereo
+    50 Timbalito L Sidestick Stereo
+    51 Timbalito L Roll Stereo
+    52 Timbalito L Paila Stereo
+    53 Timbalito H Open Stereo
+    54 Timbalito H Mute Stereo
+    55 Timbalito H Rim Stereo
+    56 Timbalito H Sidestick Stereo
+    57 Timbalito H Roll Stereo
+    58 Timbalito H Paila Stereo
+    59 Latin Cowbell Top Stereo
+    60 Latin Cowbell End Stereo
+    61 Wood Block 2 H Stereo
+    62 Wood Block 2 L Stereo
+    63 Metal Guiro Short Stereo
+    64 Metal Guiro Long Stereo
+    65 Claves 2 Stereo
+    66 Vibraslap Large Stereo
+    67 Tamborim Mute / Open Stereo
+    68 Tamborim Heel Stereo
+    71 Maracas 2 Stereo
+    72 Shaker Stereo
+    73 Cabasa Stereo
+126-0-42 Live! Brazilian Kit
+    21 Conga H Tip Stereo
+    22 Conga H Heel Stereo
+    23 Conga H Open Stereo
+    24 Conga H Mute Stereo
+    25 Conga H Slap Open Stereo
+    26 Conga H Slap Stereo
+    27 Conga H Slap Mute Stereo
+    28 Conga L Tip Stereo
+    29 Conga L Heel Stereo
+    30 Conga L Open Stereo
+    31 Conga L Mute Stereo
+    32 Conga L Slap Open Stereo
+    33 Conga L Slap Stereo
+    34 Conga L Slide Stereo
+    47 Timbalito L Open Stereo
+    48 Timbalito L Mute Stereo
+    49 Timbalito L Rim Stereo
+    50 Timbalito L Sidestick Stereo
+    51 Timbalito L Roll Stereo
+    52 Timbalito L Paila Stereo
+    53 Timbalito H Open Stereo
+    54 Timbalito H Mute Stereo
+    55 Timbalito H Rim Stereo
+    56 Timbalito H Sidestick Stereo
+    57 Timbalito H Roll Stereo
+    58 Timbalito H Paila Stereo
+    61 Wood Block 1 H
+    62 Wood Block 1 L
+    65 Claves 1 Stereo
+    66 Vibraslap Small Stereo
+126-0-43 Live! PopLatin Kit
+    14 Log Drum H Stereo
+    15 Log Drum L Stereo
+    16 Caxixi Stereo
+    17 Hand Clap 1 Stereo
+    18 Hand Clap 2 Stereo
+    19 Finger Snap Stereo
+    20 Castanet Stereo
+    21 Conga H Tip Stereo
+    22 Conga H Heel Stereo
+    23 Conga H Open Stereo
+    24 Conga H Mute Stereo
+    25 Conga H Slap Open Stereo
+    26 Conga H Slap Stereo
+    27 Conga H Slap Mute Stereo
+    28 Conga L Tip Stereo
+    29 Conga L Heel Stereo
+    30 Conga L Open Stereo
+    31 Conga L Mute Stereo
+    32 Conga L Slap Open Stereo
+    33 Conga L Slap Stereo
+    34 Conga L Slide Stereo
+    35 Bongo H Open 1 finger Stereo
+    36 Bongo H Open 3 finger Stereo
+    37 Bongo H Rim Stereo
+    38 Bongo H Tip Stereo
+    39 Bongo H Heel Stereo
+    40 Bongo H Slap Stereo
+    41 Bongo L Open 1 finger Stereo
+    42 Bongo L Open 3 finger Stereo
+    43 Bongo L Rim Stereo
+    44 Bongo L Tip Stereo
+    45 Bongo L Heel Stereo
+    46 Bongo L Slap Stereo
+    47 Timbale L Open Stereo
+    48 Timbale L Mute Stereo
+    49 Timbale L Rim Stereo
+    50 Timbale L Sidestick Stereo
+    51 Timbale L Roll Stereo
+    52 Timbale L Paila Stereo
+    53 Timbale H Open Stereo
+    54 Timbale H Mute Stereo
+    55 Timbale H Rim Stereo
+    56 Timbale H Sidestick Stereo
+    57 Timbale H Roll Stereo
+    58 Timbale H Paila Stereo
+    59 Cowbell Top Stereo
+    60 Cowbell End Stereo
+    61 Wood Block 1 H Stereo
+    62 Wood Block 1 L Stereo
+    63 Guiro Short Stereo
+    64 Guiro Long Stereo
+    65 Claves 1 Stereo
+    66 Vibraslap Small Stereo
+    67 Tambourine Stereo
+    68 Tambourine Shake Stereo
+    69 Splash Cymbal Stereo
+    70 Finger Cymbal Stereo
+    71 Maracas 1 Stereo
+    72 Shaker Stereo
+    73 Cabasa Stereo
+    74 Cuica Mute Stereo
+    75 Cuica Open Stereo
+    76 Agogo H Open Stereo
+    77 Agogo H Mute Stereo
+    78 Agogo L Open Stereo
+    79 Agogo L Mute Stereo
+    80 Triangle Mute Stereo
+    81 Triangle Open Stereo
+    82 Jingle Bell Stereo
+    83 Wind Chime Stereo
+127-0-0 Standard Kit
+    12 Surdo Mute
+    13 Surdo Open
+    14 Hi Q
+    15 Whip Slap
+    16 Scratch H
+    17 Scratch L
+    18 Finger Snap
+    19 Click Noise
+    20 Metronome Click
+    21 Metronome Bell
+    22 Seq Click L
+    23 Seq Click H
+    24 Brush Tap
+    25 Brush Swirl
+    26 Brush Slap
+    27 Brush Tap Swirl
+    28 Snare Roll
+    29 Castanet
+    30 Snare Soft
+    31 Sticks
+    32 Kick Soft
+    33 Open Rim Shot
+    34 Kick Tight
+    35 Kick
+    36 Side Stick
+    37 Snare
+    38 Hand Clap
+    39 Snare Tight
+    40 Floor Tom L
+    41 Hi-Hat Closed
+    42 Floor Tom H
+    43 Hi-Hat Pedal
+    44 Low Tom
+    45 Hi-Hat Open
+    46 Mid Tom L
+    47 Mid Tom H
+    48 Crash Cymbal 1
+    49 High Tom
+    50 Ride Cymbal 1
+    51 Chinese Cymbal
+    52 Ride Cymbal Cup
+    53 Tambourine
+    54 Splash Cymbal
+    55 Cowbell
+    56 Crash Cymbal 2
+    57 Vibraslap
+    58 Ride Cymbal 2
+    59 Bongo H
+    60 Bongo L
+    61 Conga H Mute
+    62 Conga H Open
+    63 Conga L
+    64 Timbale H
+    65 Timbale L
+    66 Agogo H
+    67 Agogo L
+    68 Cabasa
+    69 Maracas
+    70 Samba Whistle H
+    71 Samba Whistle L
+    72 Guiro Short
+    73 Guiro Long
+    74 Claves
+    75 Wood Block H
+    76 Wood Block L
+    77 Cuica Mute
+    78 Cuica Open
+    79 Triangle Mute
+    80 Triangle Open
+    81 Shaker
+    82 Jingle Bells
+    83 Bell Tree
+127-0-1 Standard Kit 2
+    12 Surdo Mute V
+    13 Surdo Open V
+    14 Hi Q B
+    15 Whip Slap B
+    16 Scratch H B
+    17 Scratch L B
+    18 Finger Snap B
+    19 Click Noise B
+    20 Metronome Click B
+    21 Metronome Bell B
+    22 Seq Click L B
+    23 Seq Click H B
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl V
+    28 Snare Roll 2
+    29 Castanet B
+    30 Snare Soft 2
+    31 Sticks B
+    32 Kick Dry Soft
+    33 Open Rim Shot H Short
+    34 Kick Tight Short
+    35 Kick Short
+    36 Side Stick Dry
+    37 Snare Short
+    38 Hand Clap B
+    39 Snare Tight H
+    40 Floor Tom L Short
+    41 Hi-Hat Closed L B
+    42 Floor Tom H Short
+    43 Hi-Hat Pedal B
+    44 Low Tom Short
+    45 Hi-Hat Open B
+    46 Mid Tom L Short
+    47 Mid Tom H Short
+    48 Crash Cymbal 1 V
+    49 High Tom Short
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    52 Ride Cymbal Cup Short
+    53 Tambourine B
+    54 Splash Cymbal V
+    55 Cowbell L
+    56 Crash Cymbal 2 V
+    57 Vibraslap B
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    68 Cabasa B
+    69 Maracas B
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    72 Guiro Short B
+    73 Guiro Long B
+    74 Claves B
+    75 Wood Block H B
+    76 Wood Block L B
+    77 Cuica Mute V
+    78 Cuica Open V
+    79 Triangle Mute B
+    80 Triangle Open B
+    81 Shaker B
+    82 Jingle Bells B
+    83 Bell Tree B
+127-0-2 Dry Kit
+    12 Surdo Mute B
+    13 Surdo Open B
+    24 Brush Tap B
+    25 Brush Swirl B
+    26 Brush Slap B
+    27 Brush Tap Swirl B
+    28 Snare Roll V
+    30 Snare Dry Soft
+    32 Kick Soft B
+    33 Open Rim Shot Dry V
+    34 Kick Dry Tight
+    35 Kick Dry Mute
+    36 Side Stick B
+    37 Snare Dry
+    39 Snare Dry Mute
+    40 Floor Tom L B
+    42 Floor Tom H B
+    44 Low Tom B
+    46 Mid Tom L B
+    47 Mid Tom H B
+    48 Crash Cymbal 1 B
+    49 High Tom B
+    50 Ride Cymbal 1 B
+    51 Chinese Cymbal B
+    54 Splash Cymbal B
+    56 Crash Cymbal 2 B
+    58 Ride Cymbal 2 B
+    59 Bongo H B
+    60 Bongo L B
+    61 Conga H Mute B
+    62 Conga H Open B
+    63 Conga L B
+    64 Timbale H B
+    65 Timbale L B
+    66 Agogo H B
+    67 Agogo L B
+    70 Samba Whistle H B
+    71 Samba Whistle L B
+    77 Cuica Mute B
+    78 Cuica Open B
+127-0-3 Bright Kit
+    28 Snare Roll B
+    30 Snare Soft B
+    33 Open Rim Shot B
+    34 Kick Tight B
+    35 Kick B
+    37 Snare B
+    39 Snare Tight B
+127-0-4 Slim Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    29 Castanet Sk
+    30 Snare Dry Q
+    31 Sticks Q
+    32 Kick Dry Soft HPF
+    33 Open Rim Shot Dry HPF
+    34 Kick Dry Tight Q
+    35 Kick Dry Mute HPF
+    36 Side Stick Dry Q
+    37 Snare Dry H
+    38 Hand Clap Sk
+    39 Snare Dry Mute Q
+    40 Floor Tom L Short Sk
+    41 Hi-Hat Closed H
+    42 Floor Tom H Short Sk
+    43 Hi-Hat Pedal H
+    44 Low Tom Short Sk
+    45 Hi-Hat Open H
+    46 Mid Tom L Short Sk
+    47 Mid Tom H Short Sk
+    48 Crash Cymbal 1 Q
+    49 High Tom Short Sk
+    50 Ride Cymbal 1 Sk
+    51 Chinese Cymbal HPF
+    52 Ride Cup Q
+    53 Tambourine Q
+    54 Splash Cymbal H
+    55 Cowbell HPF
+    56 Crash Cymbal 2 Dark
+    58 Ride Cymbal 2 Q
+    59 Bongo H HPF
+    60 Bongo L HPF
+    61 Conga H Mute HPF
+    62 Conga H Open HPF
+    63 Conga L HPF
+    64 Timbale H HPF
+    65 Timbale L HPF
+    66 Agogo H HPF
+    67 Agogo L HPF
+    68 Cabasa BPF
+    69 Maracas L
+    70 Samba Whistle H BPF
+    71 Samba Whistle L BPF
+    78 Cuica Open H
+127-0-5 Cl™ Vil Slim Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    29 Castanet H
+    30 Snare Rough Q
+    32 Kick Soft Dark
+    33 Open Rim Shot Sl
+    34 Kick Tight Short L
+    35 Kick Short Dark
+    36 Side Stick Q
+    37 Snare Short HPF
+    38 Hand Clap Dark
+    39 Snare Tight Mute
+    40 Floor Tom L Tight
+    41 Hi-Hat Closed L Q
+    42 Floor Tom H Tight
+    43 Hi-Hat Pedal Q
+    44 Low Tom Tight
+    45 Hi-Hat Open Q
+    46 Mid Tom L Tight
+    47 Mid Tom H Tight
+    48 Crash Cymbal 1 L
+    49 High Tom Tight
+    50 Ride Cymbal 1 L
+    51 Chinese Cymbal L
+    52 Ride Cymbal Cup L
+    54 Splash Cymbal L Short
+    55 Cowbell Dark
+    56 Crash Cymbal 2 L
+    58 Ride Cymbal 2 L
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L H
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    78 Cuica Open H
+127-0-6 Rogue Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    29 Castanet H
+    30 Snare Brass Soft
+    32 Kick Soft 2
+    33 Open Rim Shot 2
+    34 Kick Dark 2
+    35 Kick Tight 4
+    36 Side Stick Tight
+    37 Snare Snappy Short
+    39 Snare Brass Hard
+    40 Floor Tom L Tight
+    41 Hi-Hat Closed 3
+    42 Floor Tom H Tight
+    43 Hi-Hat Pedal 3
+    44 Low Tom Tight
+    45 Hi-Hat Open 3
+    46 Mid Tom L Tight
+    47 Mid Tom H Tight
+    48 Crash Cymbal 3
+    49 High Tom Tight
+    50 Ride Cymbal 3
+    51 Chinese Cymbal 2
+    52 Ride Cymbal Cup 2
+    54 Splash Cymbal V
+    55 Cowbell Mid
+    56 Crash Cymbal 4
+    58 Ride Cymbal 4 Q
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute 2
+    62 Conga H Open 2
+    63 Conga L 2
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    78 Cuica Open H
+127-0-7 Hob Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    29 Castanet H
+    30 Snare Brass Soft H
+    32 Kick Soft 2 H
+    33 Open Rim Shot H Short 2
+    34 Kick Dark 2 H
+    35 Kick Tight 4 H
+    36 Side Stick Tight H
+    37 Snare Snappy Short H
+    39 Snare Brass Hard H
+    40 Floor Tom L Tight H
+    41 Hi-Hat Closed 3 H
+    42 Floor Tom H Tight H
+    43 Hi-Hat Pedal 3 H
+    44 Low Tom Tight H
+    45 Hi-Hat Open 3 H
+    46 Mid Tom L Tight H
+    47 Mid Tom H Tight H
+    48 Crash Cymbal 3 H
+    49 High Tom Tight H
+    50 Ride Cymbal 3 H
+    51 Chinese Cymbal 2 H
+    52 Ride Cymbal Cup 2 H
+    53 Tambourine H
+    54 Splash Cymbal H
+    55 Cowbell H
+    56 Crash Cymbal 4 H
+    58 Ride Cymbal 4
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute 2 H
+    62 Conga H Open 2 H
+    63 Conga L 2 H
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    77 Cuica Mute V
+    78 Cuica Open H
+127-0-8 Room Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl V
+    28 Snare Roll V
+    30 Snare Noisy
+    32 Kick Tight 2
+    34 Kick Dark
+    35 Kick Room
+    37 Snare Snappy
+    39 Snare Tight Snappy
+    40 Tom Room 1
+    41 Hi-Hat Closed Q
+    42 Tom Room 2
+    43 Hi-Hat Pedal Q
+    44 Tom Room 3
+    45 Hi-Hat Open L
+    46 Tom Room 4
+    47 Tom Room 5
+    49 Tom Room 6
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    54 Splash Cymbal V
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    78 Cuica Open V
+127-0-9 Dark Room Kit
+    34 Kick 2
+    35 Kick Room Gate
+    37 Snare Snappy 2
+    39 Snare Tight Snappy 2
+    40 Tom Room 1 Q
+    42 Room Tom 2 Q
+    44 Room Tom 3 Q
+    46 Tom Room 4 Dark
+    47 Tom Room 5 L Dark
+    49 Tom Room 6 L Dark
+127-0-16 Rock Kit
+    35 Kick Gate
+    37 Snare Rock
+    39 Snare Rock Rim
+    40 Tom Rock 1
+    42 Tom Rock 2
+    44 Tom Rock 3
+    46 Tom Rock 4
+    47 Tom Rock 5
+    49 Tom Rock 6
+127-0-17 Rock Kit 2
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl V
+    28 Snare Roll V
+    29 Hi Q 2
+    30 Snare Noisy 5
+    32 Kick Tight 3
+    34 Kick 4
+    35 Kick Gate 2
+    36 Side Stick Analog
+    37 Snare Rock 2
+    39 Snare Rock Rim Q
+    40 Tom Rock 1 H
+    41 Hi-Hat Closed 2
+    42 Tom Rock 2 H
+    43 Hi-Hat Pedal 2
+    44 Tom Rock 3 L Short
+    45 Hi-Hat Open 2
+    46 Tom Rock 4 L Short
+    47 Tom Rock 5 L Short
+    48 Crash Analog
+    49 Tom Rock 6 L Short
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    54 Splash Cymbal V
+    55 Cowbell Analog
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    74 Claves 2
+    77 Cuica Mute V
+    78 Cuica Open V
+127-0-24 Electro Kit
+    27 Reverse Cymbal
+    29 Hi Q 2
+    30 Snare Snappy Electro
+    32 Kick 3
+    34 Kick Gate
+    35 Kick Gate Heavy
+    37 Snare Noisy 2
+    39 Snare Noisy 3
+    40 Tom Electro 1
+    41 Hi-Hat Closed Analog
+    42 Tom Electro 2
+    43 Hi-Hat Closed Analog 2
+    44 Tom Electro 3
+    45 Hi-Hat Open Analog
+    46 Tom Electro 4
+    47 Tom Electro 5
+    49 Tom Electro 6
+    61 Conga Analog H
+    62 Conga Analog M
+    63 Conga Analog L
+    77 Scratch H 2
+    78 Scratch L 2
+127-0-25 Analog Kit
+    27 Reverse Cymbal
+    30 Snare Noisy 4
+    32 Kick Tight 2
+    34 Kick Analog Short
+    35 Kick Analog
+    37 Snare Analog
+    39 Snare Analog 2
+    40 Tom Analog 1
+    42 Tom Analog 2
+    44 Tom Analog 3
+    46 Tom Analog 4
+    47 Tom Analog 5
+    49 Tom Analog 6
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-26 Analog Kit 2
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Reverse Cymbal
+    28 Snare Roll V
+    29 Hi Q 2
+    30 Snare Analog 3
+    32 Kick Techno Soft
+    33 Open Rim Shot Dry V
+    34 Kick Techno Tight
+    35 Kick Techno
+    36 Side Stick Analog
+    37 Snare Techno
+    39 Snare Techno 2
+    40 Tom Analog 1
+    41 Hi-Hat Closed Analog
+    42 Tom Analog 2
+    43 Hi-Hat Closed Analog 2
+    44 Tom Analog 3
+    45 Hi-Hat Open Analog
+    46 Tom Analog 4
+    47 Tom Analog 5
+    48 Crash Analog
+    49 Tom Analog 6
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    54 Splash Cymbal V
+    55 Cowbell Analog
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga Analog H
+    62 Conga Analog M
+    63 Conga Analog L
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    74 Claves 2
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-27 Dance Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Reverse Cymbal
+    28 Snare Roll V
+    29 Hi Q 2
+    30 Snare Techno 3
+    32 Kick Techno Q
+    33 Rim Gate
+    34 Kick Techno L
+    35 Kick Techno 2
+    36 Side Stick Analog
+    37 Snare Clap
+    39 Snare Dry 2
+    40 Tom Analog 1
+    41 Hi-Hat Closed 3
+    42 Tom Analog 2
+    43 Hi-Hat Closed Analog 2
+    44 Tom Analog 3
+    45 Hi-Hat Open 3
+    46 Tom Analog 4
+    47 Tom Analog 5
+    48 Crash Analog
+    49 Tom Analog 6
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    54 Splash Cymbal V
+    55 Cowbell Analog
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga Analog H
+    62 Conga Analog M
+    63 Conga Analog L
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    74 Claves 2
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-28 Hip Hop Kit
+    27 Brush Tap Swirl V
+    30 Open Rim Shot 2 Soft
+    32 Kick Dry Soft 2
+    33 Open Rim Shot 2
+    34 Kick Dim
+    35 Kick Boon
+    36 Side Stick Dry
+    37 Snare Dry Mute
+    39 Snare White
+    40 Floor Tom L Short
+    41 Hi-Hat Closed 2 H
+    42 Floor Tom H Short
+    43 Hi-Hat Pedal 2 H
+    44 Low Tom Short
+    45 Hi-Hat Open 2 L
+    46 Mid Tom L Short
+    47 Mid Tom H Short
+    48 Crash Cymbal 1 V
+    49 High Tom Short
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    77 Cuica Mute V
+    78 Cuica Open V
+127-0-29 Jungle Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl V
+    28 Snare Roll V
+    29 Hi Q 2
+    30 Rim Gate 2
+    32 Kick Cough
+    33 Rim Gate 3
+    34 Kick Zap
+    35 Kick Dawn
+    36 Side Stick Dry
+    37 Snare Tin
+    38 Clap Ambience
+    39 Snare Can
+    40 Floor Tom L Short
+    41 Hi-Hat Closed 2 Soft
+    42 Floor Tom H Short
+    43 Hi-Hat Pedal 2 Soft
+    44 Low Tom Short
+    45 Hi-Hat Open 2 Soft
+    46 Mid Tom L Short
+    47 Mid Tom H Short
+    48 Crash Cymbal 1 V
+    49 High Tom Short
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    52 Ride Cymbal Cup Q
+    53 Tambourine H
+    54 Splash Cymbal V
+    55 Cowbell Analog L
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    74 Claves 2
+    77 Cuica Mute V
+    78 Cuica Open V
+127-0-30 Apogee Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Reverse Cymbal
+    29 Hi Q 2
+    30 Snare Analog 4
+    32 Kick Techno 3
+    33 Open Rim Shot L
+    34 Kick Techno 4
+    35 Kick Techno Tight 2
+    36 Side Stick Analog 2
+    37 Snare Analog 5
+    38 Clap Ambience H
+    39 Snare Analog 6
+    40 Tom Techno 1
+    41 Hi-Hat Closed Analog 3
+    42 Tom Techno 2
+    43 Hi-Hat Closed Analog 4
+    44 Tom Techno 3
+    45 Hi-Hat Open Analog 2
+    46 Tom Techno 4
+    47 Tom Techno 5
+    48 Crash Analog
+    49 Tom Techno 6
+    50 Ride Cymbal Analog 1
+    51 Chinese Cymbal H
+    52 Ride Cymbal Cup H
+    54 Splash Cymbal V
+    55 Cowbell Analog H
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal Analog 2
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga Analog H Long
+    62 Conga Analog M Long
+    63 Conga Analog L
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    74 Claves 2
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-31 Perigee Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Reverse Cymbal
+    30 Snare Analog 4 H
+    32 Kick Techno 3
+    33 Open Rim Shot L
+    34 Kick Techno 4 H
+    35 Kick Techno Tight 2 H
+    36 Side Stick Analog 2 H
+    37 Snare Analog 5 H
+    39 Snare Analog 6 H
+    40 Tom Techno 1 H
+    41 Hi-Hat Closed Analog 3 H
+    42 Tom Techno 2 H
+    43 Hi-Hat Closed Analog 4 H
+    44 Tom Techno 3 H
+    45 Hi-Hat Open Analog 2 H
+    46 Tom Techno 4 H
+    47 Tom Techno 5 H
+    48 Crash Analog H
+    49 Tom Techno 6 H
+    50 Ride Cymbal Analog 1 H
+    54 Splash Cymbal H
+    56 Crash Cymbal 2 H
+    58 Ride Cymbal Analog 2 H
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga Analog H Long H
+    62 Conga Analog M Long H
+    63 Conga Analog L Long H
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-32 Jazz Kit
+    35 Kick Jazz
+    40 Tom Jazz 1
+    42 Tom Jazz 2
+    44 Tom Jazz 3
+    46 Tom Jazz 4
+    47 Tom Jazz 5
+    49 Tom Jazz 6
+127-0-33 Jazz Kit 2
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl V
+    28 Snare Roll V
+    29 Castanet H
+    30 Brush Slap 2
+    32 Kick Release
+    33 Open Rim Shot Dry L
+    34 Kick Cloudy H
+    35 Kick Jazz L
+    36 Side Stick B 2
+    37 Snare H
+    39 Snare Tight L
+    40 Tom Jazz 7
+    41 Hi-Hat Closed L
+    42 Tom Jazz 8
+    43 Hi-Hat Pedal L
+    44 Tom Jazz 9
+    45 Hi-Hat Open L
+    46 Tom Jazz 10
+    47 Tom Jazz 11
+    48 Crash Cymbal 4
+    49 Tom Jazz 12
+    50 Ride Cymbal 1 V
+    51 Chinese Cymbal V
+    52 Ride Cymbal Cup L
+    54 Splash Cymbal V
+    55 Cowbell 2
+    56 Crash Cymbal 2 V
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L V
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    77 Cuica Mute V
+    78 Cuica Open V
+127-0-40 Brush Kit
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    30 Snare Dry Hard
+    32 Kick Soft 2
+    34 Gran Cassa
+    35 Kick Small
+    37 Brush Slap 3
+    39 Brush Tap 2
+    40 Tom Brush 1
+    41 Hi-Hat Closed 4
+    42 Tom Brush 2
+    43 Hi-Hat Pedal 4
+    44 Tom Brush 3
+    45 Hi-Hat Open 4
+    46 Tom Brush 4
+    47 Tom Brush 5
+    48 Hand Cymbal
+    49 Tom Brush 6
+    50 Ride Cymbal 1 H
+    52 Ride Cymbal Cup 6
+    54 Splash Cymbal V
+    56 Hand Cymbal 2
+    58 Ride Cymbal 6
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L 2
+    78 Cuica Open H
+127-0-41 Brush Kit 2
+    30 Brush Slap 2
+    35 Kick Cloudy L
+    37 Brush Slap 3 Q
+    39 Brush Snare Loud
+    40 Tom Brush 7
+    42 Tom Brush 8
+    44 Tom Brush 9
+    46 Tom Brush 10
+    47 Tom Brush 11
+    49 Tom Brush 12
+    50 Hand Cymbal Short
+    58 Hand Cymbal 2 Short
+127-0-48 Symphony Kit
+    35 Gran Cassa Mute
+    37 Band Snare
+    39 Band Snare 2
+    40 Tom Jazz 1
+    42 Tom Jazz 2
+    44 Tom Jazz 3
+    46 Tom Jazz 4
+    47 Tom Jazz 5
+    49 Tom Jazz 6
+127-0-56 Natural Kit
+    24 Brush Tap Natural
+    25 Brush Swirl Natural L
+    26 Brush Slap Natural
+    27 Brush Swirl Natural H
+    28 Snare Roll Natural
+    29 Hi Q 2
+    30 Snare Natural L
+    31 Sticks Q
+    32 Kick Soft Natural
+    33 Open Rim Natural
+    34 Kick Light Natural
+    35 Kick Std Natural
+    36 Side Stick Natural
+    37 Snare Natural M
+    38 Hand Clap Dark
+    39 Snare Natural H
+    40 Floor Tom Natural L
+    41 Hi-Hat Closed Natural
+    42 Floor Tom Natural H
+    43 Hi-Hat Pedal Natural
+    44 Low Tom Natural
+    45 Hi-Hat Open Natural
+    46 Mid Tom Natural L
+    47 Mid Tom Natural H
+    48 Crash Cymbal Natural 1
+    49 High Tom Natural
+    50 Ride Cymbal Natural 1
+    51 Chinese Cymbal Natural
+    52 Ride Cymbal Cup Natural
+    53 Tambourine Dark
+    54 Splash Cymbal Natural
+    55 Cowbell Analog Q
+    56 Crash Cymbal Natural 2
+    58 Ride Cymbal Natural 2
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga Analog H Long
+    62 Conga Analog M Long
+    63 Conga Analog L Long
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas 2
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    77 Scratch H 2
+    78 Scratch L 3
+127-0-57 Natural Funk Kit
+    24 Brush Tap Natural
+    25 Brush Swirl Natural L
+    26 Brush Slap Natural
+    27 Brush Swirl Natural H
+    28 Snare Roll Natural
+    30 Snare Natural Funk L
+    32 Kick Soft Natural
+    33 Open Rim Natural
+    34 Kick Std Natural Funk
+    35 Kick Natural Funk
+    36 Side Stick Natural
+    37 Snare Natural Funk M
+    39 Snare Natural Funk H
+    40 Floor Tom Natural L
+    41 Hi-Hat Closed Natural
+    42 Floor Tom Natural H
+    43 Hi-Hat Pedal Natural
+    44 Low Tom Natural
+    45 Hi-Hat Open Natural
+    46 Mid Tom Natural L
+    47 Mid Tom Natural H
+    48 Crash Cymbal Natural 1
+    49 High Tom Natural
+    50 Ride Cymbal Natural 1
+    51 Chinese Cymbal Natural
+    52 Ride Cymbal Cup Natural
+    54 Splash Cymbal Natural
+    56 Crash Cymbal Natural 2
+    58 Ride Cymbal Natural 2
+127-0-64 Tramp Kit
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Reverse Cymbal
+    28 Snare Roll V
+    30 Snare Techno 3 Q
+    32 Kick Techno Q 2
+    33 Rim Gate Lo-Fi
+    34 Kick Techno L Q
+    35 Kick Techno 2 Gate
+    36 Side Stick Analog Q
+    37 Snare Clap
+    39 Snare Dry 2 Gate
+    40 Tom Analog 7
+    41 Hi-Hat Closed 3 Dark
+    42 Tom Analog 8
+    43 Hi-Hat Closed Analog 2 L
+    44 Tom Analog 9
+    45 Hi-Hat Open 3 Dark
+    46 Tom Analog 10
+    47 Tom Analog 11
+    48 Crash Analog Dark
+    49 Tom Analog 12
+    50 Ride Cymbal 1 Dark
+    51 Chinese Cymbal L
+    52 Ride Cymbal Cup Dark
+    54 Splash Cymbal L Q
+    56 Crash Cymbal 2 Q
+    58 Ride Cymbal 2 D
+127-0-65 Amber Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    30 Open Rim Shot 3 Soft
+    31 Sticks Q
+    32 KickDrySoft3
+    33 Open Rim Shot Dry
+    34 Kick Comp 1 L
+    35 Kick Comp 1 H
+    36 Side Stick Dry L
+    37 Snare Dry Mute L
+    38 Hand Clap Dark
+    39 Hip Snare Long
+    40 Floor Tom Tech L
+    41 Hi-Hat Closed Tech
+    42 Floor Tom Tech H
+    43 Hi-Hat Pedal Tech
+    44 Low Tom Tech
+    45 Hi-Hat Open 3 Dark
+    46 Mid Tom Tech L
+    47 Mid Tom Tech H
+    48 Crash Cymbal Dark
+    49 High Tom Tech
+    50 Ride Cymbal 1 Dark
+    51 Chinese Cymbal H2
+    52 Ride Cymbal Cup Dark
+    53 Tambourine Dark
+    54 Splash Cymbal L Q
+    55 Cowbell Lo-Fi
+    56 Crash Cymbal 2 Q
+    58 Ride Cymbal 2 V
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L 2
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    78 Cuica Open H
+127-0-66 Coffin Kit
+    12 Surdo Mute V
+    13 Surdo Open V
+    24 Brush Tap V
+    25 Brush Swirl V
+    26 Brush Slap V
+    27 Brush Tap Swirl L
+    28 Snare Roll V
+    30 Rim Gate 4
+    31 Sticks Q
+    32 Kick Cough L
+    33 Rim Gate 5
+    34 Kick Comp 2 L
+    35 Kick Comp 2 H
+    36 Side Stick Dry L
+    37 Snare Tin L
+    38 Hand Clap Dark
+    39 Snare Can L
+    40 Floor Tom Tech L
+    41 Hi-Hat Closed Tech
+    42 Floor Tom Tech H
+    43 Hi-Hat Pedal Tech
+    44 Low Tom Tech
+    45 Hi-Hat Open 3 Dark
+    46 Mid Tom Tech L
+    47 Mid Tom Tech H
+    48 Crash Cymbal Dark 2
+    49 High Tom Tech
+    50 Ride Cymbal Hard 2
+    51 Chinese Cymbal Q
+    52 Ride Cymbal Cup 5
+    53 Tambourine Dark
+    54 Tech Splash Cymbal
+    55 Cowbell Lo-Fi
+    56 Crash Cymbal 2 Q
+    58 Ride Cymbal 5
+    59 Bongo H V
+    60 Bongo L V
+    61 Conga H Mute V
+    62 Conga H Open V
+    63 Conga L 2
+    64 Timbale H V
+    65 Timbale L V
+    66 Agogo H V
+    67 Agogo L V
+    69 Maracas Q
+    70 Samba Whistle H V
+    71 Samba Whistle L V
+    78 Cuica Open H
+127-0-80 Live! Standard Kit
+    24 Brush Tap
+    25 Brush Swirl L
+    26 Brush Slap
+    27 Brush Swirl H
+    28 Snare Roll
+    30 Snare L
+    32 Kick Soft
+    33 Open Rim
+    34 Kick Light
+    35 Kick Std
+    36 Side Stick
+    37 Snare M
+    39 Snare H
+    40 Floor Tom L
+    41 Hi-Hat Closed
+    42 Floor Tom H
+    43 Hi-Hat Pedal
+    44 Low Tom
+    45 Hi-Hat Open
+    46 Mid Tom L
+    47 Mid Tom H
+    48 Crash Cymbal 1
+    49 High Tom
+    50 Ride Cymbal 1
+    51 Chinese Cymbal
+    52 Ride Cymbal Cup
+    54 Splash Cymbal
+    56 Crash Cymbal 2
+    58 Ride Cymbal 2
+127-0-81 Live! Funk Kit
+    24 Brush Tap
+    25 Brush Swirl L
+    26 Brush Slap
+    27 Brush Swirl H
+    28 Snare Roll
+    30 Snare Funk L
+    32 Kick Soft
+    33 Open Rim
+    34 Kick Std
+    35 Kick Funk
+    36 Side Stick
+    37 Snare Funk M
+    39 Snare Funk H
+    40 Floor Tom L
+    41 Hi-Hat Closed
+    42 Floor Tom H
+    43 Hi-Hat Pedal
+    44 Low Tom
+    45 Hi-Hat Open
+    46 Mid Tom L
+    47 Mid Tom H
+    48 Crash Cymbal 1
+    49 High Tom
+    50 Ride Cymbal 1
+    51 Chinese Cymbal
+    52 Ride Cymbal Cup
+    54 Splash Cymbal
+    56 Crash Cymbal 2
+    58 Ride Cymbal 2
+127-0-82 Live! Brush Kit
+    24 Brush Tap
+    25 Brush Swirl L
+    26 Brush Slap
+    27 Brush Swirl H
+    28 Snare Roll
+    30 Brush Slap 2
+    32 Kick Soft
+    33 Open Rim
+    34 Kick Std
+    35 Kick Funk
+    36 Side Stick
+    37 Snare Brush M
+    38 Hand Clap Stereo
+    39 Snare Brush H
+    40 Brush Floor Tom L
+    41 Hi-Hat Closed
+    42 Brush Floor Tom H
+    43 Hi-Hat Pedal
+    44 Brush Low Tom
+    45 Hi-Hat Open
+    46 Brush Mid Tom L
+    47 Brush Mid Tom H
+    48 Brush Crash Cymbal 1
+    49 Brush High Tom
+    50 Brush Ride Cymbal 1
+    51 Chinese Cymbal
+    52 Brush Ride Cymbal Cup
+    53 Tambourine Stereo
+    54 Splash Cymbal
+    55 Cowbell Stereo
+    56 Brush Crash Cymbal 2
+    58 Brush Ride Cymbal 2
+    59 Bongo H Stereo
+    60 Bongo L Srereo
+    61 Conga H Mute Stereo
+    62 Conga H Open Stereo
+    63 Conga L Stereo
+    64 Timbale H Stereo
+    65 Timbale L Stereo
+    68 Cabasa Stereo
+    69 Maracas Stereo
+    72 Guiro Short Stereo
+    73 Guiro Long Stereo
+    77 Cuica Mute Stereo
+    78 Cuica Open Stereo
+    79 Triangle Mute Stereo
+    80 Triangle Open Stereo
+    81 Shaker Stereo
+    83 Wind Chime Stereo
+127-0-83 Live! Standard + Percussion Kit
+    24 Brush Tap Stereo
+    25 Brush Swirl Stereo
+    26 Brush Slap Stereo
+    27 Brush Tap Swirl Stereo
+    28 Snare Roll Stereo
+    30 Snare L Stereo
+    32 Kick Soft Stereo
+    33 Open Rim Shot Stereo
+    34 Kick Light Stereo
+    35 Kick Std Stereo
+    36 Side Stick Stereo
+    37 Snare M Stereo
+    39 Snare H Stereo
+    40 Floor Tom L Stereo
+    41 Hi-Hat Closed Stereo
+    42 Floor Tom H Stereo
+    43 Hi-Hat Pedal Stereo
+    44 Low Tom Stereo
+    45 Hi-Hat Open Stereo
+    46 Mid Tom L Stereo
+    47 Mid Tom H Stereo
+    48 Crash Cymbal 1 Stereo
+    49 High Tom Stereo
+    50 Ride Cymbal 1 Stereo
+    51 Chinese Cymbal Stereo
+    52 Ride Cymbal Cup Stereo
+    54 Splash Cymbal Stereo
+    56 Crash Cymbal 2 Stereo
+    58 Ride Cymbal 2 Stereo
+127-0-84 Live! Funk + Percussion Kit
+    24 Brush Tap Stereo
+    25 Brush Swirl Stereo
+    26 Brush Slap Stereo
+    27 Brush Tap Swirl Stereo
+    28 Snare Roll Stereo
+    30 Snare L Stereo
+    32 Kick Soft Stereo
+    33 Open Rim Shot Stereo
+    34 Kick Std Stereo
+    35 Kick Funk Stereo
+    36 Side Stick Stereo
+    37 Snare Funk M Stereo
+    38 Hand Clap Stereo
+    39 Snare Funk H Stereo
+    40 Floor Tom L Stereo
+    41 Hi-Hat Closed Stereo
+    42 Floor Tom H Stereo
+    43 Hi-Hat Pedal Stereo
+    44 Low Tom Stereo
+    45 Hi-Hat Open Stereo
+    46 Mid Tom L Stereo
+    47 Mid Tom H Stereo
+    48 Crash Cymbal 1 Stereo
+    49 High Tom Stereo
+    50 Ride Cymbal 1 Stereo
+    51 Chinese Cymbal Stereo
+    52 Ride Cymbal Cup Stereo
+    53 Tambourine Stereo
+    54 Splash Cymbal Stereo
+    55 Cowbell Stereo
+    56 Crash Cymbal 2 Stereo
+    58 Ride Cymbal 2 Stereo
+    59 Bongo H Stereo
+    60 Bongo L Srereo
+    61 Conga H Mute Stereo
+    62 Conga H Open Stereo
+    63 Conga L Stereo
+    64 Timbale H Stereo
+    65 Timbale L Stereo
+    68 Cabasa Stereo
+    69 Maracas Stereo
+    72 Guiro Short Stereo
+    73 Guiro Long Stereo
+    77 Cuica Mute Stereo
+    78 Cuica Open Stereo
+    79 Triangle Mute Stereo
+    80 Triangle Open Stereo
+    81 Shaker Stereo
+    83 Wind Chime Stereo
+127-0-85 Live! Brush + Percussion Kit
+    24 Brush Tap Stereo
+    25 Brush Swirl Stereo
+    26 Brush Slap Stereo
+    27 Brush Tap Swirl Stereo
+    28 Snare Roll Stereo
+    30 Brush Slap 2 Stereo
+    32 Kick Soft Stereo
+    33 Open Rim Shot Stereo
+    34 Kick Std Stereo
+    35 Kick Funk Stereo
+    36 Side Stick Stereo
+    37 Snare Brush M Stereo
+    38 Hand Clap Stereo
+    39 Snare Brush H Stereo
+    40 Brush Floor Tom L Stereo
+    41 Hi-Hat Closed Stereo
+    42 Brush Floor Tom H Stereo
+    43 Hi-Hat Pedal Stereo
+    44 Brush Low Tom Stereo
+    45 Hi-Hat Open Stereo
+    46 Brush Mid Tom L Stereo
+    47 Brush Mid Tom H Stereo
+    48 Brush Crash Cymbal 1 Stereo
+    49 Brush High Tom Stereo
+    50 Brush Ride Cymbal 1 Stereo
+    51 Chinese Cymbal Stereo
+    52 Brush Ride Cymbal Cup Stereo
+    53 Tambourine Stereo
+    54 Splash Cymbal Stereo
+    55 Cowbell Stereo
+    56 Brush Crash Cymbal 2 Stereo
+    58 Brush Ride Cymbal 2 Stereo
+    59 Bongo H Stereo
+    60 Bongo L Srereo
+    61 Conga H Mute Stereo
+    62 Conga H Open Stereo
+    63 Conga L Stereo
+    64 Timbale H Stereo
+    65 Timbale L Stereo
+    68 Cabasa Stereo
+    69 Maracas Stereo
+    72 Guiro Short Stereo
+    73 Guiro Long Stereo
+    77 Cuica Mute Stereo
+    78 Cuica Open Stereo
+    79 Triangle Mute Stereo
+    80 Triangle Open Stereo
+    81 Shaker Stereo
+    83 Wind Chime Stereo

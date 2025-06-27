@@ -14,7 +14,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequ
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.common.sysex.yaml.*;
+import com.hypercube.workshop.midiworkshop.common.sysex.yaml.deserializer.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -42,6 +42,26 @@ class MidiDeviceLibraryTest {
     }
 
     @Test
+    void loadDrumkits() {
+        // WHEN
+        MidiDeviceDefinition midiDeviceDefinition = midiDeviceLibrary.getDevice("CS1x")
+                .get();
+
+        // THEN
+        var mode = midiDeviceDefinition.getMode("XG")
+                .orElseThrow();
+        var bank = mode.getBank("XG DRUM KITS")
+                .orElseThrow();
+        var preset = bank.getPresets()
+                .get(0);
+        assertEquals(9, bank.getPresets()
+                .size());
+        assertEquals("Standard Kit", preset.name());
+        assertEquals(72, preset.drumMap()
+                .size());
+    }
+
+    @Test
     void forgeRequestsWithoutMacro() {
         // GIVEN
         CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7");

@@ -32,6 +32,8 @@ public class CS1XPresetsCSVParser {
                 cells.add(current);
                 current = "";
             } else if (!inStr && c == 10) {
+                cells.add(current);
+                current = "";
                 log.info("====> " + cells.stream()
                         .collect(Collectors.joining(",")));
                 records.add(cells);
@@ -43,13 +45,14 @@ public class CS1XPresetsCSVParser {
             }
 
             if (current.contains("Bank 102")) {
-                break;
+                log.info("Last table Bank 102");
             }
         }
         for (List<String> record : records) {
-            if (record.get(0)
-                    .trim()
-                    .startsWith("Instrument Group")) {
+            String firstRow = record.get(0)
+                    .trim();
+            if (firstRow
+                    .startsWith("Instrument Group") || firstRow.startsWith("Pgm")) {
                 log.info(record.stream()
                         .collect(Collectors.joining(",")));
                 for (int i = 0; i < record.size(); i++) {

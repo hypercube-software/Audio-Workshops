@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.library.device;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +26,10 @@ public class MidiDeviceBank {
      */
     private String queryName;
     /**
+     * Optional, can force the category index for all patches in this bank
+     */
+    private Integer category;
+    /**
      * We currently do not support multichannel yet
      */
     @Getter(AccessLevel.NONE)
@@ -40,5 +45,27 @@ public class MidiDeviceBank {
 
     public int getZeroBasedChannel() {
         return channel - 1;
+    }
+
+    public int getMSB() {
+        if (command.contains("-")) {
+            String[] v = command.split("-");
+            return v.length > 0 ? Integer.parseInt(v[0]) : -1;
+        } else if (command.startsWith("$")) {
+            return Integer.parseInt(command.substring(1, 3), 16);
+        } else {
+            throw new MidiConfigError("Unsupported command format:" + command);
+        }
+    }
+
+    public int getLSB() {
+        if (command.contains("-")) {
+            String[] v = command.split("-");
+            return v.length > 1 ? Integer.parseInt(v[1]) : -1;
+        } else if (command.startsWith("$")) {
+            return Integer.parseInt(command.substring(3, 5), 16);
+        } else {
+            throw new MidiConfigError("Unsupported command format:" + command);
+        }
     }
 }

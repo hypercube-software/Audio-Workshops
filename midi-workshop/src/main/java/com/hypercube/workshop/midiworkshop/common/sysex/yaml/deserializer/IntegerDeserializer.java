@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.common.sysex.yaml;
+package com.hypercube.workshop.midiworkshop.common.sysex.yaml.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
