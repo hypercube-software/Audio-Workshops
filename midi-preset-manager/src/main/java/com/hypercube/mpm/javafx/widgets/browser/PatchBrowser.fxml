@@ -2,28 +2,25 @@
 
 <?import com.hypercube.mpm.javafx.widgets.attribute.*?>
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchSelector?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
 <fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <GridPane GridPane.columnIndex="0">
-            <AttributeSelector fx:id="device" dataSource="model.devices" minHeight="-Infinity"
-                               minWidth="-Infinity"
-                               title="Device"
-                               GridPane.rowIndex="0" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
-            <AttributeSelector fx:id="master" dataSource="model.midiInPorts" minHeight="-Infinity"
-                               minWidth="-Infinity"
-                               title="Master Keyboard"
-                               GridPane.rowIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
-            <AttributeSelector fx:id="passThru" dataSource="model.midiThruPorts" minHeight="-Infinity"
-                               minWidth="-Infinity"
-                               title="Pass Thru"
-                               allowMultiSelection="true"
-                               GridPane.rowIndex="2" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS"/>
+            <AttributeSelector fx:id="device" dataSource="model.devices" minHeight="-Infinity" minWidth="-Infinity"
+                               title="Device" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
+            <AttributeSelector fx:id="master" dataSource="model.midiInPorts" minHeight="-Infinity" minWidth="-Infinity"
+                               title="Master Keyboard" GridPane.hgrow="NEVER" GridPane.rowIndex="1"
+                               GridPane.vgrow="ALWAYS"/>
+            <AttributeSelector fx:id="passThru" allowMultiSelection="true" dataSource="model.midiThruPorts"
+                               minHeight="-Infinity" minWidth="-Infinity" title="Pass Thru" GridPane.hgrow="NEVER"
+                               GridPane.rowIndex="2" GridPane.vgrow="ALWAYS"/>
             <columnConstraints>
                 <ColumnConstraints/>
             </columnConstraints>
             <rowConstraints>
+                <RowConstraints/>
                 <RowConstraints/>
                 <RowConstraints/>
             </rowConstraints>
@@ -33,9 +30,8 @@
                                minWidth="-Infinity" prefHeight="144.0" prefWidth="248.0"
                                selectedItems="model.currentDeviceState.currentMode" title="Mode" GridPane.hgrow="NEVER"
                                GridPane.rowIndex="0"/>
-            <AttributeSelector fx:id="channel" dataSource="model.modeChannels"
-                               minWidth="-Infinity"
-                               selectedItems="model.currentDeviceState.currentChannel" title="MIDI Channel"
+            <AttributeSelector fx:id="channel" dataSource="model.modeChannels" minWidth="-Infinity"
+                               selectedItems="model.currentDeviceState.id.channel" title="MIDI Channel"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
             <columnConstraints>
                 <ColumnConstraints/>
@@ -45,15 +41,25 @@
                 <RowConstraints/>
             </rowConstraints>
         </GridPane>
-        <GridPane GridPane.columnIndex="2">
+        <GridPane style="-fx-border-width: 0 0 0 2; -fx-border-color: red;" GridPane.columnIndex="2">
             <AttributeSelector fx:id="bank" acceptedFileTypes="syx,mid" allowDrop="true" dataSource="model.modeBanks"
-                               minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBank"
-                               title="Bank" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
+                               minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBank" title="Bank"
+                               GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="category" allowMultiSelection="true" dataSource="model.modeCategories"
                                itemType="com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory"
                                labelMethod="name" minWidth="-Infinity"
                                selectedItems="model.currentDeviceState.currentSelectedCategories" title="Categories"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+            <columnConstraints>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+                <RowConstraints/>
+            </rowConstraints>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
         </GridPane>
         <PatchSelector minWidth="-Infinity" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"/>
     </children>

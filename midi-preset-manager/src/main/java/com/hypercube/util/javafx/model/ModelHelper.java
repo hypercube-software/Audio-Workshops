@@ -52,9 +52,7 @@ public class ModelHelper {
         try {
             if (model == null) {
                 return null;
-            } else if (model.getClass()
-                    .getName()
-                    .contains("ByteBuddy")) {
+            } else if (isObservable(model)) {
                 return model; // already observable
             } else if (model instanceof String || model instanceof Boolean || model instanceof Integer || model instanceof Long || model instanceof Float || model instanceof Double || model.getClass()
                     .isEnum()) {
@@ -217,6 +215,12 @@ public class ModelHelper {
             assignedFields.put(key, field);
         }
         return field;
+    }
+
+    public static boolean isObservable(Object obj) {
+        return obj.getClass()
+                .getName()
+                .contains("ByteBuddy");
     }
 
     // https://stackoverflow.com/questions/47104098/using-bytebuddy-to-intercept-setter

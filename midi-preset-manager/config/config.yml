@@ -7,6 +7,7 @@ selectedPatches:
   category: "Bass"
   command: "000514"
   filename: null
+  channel: 0
   score: 0
 - device: "Summit"
   mode: "Single"
@@ -15,6 +16,7 @@ selectedPatches:
   category: "Keyboard"
   command: "00026E"
   filename: null
+  channel: 0
   score: 0
 - device: "Mininova"
   mode: "Single"
@@ -23,15 +25,8 @@ selectedPatches:
   category: "Classic"
   command: "0145"
   filename: null
+  channel: 0
   score: 2
-- device: "JV-880"
-  mode: "Patch"
-  bank: "Internal Bank"
-  name: "A.Piano 3"
-  category: "Keyboard"
-  command: "5008"
-  filename: null
-  score: 0
 - device: "TG-500"
   mode: "Voice"
   bank: "Top40"
@@ -39,12 +34,41 @@ selectedPatches:
   category: "Bass"
   command: "000000"
   filename: "033 [000000,Bass] BA Fingr.syx"
+  channel: 0
   score: 0
 - device: "DS-330"
   mode: "GS Standard"
   bank: "SC"
-  name: "Strings"
-  category: "Ensemble"
-  command: "0030"
+  name: "5th Saw Wave"
+  category: "Synth lead"
+  command: "0056"
   filename: null
+  channel: 1
+  score: 0
+- device: "CS1x"
+  mode: "XG"
+  bank: "XG 040 (Tutti 1)"
+  name: "16+2\"2/3"
+  category: "Organ"
+  command: "002810"
+  filename: null
+  channel: 0
+  score: 0
+- device: "JV-880"
+  mode: "Performance"
+  bank: "Internal Bank"
+  name: "Encounter X"
+  category: "Unknown"
+  command: "5001"
+  filename: null
+  channel: 0
+  score: 0
+- device: "DS-330"
+  mode: "GS Standard"
+  bank: "SC"
+  name: "Agogo"
+  category: "Percussive"
+  command: "0071"
+  filename: null
+  channel: 0
   score: 0

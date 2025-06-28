@@ -13,11 +13,10 @@ import java.util.stream.IntStream;
 @Getter
 @Setter
 public class DeviceState {
-    private String deviceName;
+    private DeviceStateId id = new DeviceStateId();
     private String currentMode;
     private String currentBank;
     private Patch currentPatch;
-    private Integer currentChannel;
     private List<Patch> currentSearchOutput = new ArrayList<>();
     private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
     @NotObservable

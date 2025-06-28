@@ -1,6 +1,7 @@
 package com.hypercube.mpm.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.MidiPresetManagerApplication;
@@ -60,6 +61,7 @@ public class ConfigurationFactory {
         try {
             SimpleModule observableModule = new SimpleModule("observableModule");
             observableModule.setSerializerModifier(new ObservableSerializer());
+            mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
             mapper.registerModule(observableModule);
             mapper.writeValue(configFile, configuration);
         } catch (IOException e) {

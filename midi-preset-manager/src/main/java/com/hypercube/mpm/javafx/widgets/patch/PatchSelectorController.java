@@ -7,9 +7,13 @@ import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.sun.javafx.binding.SelectBinding;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,6 +55,7 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     @FXML
     TableColumn colCommand;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
@@ -63,20 +68,35 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
         colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
-        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilterProperty");
-        ObservableValue<List<Patch>> patchesProperty = resolvePath("model.currentDeviceState.currentSearchOutputProperty");
-        SimpleObjectProperty<Patch> currentPatchProperty = resolvePath("model.currentDeviceState.currentPatchProperty");
-        patchList.itemsProperty()
-                .bind(patchesProperty);
+        bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChange);
+        bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChange);
+
+        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
         searchBox.textProperty()
                 .bindBidirectional(currentPatchNameFilterProperty);
         searchBox.setOnAction(this::onSearch);
-        currentPatchProperty.addListener(this::onSelectedPatchChange);
+
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
     }
 
-    private void onSelectedPatchChange(ObservableValue<? extends Patch> patchProperty, Patch oldValue, Patch newValue) {
+    private void onSearchOutputChange(Observable observable) {
+        log.info("SearchOutput updated");
+        ObservableList list = (ObservableList) ((SelectBinding.AsObject<?>) observable).get();
+        patchList.setItems(list != null ? list : new SimpleListProperty());
+        // since the list is updated, try to update the selection
+        ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.currentDeviceState.currentPatch");
+        if (currentPatchProperty != null) {
+            onSelectedPatchChange(currentPatchProperty);
+        }
+    }
+
+    /**
+     * Update the view selection, when the model change
+     */
+    private void onSelectedPatchChange(Observable observable) {
+        ObservableValue<? extends Patch> patchProperty = (ObservableValue<? extends Patch>) observable;
         log.info("onSelectedPatchChange {} for Patches", patchProperty);
+        Patch newValue = patchProperty.getValue();
         var sm = patchList.getSelectionModel();
         Patch currentPatch = (Patch) sm.getSelectedItem();
         if (currentPatch == null || !currentPatch.equals(newValue)) {

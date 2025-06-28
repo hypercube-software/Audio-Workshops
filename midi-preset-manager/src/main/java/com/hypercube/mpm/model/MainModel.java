@@ -21,12 +21,12 @@ public class MainModel {
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<Integer> modeChannels = new ArrayList<>();
     private List<String> modeBanks = new ArrayList<>();
-    private DeviceState currentDeviceState = new DeviceState();
+    private DeviceState currentDeviceState;
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
 
     @NotObservable
-    private Map<String, DeviceState> deviceStates = new HashMap<>();
+    private Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
     private String info;
 
     private static MainModel observableInstance = null;

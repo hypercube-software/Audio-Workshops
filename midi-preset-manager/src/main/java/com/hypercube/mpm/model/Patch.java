@@ -1,5 +1,6 @@
 package com.hypercube.mpm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @Getter
@@ -15,11 +16,17 @@ public class Patch {
     private String category;
     private String command;
     private String filename;
+    private Integer channel;
     @EqualsAndHashCode.Exclude
     private int score;
 
     @Override
     public String toString() {
         return name;
+    }
+
+    @JsonIgnore
+    public DeviceStateId getDeviceStateId() {
+        return new DeviceStateId(device, channel);
     }
 }

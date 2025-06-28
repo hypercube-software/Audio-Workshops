@@ -1,5 +1,6 @@
 package com.hypercube.util.javafx.controller;
 
+import com.hypercube.util.javafx.binding.BindingManager;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.events.EventHelper;
 import javafx.beans.property.ObjectProperty;
@@ -11,10 +12,6 @@ import javafx.scene.Node;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
  * All controllers will own their widget for convenience
@@ -26,6 +23,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 @Slf4j
 public abstract class Controller<T extends Node, M> {
     private T view;
+    protected BindingManager bindingManager = new BindingManager(this);
 
     private ObjectProperty<M> model = new SimpleObjectProperty<>();
 
@@ -51,16 +49,7 @@ public abstract class Controller<T extends Node, M> {
     }
 
     public <P> P resolvePath(String path) {
-        if (path == null) {
-            return null;
-        }
-        ExpressionParser parser = new SpelExpressionParser();
-        Expression expression = parser.parseExpression(path);
-        try {
-            return (P) expression.getValue(this);
-        } catch (SpelEvaluationException e) {
-            throw new RuntimeException("Unable to resolve path " + path, e);
-        }
+        return bindingManager.resolvePropertyPath(path);
     }
 
     public <E extends Event> void addEventListener(Class<E> eventClass, EventHandler<E> callback) {
@@ -74,4 +63,5 @@ public abstract class Controller<T extends Node, M> {
             getView().fireEvent(EventHelper.forge(eventClass, getView(), getView(), args));
         }
     }
+
 }
