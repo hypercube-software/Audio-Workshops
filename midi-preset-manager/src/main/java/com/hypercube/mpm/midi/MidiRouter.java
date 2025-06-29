@@ -11,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,7 @@ public class MidiRouter implements MidiListener {
     private Object currentMidiOutsGuardian = new Object();
     private List<MidiOutDevice> currentMidiOuts = new ArrayList<>();
     private MidiOutDevice mainMidiOut;
+    private int outputChannel = 0;
 
     public void changeSource(String deviceOrPortName) {
         var portName = cfg.getMidiDeviceLibrary()
@@ -72,14 +76,34 @@ public class MidiRouter implements MidiListener {
     public void onEvent(MidiInDevice device, CustomMidiEvent event) {
         log.info("Receive " + event.getHexValuesSpaced());
         if (mainMidiOut != null) {
+            CustomMidiEvent outputEvent = forgeOutputEvent(event);
             log.info("Main " + mainMidiOut.getName());
-            mainMidiOut.send(event);
+            mainMidiOut.send(outputEvent);
         }
         synchronized (currentMidiOutsGuardian) {
             for (MidiOutDevice midiOut : currentMidiOuts) {
                 log.info("Passthru " + midiOut.getName());
                 midiOut.send(event);
             }
+        }
+    }
+
+    public void changeOutputChannel(Integer channel) {
+        log.info("New output channel in MIDI router: " + channel);
+        outputChannel = channel;
+    }
+
+    private CustomMidiEvent forgeOutputEvent(CustomMidiEvent event) {
+        MidiMessage msg = event.getMessage();
+        byte[] payload = msg
+                .getMessage();
+        int command = payload[0] & 0xF0;
+        int data1 = payload[1];
+        int data2 = payload[2];
+        try {
+            return new CustomMidiEvent(new ShortMessage(command, outputChannel, data1, data2));
+        } catch (InvalidMidiDataException e) {
+            throw new ApplicationError(e);
         }
     }
 

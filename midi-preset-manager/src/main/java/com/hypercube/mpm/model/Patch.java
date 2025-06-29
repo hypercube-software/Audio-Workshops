@@ -16,6 +16,7 @@ public class Patch {
     private String category;
     private String command;
     private String filename;
+    @EqualsAndHashCode.Exclude
     private Integer channel;
     @EqualsAndHashCode.Exclude
     private int score;
@@ -27,6 +28,6 @@ public class Patch {
 
     @JsonIgnore
     public DeviceStateId getDeviceStateId() {
-        return new DeviceStateId(device, channel);
+        return new DeviceStateId(device, mode, channel);
     }
 }

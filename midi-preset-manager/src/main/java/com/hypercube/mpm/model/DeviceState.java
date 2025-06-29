@@ -14,11 +14,11 @@ import java.util.stream.IntStream;
 @Setter
 public class DeviceState {
     private DeviceStateId id = new DeviceStateId();
-    private String currentMode;
     private String currentBank;
     private Patch currentPatch;
     private List<Patch> currentSearchOutput = new ArrayList<>();
     private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
+    private boolean lastUsed;
     @NotObservable
     private MidiOutDevice midiOutDevice;
 

@@ -45,15 +45,6 @@ selectedPatches:
   filename: null
   channel: 1
   score: 0
-- device: "CS1x"
-  mode: "XG"
-  bank: "XG 040 (Tutti 1)"
-  name: "16+2\"2/3"
-  category: "Organ"
-  command: "002810"
-  filename: null
-  channel: 0
-  score: 0
 - device: "JV-880"
   mode: "Performance"
   bank: "Internal Bank"
@@ -69,6 +60,15 @@ selectedPatches:
   name: "Agogo"
   category: "Percussive"
   command: "0071"
+  filename: null
+  channel: 0
+  score: 0
+- device: "CS1x"
+  mode: "XG"
+  bank: "XG 033 (Detune 2)"
+  name: "60's Drawbar Organ 1"
+  category: "Organ"
+  command: "002110"
   filename: null
   channel: 0
   score: 0

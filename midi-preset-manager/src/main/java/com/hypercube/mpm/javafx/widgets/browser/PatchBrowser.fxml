@@ -28,7 +28,7 @@
         <GridPane GridPane.columnIndex="1">
             <AttributeSelector fx:id="mode" dataSource="model.deviceModes" maxHeight="301.0" minHeight="-Infinity"
                                minWidth="-Infinity" prefHeight="144.0" prefWidth="248.0"
-                               selectedItems="model.currentDeviceState.currentMode" title="Mode" GridPane.hgrow="NEVER"
+                               selectedItems="model.currentDeviceState.id.mode" title="Mode" GridPane.hgrow="NEVER"
                                GridPane.rowIndex="0"/>
             <AttributeSelector fx:id="channel" dataSource="model.modeChannels" minWidth="-Infinity"
                                selectedItems="model.currentDeviceState.id.channel" title="MIDI Channel"

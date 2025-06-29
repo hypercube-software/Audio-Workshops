@@ -136,7 +136,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 .getName())
                         .orElseThrow();
                 filesDroppedEvent.getFiles()
-                        .forEach(f -> patchImporter.importSysex(device, state.getCurrentMode(), f));
+                        .forEach(f -> patchImporter.importSysex(device, state.getId()
+                                .getMode(), f));
 
                 midiDeviceLibrary
                         .collectCustomPatches(device);
@@ -191,7 +192,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         var state = model.getCurrentDeviceState();
         if (state != null) {
             var id = new DeviceStateId(state.getId()
-                    .getName(), channel);
+                    .getName(), state.getId()
+                    .getMode(), channel);
             if (!model.getDeviceStates()
                     .containsKey(id)) {
                 initDeviceStateFromConfig(id, null);
@@ -417,7 +419,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         List<Patch> patches = List.of();
 
         String currentModeName = model.getCurrentDeviceState()
-                .getCurrentMode();
+                .getId()
+                .getMode();
         if (currentModeName != null) {
             // Note: it is possible that currentModeBankName is not yet updated at this point
             // so midiDeviceMode will be null because it points to the previous selected device
@@ -506,19 +509,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             String modeName = (String) selectionChangedEvent.getSelectedItems()
                     .getFirst();
             log.info("Current Mode: " + modeName);
-            changeMode(device, state, modeName);
+            changeModeOnDevice(device, state, modeName);
             refreshModeProperties(model, device, state);
             state.setCurrentSelectedCategories(List.of());
-            state.setCurrentMode(modeName);
-            state.getId()
-                    .setChannel(0);
             state.setCurrentBank(null);
             state.setCurrentSearchOutput(null);
         } else {
+            log.info("No mode selected, emptying everything...");
             model.setModeCategories(List.of());
+            model.setModeChannels(List.of());
+            model.setModeBanks(List.of());
             state.setCurrentBank(null);
             state.setCurrentSearchOutput(null);
-            state.setCurrentMode(null);
         }
         refreshPatches();
     }
@@ -532,14 +534,20 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * </ul>
      */
     private void refreshModeProperties(MainModel model, MidiDeviceDefinition device, DeviceState state) {
+        log.info("---------------------------------------------------------------------------------");
+
         var mode = device.getDeviceModes()
-                .get(state.getCurrentMode());
+                .get(state.getId()
+                        .getMode());
         if (mode != null) {
+            log.info("Set categories from mode " + mode.getName());
             model.setModeCategories(mode.getCategories()
                     .stream()
                     .sorted(Comparator.comparing(MidiPresetCategory::name))
                     .toList());
+            log.info("Set channels from mode " + mode.getName());
             model.setModeChannels(mode.getChannels());
+            log.info("Set banks from mode " + mode.getName());
             model.setModeBanks(mode.getBanks()
                     .values()
                     .stream()
@@ -556,6 +564,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .map(MidiDeviceBank::getName)
                     .toList());
         } else {
+            log.warn("No mode selected, emptying everything...");
             model.setModeCategories(List.of());
             model.setModeBanks(List.of());
             model.setModeChannels(List.of());
@@ -563,17 +572,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     /**
-     * Change effectively the mode in the hardware device via MIDI
+     * If the mode is changed, change effectively the mode in the hardware device via MIDI
      */
-    public void changeMode(MidiDeviceDefinition device, DeviceState state, String modeName) {
-        if (state.getCurrentMode() == null || !state.getCurrentMode()
-                .equals(modeName)) {
+    public void changeModeOnDevice(MidiDeviceDefinition device, DeviceState currentState, String newModeName) {
+        if (!currentState.getId()
+                .getMode()
+                .equals(newModeName)) {
             String modeCommand = device.getDeviceModes()
-                    .get(modeName)
+                    .get(newModeName)
                     .getCommand();
-            MidiOutDevice midiOutDevice = state.getMidiOutDevice();
+            MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
             if (modeCommand != null && midiOutDevice != null) {
-                log.info("Switch to mode: " + modeName);
+                log.info("Switch to mode: " + newModeName);
                 var sequences = CommandCall.parse(device.getDefinitionFile(), modeCommand)
                         .stream()
                         .map(commandCall -> {
@@ -595,10 +605,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 throw new MidiError(e);
                             }
                         }));
-                state.setCurrentMode(modeName);
             }
         } else {
-            log.info("Already in mode: " + modeName);
+            log.info("Already in mode: " + newModeName);
         }
 
     }
@@ -624,10 +633,26 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .getDevice(deviceName)
                     .orElseThrow();
             midiRouter.changeMainDestination(device);
-            DeviceStateId id = new DeviceStateId(deviceName, 0);
-            if (!model.getDeviceStates()
-                    .containsKey(id)) {
+            var states = model.getDeviceStates()
+                    .values()
+                    .stream()
+                    .filter(s -> s.getId()
+                            .getName()
+                            .equals(deviceName) && s.isLastUsed())
+                    .toList();
+            dumpStates();
+            DeviceStateId id = null;
+            if (states.isEmpty()) {
+                id = new DeviceStateId(deviceName, device.getDeviceModes()
+                        .values()
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .getName(), 0);
                 initDeviceStateFromConfig(id, null);
+            } else {
+                id = states.getFirst()
+                        .getId();
             }
             var modes = device.getDeviceModes()
                     .keySet()
@@ -653,11 +678,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 .getChannel()))
 
                 .forEach(
-                        (source) -> log.info("         [{}/{}] state: mode '{}' command '{}' categories '{}' patch '{}'",
-                                source.getId()
-                                        .getName(), source.getId()
-                                        .getChannel(),
-                                source.getCurrentMode(),
+                        (source) -> log.info("         {} lastUsed: '{}' command '{}' categories '{}' patch '{}'",
+                                source.getId(),
+                                source.isLastUsed(),
                                 source.getCurrentBank(),
                                 source.getCurrentSelectedCategories(),
                                 source.getCurrentPatch()
@@ -674,9 +697,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (current.getId()
                 .getName() != null) {
             log.info("---------------------------------------------------------------------------------");
-            log.info("Save {} state: mode '{}' channel: '{}' command '{}' categories '{}' patch '{}'", current.getId()
+            log.info("Save {} state: mode '{}' channel: '{}' selected bank '{}' selected categories '{}' selected patch '{}'",
+                    current.getId()
                             .getName(),
-                    current.getCurrentMode(),
+                    current.getId()
+                            .getMode(),
                     current.getId()
                             .getChannel(),
                     current.getCurrentBank(),
@@ -691,6 +716,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                             .getName())) {
                 throw new IllegalStateException();
             }
+            midiRouter.changeOutputChannel(current.getId()
+                    .getChannel());
             model.getDeviceStates()
                     .put(current.getId(), current);
         } else {
@@ -700,20 +727,32 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     /**
-     * Update the observable state from the unobservable state
+     * Restore the UI with a given device state
      *
-     * @param source a state from the map {@link MainModel#getDeviceStates()}
-     * @param target the current state displayed on screen
+     * @param model    the current state displayed on screen
+     * @param newState a state from the map {@link MainModel#getDeviceStates()}
      */
-    private void refreshCurrentDeviceState(DeviceState source, MainModel target) {
-        log.info("Switch to {} state: mode '{}' channel '{}' command '{}' categories '{}' patch '{}'", source.getId()
-                .getName(), source.getCurrentMode(), source.getId()
-                .getChannel(), source.getCurrentBank(), source.getCurrentSelectedCategories(), source.getCurrentPatch());
-        target.setCurrentDeviceState(source);
+    private void refreshCurrentDeviceState(MainModel model, DeviceState newState) {
+        log.info("---------------------------------------------------------------------------------");
+        log.info("Switch to {} command '{}' categories '{}' patch '{}'", newState.getId(), newState.getCurrentBank(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
+        updateLastUsed(model, newState);
+        model.setCurrentDeviceState(newState);
+    }
+
+    private void updateLastUsed(MainModel model, DeviceState newState) {
+        model.getDeviceStates()
+                .values()
+                .stream()
+                .filter(s -> s.getId()
+                        .getName()
+                        .equals(newState.getId()
+                                .getName()))
+                .forEach(s -> s.setLastUsed(false));
+        newState.setLastUsed(true);
     }
 
     /**
-     * Create a unobservable state in the map {@link MainModel#getDeviceStates()} if needed
+     * Create a device state in the map {@link MainModel#getDeviceStates()} if needed
      * <p>This does NOT update the UI</p>
      *
      * @param id            state key used to store it in the map
@@ -726,7 +765,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .orElseThrow();
         DeviceState deviceState;
         deviceState = new DeviceState();
-        deviceState.setId(new DeviceStateId(id.getName(), selectedPatch == null ? id.getChannel() : selectedPatch.getChannel()));
+        deviceState.setId(new DeviceStateId(id.getName(), id.getMode(), selectedPatch == null ? id.getChannel() : selectedPatch.getChannel()));
         if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
             try {
                 deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
@@ -736,17 +775,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             }
         }
         if (selectedPatch != null) {
-            deviceState.setCurrentMode(selectedPatch.getMode());
             deviceState.setCurrentPatch(selectedPatch);
-        } else if (device.getDeviceModes()
-                .size() == 1) {
-            deviceState
-                    .setCurrentMode(device.getDeviceModes()
-                            .values()
-                            .stream()
-                            .toList()
-                            .getFirst()
-                            .getName());
         }
         getModel().getDeviceStates()
                 .put(deviceState.getId(), deviceState);
@@ -762,13 +791,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .getDevice(id.getName())
                 .orElseThrow();
         var model = getModel();
-        // get the unobservable state from the map deviceStates
         DeviceState deviceState = model.getDeviceStates()
                 .get(id);
 
         // update the view with it
         refreshModeProperties(model, device, deviceState);
-        refreshCurrentDeviceState(deviceState, model);
+        refreshCurrentDeviceState(model, deviceState);
     }
 
 
