@@ -4,7 +4,6 @@ import com.hypercube.workshop.midiworkshop.common.MidiNote;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
@@ -35,10 +34,7 @@ public class MidiSettings {
      * Which kinf of bankName select must be used
      */
     private MidiBankFormat presetFormat;
-    /**
-     * Preset numbers start from 0 or 1 ?
-     */
-    private MidiPresetNumbering presetNumbering;
+
     /**
      * Defautl MIDI channel to use in the range [1-16] not [0-15]
      */

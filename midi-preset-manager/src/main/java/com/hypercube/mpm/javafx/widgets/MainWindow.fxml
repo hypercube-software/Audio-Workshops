@@ -4,8 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root type="GridPane" stylesheets="@MainWindow.css" xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml">
+<fx:root stylesheets="@MainWindow.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
+         xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
             <menus>
@@ -27,13 +27,19 @@
             </menus>
         </MenuBar>
         <PatchBrowser GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
-        <Pane GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+        <HBox GridPane.rowIndex="2">
             <Label text="${controller.model.info}">
                 <padding>
                     <Insets left="10.0"/>
                 </padding>
             </Label>
-        </Pane>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="${controller.model.eventInfo}">
+                <padding>
+                    <Insets right="10.0"/>
+                </padding>
+            </Label>
+        </HBox>
     </children>
     <columnConstraints>
         <ColumnConstraints/>

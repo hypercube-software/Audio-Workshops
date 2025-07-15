@@ -29,6 +29,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchIm
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,14 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     sendPatchToDevice(selectedPatch);
                 });
         onDeviceChanged(null);
+        midiRouter.setListener(this::onMidiController);
+        midiRouter.listenDawOutputs();
+    }
+
+    private void onMidiController(String s) {
+        Platform.runLater(() -> {
+            getModel().setEventInfo(s);
+        });
     }
 
     /**
@@ -209,7 +218,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .map(obj -> (String) obj)
                 .findFirst()
                 .orElse(null);
-        midiRouter.changeSource(deviceOrPortName);
+        midiRouter.changeMainSource(deviceOrPortName);
     }
 
     private void onPassThruChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -290,7 +299,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         } else {
             MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), selectedPatch.getChannel(),
                     device.getPresetFormat(),
-                    device.getPresetNumbering(),
                     selectedPatch.getName(),
                     device.getMacros(),
                     List.of(selectedPatch.getCommand()), List.of(MidiPreset.NO_CC), null);
@@ -643,12 +651,16 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             dumpStates();
             DeviceStateId id = null;
             if (states.isEmpty()) {
-                id = new DeviceStateId(deviceName, device.getDeviceModes()
+                id = device.getDeviceModes()
                         .values()
                         .stream()
                         .findFirst()
-                        .get()
-                        .getName(), 0);
+                        .map(MidiDeviceMode::getName)
+                        .map(name -> new DeviceStateId(deviceName, name, 0))
+                        .orElse(null);
+                if (id == null) {
+                    return;
+                }
                 initDeviceStateFromConfig(id, null);
             } else {
                 id = states.getFirst()

@@ -4,7 +4,6 @@
 deviceName: "Mininova"
 brand: "Novation"
 presetFormat: BANK_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "EditBuffer()               : F0 002029 03017F 40 000000 00 00 F7"
@@ -70,3 +69,7 @@ patchOverrides:
         value: 00
       - offset: $0C # PRG
         value: 00
+
+controllers:
+  - "4A | Filter Freq | CC | 0 | 127"
+  - "47 | Filter Res  | CC | 0 | 127"

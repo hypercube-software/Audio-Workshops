@@ -4,7 +4,6 @@
 deviceName: "DS-330"
 brand: "Boss"
 presetFormat: BANK_MSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: SOUND_CANVAS
 macros:
   - "ModeMultiGS()             :       : F0 41 00 42 12 40007F 00 CK6 F7"

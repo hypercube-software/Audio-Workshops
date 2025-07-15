@@ -4,7 +4,6 @@
 deviceName: "Micron"
 brand: "Alesis"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   # bank 0=Red, bank 1=Green, bank 2=Blue, bank 3=Yellow (user), bank 4=Edit bank
@@ -89,3 +88,7 @@ mappers:
         offset: 633 # byte 79 and 1 bit
         unit: BIT
         size: 7 # unofficial SYSEX spec say 8 bit, it is in fact 7 bits
+
+controllers:
+  - "002C | Filter Freq | NRPN_MSB_LSB | 0 | 920"
+  - "002D | Filter Res  | NRPN_MSB_LSB | 0 | 100"

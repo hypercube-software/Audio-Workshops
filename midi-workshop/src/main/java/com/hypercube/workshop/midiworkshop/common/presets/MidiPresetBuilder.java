@@ -27,16 +27,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering.FROM_ONE;
-
 @UtilityClass
 public class MidiPresetBuilder {
     private static Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
     private static final Pattern COMMAND_REGEXP = Pattern.compile("\\s*([A-F0-9]{2})");
 
-    public static MidiPreset parse(File configFile, int zeroBasedChannel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
+    public static MidiPreset parse(File configFile, int zeroBasedChannel, MidiBankFormat midiBankFormat, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
         List<MidiMessage> messages = commands.stream()
-                .flatMap(cmd -> parseCommand(configFile, zeroBasedChannel, midiBankFormat, presetNumbering, macros, cmd))
+                .flatMap(cmd -> parseCommand(configFile, zeroBasedChannel, midiBankFormat, macros, cmd))
                 .toList();
         return new MidiPreset(null, null, title, zeroBasedChannel, messages, controlChanges, drumKitNotes, midiBankFormat);
     }
@@ -66,7 +64,7 @@ public class MidiPresetBuilder {
                     .flatMap(call -> {
                         CommandMacro macro = device.getMacro(call);
                         String cmd = macro.expand(call);
-                        return parseCommand(device.getDefinitionFile(), 0, midiBankFormat, device.getPresetNumbering(), device.getMacros(), cmd);
+                        return parseCommand(device.getDefinitionFile(), 0, midiBankFormat, device.getMacros(), cmd);
                     })
                     .toList();
         } else {
@@ -94,7 +92,7 @@ public class MidiPresetBuilder {
         };
 
         try {
-            return parsePresetSelectCommand(zeroBasedChannel, device.getPresetFormat(), device.getPresetNumbering(), definition).toList();
+            return parsePresetSelectCommand(zeroBasedChannel, device.getPresetFormat(), definition).toList();
         } catch (MidiError e) {
             throw new MidiError("Faulty preset definition:" + definition, e);
         }
@@ -106,12 +104,11 @@ public class MidiPresetBuilder {
      *
      * @param zeroBasedChannel MIDI channel where to activate this preset
      * @param midiBankFormat   Which kind of MIDI message must be used to select this preset
-     * @param presetNumbering  Does the numbers starts from 0 or 1 (for convenience)
      * @param macros           Macros which can be used to generate the commands
      * @param definition       Textual definition of the command template
      * @return
      */
-    private static Stream<MidiMessage> parseCommand(File configFile, int zeroBasedChannel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, List<CommandMacro> macros, String definition) {
+    private static Stream<MidiMessage> parseCommand(File configFile, int zeroBasedChannel, MidiBankFormat midiBankFormat, List<CommandMacro> macros, String definition) {
         try {
             String expandedDefinition = getExpandedDefinitions(configFile, macros, definition);
             return Arrays.stream(expandedDefinition.split(";"))
@@ -122,7 +119,7 @@ public class MidiPresetBuilder {
                         } else if (def.startsWith("B0") || def.startsWith("C0")) {
                             return parseMidiCommand(def);
                         }
-                        return parsePresetSelectCommand(zeroBasedChannel, midiBankFormat, presetNumbering, def);
+                        return parsePresetSelectCommand(zeroBasedChannel, midiBankFormat, def);
                     });
         } catch (NumberFormatException | MidiError e) {
             throw new MidiError("Faulty preset definition:" + definition, e);
@@ -171,16 +168,15 @@ public class MidiPresetBuilder {
      *
      * @param zeroBasedChannel which midi channel to use for the midi messages
      * @param midiBankFormat   which format to generate
-     * @param presetNumbering  how numbers are expressed in the definition
      * @param definition       the definition of the preset
      * @return a stream of Midi messages to select the patch on the given midi channel
      * @throws InvalidMidiDataException
      */
-    private static Stream<MidiMessage> parsePresetSelectCommand(int zeroBasedChannel, MidiBankFormat midiBankFormat, MidiPresetNumbering presetNumbering, String definition) {
+    private static Stream<MidiMessage> parsePresetSelectCommand(int zeroBasedChannel, MidiBankFormat midiBankFormat, String definition) {
 
         List<Integer> ids = preparePresetSelectIdentifiers(midiBankFormat, definition);
         if (!ids.isEmpty()) {
-            int zeroBasedProgram = getProgramNumber(presetNumbering, ids);
+            int zeroBasedProgram = getProgramNumber(ids);
             try {
                 return switch (midiBankFormat) {
                     case NO_BANK_PRG -> programChangeOnly(definition, zeroBasedChannel, ids, zeroBasedProgram);
@@ -198,20 +194,8 @@ public class MidiPresetBuilder {
         }
     }
 
-    private static int getProgramNumber(MidiPresetNumbering presetNumbering, List<Integer> ids) {
-        return getZeroBasedNumber("program change", presetNumbering, ids.getLast());
-    }
-
-    private static int getZeroBasedNumber(String field, MidiPresetNumbering presetNumbering, int value) {
-        int valueOffset = switch (presetNumbering) {
-            case FROM_ONE -> 1;
-            case FROM_ZERO -> 0;
-        };
-        if (presetNumbering == FROM_ONE && value == 0) {
-            throw new MidiError("You are using a zero based '%s' and at the same time '%s'".formatted(field, FROM_ONE.name()));
-        }
-        // MIDI values always from 0 (channels, program numbers...)
-        return value - valueOffset;
+    private static int getProgramNumber(List<Integer> ids) {
+        return ids.getLast();
     }
 
     private static Stream<MidiMessage> bankMsbLsbThenProgramChange(String definition, int zeroBasedChannel, List<Integer> ids, int program) throws InvalidMidiDataException {

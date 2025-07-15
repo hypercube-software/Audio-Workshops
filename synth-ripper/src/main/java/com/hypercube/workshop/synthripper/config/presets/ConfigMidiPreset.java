@@ -73,7 +73,7 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
                 .map(this::forgeDrumKitNote)
                 .toList();
         final List<CommandMacro> macros = midiSettings.getCommands();
-        return MidiPresetBuilder.parse(configFile, midiChannel, midiSettings.getPresetFormat(), midiSettings.getPresetNumbering(), title, macros, commands, controlChanges, drumKitNotes);
+        return MidiPresetBuilder.parse(configFile, midiChannel, midiSettings.getPresetFormat(), title, macros, commands, controlChanges, drumKitNotes);
     }
 
     private DrumKitNote forgeDrumKitNote(String spec) {

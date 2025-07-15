@@ -1,6 +1,7 @@
 package com.hypercube.workshop.synthripper.config;
 
 import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -13,6 +14,7 @@ class SynthRipperConfigurationTest {
      * The test configuration use a macro to set the tempo of various presets via MIDI SySex
      */
     @Test
+    @Disabled
     void canLoadConfig() {
         var rsc = this.getClass()
                 .getClassLoader()

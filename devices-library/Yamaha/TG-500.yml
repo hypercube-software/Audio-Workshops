@@ -4,7 +4,6 @@
 deviceName: "TG-500"
 brand: "Yamaha"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "System Setup()           : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00      F7"

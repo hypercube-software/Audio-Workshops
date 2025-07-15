@@ -125,11 +125,6 @@ deviceModes:
 #
 presetFormat: BANK_MSB_LSB_PRG
 #
-# FROM_ONE : preset number start from 1, it will be converted to n-1
-# FROM_ZERO: preset number will be sent "as is"
-#
-presetNumbering: FROM_ZERO
-#
 # STANDARD     : it is possible to get the patch name with SysEx
 # SOUND_CANVAS : Patch names are hardcoded in java application
 #

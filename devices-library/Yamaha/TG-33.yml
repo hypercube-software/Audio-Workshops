@@ -4,7 +4,6 @@
 deviceName: "TG-33"
 brand: "Yamaha"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "System Data()       : 0001B : F0 43 20 7E 'LM  0012SY' F7"

@@ -4,7 +4,6 @@
 deviceName: "TG-77"
 brand: "Yamaha"
 presetFormat: BANK_PRG_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 # requests format is in table 5 (page 15) of the document "MIDI DATA FORMAT"
 # mtype: 00 = INTERNAL

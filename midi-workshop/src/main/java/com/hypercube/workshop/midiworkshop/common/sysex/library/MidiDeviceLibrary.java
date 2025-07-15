@@ -6,10 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetDomain;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevicePreset;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.*;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
@@ -176,6 +173,9 @@ public class MidiDeviceLibrary {
         if (user.getSysExPauseMs() != null) {
             org.setSysExPauseMs(user.getSysExPauseMs());
         }
+        if (user.getDawMidiDevice() != null) {
+            org.setDawMidiDevice(user.getDawMidiDevice());
+        }
         for (var mode : user.getDeviceModes()
                 .values()) {
             if (!org.getDeviceModes()
@@ -312,6 +312,7 @@ public class MidiDeviceLibrary {
             module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(midiDeviceFile));
             module.addDeserializer(MidiPresetCategory.class, new MidiPresetCategoryDeserializer());
             module.addDeserializer(MidiDevicePreset.class, new MidiDevicePresetDeserializer(devices));
+            module.addDeserializer(MidiDeviceController.class, new MidiDeviceControllerDeserializer());
             module.addDeserializer(MidiPresetDomain.class, new MidiPresetDomainDeserializer(midiDeviceFile));
             module.addDeserializer(int.class, new IntegerDeserializer());
 

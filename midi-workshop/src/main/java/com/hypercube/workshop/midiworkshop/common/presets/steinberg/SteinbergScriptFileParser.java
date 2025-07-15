@@ -4,7 +4,6 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,6 @@ public class SteinbergScriptFileParser {
     private final File scriptFile;
     private final Pattern ENTRY_REGEXP = Pattern.compile("^\\s*\\[([^]]+)\\]?(.+)$");
     private MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
-    MidiPresetNumbering midiPresetNumbering = MidiPresetNumbering.FROM_ZERO;
 
     public List<MidiPreset> parse() {
         try {

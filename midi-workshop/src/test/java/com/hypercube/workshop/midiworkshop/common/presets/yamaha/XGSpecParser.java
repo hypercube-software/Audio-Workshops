@@ -1,6 +1,9 @@
 package com.hypercube.workshop.midiworkshop.common.presets.yamaha;
 
-import com.hypercube.workshop.midiworkshop.common.presets.*;
+import com.hypercube.workshop.midiworkshop.common.presets.DrumKitNote;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,6 @@ import java.util.stream.IntStream;
 public class XGSpecParser {
     private final MidiDeviceDefinition device;
     private final MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
-    private final MidiPresetNumbering midiPresetNumbering = MidiPresetNumbering.FROM_ZERO;
     private Map<String, String> bankNames = buildBankNames();
     private Map<String, String> drumKitsNames = buildKitNames();
     private static final Pattern SINGLE_LETTER_PATTERN = Pattern.compile("^[0-9+-]$");
@@ -299,7 +301,7 @@ public class XGSpecParser {
         map.put("127-0-84", "Live! Funk + Percussion Kit");
         map.put("127-0-85", "Live! Brush + Percussion Kit");
         map.put("127-0-7", "Hob Kit");
-       
+
         return map;
     }
 

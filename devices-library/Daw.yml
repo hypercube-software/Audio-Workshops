@@ -1,0 +1,4 @@
+deviceName: "DAW"
+controllers:
+  - "4A | Filter Freq | CC | 0 | 127"
+  - "47 | Filter Res  | CC | 0 | 127"

@@ -14,7 +14,9 @@ public abstract class AbstractMidiDevice implements Closeable {
 
     public void open() {
         try {
-            device.open();
+            if (!device.isOpen()) {
+                device.open();
+            }
         } catch (MidiUnavailableException e) {
             throw new MidiError(e);
         }
@@ -22,7 +24,9 @@ public abstract class AbstractMidiDevice implements Closeable {
 
     @Override
     public void close() throws IOException {
-        device.close();
+        if (device.isOpen()) {
+            device.close();
+        }
     }
 
     public boolean isOpen() {

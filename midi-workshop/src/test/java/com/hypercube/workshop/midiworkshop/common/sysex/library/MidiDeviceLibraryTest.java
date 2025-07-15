@@ -1,6 +1,8 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.library;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
@@ -210,6 +212,32 @@ class MidiDeviceLibraryTest {
         File dest = new File("src/test/resources/devices-library/Mininova/SingleMode/SN Patches II");
         assertTrue(dest.exists());
         assertEquals(128, dest.listFiles().length);
+    }
+
+    @Test
+    void parseMininovaControllers() {
+        // GIVEN
+        MidiDeviceDefinition device = midiDeviceLibrary.getDevice("Mininova")
+                .orElseThrow();
+        // THEN
+        assertEquals(5, device.getControllers()
+                .size());
+        MidiDeviceController firstController = device.getControllers()
+                .get(0);
+        MidiDeviceController lastController = device.getControllers()
+                .get(4);
+        assertEquals("45", firstController
+                .getHexaId());
+        assertEquals(7, firstController
+                .getIdBitDepth());
+        assertEquals(ControllerValueType.CC, firstController
+                .getType());
+        assertEquals("004C", lastController
+                .getHexaId());
+        assertEquals(14, lastController
+                .getIdBitDepth());
+        assertEquals(ControllerValueType.NRPN_MSB_LSB, lastController
+                .getType());
     }
 
     @Test

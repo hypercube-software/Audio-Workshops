@@ -25,11 +25,7 @@ midi:
   # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
   #
   presetFormat: BANK_MSB_PRG
-  #
-  # FROM_ONE : preset number start from 1, it will be converted to n-1
-  # FROM_ZERO: preset number will be sent "as is"
-  #
-  presetNumbering: FROM_ONE
+
   #
   # preset numbers can be in two forms:
   #   <bankName number>-<program number>

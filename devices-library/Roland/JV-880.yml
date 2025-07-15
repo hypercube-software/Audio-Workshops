@@ -4,7 +4,6 @@
 deviceName: "JV-880"
 brand: "Roland"
 presetFormat: BANK_MSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "System Common()      : 009B : F041104611 00000000 00000110 CK8 F7"

@@ -27,7 +27,14 @@ public class MainModel {
 
     @NotObservable
     private Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
+    /**
+     * Gives some info about the current search output
+     */
     private String info;
+    /**
+     * Gives some info about the latest MIDI event received
+     */
+    private String eventInfo;
 
     private static MainModel observableInstance = null;
 

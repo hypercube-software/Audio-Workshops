@@ -4,7 +4,6 @@
 deviceName: "TX-81z"
 brand: "Yamaha"
 presetFormat: NO_BANK_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "VMEM() : 1008 : F0 43 20 04 F7"                 # Voice Memory Bulk

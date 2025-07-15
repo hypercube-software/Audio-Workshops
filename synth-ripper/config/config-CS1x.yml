@@ -31,11 +31,6 @@ midi:
   #
   presetFormat: BANK_MSB_LSB_PRG
   #
-  # FROM_ONE : preset number start from 1, it will be converted to n-1
-  # FROM_ZERO: preset number will be sent "as is"
-  #
-  presetNumbering: FROM_ONE
-  #
   # preset numbers can be in two forms:
   #   <bankName number>-<program number>
   #   <program number> only, in this case bankName will be 0

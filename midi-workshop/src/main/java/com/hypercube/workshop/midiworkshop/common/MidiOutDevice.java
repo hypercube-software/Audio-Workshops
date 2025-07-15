@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -29,7 +30,9 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     @Override
     public void close() throws IOException {
-        receiver.close();
+        Optional.ofNullable(receiver)
+                .ifPresent(Receiver::close);
+        receiver = null;
         super.close();
     }
 
@@ -37,14 +40,17 @@ public class MidiOutDevice extends AbstractMidiDevice {
     public void open() {
         super.open();
         try {
-            receiver = device.getReceiver();
+            if (isOpen()) {
+                receiver = device.getReceiver();
+            } else {
+                receiver = null;
+            }
         } catch (MidiUnavailableException e) {
             throw new MidiError(e);
         }
     }
 
     public MidiOutDevice(MidiDevice device) throws MidiUnavailableException {
-
         super(device);
         try {
             clockMessage = new ShortMessage(ShortMessage.TIMING_CLOCK);
@@ -59,10 +65,14 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void send(MidiEvent evt) {
+        send(evt.getMessage(), evt.getTick());
+    }
+
+    public void send(MidiMessage msg, long timestamp) {
         if (!isOpen()) {
             throw new MidiError("Open the device before sending anything");
         }
-        receiver.send(evt.getMessage(), evt.getTick());
+        receiver.send(msg, timestamp);
     }
 
     public void sendPresetChange(MidiPreset preset) {
@@ -77,7 +87,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendProgramChange(int channel, int prg) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, prg, 0), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.PROGRAM_CHANGE, channel, prg, 0), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -85,7 +95,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendBankMSB(int channel, int bankMSB) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_MSB, bankMSB), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_MSB, bankMSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -93,7 +103,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendBankLSB(int channel, int bankLSB) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_LSB, bankLSB), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CC_BANK_SELECT_LSB, bankLSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -109,23 +119,23 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     public void sendActiveSensing() {
-        receiver.send(activeSensingMessage, NO_TIME_STAMP);
+        send(activeSensingMessage, NO_TIME_STAMP);
     }
 
     public void sendClock() {
-        receiver.send(clockMessage, NO_TIME_STAMP);
+        send(clockMessage, NO_TIME_STAMP);
     }
 
     public void sendPlay() {
-        receiver.send(playMessage, NO_TIME_STAMP);
+        send(playMessage, NO_TIME_STAMP);
     }
 
     public void sendPause() {
-        receiver.send(pauseMessage, NO_TIME_STAMP);
+        send(pauseMessage, NO_TIME_STAMP);
     }
 
     public void sendResume() {
-        receiver.send(resumeMessage, NO_TIME_STAMP);
+        send(resumeMessage, NO_TIME_STAMP);
     }
 
     public void bind(Sequencer sequencer) throws MidiUnavailableException {
@@ -135,7 +145,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendAllNoteOff(int channel) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_NOTE_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_NOTE_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -143,7 +153,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendAllSoundsOff(int channel) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_SOUND_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_SOUND_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -151,7 +161,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     public void sendAllcontrollersOff(int channel) {
         try {
-            receiver.send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_CONTROLLERS_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
+            send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_CONTROLLERS_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }

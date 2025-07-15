@@ -23,7 +23,6 @@ class PredefinedPatchNamesGenerationTest {
         MidiDeviceDefinition device = new MidiDeviceDefinition();
         device.setPresetNaming(MidiPresetNaming.SOUND_CANVAS);
         device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
-        device.setPresetNumbering(MidiPresetNumbering.FROM_ZERO);
         SteinbergScriptFileParser steinbergScriptFileParser = new SteinbergScriptFileParser(device, new File("./src/test/resources/steinberg-scripts/SC-88.txt"));
         List<String> lines = steinbergScriptFileParser.parse()
                 .stream()
@@ -48,7 +47,6 @@ class PredefinedPatchNamesGenerationTest {
         MidiDeviceDefinition device = new MidiDeviceDefinition();
         device.setPresetNaming(MidiPresetNaming.YAMAHA_XG);
         device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
-        device.setPresetNumbering(MidiPresetNumbering.FROM_ZERO);
         XGSpecParser xgSpecParser = new XGSpecParser(device);
 
         List<MidiPreset> midiPresets = xgSpecParser.parsePresets(new File("./src/test/resources/XG/XG-voices.htm"));

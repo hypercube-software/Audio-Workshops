@@ -3,9 +3,12 @@ package com.hypercube.workshop.midiworkshop.common;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.common.listener.SysExMidiListener;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -13,11 +16,22 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class MidiInDevice extends AbstractMidiDevice {
     private final Set<MidiListener> listeners = ConcurrentHashMap.newKeySet();
-
+    private Transmitter transmitter;
     CountDownLatch listenTerminated;
+    @Getter
+    private boolean isListening;
 
     public MidiInDevice(MidiDevice device) {
         super(device);
+    }
+
+    public int getListenersCount() {
+        return listeners.size();
+    }
+
+    public List<MidiListener> getListeners() {
+        return listeners.stream()
+                .toList();
     }
 
     /**
@@ -62,15 +76,20 @@ public class MidiInDevice extends AbstractMidiDevice {
      * @throws MidiUnavailableException
      */
     public void startListening() throws MidiUnavailableException {
+        if (isListening) {
+            return;
+        }
         listenTerminated = new CountDownLatch(1);
-        Transmitter transmitter = device.getTransmitter();
+        closeTransmitter();
+        transmitter = device.getTransmitter();
         Receiver receiver = new Receiver() {
             @Override
             public void send(MidiMessage message, long timeStamp) {
-                //log.info("%d listeners, receive %02X".formatted(listeners.size(), message.getStatus()));
+                CustomMidiEvent event = new CustomMidiEvent(message, timeStamp);
+                //log.info("%d listeners, receive %s".formatted(listeners.size(), event.toString()));
                 for (MidiListener listener : listeners) {
                     try {
-                        listener.onEvent(MidiInDevice.this, new CustomMidiEvent(message, timeStamp));
+                        listener.onEvent(MidiInDevice.this, event);
                     } catch (RuntimeException e) {
                         log.error("Unexpected error in midi listener", e);
                     }
@@ -91,19 +110,24 @@ public class MidiInDevice extends AbstractMidiDevice {
         } catch (InterruptedException e) {
             throw new MidiError(e);
         }
+        isListening = true;
+    }
+
+    private void closeTransmitter() {
+        Optional.ofNullable(transmitter)
+                .ifPresent(t -> {
+                    t.setReceiver(null);
+                    t.close();
+                });
+        transmitter = null;
     }
 
     public void stopListening() {
-        try {
-            listeners.clear();
-            var transmitter = device.getTransmitter();
-            transmitter.setReceiver(null);
-            transmitter.close();
-            if (listenTerminated != null) {
-                listenTerminated.countDown();
-            }
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(e);
+        listeners.clear();
+        closeTransmitter();
+        isListening = false;
+        if (listenTerminated != null) {
+            listenTerminated.countDown();
         }
     }
 

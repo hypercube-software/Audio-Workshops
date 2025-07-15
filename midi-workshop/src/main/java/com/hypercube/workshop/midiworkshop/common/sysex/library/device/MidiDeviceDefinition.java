@@ -4,7 +4,6 @@ import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNaming;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetNumbering;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchOverride;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
@@ -21,24 +20,86 @@ import java.util.stream.Collectors;
 @Setter
 @Slf4j
 public class MidiDeviceDefinition {
+    /**
+     * Where this device has been defined
+     */
     private File definitionFile;
+    /**
+     * Name of the device
+     */
     private String deviceName;
+    /**
+     * Device brand
+     */
     private String brand;
+    /**
+     * Midi port receiving messages from the revice
+     */
     private String inputMidiDevice;
+    /**
+     * Midi port sending messages to the device
+     */
     private String outputMidiDevice;
+    /**
+     * Midi port send messages from the DAW for this device
+     */
+    private String dawMidiDevice;
+    /**
+     * Optional limit to output messages in bytes per sec.
+     */
     private Integer outputBandWidth;
+    /**
+     * How many ms we have to way after sending a sysex
+     */
     private Integer sysExPauseMs;
+    /**
+     * Maximum time in ms we wait the response of the device (typically during backup)
+     */
     private Integer inactivityTimeoutMs;
+    /**
+     * How the device select patches
+     */
     private MidiBankFormat presetFormat;
-    private MidiPresetNumbering presetNumbering;
+    /**
+     * How patch names can be retreived on this device
+     */
     private MidiPresetNaming presetNaming;
+    /**
+     * How long the device makes to load new patches in ms
+     */
     private int presetLoadTimeMs = 1000;
+    /**
+     * How long the device makes to change mode in ms
+     */
     private int modeLoadTimeMs = 1000;
+    /**
+     * Decoding key used to convert 7 bits SysEx to the real 8 bit payload
+     */
     private MidiDeviceDecodingKey decodingKey;
+    /**
+     * Macros definitions for this device
+     */
     private List<CommandMacro> macros = new ArrayList<>();
+    /**
+     * Patch categories defined globally for the device.
+     * <p>They can be overriden at the mode level</p>
+     */
     private List<MidiPresetCategory> categories = new ArrayList<>();
+    /**
+     * Which MIDI controllers are available in this device
+     */
+    private List<MidiDeviceController> controllers = new ArrayList<>();
+    /**
+     * How many modes are supported in this device (Typically Voice, Multi, Performance)
+     */
     private Map<String, MidiDeviceMode> deviceModes = new HashMap<>();
+    /**
+     * Mappers used to extract data from SysEx response (Typically patch names and categories)
+     */
     private Map<String, MidiResponseMapper> mappers = new HashMap<>();
+    /**
+     * Used to import SysEx files and modify them to match the Edit Buffer only
+     */
     private List<PatchOverride> patchOverrides;
 
     public Optional<MidiDeviceMode> getMode(String mode) {

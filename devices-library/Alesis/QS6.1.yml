@@ -4,7 +4,6 @@
 deviceName: "QS6.1"
 brand: "Alesis"
 presetFormat: BANK_MSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "PatchName()             :       : F0 00 00 0E 0E 03 00 F7 : AlesisProgramMapper"

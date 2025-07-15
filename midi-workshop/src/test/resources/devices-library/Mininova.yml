@@ -49,11 +49,6 @@ categories:
 #
 presetFormat: BANK_LSB_PRG
 #
-# FROM_ONE : preset number start from 1, it will be converted to n-1
-# FROM_ZERO: preset number will be sent "as is"
-#
-presetNumbering: FROM_ZERO
-#
 # STANDARD     : it is possible to get the patch name with SysEx
 # SOUND_CANVAS : Patch names are hardcoded in java application
 #
@@ -86,3 +81,10 @@ patchOverrides:
         value: 00
       - offset: $0C # PRG
         value: 00
+
+controllers:
+  - "45 | Filter 1 Freq | CC | 0 | 127"
+  - "47 | Filter 1 Res | CC | 0 | 127"
+  - "53 | Filter 2 Freq | CC | 0 | 127"
+  - "55 | Filter 2 Res | CC | 0 | 127"
+  - "004C | LFO 1 Rate | NRPN_MSB_LSB | 0 | 1000"

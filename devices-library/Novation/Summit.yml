@@ -4,7 +4,6 @@
 deviceName: "Summit"
 brand: "Novation"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 #
 # The summit use 3 midi channels:
@@ -116,3 +115,6 @@ mappers:
         offset: $1AD
         size: 1
 
+controllers:
+  - "1D3D | Filter Freq | CC_MSB_LSB | 0 | 16320"
+  - "4F   | Filter Res  | CC         | 0 | 127"

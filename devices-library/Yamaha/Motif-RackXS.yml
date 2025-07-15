@@ -4,7 +4,6 @@
 deviceName: "Motif-RackXS"
 brand: "Yamaha"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 # definitions found in the "DATA LIST" PDF from Yamaha (see chapter Bulk Dump Block)
 macros:

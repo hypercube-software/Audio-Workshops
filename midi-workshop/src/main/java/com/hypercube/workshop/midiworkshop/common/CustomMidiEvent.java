@@ -5,6 +5,12 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
 public class CustomMidiEvent extends MidiEvent {
+
+    public static final int NRPN_MSB_PARAM = 0x63;
+    public static final int NRPN_LSB_PARAM = 0x62;
+    public static final int NRPN_MSB_VALUE = 0x06;
+    public static final int NRPN_LSB_VALUE = 0x26;
+
     /**
      * Constructs a new {@code MidiEvent}.
      *
@@ -47,12 +53,28 @@ public class CustomMidiEvent extends MidiEvent {
         var message = getMessage();
         switch (message) {
             case ShortMessage shortMessage: {
+                byte[] payload = message.getMessage();
                 if (shortMessage.getCommand() == ShortMessage.NOTE_ON) {
-                    MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
+                    MidiNote note = MidiNote.fromValue(payload[1]);
                     return "%s Note ON: %s 0x%02X(%d)".formatted(getHexValues(), note.name(), note.value(), note.value());
                 } else if (shortMessage.getCommand() == ShortMessage.NOTE_OFF) {
-                    MidiNote note = MidiNote.fromValue(message.getMessage()[1]);
+                    MidiNote note = MidiNote.fromValue(payload[1]);
                     return "%s Note OFF: %s 0x%02X(%d)".formatted(getHexValues(), note.name(), note.value(), note.value());
+                } else if (shortMessage.getCommand() == ShortMessage.CONTROL_CHANGE) {
+                    int id = payload[1];
+                    int value = payload[2];
+                    if (id == NRPN_MSB_PARAM) {
+                        return "%s NRPN MSB PARAM %d".formatted(getHexValues(), value);
+                    } else if (id == NRPN_LSB_PARAM) {
+                        return "%s NRPN LSB PARAM %d".formatted(getHexValues(), value);
+                    } else if (id == NRPN_MSB_VALUE) {
+                        return "%s NRPN MSB VALUE %d".formatted(getHexValues(), value);
+                    } else if (id == NRPN_LSB_VALUE) {
+                        return "%s NRPN LSB VALUE %d".formatted(getHexValues(), value);
+                    } else {
+                        return "%s CC $%02X/%d".formatted(getHexValues(), id, id);
+                    }
+
                 } else {
                     return getHexValues();
                 }

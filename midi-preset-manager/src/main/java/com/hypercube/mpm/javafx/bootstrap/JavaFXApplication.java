@@ -2,6 +2,7 @@ package com.hypercube.mpm.javafx.bootstrap;
 
 import com.hypercube.mpm.MidiPresetManagerApplication;
 import com.hypercube.mpm.javafx.event.StageReadyEvent;
+import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.util.javafx.controller.ControllerHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -56,6 +57,9 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void stop() throws Exception {
+        MidiRouter midiRouter = applicationContext.getBeanFactory()
+                .getBean(MidiRouter.class);
+        midiRouter.terminate();
         applicationContext.close();
         Platform.exit();
     }

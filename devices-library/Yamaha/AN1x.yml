@@ -4,7 +4,6 @@
 deviceName: "AN1x"
 brand: "Yamaha"
 presetFormat: NO_BANK_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "System Data()                 : 027 : F0 43 20 5C 000000 F7"

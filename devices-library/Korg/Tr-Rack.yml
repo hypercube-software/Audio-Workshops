@@ -4,7 +4,6 @@
 deviceName: "Tr-Rack"
 brand: "Korg"
 presetFormat: BANK_MSB_LSB_PRG
-presetNumbering: FROM_ZERO
 presetNaming: STANDARD
 macros:
   - "GLOBAL DATA()                   : 00543 : F042303B 0E 00 F7"

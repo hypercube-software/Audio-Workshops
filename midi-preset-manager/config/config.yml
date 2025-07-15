@@ -27,15 +27,6 @@ selectedPatches:
   filename: null
   channel: 0
   score: 2
-- device: "TG-500"
-  mode: "Voice"
-  bank: "Top40"
-  name: "BA Fingr.syx"
-  category: "Bass"
-  command: "000000"
-  filename: "033 [000000,Bass] BA Fingr.syx"
-  channel: 0
-  score: 0
 - device: "DS-330"
   mode: "GS Standard"
   bank: "SC"
@@ -69,6 +60,15 @@ selectedPatches:
   name: "60's Drawbar Organ 1"
   category: "Organ"
   command: "002110"
+  filename: null
+  channel: 0
+  score: 0
+- device: "TG-500"
+  mode: "Voice"
+  bank: "Preset 1 Voices"
+  name: "AP Grand"
+  category: "Piano"
+  command: "000200"
   filename: null
   channel: 0
   score: 0
