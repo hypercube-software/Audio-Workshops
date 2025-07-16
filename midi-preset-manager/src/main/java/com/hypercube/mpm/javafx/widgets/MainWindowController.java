@@ -226,7 +226,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .stream()
                 .map(obj -> (String) obj)
                 .toList();
-        midiRouter.changeDestinations(selectedItems);
+        midiRouter.changeSecondaryOutputs(selectedItems);
     }
 
     private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent) {
