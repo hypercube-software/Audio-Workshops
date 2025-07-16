@@ -55,6 +55,10 @@ public final class MidiDeviceController {
         return (id >> 0) & 0x7F;
     }
 
+    public boolean isSigned() {
+        return minValue < 0;
+    }
+
     public boolean isNRPN() {
         return switch (type) {
             case CC, CC_MSB_LSB -> false;

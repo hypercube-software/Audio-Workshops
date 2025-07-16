@@ -10,11 +10,11 @@ public enum ControllerValueType {
      */
     CC_MSB_LSB,
     /**
-     * 7 bits values via MSB only, no LSB
+     * 7 bits values via MSB only, no LSB. This is what MIDI spec recommend
      */
     NRPN_MSB,
     /**
-     * 7 bits values via LSB only, no MSB
+     * 7 bits values via LSB only, no MSB. This is what Alesis often uses
      */
     NRPN_LSB,
     /**

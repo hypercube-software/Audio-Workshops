@@ -24,7 +24,7 @@ public final class MidiControllerMapping {
         int dstMin = dst.getMinValue();
         int dstMax = dst.getMaxValue();
 
-        int inputValueInt = inputValue.toValue();
+        int inputValueInt = src.isSigned() ? inputValue.to32bitsSignedValue() : inputValue.to32BitsUnsignedValue();
 
         // Rescale the input value from the source range to the destination range
         // Formula: output = (input - srcMin) * (dstMax - dstMin) / (srcMax - srcMin) + dstMin
@@ -34,6 +34,6 @@ public final class MidiControllerMapping {
         int rescaledValueInt = (int) Math.round(rescaledValueDouble);
         rescaledValueInt = Math.max(dstMin, Math.min(dstMax, rescaledValueInt));
 
-        return MidiControllerValue.fromValue(rescaledValueInt);
+        return MidiControllerValue.from32BitsSignedValue(rescaledValueInt);
     }
 }

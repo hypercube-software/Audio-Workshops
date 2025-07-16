@@ -14,7 +14,7 @@ import java.util.List;
 public class MidiControllerFactory {
     static List<CustomMidiEvent> forge7BitsCC(int outputChannel, int cc, MidiControllerValue value) {
         try {
-            return List.of(new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, cc, value.lsb())));
+            return List.of(new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, cc, value.to7bitsSignedValue())));
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }
@@ -68,11 +68,11 @@ public class MidiControllerFactory {
                 return List.of(
                         new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, CustomMidiEvent.NRPN_MSB_PARAM, nrpnMsbId)),
                         new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, CustomMidiEvent.NRPN_LSB_PARAM, nrpnLsbId)),
-                        new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, nrpnValueType, value.lsb()))
+                        new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, nrpnValueType, value.to7bitsSignedValue()))
                 );
             } else {
                 return List.of(
-                        new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, nrpnValueType, value.lsb()))
+                        new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, nrpnValueType, value.to7bitsSignedValue()))
                 );
             }
         } catch (InvalidMidiDataException e) {

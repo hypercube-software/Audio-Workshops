@@ -150,10 +150,13 @@ class MidiTransformerTest {
 
     public static Stream<Arguments> rescaleProperly() {
         return Stream.of(
-                Arguments.of("1D3D | SrcName | CC_MSB_LSB | 30 | 16320", "0009 | DstName | NRPN_MSB_LSB | 10 | 1000"),
+                Arguments.of("1D3D | SrcName | CC_MSB_LSB | 30 | 16320", "0009 | DstName | NRPN_MSB_LSB | 0 | 16383"),
                 Arguments.of("4A | SrcName | CC | 30 | 127", "0009 | DstName | NRPN_MSB_LSB | 10 | 1000"),
                 Arguments.of("4A | SrcName | CC | 30 | 127", "4B | SrcName | CC | 0 | 64"),
-                Arguments.of("0009 | SrcName | NRPN_MSB_LSB | 10 | 1000", "4A | DstName | CC | 30 | 127")
+                Arguments.of("0009 | SrcName | NRPN_MSB_LSB | 10 | 1000", "4A | DstName | CC | 30 | 127"),
+                Arguments.of("4A | SrcName | CC | 30 | 127", "0009 | DstName | NRPN_MSB_LSB | -100 | 100"),
+                Arguments.of("4A | SrcName | CC | 30 | 127", "4B | SrcName | CC | -32 | 32")
+
         );
     }
 
@@ -208,36 +211,45 @@ class MidiTransformerTest {
                     .getMessage());
             switch (dst.getType()) {
                 case CC -> {
-                    values.add(payload[2]);
+                    values.add(decode7bits(dst.isSigned(), payload[2]));
                 }
                 case CC_MSB_LSB -> {
                     if (payload[1] == dst.getMSB()) {
-                        valueMSB = payload[2];
+                        valueMSB = decode7bits(dst.isSigned(), payload[2]);
 
                     } else if (payload[1] == dst.getLSB()) {
-                        values.add(valueMSB << 7 | payload[2]);
+                        values.add(decodeSigned14Bits(dst.isSigned(), valueMSB << 7, payload[2]));
                     }
                 }
                 case NRPN_MSB -> {
                     if (payload[1] == CustomMidiEvent.NRPN_MSB_VALUE) {
-                        values.add(payload[2]);
+                        values.add(decode7bits(dst.isSigned(), payload[2]));
                     }
                 }
                 case NRPN_LSB -> {
                     if (payload[1] == CustomMidiEvent.NRPN_LSB_VALUE) {
-                        values.add(payload[2]);
+                        values.add(decode7bits(dst.isSigned(), payload[2]));
                     }
                 }
                 case NRPN_MSB_LSB -> {
                     if (payload[1] == CustomMidiEvent.NRPN_MSB_VALUE) {
-                        valueMSB = payload[2];
+                        valueMSB = decode7bits(dst.isSigned(), payload[2]);
                     } else if (payload[1] == CustomMidiEvent.NRPN_LSB_VALUE) {
-                        values.add(valueMSB << 7 | payload[2]);
+                        values.add(decodeSigned14Bits(dst.isSigned(), valueMSB, payload[2]));
                     }
                 }
             }
         }
         return values;
+    }
+
+    private int decode7bits(boolean signed, int value) {
+        return signed ? (value << 25) >> 25 : value; // expand the bit 7 to 32 bits (since ">>" preserves sign)
+    }
+
+    private int decodeSigned14Bits(boolean signed, int valueMSB, int valueLSB) {
+        int value14bit = valueMSB << 7 | valueLSB;
+        return signed ? (value14bit << 18) >> 18 : value14bit; // expand the bit 14 to 32 bits (since ">>" preserves sign)
     }
 
     private List<CustomMidiEvent> forgeInput(MidiDeviceController ctrl, List<Integer> values) {
@@ -249,7 +261,7 @@ class MidiTransformerTest {
     }
 
     private List<CustomMidiEvent> forgeNRPN(MidiDeviceController ctrl, boolean sameNRPN, int value) {
-        var v = MidiControllerValue.fromValue(value);
+        var v = MidiControllerValue.from32BitsSignedValue(value);
         return switch (ctrl.getType()) {
             case CC -> MidiControllerFactory.forge7BitsCC(0, ctrl.getId(), v);
             case CC_MSB_LSB -> MidiControllerFactory.forge14BitsCC(0, ctrl.getId(), v);
