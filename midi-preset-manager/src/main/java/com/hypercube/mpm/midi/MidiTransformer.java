@@ -11,13 +11,32 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import java.util.*;
 
+/**
+ * This class convert an incoming stream of controllers to a new one according to a specifications in {@link MidiDeviceDefinition#getControllers()}
+ * <ul>
+ *     <li>It is very important to understand <b>this class is statefull</b>. We need to keep track of what we receive to generate the output events</li>
+ *     <li>For instance a 14 bits NRPN id, followed by a 14 bits NRPN value, take 4 MIDI events to be detected</li>
+ *     <li>this mean the method {@link #transform(int, CustomMidiEvent)} can return an empty list before outputting something</li>
+ * </ul>
+ */
 @Slf4j
 public class MidiTransformer {
+    /**
+     * Which "jargon" we are reading for
+     */
     private final MidiDeviceDefinition inputDevice;
+    /**
+     * Which "jargon" we are translating to
+     */
     private final MidiDeviceDefinition outputDevice;
+    /**
+     * Used by the GUI to display CC/NRPN ids to the end user (it's just informative)
+     */
     private final MidiTransformerListener listener;
+    /**
+     * Keep track of 14 bits controllers
+     */
     private final MidiTransformerState midiTransformerState = new MidiTransformerState();
-
     /**
      * 14 bits to 7 bits CC mapping
      */
@@ -32,9 +51,13 @@ public class MidiTransformer {
      * Gives the MSB CC value bound to an MSB CC id
      */
     private final Map<Integer, Integer> ccMSBtoValue = new HashMap<>();
-
+    /**
+     * Which mapping must be applied given an incoming controller event
+     */
     private final Map<MidiControllerId, MidiControllerMapping> mappings = new HashMap<>();
-
+    /**
+     * Try to not create an empty list on each call :-)
+     */
     private final List<CustomMidiEvent> empty = List.of();
 
     public MidiTransformer(MidiDeviceDefinition inputDevice, MidiDeviceDefinition outputDevice, MidiTransformerListener listener) {
@@ -42,17 +65,21 @@ public class MidiTransformer {
         this.outputDevice = outputDevice;
         this.listener = listener;
         if (inputDevice != null && outputDevice != null) {
-            autoSetupMappings(inputDevice, outputDevice);
+            autoSetupMappings();
         }
     }
 
-    private void autoSetupMappings(MidiDeviceDefinition input, MidiDeviceDefinition output) {
-        log.info("Autosetup controllers mappings %s (%d cc) => %s (%d cc)".formatted(input.getDeviceName(), input.getControllers()
-                .size(), output.getDeviceName(), output.getControllers()
+    /**
+     * Inspect the controllers definitions of each device and see which one have the same name
+     * <p>When it is the case, install a mapping between them</p>
+     */
+    private void autoSetupMappings() {
+        log.info("Autosetup controllers mappings %s (%d cc) => %s (%d cc)".formatted(inputDevice.getDeviceName(), inputDevice.getControllers()
+                .size(), outputDevice.getDeviceName(), outputDevice.getControllers()
                 .size()));
-        input.getControllers()
+        inputDevice.getControllers()
                 .forEach(inputController -> {
-                    output.getControllers()
+                    outputDevice.getControllers()
                             .stream()
                             .filter(outputController -> outputController.getName()
                                     .equals(inputController.getName()))
@@ -64,7 +91,7 @@ public class MidiTransformer {
     }
 
     /**
-     * Update the hashmap according to the declared maaping
+     * Update the hashmap according to the declared mapping
      */
     public void addControllerMapping(MidiControllerMapping mapping) {
         var src = mapping.getSrc();
@@ -77,6 +104,13 @@ public class MidiTransformer {
         }
     }
 
+    /**
+     * This is the main method, transforming on the fly incoming events to new ones.
+     * <ul>
+     *     <li>It has to go fast</li>
+     *     <li>It is a state machine based on the state {@link #midiTransformerState}</li>
+     * </ul>>
+     */
     public List<CustomMidiEvent> transform(int outputChannel, CustomMidiEvent event) {
 
         MidiMessage msg = event.getMessage();
@@ -129,6 +163,9 @@ public class MidiTransformer {
         return empty;
     }
 
+    /**
+     * Notify the GUI for a newly detected controller
+     */
     private void notifyListener(String msg) {
         Optional.ofNullable(listener)
                 .ifPresent(l -> l.onControllerEvent("%s %s".formatted(Optional.ofNullable(inputDevice)
@@ -136,6 +173,9 @@ public class MidiTransformer {
                         .orElse("?"), msg)));
     }
 
+    /**
+     * Called when a 7 bits CC is detected
+     */
     private List<CustomMidiEvent> onSingleCC(int outputChannel, int ccId, int lsbValue) throws InvalidMidiDataException {
         notifyListener("  CC   $%02X/%d = %d".formatted(ccId, ccId, lsbValue));
         var mapping = mappings.get(new MidiControllerId(ControllerValueType.CC, ccId));
@@ -144,28 +184,9 @@ public class MidiTransformer {
                 .orElse(empty);
     }
 
-    private List<CustomMidiEvent> mapAndRescaleControllerValue(int outputChannel, MidiControllerMapping mapping, MidiControllerValue inputValue) {
-        int controllerId = mapping.getDst()
-                .getId();
-        var value = mapping.rescaleValue(inputValue);
-        boolean sameNRPN = midiTransformerState.currentOutputNRPN == controllerId;
-        if (!sameNRPN && mapping.getDst()
-                .isNRPN()) {
-            midiTransformerState.currentOutputNRPN = controllerId;
-        }
-        return switch (mapping.getDst()
-                .getType()) {
-            case CC -> MidiControllerFactory.forge7BitsCC(outputChannel, controllerId, value);
-            case CC_MSB_LSB -> MidiControllerFactory.forge14BitsCC(outputChannel, controllerId, value);
-            case NRPN_MSB ->
-                    MidiControllerFactory.forge7bitsNRPN(outputChannel, sameNRPN, controllerId, value, ControllerValueType.NRPN_MSB);
-            case NRPN_LSB ->
-                    MidiControllerFactory.forge7bitsNRPN(outputChannel, sameNRPN, controllerId, value, ControllerValueType.NRPN_LSB);
-            case NRPN_MSB_LSB -> MidiControllerFactory.forge14bitsNRPN(outputChannel, sameNRPN, controllerId, value);
-        };
-
-    }
-
+    /**
+     * Called when a 14 bits CC is detected
+     */
     private List<CustomMidiEvent> onDoubleCC(int outputChannel, int msbId, int lsbId, int lsbValue) throws InvalidMidiDataException {
         int msbValue = ccMSBtoValue.get(msbId); // retrieve the first CC
         int value14bits = (msbValue << 7) + lsbValue; // merge it with the second CC
@@ -179,7 +200,9 @@ public class MidiTransformer {
     }
 
     /**
-     * It is important to understand that some devices does not send NRPN id for each NRPN values
+     * Called when a 14 bits or 7 bits NRPN is detected
+     * <p>
+     * It is important to understand that some devices don't send NRPN id for each NRPN values
      * <p>they just send the id one time because it is just enough
      * <p>Also some devices just send the MSB value, some just the LSB value, some both (14 bits values)
      * <ul>
@@ -223,4 +246,31 @@ public class MidiTransformer {
         }
 
     }
+
+    /**
+     * Once the controller is detected, we rescale its value to the target one
+     */
+    private List<CustomMidiEvent> mapAndRescaleControllerValue(int outputChannel, MidiControllerMapping mapping, MidiControllerValue inputValue) {
+        int controllerId = mapping.getDst()
+                .getId();
+        var value = mapping.rescaleValue(inputValue);
+        boolean sameNRPN = midiTransformerState.currentOutputNRPN == controllerId;
+        if (!sameNRPN && mapping.getDst()
+                .isNRPN()) {
+            midiTransformerState.currentOutputNRPN = controllerId;
+        }
+        return switch (mapping.getDst()
+                .getType()) {
+            case CC -> MidiControllerFactory.forge7BitsCC(outputChannel, controllerId, value);
+            case CC_MSB_LSB -> MidiControllerFactory.forge14BitsCC(outputChannel, controllerId, value);
+            case NRPN_MSB ->
+                    MidiControllerFactory.forge7bitsNRPN(outputChannel, sameNRPN, controllerId, value, ControllerValueType.NRPN_MSB);
+            case NRPN_LSB ->
+                    MidiControllerFactory.forge7bitsNRPN(outputChannel, sameNRPN, controllerId, value, ControllerValueType.NRPN_LSB);
+            case NRPN_MSB_LSB -> MidiControllerFactory.forge14bitsNRPN(outputChannel, sameNRPN, controllerId, value);
+        };
+
+    }
+
+
 }

@@ -1,10 +1,10 @@
 package com.hypercube.workshop.midiworkshop.monitor;
 
 import com.hypercube.workshop.midiworkshop.common.*;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 
@@ -22,7 +22,7 @@ public class MidiMonitor {
         try {
             this.midiInDevice = midiInDevice;
             midiInDevice.listen((device, event) -> onMidiEvent(device, event, eventListener));
-        } catch (MidiUnavailableException e) {
+        } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + midiInDevice.getName());
         }
     }
@@ -73,7 +73,7 @@ public class MidiMonitor {
     void filter(MidiInDevice in, MidiOutDevice out) {
         try {
             in.listen((device, evt) -> filterEvent(evt, out));
-        } catch (MidiUnavailableException e) {
+        } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + in.getName());
         }
     }

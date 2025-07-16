@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.SysexMessage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -214,8 +213,6 @@ public class MidiPresetCrawler {
                 }
             }
             in.stopListening();
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(e);
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         } finally {

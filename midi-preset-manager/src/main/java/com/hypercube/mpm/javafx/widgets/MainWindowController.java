@@ -67,7 +67,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     sendPatchToDevice(selectedPatch);
                 });
         onDeviceChanged(null);
-        midiRouter.setListener(this::onMidiController);
+        midiRouter.setControllerMessageListener(this::onMidiController);
         midiRouter.listenDawOutputs();
     }
 

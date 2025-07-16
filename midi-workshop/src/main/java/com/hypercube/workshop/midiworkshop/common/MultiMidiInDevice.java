@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.common;
 
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.listener.MidiListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,29 +56,33 @@ public class MultiMidiInDevice extends MidiInDevice {
     }
 
     @Override
-    public void listen(MidiListener listener) throws MidiUnavailableException {
+    public void listen(MidiListener listener) {
         runningListeners.set(0);
-        for (var device : devices) {
-            device.device.getTransmitter()
-                    .setReceiver(new Receiver() {
-                        @Override
-                        public void send(MidiMessage message, long timeStamp) {
-                            try {
-                                listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
-                            } catch (RuntimeException e) {
-                                log.error("Unexpected error in midi listener", e);
+        try {
+            for (var device : devices) {
+                device.device.getTransmitter()
+                        .setReceiver(new Receiver() {
+                            @Override
+                            public void send(MidiMessage message, long timeStamp) {
+                                try {
+                                    listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
+                                } catch (RuntimeException e) {
+                                    log.error("Unexpected error in midi listener", e);
+                                }
                             }
-                        }
 
-                        @Override
-                        public void close() {
-                            int v = runningListeners.addAndGet(-1);
-                            if (v <= 0) {
-                                stopListening();
+                            @Override
+                            public void close() {
+                                int v = runningListeners.addAndGet(-1);
+                                if (v <= 0) {
+                                    stopListening();
+                                }
                             }
-                        }
-                    });
-            runningListeners.addAndGet(1);
+                        });
+                runningListeners.addAndGet(1);
+            }
+        } catch (MidiUnavailableException e) {
+            throw new MidiError(e);
         }
         waitNotListening();
     }

@@ -25,7 +25,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.sound.midi.MidiUnavailableException;
 import java.io.IOException;
 import java.util.List;
 
@@ -77,26 +76,22 @@ public class SynthEditorService implements SynthEditorBusListener {
     }
 
     public void updateParameters() {
-        try {
-            if (inputDevice == null || outputDevice == null) {
-                return;
-            }
-            inputDevice.startListening();
-            int progress = 0;
-            var params = editableParameters.getAll();
-            for (int i = 0; i < params.size(); i++) {
-                var p = params.get(i);
-                log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
-                int value = device.requestMemory(inputDevice, outputDevice, MemoryInt24.fromPacked(p.getAddress()), MemoryInt24.from(p.getSize()));
-                p.setValue(value);
-                progress = (i + 1) * 100 / params.size();
-                bus.sendProgress(progress);
-            }
-            inputDevice.stopListening();
-            inputDevice.waitNotListening();
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(e);
+        if (inputDevice == null || outputDevice == null) {
+            return;
         }
+        inputDevice.startListening();
+        int progress = 0;
+        var params = editableParameters.getAll();
+        for (int i = 0; i < params.size(); i++) {
+            var p = params.get(i);
+            log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
+            int value = device.requestMemory(inputDevice, outputDevice, MemoryInt24.fromPacked(p.getAddress()), MemoryInt24.from(p.getSize()));
+            p.setValue(value);
+            progress = (i + 1) * 100 / params.size();
+            bus.sendProgress(progress);
+        }
+        inputDevice.stopListening();
+        inputDevice.waitNotListening();
     }
 
     public synchronized void closeCurrentInputDevice() {

@@ -36,24 +36,38 @@ public class MidiInDevice extends AbstractMidiDevice {
 
     /**
      * Blocking listen
-     *
-     * @param listener
-     * @throws MidiUnavailableException
+     * <p>
+     * BEWARE, In JAVA, two method references pointing to the same method are not equals
+     * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
      */
-    public void listen(MidiListener listener) throws MidiUnavailableException {
+    public void listen(MidiListener listener) {
         addListener(listener);
         startListening();
         waitNotListening();
     }
 
+    /**
+     * BEWARE, In JAVA, two method references pointing to the same method are not equals
+     * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
+     */
     public void addListener(MidiListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Add a listener wrapping it with a {@link SysExMidiListener} to receive ONLY SYSEX
+     * <p>
+     * BEWARE, In JAVA, two method references pointing to the same method are not equals
+     * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
+     */
     public void addSysExListener(MidiListener listener) {
         addListener(new SysExMidiListener(listener));
     }
 
+    /**
+     * BEWARE, In JAVA, two method references pointing to the same method are not equals
+     * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
+     */
     public void removeListener(MidiListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
@@ -67,21 +81,23 @@ public class MidiInDevice extends AbstractMidiDevice {
                     .findFirst()
                     .ifPresent(listeners::remove);
         }
-
     }
 
     /**
-     * Non blocking listen
-     *
-     * @throws MidiUnavailableException
+     * Non-blocking listen. Does nothing if already listening
      */
-    public void startListening() throws MidiUnavailableException {
+    public void startListening() {
         if (isListening) {
             return;
         }
         listenTerminated = new CountDownLatch(1);
         closeTransmitter();
-        transmitter = device.getTransmitter();
+
+        try {
+            transmitter = device.getTransmitter();
+        } catch (MidiUnavailableException e) {
+            throw new MidiError(e);
+        }
         Receiver receiver = new Receiver() {
             @Override
             public void send(MidiMessage message, long timeStamp) {

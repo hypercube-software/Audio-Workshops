@@ -12,11 +12,11 @@ import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
 import com.hypercube.workshop.audioworkshop.synth.vco.VCO;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.sampled.LineUnavailableException;
 import java.nio.ByteOrder;
@@ -56,7 +56,7 @@ public class AudioSynth {
             log.info("Play some notes ! Use the pitch bend to exit...");
             thread.start();
             midiInDevice.listen((device, evt) -> onMidiEvent(evt, vca));
-        } catch (MidiUnavailableException e) {
+        } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + midiInDevice.getName());
         }
     }

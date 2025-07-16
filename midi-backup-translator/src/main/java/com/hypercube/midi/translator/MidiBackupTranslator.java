@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public class MidiBackupTranslator {
             consumer.setPriority(Thread.MAX_PRIORITY);
             consumer.start();
             in.listen(this::onMidiEvent);
-        } catch (MidiUnavailableException e) {
+        } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + in.getName());
         } finally {
             stop = true;

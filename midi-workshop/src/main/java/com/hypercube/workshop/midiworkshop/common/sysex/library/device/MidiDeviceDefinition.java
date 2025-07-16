@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Setter
 @Slf4j
 public class MidiDeviceDefinition {
+    public static final String DAW_DEVICE_NAME = "DAW";
     /**
      * Where this device has been defined
      */

@@ -169,8 +169,8 @@ public class MidiBackupTranslatorShell {
             in.stopListening();
             in.waitNotListening();
             deviceInstance.save();
-            log.info(projectDevice.getName() + " saved 0x%X (%d) bytes".formatted(deviceInstance.getStateSize(), deviceInstance.getStateSize()));
-        } catch (IOException | MidiUnavailableException | InvalidMidiDataException e) {
+            log.info("{}{}", projectDevice.getName(), " saved 0x%X (%d) bytes".formatted(deviceInstance.getStateSize(), deviceInstance.getStateSize()));
+        } catch (IOException | InvalidMidiDataException e) {
             throw new MidiError(e);
         }
     }
