@@ -72,3 +72,21 @@ selectedPatches:
   filename: null
   channel: 0
   score: 0
+- device: "CS1x"
+  mode: "XG"
+  bank: "XG 037 (5th 1)"
+  name: "60's Drawbar Organ 3"
+  category: "Organ"
+  command: "002510"
+  filename: null
+  channel: 1
+  score: 0
+- device: "CS1x"
+  mode: "Performance"
+  bank: "Performances"
+  name: "Airy"
+  category: "Synth FX"
+  command: "3F401F"
+  filename: null
+  channel: 0
+  score: 5

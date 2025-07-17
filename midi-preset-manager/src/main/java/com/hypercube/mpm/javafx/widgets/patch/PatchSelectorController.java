@@ -68,8 +68,8 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
         colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
-        bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChange);
-        bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChange);
+        bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChanged);
+        bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChanged);
 
         SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
         searchBox.textProperty()
@@ -79,21 +79,21 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
     }
 
-    private void onSearchOutputChange(Observable observable) {
+    private void onSearchOutputChanged(Observable observable) {
         log.info("SearchOutput updated");
         ObservableList list = (ObservableList) ((SelectBinding.AsObject<?>) observable).get();
         patchList.setItems(list != null ? list : new SimpleListProperty());
         // since the list is updated, try to update the selection
         ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.currentDeviceState.currentPatch");
         if (currentPatchProperty != null) {
-            onSelectedPatchChange(currentPatchProperty);
+            onSelectedPatchChanged(currentPatchProperty);
         }
     }
 
     /**
      * Update the view selection, when the model change
      */
-    private void onSelectedPatchChange(Observable observable) {
+    private void onSelectedPatchChanged(Observable observable) {
         ObservableValue<? extends Patch> patchProperty = (ObservableValue<? extends Patch>) observable;
         log.info("onSelectedPatchChange {} for Patches", patchProperty);
         Patch newValue = patchProperty.getValue();

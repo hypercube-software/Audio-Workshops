@@ -211,7 +211,9 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     @FXML
     public void onKeyReleased(KeyEvent event) {
-        onSelectedItemChange();
+        if (event.getCode() != KeyCode.TAB) {
+            onSelectedItemChange();
+        }
     }
 
     /**

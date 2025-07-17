@@ -8,9 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DeviceStateId {
-    private String name;
-    private String mode;
-    private Integer channel;
+    private String name; // device name
+    private String mode; // mode name
+    private Integer channel; // device channel
 
     @Override
     public String toString() {

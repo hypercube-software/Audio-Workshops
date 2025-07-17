@@ -414,59 +414,62 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * <p>This method also update the info bar on the bottom of the UI</p>
      */
     private void refreshPatches() {
-        var model = getModel();
-        if (model.getCurrentDeviceState()
-                .getId()
-                .getName() == null)
-            return;
-        var device = cfg.getMidiDeviceLibrary()
-                .getDevice(model.getCurrentDeviceState()
-                        .getId()
-                        .getName())
-                .orElseThrow();
-        List<Patch> patches = List.of();
+        if (getModel().getCurrentDeviceState() != null) {
+            var model = getModel();
+            if (model.getCurrentDeviceState()
+                    .getId()
+                    .getName() == null)
+                return;
+            var device = cfg.getMidiDeviceLibrary()
+                    .getDevice(model.getCurrentDeviceState()
+                            .getId()
+                            .getName())
+                    .orElseThrow();
+            List<Patch> patches = List.of();
 
-        String currentModeName = model.getCurrentDeviceState()
-                .getId()
-                .getMode();
-        if (currentModeName != null) {
-            // Note: it is possible that currentModeBankName is not yet updated at this point
-            // so midiDeviceMode will be null because it points to the previous selected device
-            String currentModeBankName = model.getCurrentDeviceState()
-                    .getCurrentBank();
-            MidiDeviceMode midiDeviceMode = device.getDeviceModes()
-                    .get(currentModeName);
-            if (midiDeviceMode != null) {
-                int channel = model.getCurrentDeviceState()
-                        .getId()
-                        .getChannel();
-                // Patches are stored by banks as String to keep space, we call them "presets"
-                // Once filtered, we convert string presets to a class Patch with score 0
-                // Then the score is updated configurationFactory.getFavorite()
-                // Finally they are sorted by name
-                patches = midiDeviceMode
-                        .getBanks()
-                        .values()
-                        .parallelStream()
-                        .filter(bank -> currentModeBankName == null || currentModeBankName
-                                .equals(bank.getName()))
-                        .flatMap(bank -> bank.getPresets()
-                                .stream()
-                                .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))
-                                .map(preset ->
-                                        configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
-                                .filter(this::patchScoreMatches))
-                        .sorted(Comparator.comparing(Patch::getName))
-                        .toList();
+            String currentModeName = model.getCurrentDeviceState()
+                    .getId()
+                    .getMode();
+            if (currentModeName != null) {
+                log.info("Search patches for mode {}", currentModeName);
+                // Note: it is possible that currentModeBankName is not yet updated at this point
+                // so midiDeviceMode will be null because it points to the previous selected device
+                String currentModeBankName = model.getCurrentDeviceState()
+                        .getCurrentBank();
+                MidiDeviceMode midiDeviceMode = device.getDeviceModes()
+                        .get(currentModeName);
+                if (midiDeviceMode != null) {
+                    int channel = model.getCurrentDeviceState()
+                            .getId()
+                            .getChannel();
+                    // Patches are stored by banks as String to keep space, we call them "presets"
+                    // Once filtered, we convert string presets to a class Patch with score 0
+                    // Then the score is updated configurationFactory.getFavorite()
+                    // Finally they are sorted by name
+                    patches = midiDeviceMode
+                            .getBanks()
+                            .values()
+                            .parallelStream()
+                            .filter(bank -> currentModeBankName == null || currentModeBankName
+                                    .equals(bank.getName()))
+                            .flatMap(bank -> bank.getPresets()
+                                    .stream()
+                                    .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))
+                                    .map(preset ->
+                                            configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
+                                    .filter(this::patchScoreMatches))
+                            .sorted(Comparator.comparing(Patch::getName))
+                            .toList();
+                }
             }
+            // Update the info bar
+            model.setInfo("%s | MIDI OUT '%s' | %d patches".formatted(device.getDeviceName(), device.getOutputMidiDevice(), patches.size()));
+            // store the search output in the current observable state
+            model.getCurrentDeviceState()
+                    .setCurrentSearchOutput(patches);
+            dumpStates();
+            saveDeviceState();
         }
-        // Update the info bar
-        model.setInfo("%s | MIDI OUT '%s' | %d patches".formatted(device.getDeviceName(), device.getOutputMidiDevice(), patches.size()));
-        // store the search output in the current observable state
-        DeviceState deviceState = model.getCurrentDeviceState();
-        deviceState
-                .setCurrentSearchOutput(patches);
-        saveDeviceState();
     }
 
     private Patch forgePatch(String deviceName, String currentModeName, int channel, String bankName, MidiDevicePreset preset) {
@@ -496,14 +499,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     /**
-     * Called when the used change device mode
+     * Called when the user change device mode
      */
     private void onModeChanged(SelectionChangedEvent selectionChangedEvent) {
         var model = getModel();
-        if (model.getCurrentDeviceState()
-                .getId()
-                .getName() == null) {
-            refreshPatches();
+        if (model.getCurrentDeviceState() == null) {
             return;
         }
         var device = cfg.getMidiDeviceLibrary()
@@ -511,26 +511,43 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .getId()
                         .getName())
                 .orElseThrow();
-        var state = model.getCurrentDeviceState();
+        var currentState = model.getCurrentDeviceState();
         if (!selectionChangedEvent.getSelectedItems()
                 .isEmpty()) {
             String modeName = (String) selectionChangedEvent.getSelectedItems()
                     .getFirst();
-            log.info("Current Mode: " + modeName);
-            changeModeOnDevice(device, state, modeName);
-            refreshModeProperties(model, device, state);
-            state.setCurrentSelectedCategories(List.of());
-            state.setCurrentBank(null);
-            state.setCurrentSearchOutput(null);
+            log.info("Switch from mode '{}' to mode '{}' ", currentState.getId()
+                    .getMode(), modeName);
+            changeModeOnDevice(device, currentState, modeName);
+            var stateId = getOrCreateDeviceStateId(device, modeName);
+            currentState = model.getDeviceStates()
+                    .get(stateId);
+            updateLastUsed(model, currentState);
+            model.setCurrentDeviceState(currentState);
+            refreshModeProperties(model, device, currentState);
+            currentState.setCurrentSelectedCategories(List.of());
+            currentState.setCurrentBank(null);
+            currentState.setCurrentSearchOutput(null);
+            refreshPatches();
         } else {
             log.info("No mode selected, emptying everything...");
             model.setModeCategories(List.of());
             model.setModeChannels(List.of());
             model.setModeBanks(List.of());
-            state.setCurrentBank(null);
-            state.setCurrentSearchOutput(null);
+            model.getCurrentDeviceState()
+                    .setCurrentSearchOutput(List.of());
         }
-        refreshPatches();
+    }
+
+    private DeviceStateId getOrCreateDeviceStateId(MidiDeviceDefinition device, String modeName) {
+        var model = getModel();
+        var id = new DeviceStateId(device.getDeviceName(), modeName, 0);
+        if (model.getDeviceStates()
+                .containsKey(id)) {
+            return forgeDefaultDeviceStateId(device, modeName);
+        } else {
+            return id;
+        }
     }
 
     /**
@@ -543,19 +560,20 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      */
     private void refreshModeProperties(MainModel model, MidiDeviceDefinition device, DeviceState state) {
         log.info("---------------------------------------------------------------------------------");
-
+        log.info("Update mode properties: {}", state.getId()
+                .getMode());
         var mode = device.getDeviceModes()
                 .get(state.getId()
                         .getMode());
         if (mode != null) {
-            log.info("Set categories from mode " + mode.getName());
+            log.info("Set categories from mode {}", mode.getName());
             model.setModeCategories(mode.getCategories()
                     .stream()
                     .sorted(Comparator.comparing(MidiPresetCategory::name))
                     .toList());
-            log.info("Set channels from mode " + mode.getName());
+            log.info("Set channels from mode {}", mode.getName());
             model.setModeChannels(mode.getChannels());
-            log.info("Set banks from mode " + mode.getName());
+            log.info("Set banks from mode {}", mode.getName());
             model.setModeBanks(mode.getBanks()
                     .values()
                     .stream()
@@ -591,7 +609,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .getCommand();
             MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
             if (modeCommand != null && midiOutDevice != null) {
-                log.info("Switch to mode: " + newModeName);
+                log.info("Switch to Mode on device: {}", newModeName);
                 var sequences = CommandCall.parse(device.getDefinitionFile(), modeCommand)
                         .stream()
                         .map(commandCall -> {
@@ -641,40 +659,68 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .getDevice(deviceName)
                     .orElseThrow();
             midiRouter.changeMainDestination(device);
-            var states = model.getDeviceStates()
-                    .values()
-                    .stream()
-                    .filter(s -> s.getId()
-                            .getName()
-                            .equals(deviceName) && s.isLastUsed())
-                    .toList();
             dumpStates();
-            DeviceStateId id = null;
-            if (states.isEmpty()) {
-                id = device.getDeviceModes()
-                        .values()
-                        .stream()
-                        .findFirst()
-                        .map(MidiDeviceMode::getName)
-                        .map(name -> new DeviceStateId(deviceName, name, 0))
-                        .orElse(null);
-                if (id == null) {
-                    return;
-                }
-                initDeviceStateFromConfig(id, null);
-            } else {
-                id = states.getFirst()
-                        .getId();
-            }
-            var modes = device.getDeviceModes()
-                    .keySet()
-                    .stream()
-                    .sorted()
-                    .toList();
-            model.setDeviceModes(modes);
+            final DeviceStateId id = getLastUsedDeviceStateId(device);
+            refreshDeviceModes(device);
             refreshCurrentDeviceState(id);
             refreshPatches();
         }
+    }
+
+    /**
+     * Note: it is perfectly possible to have no modes for a device (DAW device for instance)
+     */
+    private void refreshDeviceModes(MidiDeviceDefinition device) {
+        var modes = device.getDeviceModes()
+                .keySet()
+                .stream()
+                .sorted()
+                .toList();
+        getModel().setDeviceModes(modes);
+    }
+
+    /**
+     * Peek the latest used state id or create a new one if needed
+     *
+     * @param device currently selected device
+     */
+    private DeviceStateId getLastUsedDeviceStateId(MidiDeviceDefinition device) {
+        var model = getModel();
+        String deviceName = device.getDeviceName();
+        var lastUsedState = model.getDeviceStates()
+                .values()
+                .stream()
+                .filter(s -> s.getId()
+                        .getName()
+                        .equals(deviceName) && s.isLastUsed())
+                .findFirst()
+                .orElse(null);
+        if (lastUsedState == null) {
+            return forgeDefaultDeviceStateId(device, null);
+        } else {
+            return lastUsedState.getId();
+        }
+    }
+
+    /**
+     * Create a new device state id and its state
+     */
+    private DeviceStateId forgeDefaultDeviceStateId(MidiDeviceDefinition device, String defaultModeName) {
+        String deviceName = device.getDeviceName();
+        // id can be null if no modes are defined (DAW device typically)
+        final DeviceStateId id = device.getDeviceModes()
+                .values()
+                .stream()
+                .filter(mode -> defaultModeName == null || mode.getName()
+                        .equals(defaultModeName))
+                .findFirst()
+                .map(MidiDeviceMode::getName)
+                .map(modeName -> new DeviceStateId(deviceName, modeName, 0))
+                .orElse(null);
+        if (id != null) {
+            initDeviceStateFromConfig(id, null);
+        }
+        return id;
     }
 
     /**
@@ -691,7 +737,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
                 .forEach(
                         (source) -> log.info("         {} lastUsed: '{}' command '{}' categories '{}' patch '{}'",
-                                source.getId(),
+                                "%40s".formatted((source.isLastUsed() ? "->" : "  ") + source.getId()),
                                 source.isLastUsed(),
                                 source.getCurrentBank(),
                                 source.getCurrentSelectedCategories(),
@@ -709,9 +755,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (current.getId()
                 .getName() != null) {
             log.info("---------------------------------------------------------------------------------");
-            log.info("Save {} state: mode '{}' channel: '{}' selected bank '{}' selected categories '{}' selected patch '{}'",
+            log.info("Save {} state: lastUsed: '{}' mode '{}' channel: '{}' selected bank '{}' selected categories '{}' selected patch '{}'",
                     current.getId()
                             .getName(),
+                    current.isLastUsed(),
                     current.getId()
                             .getMode(),
                     current.getId()
@@ -735,7 +782,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         } else {
             log.info("Nothing to save, no device selected");
         }
-        //dumpStates();
+        dumpStates();
     }
 
     /**
@@ -746,7 +793,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      */
     private void refreshCurrentDeviceState(MainModel model, DeviceState newState) {
         log.info("---------------------------------------------------------------------------------");
-        log.info("Switch to {} command '{}' categories '{}' patch '{}'", newState.getId(), newState.getCurrentBank(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
+        log.info("Switch to {} lastUsed '{}' command '{}' categories '{}' patch '{}'", newState.getId(),
+                newState.isLastUsed(),
+                newState.getCurrentBank(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
         updateLastUsed(model, newState);
         model.setCurrentDeviceState(newState);
     }
@@ -761,6 +810,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 .getName()))
                 .forEach(s -> s.setLastUsed(false));
         newState.setLastUsed(true);
+        dumpStates();
     }
 
     /**
@@ -799,16 +849,25 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * @param id key of the state in the map
      */
     private void refreshCurrentDeviceState(DeviceStateId id) {
-        var device = cfg.getMidiDeviceLibrary()
-                .getDevice(id.getName())
-                .orElseThrow();
         var model = getModel();
-        DeviceState deviceState = model.getDeviceStates()
-                .get(id);
+        if (id == null) {
+            // device without modes, so no id, we empty everything
+            model.setModeCategories(List.of());
+            model.setModeBanks(List.of());
+            model.setModeChannels(List.of());
+            model.setCurrentDeviceState(null);
+        } else {
+            var device = cfg.getMidiDeviceLibrary()
+                    .getDevice(id.getName())
+                    .orElseThrow();
 
-        // update the view with it
-        refreshModeProperties(model, device, deviceState);
-        refreshCurrentDeviceState(model, deviceState);
+            DeviceState deviceState = model.getDeviceStates()
+                    .get(id);
+
+            // update the view with it
+            refreshModeProperties(model, device, deviceState);
+            refreshCurrentDeviceState(model, deviceState);
+        }
     }
 
 
