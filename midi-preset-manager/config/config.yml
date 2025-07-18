@@ -54,15 +54,6 @@ selectedPatches:
   filename: null
   channel: 0
   score: 0
-- device: "CS1x"
-  mode: "XG"
-  bank: "XG 033 (Detune 2)"
-  name: "60's Drawbar Organ 1"
-  category: "Organ"
-  command: "002110"
-  filename: null
-  channel: 0
-  score: 0
 - device: "TG-500"
   mode: "Voice"
   bank: "Preset 1 Voices"
@@ -90,3 +81,12 @@ selectedPatches:
   filename: null
   channel: 0
   score: 5
+- device: "CS1x"
+  mode: "XG"
+  bank: "XG 034 (Detune 3)"
+  name: "60's Drawbar Organ 2"
+  category: "Organ"
+  command: "002210"
+  filename: null
+  channel: 0
+  score: 0
