@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.library;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
@@ -39,7 +40,7 @@ class MidiDeviceLibraryTest {
 
         // THEN
         assertEquals(DEVICE_NAME, midiDeviceDefinition.getDeviceName());
-        assertEquals(19, midiDeviceDefinition.getMacros()
+        assertEquals(21, midiDeviceDefinition.getMacros()
                 .size());
     }
 
@@ -227,17 +228,40 @@ class MidiDeviceLibraryTest {
         MidiDeviceController lastController = device.getControllers()
                 .get(4);
         assertEquals("45", firstController
-                .getHexaId());
+                .getIdentity());
         assertEquals(7, firstController
                 .getIdBitDepth());
         assertEquals(ControllerValueType.CC, firstController
                 .getType());
         assertEquals("004C", lastController
-                .getHexaId());
+                .getIdentity());
         assertEquals(14, lastController
                 .getIdBitDepth());
         assertEquals(ControllerValueType.NRPN_MSB_LSB, lastController
                 .getType());
+    }
+
+    @Test
+    void parseSYSEXControllers() {
+        // GIVEN
+        MidiDeviceDefinition device = midiDeviceLibrary.getDevice("TG-500")
+                .orElseThrow();
+        // THEN
+        assertEquals(1, device.getControllers()
+                .size());
+        MidiDeviceController firstController = device.getControllers()
+                .get(0);
+
+        assertEquals(ControllerValueType.SYSEX, firstController
+                .getType());
+        assertNotNull(firstController.getSysExTemplate());
+
+        for (int i = 0; i < 10; i++) {
+            byte[] payload = firstController.getSysExTemplate()
+                    .forgePayload(MidiControllerValue.from32BitsSignedValue(i));
+            assertEquals(11, payload.length);
+            assertEquals(i, payload[9]);
+        }
     }
 
     @Test

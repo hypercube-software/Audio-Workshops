@@ -220,7 +220,7 @@ public class PatchesManager {
     }
 
     /**
-     * Some devices need to first select a factory patch before sending a SySex Edit Buffer update
+     * Some devices need to first select a factory patch before sending a SysEx Edit Buffer update
      */
     private void selectEditBuffer(Patch selectedPatch, MidiDeviceDefinition device, MidiOutDevice port) {
         if (selectedPatch.getCommand() != null) {

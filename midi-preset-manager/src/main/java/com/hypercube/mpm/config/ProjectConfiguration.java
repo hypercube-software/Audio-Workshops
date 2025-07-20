@@ -13,6 +13,10 @@ import java.util.List;
 @Setter
 @Getter
 public class ProjectConfiguration {
+    private String selectedOutput;
+    private String selectedInput;
+    private List<String> selectedSecondaryOutputs = new ArrayList<>();
+
     private List<Patch> selectedPatches = new ArrayList<>();
     @JsonIgnore
     private MidiDeviceLibrary midiDeviceLibrary;

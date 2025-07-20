@@ -50,10 +50,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class MidiRouter {
-    // As you should know, in JAVA, two method references pointing to the same method are not equals
-    // So it is crucial to use the same all the time
-    private final MidiListener mainDestinationEventListener = this::onMainDestinationEvent;
-    private final MidiListener mainSourceEventListener = this::onMainSourceEvent;
     /**
      * For primary input and secondary inputs towards synths
      * <p>{@link MidiTransformer} are bound to a specific {@link MidiInDevice} name
@@ -69,14 +65,18 @@ public class MidiRouter {
      */
     private final ProjectConfiguration cfg;
     /**
+     * Used to protect the access of the list {@link #secondaryOutputs} in a threadsafe way
+     */
+    private final Object secondaryOutputsGuardian = new Object();
+    /**
+     * Inputs from the DAW, typically
+     */
+    private final List<MidiInDevice> secondaryInputs = new ArrayList<>();
+    /**
      * This listener will be set by the GUI to display CC or NRPN identifiers received from the MIDI (it's just informative)
      */
     @Setter
     private MidiTransformerListener controllerMessageListener;
-    /**
-     * Used to protect the access of the list {@link #secondaryOutputs} in a threadsafe way
-     */
-    private final Object secondaryOutputsGuardian = new Object();
     /**
      * Outputs towards the DAW, typically
      */
@@ -85,11 +85,6 @@ public class MidiRouter {
      * List of secondary outputs given by the GUI (device names, or ports names)
      */
     private List<String> deviceOrPortNames = new ArrayList<>();
-
-    /**
-     * Inputs from the DAW, typically
-     */
-    private final List<MidiInDevice> secondaryInputs = new ArrayList<>();
     /**
      * Input master Keyboard controller
      */
@@ -102,6 +97,9 @@ public class MidiRouter {
      * Output to the synth currently used
      */
     private MidiDeviceDefinition mainDestination;
+    // As you should know, in JAVA, two method references pointing to the same method are not equals
+    // So it is crucial to use the same all the time
+    private final MidiListener mainDestinationEventListener = this::onMainDestinationEvent;
     /**
      * {@link MidiInDevice} bound to the synth currently used
      */
@@ -115,6 +113,7 @@ public class MidiRouter {
      * <p>Range is [0-15], not [1-16]</p>
      */
     private int outputChannel = 0;
+    private final MidiListener mainSourceEventListener = this::onMainSourceEvent;
 
     /**
      * The GUI run this method on startup
@@ -132,24 +131,30 @@ public class MidiRouter {
                 .values()
                 .stream()
                 .filter(d -> d.getDawMidiDevice() != null && d.getOutputMidiDevice() != null)
-                .forEach(d -> {
+                .forEach(outputDevice -> {
                     MidiInDevice dawMidiInDevice = cfg.getMidiDeviceManager()
-                            .getInput(d.getDawMidiDevice())
+                            .getInput(outputDevice.getDawMidiDevice())
                             .orElse(null);
                     MidiOutDevice midiOutDevice = cfg.getMidiDeviceManager()
-                            .getOutput(d.getOutputMidiDevice())
+                            .getOutput(outputDevice.getOutputMidiDevice())
                             .orElse(null);
                     if (dawMidiInDevice != null && midiOutDevice != null) {
                         var dawDevice = cfg.getMidiDeviceLibrary()
                                 .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
                                 .orElse(null);
-                        log.info("{} will go to {}", d.getDawMidiDevice(), d.getOutputMidiDevice());
+                        log.info("{} will go to {}", outputDevice.getDawMidiDevice(), outputDevice.getOutputMidiDevice());
                         dawMidiInDevice.open();
                         // TODO: Memory leak on this listener
-                        dawMidiInDevice.addListener((device, event) -> onDAWEvent(device, event, midiOutDevice));
+                        dawMidiInDevice.addListener((device, event) -> onDAWEvent(outputDevice, midiOutDevice, event));
                         secondaryInputs.add(dawMidiInDevice);
                         try {
-                            inputTransformers.put(dawMidiInDevice.getName(), new MidiTransformer(dawDevice, d, controllerMessageListener));
+                            String key = outputDevice.getDeviceName();
+                            var dup = inputTransformers.get(key);
+                            if (dup != null) {
+                                throw new IllegalArgumentException("Transformer already set for " + key + ": " + dup.getOutputDevice()
+                                        .getDeviceName());
+                            }
+                            inputTransformers.put(key, new MidiTransformer(dawDevice, outputDevice, controllerMessageListener));
                             dawMidiInDevice.startListening();
                         } catch (MidiError e) {
                             throw new ApplicationError(e);
@@ -222,6 +227,54 @@ public class MidiRouter {
         openSecondaryOutputs();
     }
 
+    /**
+     * This listener receive messages from the master keyboard controller and redirect the traffic to the currently selected synth
+     * <p>A specific {@link MidiTransformer} will take care of CC/NRPN conversion</p>
+     */
+    public void onMainSourceEvent(MidiInDevice device, CustomMidiEvent event) {
+        if (event.getMessage()
+                .getStatus() <= 0xF0) {
+            log.info("onMainSourceEvent: Receive from {}: {}", device.getName(), event.toString());
+        }
+        // note that transformed can be empty, especially when NPRN are received in multiple Midi events
+        List<CustomMidiEvent> transformed = inputTransformers.get(device.getName())
+                .transform(outputChannel, event);
+        if (mainDestinationMidiOut != null) {
+            redirectTrafficToMainOutput(device, event, transformed);
+        }
+        redirectTrafficToSecondaryOutputs(device, event);
+    }
+
+    public void changeOutputChannel(Integer channel) {
+        log.info("New output channel in MIDI router: {}", channel);
+        outputChannel = channel;
+    }
+
+    public void terminate() {
+        log.info("Shutdown Midi Router...");
+        try {
+            if (mainDestinationMidiOut != null) {
+                log.info("Close {}", mainDestinationMidiOut.getName());
+                mainDestinationMidiOut.close();
+            }
+            for (MidiOutDevice currentMidiOut : secondaryOutputs) {
+                log.info("Close {}", currentMidiOut.getName());
+                currentMidiOut.close();
+            }
+            closeMainSourceListener();
+            closeMainDestinationListener();
+            for (MidiInDevice dawMidiIn : secondaryInputs) {
+                log.info("Stop listening {}", dawMidiIn.getName());
+                dawMidiIn.stopListening();
+                log.info("Close {}", dawMidiIn.getName());
+                dawMidiIn.close();
+            }
+        } catch (IOException e) {
+            throw new ApplicationError(e);
+        }
+        log.info("Midi Router terminated.");
+    }
+
     private void closeSecondaryOutputs() {
         deviceOrPortNames.stream()
                 .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
@@ -278,24 +331,6 @@ public class MidiRouter {
     }
 
     /**
-     * This listener receive messages from the master keyboard controller and redirect the traffic to the currently selected synth
-     * <p>A specific {@link MidiTransformer} will take care of CC/NRPN conversion</p>
-     */
-    public void onMainSourceEvent(MidiInDevice device, CustomMidiEvent event) {
-        if (event.getMessage()
-                .getStatus() <= 0xF0) {
-            log.info("onMainSourceEvent: Receive from {}: {}", device.getName(), event.toString());
-        }
-        // note that transformed can be empty, especially when NPRN are received in multiple Midi events
-        List<CustomMidiEvent> transformed = inputTransformers.get(device.getName())
-                .transform(outputChannel, event);
-        if (mainDestinationMidiOut != null) {
-            redirectTrafficToMainOutput(device, event, transformed);
-        }
-        redirectTrafficToSecondaryOutputs(device, event);
-    }
-
-    /**
      * Send events to the secondary outputs (typically the DAW)
      * <p>If one of them is the same as the input, we send the origin event instead of the transformed ones</p>
      */
@@ -342,13 +377,13 @@ public class MidiRouter {
      * This listener redirect traffic from DAW ({@link #secondaryInputs}) to the right synth ({@link #secondaryOutputs})
      * <p>A specific {@link MidiTransformer} will take care of CC/NRPN conversion</p>
      */
-    private void onDAWEvent(MidiInDevice device, CustomMidiEvent event, MidiOutDevice midiOutDevice) {
+    private void onDAWEvent(MidiDeviceDefinition outputDevice, MidiOutDevice midiOutDevice, CustomMidiEvent event) {
         if (event.getMessage()
                 .getStatus() <= 0xF0) {
-            log.info("Receive from DAW {}: {}", device.getName(), event.toString());
+            log.info("Receive from DAW, targeting {}: {}", outputDevice.getDeviceName(), event.toString());
         }
 
-        List<CustomMidiEvent> transformed = inputTransformers.get(device.getName())
+        List<CustomMidiEvent> transformed = inputTransformers.get(outputDevice.getDeviceName())
                 .transform(-1, event);
         for (CustomMidiEvent outputEvent : transformed) {
             if (midiOutDevice != null) {
@@ -359,11 +394,6 @@ public class MidiRouter {
                 midiOutDevice.send(outputEvent);
             }
         }
-    }
-
-    public void changeOutputChannel(Integer channel) {
-        log.info("New output channel in MIDI router: {}", channel);
-        outputChannel = channel;
     }
 
     /**
@@ -416,31 +446,6 @@ public class MidiRouter {
                 throw new ApplicationError(e);
             }
         }
-    }
-
-    public void terminate() {
-        log.info("Shutdown Midi Router...");
-        try {
-            if (mainDestinationMidiOut != null) {
-                log.info("Close {}", mainDestinationMidiOut.getName());
-                mainDestinationMidiOut.close();
-            }
-            for (MidiOutDevice currentMidiOut : secondaryOutputs) {
-                log.info("Close {}", currentMidiOut.getName());
-                currentMidiOut.close();
-            }
-            closeMainSourceListener();
-            closeMainDestinationListener();
-            for (MidiInDevice dawMidiIn : secondaryInputs) {
-                log.info("Stop listening {}", dawMidiIn.getName());
-                dawMidiIn.stopListening();
-                log.info("Close {}", dawMidiIn.getName());
-                dawMidiIn.close();
-            }
-        } catch (IOException e) {
-            throw new ApplicationError(e);
-        }
-        log.info("Midi Router terminated.");
     }
 
     private void dumpListeners(String name, MidiInDevice device) {

@@ -1,10 +1,15 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.common.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
+import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExTemplate;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.CRC32;
 
 @Getter
 public final class MidiDeviceController {
@@ -17,9 +22,9 @@ public final class MidiDeviceController {
      */
     private final String name;
     /**
-     * Controller ID in hexadecimal
+     * Controller ID in hexadecimal or SYSEX command call (@link {@link CommandCall}
      */
-    private final String hexaId;
+    private final String identity;
     /**
      * Controller ID
      */
@@ -37,33 +42,27 @@ public final class MidiDeviceController {
      */
     private final int maxValue;
 
-    public MidiDeviceController(ControllerValueType type, String name, String hexaId, int minValue, int maxValue) {
-        this.idBitDepth = hexaId.length() == 4 ? 14 : 7;
+    /**
+     * Template used to generate the SYSEX message quickly
+     */
+    @Setter
+    private SysExTemplate sysExTemplate;
+
+    public MidiDeviceController(ControllerValueType type, String name, String identity, int minValue, int maxValue) {
+        this.idBitDepth = identity.length() == 4 ? 14 : 7;
         this.type = type == ControllerValueType.CC && idBitDepth == 14 ? ControllerValueType.CC_MSB_LSB : type;
         this.name = name;
-        this.hexaId = hexaId;
-        this.id = Integer.parseInt(hexaId, 16);
+        this.identity = identity;
         this.minValue = minValue;
         this.maxValue = maxValue;
-    }
-
-    public int getMSB() {
-        return (id >> 8) & 0x7F;
-    }
-
-    public int getLSB() {
-        return (id >> 0) & 0x7F;
-    }
-
-    public boolean isSigned() {
-        return minValue < 0;
-    }
-
-    public boolean isNRPN() {
-        return switch (type) {
-            case CC, CC_MSB_LSB -> false;
-            case NRPN_MSB, NRPN_LSB, NRPN_MSB_LSB -> true;
-        };
+        this.sysExTemplate = null; // set later after deserialization
+        if (type == ControllerValueType.SYSEX) {
+            CRC32 crc = new CRC32();
+            crc.update(identity.getBytes(StandardCharsets.UTF_8));
+            this.id = (int) crc.getValue();
+        } else {
+            this.id = Integer.parseInt(identity, 16);
+        }
     }
 
     public static MidiDeviceController of(String definition) {
@@ -85,8 +84,32 @@ public final class MidiDeviceController {
         return new MidiDeviceController(controllerValueType, name, hexaId, minValue, maxValue);
     }
 
+    public int getMSB() {
+        return (id >> 8) & 0x7F;
+    }
+
+    public int getLSB() {
+        return (id >> 0) & 0x7F;
+    }
+
+    public boolean isSigned() {
+        return minValue < 0;
+    }
+
+    public boolean isNRPN() {
+        return switch (type) {
+            case CC, CC_MSB_LSB, SYSEX -> false;
+            case NRPN_MSB, NRPN_LSB, NRPN_MSB_LSB -> true;
+        };
+    }
+
     @Override
     public String toString() {
-        return "%s (0x%s %s)".formatted(name, hexaId, type.name());
+        if (type == ControllerValueType.SYSEX) {
+            return "%s (0x%s %s %s)".formatted(name, sysExTemplate.midiRequest()
+                    .getValue(), identity, type.name());
+        } else {
+            return "%s (0x%s %s)".formatted(name, identity, type.name());
+        }
     }
 }

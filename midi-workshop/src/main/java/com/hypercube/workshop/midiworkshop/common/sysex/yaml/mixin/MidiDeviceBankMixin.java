@@ -8,11 +8,11 @@ import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDevic
 import java.util.List;
 
 @JsonAutoDetect(
-        fieldVisibility = JsonAutoDetect.Visibility.NONE,      // N'auto-détecte aucun champ
-        getterVisibility = JsonAutoDetect.Visibility.NONE,     // N'auto-détecte aucun getter
-        isGetterVisibility = JsonAutoDetect.Visibility.NONE,   // N'auto-détecte aucun getter de type 'is'
-        setterVisibility = JsonAutoDetect.Visibility.NONE,     // N'auto-détecte aucun setter
-        creatorVisibility = JsonAutoDetect.Visibility.NONE     // N'auto-détecte aucun constructeur/méthode factory
+        fieldVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE,
+        creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
 public class MidiDeviceBankMixin {
     @JsonProperty("presets")

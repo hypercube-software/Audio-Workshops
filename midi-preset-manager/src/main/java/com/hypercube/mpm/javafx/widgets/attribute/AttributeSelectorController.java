@@ -103,6 +103,18 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         }
     }
 
+    @FXML
+    public void onMouseClicked(MouseEvent event) {
+        onSelectedItemChange();
+    }
+
+    @FXML
+    public void onKeyReleased(KeyEvent event) {
+        if (event.getCode() != KeyCode.TAB) {
+            onSelectedItemChange();
+        }
+    }
+
     private void onDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
@@ -196,23 +208,14 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         selectionModel
                 .clearSelection();
         if (selectedItems != null) {
+            if (selectedItems.size() > 1) {
+                selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+            }
             selectedItems
                     .forEach(item -> {
                         selectionModel.select(item);
                     });
 
-        }
-    }
-
-    @FXML
-    public void onMouseClicked(MouseEvent event) {
-        onSelectedItemChange();
-    }
-
-    @FXML
-    public void onKeyReleased(KeyEvent event) {
-        if (event.getCode() != KeyCode.TAB) {
-            onSelectedItemChange();
         }
     }
 

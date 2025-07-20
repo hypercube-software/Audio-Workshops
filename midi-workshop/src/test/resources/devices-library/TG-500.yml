@@ -23,8 +23,11 @@ macros:
   - "PatchName()              : Voice Edit Buffer() : YamahaMapper"
   - "DrumPatchName()          : Drum voice Edit Buffer(): YamahaMapper"
   - "PerformanceName()        : Performance Edit Buffer() : YamahaMapper"
-
-# Categories found in manual page 24
+  - # TG500 Data parameter change is in chapter 3.1.1 in the manual
+  - "ParameterChange(grp,sgrp,msb,lsb,vmsb,vlsb)    : F0 43 10 29 grp sgrp msb lsb vmsb vlsb F7"
+  - "NormalVoiceParam(msb,lsb,vmsb,vlsb)            : ParameterChange(2,0,msb,lsb,vmsb,vlsb)"
+  -
+  # Categories found in manual page 24
 categories:
   - "Piano: AP"
   - "Keyboard: KY"
@@ -187,3 +190,6 @@ patchOverrides:
         value: $7F # memory type: Edit Buffer
       - offset: $2C3
         value: CK701 # Checksum
+
+controllers:
+  - "NormalVoiceParam(B3,8B,0,lsb) | Filter Freq | SYSEX | 0 | 127"

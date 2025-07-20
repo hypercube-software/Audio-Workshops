@@ -3,9 +3,7 @@ package com.hypercube.workshop.midiworkshop.common.sysex.util;
 import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.checksum.DefaultChecksum;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -24,64 +22,9 @@ import java.util.stream.Stream;
 public class SysExBuilder {
     public static final Pattern DECIMAL_OR_HEX_NUMBER = Pattern.compile("((0x|\\$)(?<hexadecimal>[0-9A-F]+))|(?<decimal>[0-9]+)");
     public static final Pattern nibbles = Pattern.compile("(^|\\s)(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
-
-
-    private static class State {
-        private boolean updateChecksum;
-    }
-
     private final SysExChecksum sysExChecksum;
     private final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     private final State state = new State();
-
-    public SysExBuilder write(int... values) {
-        Arrays.stream(values)
-                .forEach(value -> {
-                    byteStream.write(value);
-                    if (state.updateChecksum) {
-                        sysExChecksum.update(value);
-                    }
-
-                });
-        return this;
-    }
-
-    public SysExBuilder beginChecksum() {
-        state.updateChecksum = true;
-        return this;
-    }
-
-    public SysExBuilder writeChecksum() {
-        state.updateChecksum = false;
-        byteStream.write(sysExChecksum.getValue());
-        return this;
-    }
-
-    public byte[] buildBuffer() {
-        return byteStream.toByteArray();
-    }
-
-    /**
-     * Forge a MIDI event that can be send to a read MIDI Device
-     *
-     * @return the MID Event
-     * @throws InvalidMidiDataException
-     */
-    public CustomMidiEvent buildMidiEvent() throws InvalidMidiDataException {
-        byte[] data = byteStream.toByteArray();
-        return new CustomMidiEvent(new SysexMessage(data, data.length));
-    }
-
-    @Getter
-    @Setter
-    private static class CheckSumDef {
-        int size;
-        int position;
-
-        public int getStartPosition() {
-            return position - size;
-        }
-    }
 
     public static List<CustomMidiEvent> parse(String definitions) throws InvalidMidiDataException {
         return Arrays.stream(definitions.split(";"))
@@ -262,5 +205,47 @@ public class SysExBuilder {
             payload = payload.replace(k, v);
         }
         return payload;
+    }
+
+    public SysExBuilder write(int... values) {
+        Arrays.stream(values)
+                .forEach(value -> {
+                    byteStream.write(value);
+                    if (state.updateChecksum) {
+                        sysExChecksum.update(value);
+                    }
+
+                });
+        return this;
+    }
+
+    public SysExBuilder beginChecksum() {
+        state.updateChecksum = true;
+        return this;
+    }
+
+    public SysExBuilder writeChecksum() {
+        state.updateChecksum = false;
+        byteStream.write(sysExChecksum.getValue());
+        return this;
+    }
+
+    public byte[] buildBuffer() {
+        return byteStream.toByteArray();
+    }
+
+    /**
+     * Forge a MIDI event that can be send to a read MIDI Device
+     *
+     * @return the MID Event
+     * @throws InvalidMidiDataException
+     */
+    public CustomMidiEvent buildMidiEvent() throws InvalidMidiDataException {
+        byte[] data = byteStream.toByteArray();
+        return new CustomMidiEvent(new SysexMessage(data, data.length));
+    }
+
+    private static class State {
+        private boolean updateChecksum;
     }
 }

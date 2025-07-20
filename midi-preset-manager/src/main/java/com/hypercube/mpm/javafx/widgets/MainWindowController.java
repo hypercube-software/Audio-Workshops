@@ -2,6 +2,7 @@ package com.hypercube.mpm.javafx.widgets;
 
 import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.PatchesManager;
+import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
@@ -11,12 +12,14 @@ import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.view.properties.SceneListener;
 import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +30,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable {
+public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable, SceneListener {
     @Autowired
     ProjectConfiguration cfg;
     @Autowired
@@ -36,7 +39,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     DeviceStateManager deviceStateManager;
     @Autowired
     PatchesManager patchesManager;
-
+    @Autowired
+    ConfigurationFactory configurationFactory;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,6 +54,16 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         initDevices();
+    }
+
+    @Override
+    public void onSceneAttach(Scene newValue) {
+        restoreConfigSelection();
+    }
+
+    @Override
+    public void onSceneDetach(Scene oldValue) {
+
     }
 
     /**
@@ -71,8 +85,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         patchesManager.onPatchScoreChanged(patchScoreChangedEvent.getPatch());
     }
 
-    private void onMidiController(String s) {
-        Platform.runLater(() -> getModel().setEventInfo(s));
+    /**
+     * Method called when {@link com.hypercube.mpm.midi.MidiTransformer} see a controller message
+     *
+     * @param message to be displayed to the user
+     */
+    private void onMidiController(String message) {
+        Platform.runLater(() -> getModel().setEventInfo(message));
     }
 
     /**
@@ -173,7 +192,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             case WidgetIdentifiers.WIDGET_ID_CATEGORY -> onCategoriesChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_BANK -> onBankChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PATCH -> onPatchChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS -> onPassThruChanged(selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS -> onSecondaryOutputsChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS -> onMasterInputChanged(selectionChangedEvent);
         }
     }
@@ -191,6 +210,24 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
+    private void restoreConfigSelection() {
+        Optional.ofNullable(cfg.getSelectedInput())
+                .ifPresent(selectedInput -> {
+                    String inputPort = getModel().getMidiInPorts()
+                            .stream()
+                            .filter(p -> p.equals(selectedInput))
+                            .findFirst()
+                            .orElse(null);
+                    getModel().setSelectedInputPort(inputPort);
+                    midiRouter.changeMainSource(inputPort);
+                });
+        Optional.ofNullable(cfg.getSelectedSecondaryOutputs())
+                .ifPresent(selectedSecondaryOutputPorts -> {
+                    getModel().setSelectedOutputPorts(selectedSecondaryOutputPorts);
+                    midiRouter.changeSecondaryOutputs(selectedSecondaryOutputPorts);
+                });
+    }
+
     private void onMasterInputChanged(SelectionChangedEvent selectionChangedEvent) {
         String deviceOrPortName = selectionChangedEvent.getSelectedItems()
                 .stream()
@@ -198,14 +235,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .findFirst()
                 .orElse(null);
         midiRouter.changeMainSource(deviceOrPortName);
+        cfg.setSelectedInput(deviceOrPortName);
+        configurationFactory.saveConfig(cfg);
     }
 
-    private void onPassThruChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onSecondaryOutputsChanged(SelectionChangedEvent selectionChangedEvent) {
         List<String> selectedItems = selectionChangedEvent.getSelectedItems()
                 .stream()
                 .map(String.class::cast)
                 .toList();
         midiRouter.changeSecondaryOutputs(selectedItems);
+        cfg.setSelectedSecondaryOutputs(selectedItems);
+        configurationFactory.saveConfig(cfg);
     }
 
     private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent) {

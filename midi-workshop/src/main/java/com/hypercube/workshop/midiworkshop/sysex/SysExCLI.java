@@ -212,7 +212,7 @@ public class SysExCLI {
         }
     }
 
-    @ShellMethod("Generate CS1X voices SySex")
+    @ShellMethod("Generate CS1X voices SysEx")
     public void dumpCS1XVoices(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
         CS1XPresetGenerator cs1XPresetGenerator = new CS1XPresetGenerator();
         cs1XPresetGenerator.dumpCS1XVoices(deviceName);

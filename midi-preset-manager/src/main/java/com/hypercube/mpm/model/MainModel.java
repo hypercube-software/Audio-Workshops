@@ -14,9 +14,13 @@ import java.util.Map;
 @Getter
 @Setter
 public class MainModel {
+    private static MainModel observableInstance = null;
     private List<String> devices = new ArrayList<>();
     private List<String> midiInPorts = new ArrayList<>();
+    private String selectedInputPort;
     private List<String> midiThruPorts = new ArrayList<>();
+    private List<String> selectedOutputPorts = new ArrayList<>();
+    
     private List<String> deviceModes = new ArrayList<>();
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<Integer> modeChannels = new ArrayList<>();
@@ -24,7 +28,6 @@ public class MainModel {
     private DeviceState currentDeviceState;
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
-
     @NotObservable
     private Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
     /**
@@ -35,8 +38,6 @@ public class MainModel {
      * Gives some info about the latest MIDI event received
      */
     private String eventInfo;
-
-    private static MainModel observableInstance = null;
 
     public static MainModel getObservableInstance() {
         if (observableInstance == null) {

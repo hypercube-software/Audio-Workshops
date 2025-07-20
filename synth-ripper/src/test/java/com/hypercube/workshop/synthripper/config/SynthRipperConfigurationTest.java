@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SynthRipperConfigurationTest {
     /**
-     * The test configuration use a macro to set the tempo of various presets via MIDI SySex
+     * The test configuration use a macro to set the tempo of various presets via MIDI SysEx
      */
     @Test
     @Disabled

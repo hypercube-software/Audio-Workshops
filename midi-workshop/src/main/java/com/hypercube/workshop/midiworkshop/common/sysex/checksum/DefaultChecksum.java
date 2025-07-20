@@ -9,6 +9,11 @@ public class DefaultChecksum implements SysExChecksum {
     private int checksum = 0;
 
     @Override
+    public void reset() {
+        checksum = 0;
+    }
+
+    @Override
     public void update(int value) {
         checksum += value;
     }

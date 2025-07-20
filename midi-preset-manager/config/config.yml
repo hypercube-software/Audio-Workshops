@@ -1,4 +1,9 @@
 ---
+selectedOutput: null
+selectedInput: "Summit"
+selectedSecondaryOutputs:
+- "FromDAW"
+- "Microsoft GS Wavetable Synth"
 selectedPatches:
 - device: "TG-33"
   mode: "Voice"
@@ -87,6 +92,15 @@ selectedPatches:
   name: "60's Drawbar Organ 2"
   category: "Organ"
   command: "002210"
+  filename: null
+  channel: 0
+  score: 0
+- device: "M1 VST"
+  mode: "Program"
+  bank: "06 MPC-04 ORCHESTRA 1"
+  name: "BreathBass"
+  category: "Bass"
+  command: "000624"
   filename: null
   channel: 0
   score: 0

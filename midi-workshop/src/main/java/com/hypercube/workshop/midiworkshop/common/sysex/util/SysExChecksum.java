@@ -5,6 +5,11 @@ package com.hypercube.workshop.midiworkshop.common.sysex.util;
  */
 public interface SysExChecksum {
     /**
+     * Restart the checksum
+     */
+    void reset();
+
+    /**
      * Add a new byte to the current checksum
      *
      * @param value 8 bit value

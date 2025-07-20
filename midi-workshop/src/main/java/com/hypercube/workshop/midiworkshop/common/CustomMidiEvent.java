@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.common;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 
 public class CustomMidiEvent extends MidiEvent {
 
@@ -52,6 +53,9 @@ public class CustomMidiEvent extends MidiEvent {
     public String toString() {
         var message = getMessage();
         switch (message) {
+            case SysexMessage sysexMessage: {
+                return "SYSEX %s".formatted(getHexValuesSpaced());
+            }
             case ShortMessage shortMessage: {
                 byte[] payload = message.getMessage();
                 if (shortMessage.getCommand() == ShortMessage.NOTE_ON) {

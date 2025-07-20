@@ -4,10 +4,12 @@ import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
+import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
 import lombok.experimental.UtilityClass;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 import java.util.List;
 
 @UtilityClass
@@ -61,7 +63,7 @@ public class MidiControllerFactory {
         int nrpnValueType = switch (type) {
             case NRPN_MSB -> CustomMidiEvent.NRPN_MSB_VALUE;
             case NRPN_LSB -> CustomMidiEvent.NRPN_LSB_VALUE;
-            case CC, CC_MSB_LSB, NRPN_MSB_LSB -> throw new IllegalArgumentException();
+            case CC, CC_MSB_LSB, NRPN_MSB_LSB, SYSEX -> throw new IllegalArgumentException();
         };
         try {
             if (!includeParamId) {
@@ -75,6 +77,17 @@ public class MidiControllerFactory {
                         new CustomMidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, outputChannel, nrpnValueType, value.to7bitsSignedValue()))
                 );
             }
+        } catch (InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+    }
+
+    public static List<CustomMidiEvent> forgeSYSEX(int outputChannel, boolean sameNRPN, MidiDeviceController controller, MidiControllerValue value) {
+
+        try {
+            byte[] payload = controller.getSysExTemplate()
+                    .forgePayload(value);
+            return List.of(new CustomMidiEvent(new SysexMessage(payload, payload.length)));
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         }

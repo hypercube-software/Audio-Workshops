@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -24,10 +25,12 @@ public class MidiTransformer {
     /**
      * Which "jargon" we are reading for
      */
+    @Getter
     private final MidiDeviceDefinition inputDevice;
     /**
      * Which "jargon" we are translating to
      */
+    @Getter
     private final MidiDeviceDefinition outputDevice;
     /**
      * Used by the GUI to display CC/NRPN ids to the end user (it's just informative)
@@ -70,33 +73,12 @@ public class MidiTransformer {
     }
 
     /**
-     * Inspect the controllers definitions of each device and see which one have the same name
-     * <p>When it is the case, install a mapping between them</p>
-     */
-    private void autoSetupMappings() {
-        log.info("Autosetup controllers mappings %s (%d cc) => %s (%d cc)".formatted(inputDevice.getDeviceName(), inputDevice.getControllers()
-                .size(), outputDevice.getDeviceName(), outputDevice.getControllers()
-                .size()));
-        inputDevice.getControllers()
-                .forEach(inputController -> {
-                    outputDevice.getControllers()
-                            .stream()
-                            .filter(outputController -> outputController.getName()
-                                    .equals(inputController.getName()))
-                            .findFirst()
-                            .ifPresent(outputController -> {
-                                addControllerMapping(new MidiControllerMapping(inputController, outputController));
-                            });
-                });
-    }
-
-    /**
      * Update the hashmap according to the declared mapping
      */
     public void addControllerMapping(MidiControllerMapping mapping) {
         var src = mapping.getSrc();
         var dst = mapping.getDst();
-        log.info("Install controller mapping: " + src.toString() + " => " + dst.toString());
+        log.info("\tcontroller mapping: {} => {}", src.toString(), dst.toString());
         mappings.put(mapping.getId(), mapping);
         if (src.getType() == ControllerValueType.CC_MSB_LSB) {
             ccLSBtoMSB.put(src.getLSB(), src.getMSB());
@@ -161,6 +143,27 @@ public class MidiTransformer {
             log.error("Unexpected error", e);
         }
         return empty;
+    }
+
+    /**
+     * Inspect the controllers definitions of each device and see which one have the same name
+     * <p>When it is the case, install a mapping between them</p>
+     */
+    private void autoSetupMappings() {
+        log.info("Autosetup controllers mappings %s (%d cc) => %s (%d cc)".formatted(inputDevice.getDeviceName(), inputDevice.getControllers()
+                .size(), outputDevice.getDeviceName(), outputDevice.getControllers()
+                .size()));
+        inputDevice.getControllers()
+                .forEach(inputController -> {
+                    outputDevice.getControllers()
+                            .stream()
+                            .filter(outputController -> outputController.getName()
+                                    .equals(inputController.getName()))
+                            .findFirst()
+                            .ifPresent(outputController -> {
+                                addControllerMapping(new MidiControllerMapping(inputController, outputController));
+                            });
+                });
     }
 
     /**
@@ -268,6 +271,7 @@ public class MidiTransformer {
             case NRPN_LSB ->
                     MidiControllerFactory.forge7bitsNRPN(outputChannel, sameNRPN, controllerId, value, ControllerValueType.NRPN_LSB);
             case NRPN_MSB_LSB -> MidiControllerFactory.forge14bitsNRPN(outputChannel, sameNRPN, controllerId, value);
+            case SYSEX -> MidiControllerFactory.forgeSYSEX(outputChannel, sameNRPN, mapping.getDst(), value);
         };
 
     }

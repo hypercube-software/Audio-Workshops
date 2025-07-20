@@ -48,10 +48,10 @@ public class MidiDeviceBank {
     }
 
     public int getMSB() {
-        if (command.contains("-")) {
+        if (command != null && command.contains("-")) {
             String[] v = command.split("-");
             return v.length > 0 ? Integer.parseInt(v[0]) : -1;
-        } else if (command.startsWith("$")) {
+        } else if (command != null && command.startsWith("$")) {
             return Integer.parseInt(command.substring(1, 3), 16);
         } else {
             throw new MidiConfigError("Unsupported command format:" + command);
@@ -59,10 +59,10 @@ public class MidiDeviceBank {
     }
 
     public int getLSB() {
-        if (command.contains("-")) {
+        if (command != null && command.contains("-")) {
             String[] v = command.split("-");
             return v.length > 1 ? Integer.parseInt(v[1]) : -1;
-        } else if (command.startsWith("$")) {
+        } else if (command != null && command.startsWith("$")) {
             return Integer.parseInt(command.substring(3, 5), 16);
         } else {
             throw new MidiConfigError("Unsupported command format:" + command);

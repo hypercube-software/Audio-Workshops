@@ -4,17 +4,19 @@
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchSelector?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
-<fx:root gridLinesVisible="true" style="-fx-background-color: #C0C0C0;" type="GridPane"
-         xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="true" style="-fx-background-color: #C0C0C0;"
+         type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
     <children>
         <GridPane GridPane.columnIndex="0">
             <AttributeSelector fx:id="device" dataSource="model.devices" minHeight="-Infinity" minWidth="-Infinity"
                                title="Device" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="master" dataSource="model.midiInPorts" minHeight="-Infinity" minWidth="-Infinity"
                                title="Master Keyboard" GridPane.hgrow="NEVER" GridPane.rowIndex="1"
+                               selectedItems="model.selectedInputPort"
                                GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="passThru" allowMultiSelection="true" dataSource="model.midiThruPorts"
                                minHeight="-Infinity" minWidth="-Infinity" title="Pass Thru" GridPane.hgrow="NEVER"
+                               selectedItems="model.selectedOutputPorts"
                                GridPane.rowIndex="2" GridPane.vgrow="ALWAYS"/>
             <columnConstraints>
                 <ColumnConstraints/>

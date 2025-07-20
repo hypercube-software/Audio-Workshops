@@ -1,5 +1,7 @@
 package com.hypercube.workshop.midiworkshop.common.sysex.library.device;
 
+import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandCall;
+
 public enum ControllerValueType {
     /**
      * 8 bits values
@@ -21,5 +23,9 @@ public enum ControllerValueType {
      * 14 bits values via MSB and LSB
      */
     NRPN_MSB_LSB,
+    /**
+     * Send a SYSEX as controller (rely on a {@link CommandCall})
+     */
+    SYSEX
 
 }
