@@ -182,4 +182,5 @@ patchOverrides:
         value: CK701 # Checksum
 
 controllers:
-  - "NormalVoiceParam(B3,8B,0,lsb) | Filter Freq | SYSEX | 0 | 127"
+  - "NormalVoiceParam(01,0B,0,lsb) | Filter Freq | SYSEX | 0 | 127"
+  - "NormalVoiceParam(01,05,0,lsb) | Filter Res | SYSEX | 0 | 99"

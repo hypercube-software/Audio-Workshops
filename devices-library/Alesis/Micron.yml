@@ -90,5 +90,24 @@ mappers:
         size: 7 # unofficial SYSEX spec say 8 bit, it is in fact 7 bits
 
 controllers:
-  - "002C | Filter Freq | NRPN_MSB_LSB | 0 | 920"
+  - "002C | Filter Freq | NRPN_MSB_LSB | 0 | 1023"
   - "002D | Filter Res  | NRPN_MSB_LSB | 0 | 100"
+  - "0009 | FM 1        | NRPN_MSB_LSB | 0 | 1000" # FM Amount
+  - "001D | VCO 1 Level | NRPN_MSB_LSB | 0 | 100"
+  - "001E | VCO 2 Level | NRPN_MSB_LSB | 0 | 100"
+  - "001F | VCO 3 Level | NRPN_MSB_LSB | 0 | 100"
+  - "0020 | Ring Mod    | NRPN_MSB_LSB | 0 | 100"
+  - "0042 | VCA Attack  | NRPN_MSB_LSB | 0 | 255"
+  - "0044 | VCA Decay   | NRPN_MSB_LSB | 0 | 255"
+  - "0047 | VCA Sustain | NRPN_MSB_LSB | 0 | 255"
+  - "0048 | VCA Release | NRPN_MSB_LSB | 0 | 255"
+  - "004F | VCF Attack  | NRPN_MSB_LSB | 0 | 255"
+  - "0051 | VCF Decay   | NRPN_MSB_LSB | 0 | 255"
+  - "0053 | VCF Sustain | NRPN_MSB_LSB | 0 | 255"
+  - "0055 | VCF Release | NRPN_MSB_LSB | 0 | 255"  
+  - "006A | LFO 1 Rate  | NRPN_MSB_LSB | 0 | 1023"
+  - "006E | LFO 2 Rate  | NRPN_MSB_LSB | 0 | 1023"
+  - "00E6 | Reverb Level| NRPN_MSB_LSB | -50 | 50" # FX Balance
+  - "006c | Reverb Time | NRPN_MSB_LSB | 0 | 100"
+  - "0070 | Chorus      | NRPN_MSB_LSB | 0 | 100"
+  

@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.common.sysex.checksum.DefaultChecksum
 import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
 import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,30 +14,35 @@ public record SysExTemplate(MidiRequest midiRequest, Integer msbIndex, Integer l
         String payloadTemplate = midiRequest.getValue();
         List<String> bytes = Arrays.stream(payloadTemplate.split(" "))
                 .toList();
-        byte[] payload = new byte[bytes.size()];
+        ByteArrayOutputStream payload = new ByteArrayOutputStream();
         Integer msbIndex = null;
         Integer lsbIndex = null;
         CheckSumDef checkSumDef = null;
-        for (int i = 0; i < bytes.size(); i++) {
-            String chunk = bytes.get(i);
+        for (String chunk : bytes) {
+            int currentPayloadPosition = payload.size();
             if (chunk
                     .equals("msb")) {
-                msbIndex = i;
-                payload[i] = 0;
+                msbIndex = currentPayloadPosition;
+                payload.write(0);
             } else if (chunk
                     .equals("lsb")) {
-                lsbIndex = i;
-                payload[i] = 0;
+                lsbIndex = currentPayloadPosition;
+                payload.write(0);
             } else if (chunk.startsWith("CK")) {
                 checkSumDef = new CheckSumDef();
-                checkSumDef.setPosition(i);
-                checkSumDef.setSize(Integer.parseInt(chunk.substring(2)));
+                checkSumDef.setPosition(currentPayloadPosition);
+                int size = Integer.parseInt(chunk.substring(2));
+                checkSumDef.setSize(size);
+                payload.write(0);
             } else {
-                payload[i] = (byte) Integer.parseInt(chunk, 16);
+                for (int z = 0; z < chunk.length(); z += 2) {
+                    String value = chunk.substring(z, z + 2);
+                    payload.write(Integer.parseInt(value, 16));
+                }
             }
         }
         SysExChecksum checksum = checkSumDef != null ? new DefaultChecksum() : null;
-        return new SysExTemplate(midiRequest, msbIndex, lsbIndex, checkSumDef, payload, checksum);
+        return new SysExTemplate(midiRequest, msbIndex, lsbIndex, checkSumDef, payload.toByteArray(), checksum);
     }
 
     public byte[] forgePayload(MidiControllerValue value) {
