@@ -2,8 +2,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.config.ConfigError;
 import com.hypercube.mpm.config.Favorites;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiBankFormat;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

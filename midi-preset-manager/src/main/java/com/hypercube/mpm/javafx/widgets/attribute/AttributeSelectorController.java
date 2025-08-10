@@ -50,16 +50,18 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     }
 
     public void onDataChange(Observable observable) {
-        ObservableList<String> list = (ObservableList<String>) ((SelectBinding.AsObject) observable).getValue();
-        if (list != null) {
-            log.info("Datasource {} for {} just changed with {} items", getView().getDataSource(), getView().getTitle(), list.size());
-        }
-        attributes.setItems(list != null ? list : new SimpleListProperty());
-        // since the date source changed, we can update the selection
-        Observable selectedItem = bindingManager.resolvePropertyPath(getView().getSelectedItems());
-        if (selectedItem != null) {
-            onModelSelectedItemsChange(selectedItem);
-        }
+        runOnJavaFXThread(() -> {
+            ObservableList<String> list = (ObservableList<String>) ((SelectBinding.AsObject) observable).getValue();
+            if (list != null) {
+                log.info("Datasource {} for {} just changed with {} items", getView().getDataSource(), getView().getTitle(), list.size());
+            }
+            attributes.setItems(list != null ? list : new SimpleListProperty());
+            // since the date source changed, we can update the selection
+            Observable selectedItem = bindingManager.resolvePropertyPath(getView().getSelectedItems());
+            if (selectedItem != null) {
+                onModelSelectedItemsChange(selectedItem);
+            }
+        });
     }
 
     public void onAllowMultiSelectionChange(String oldValue, String newValue) {

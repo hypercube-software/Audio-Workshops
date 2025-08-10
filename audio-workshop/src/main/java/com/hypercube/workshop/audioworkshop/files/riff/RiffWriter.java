@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMMarker;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMMarker;
 import com.hypercube.workshop.audioworkshop.files.io.SeekableBinaryOutputStream;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.Chunks;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffFmtChunk;

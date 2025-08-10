@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.monitor;
 
-import com.hypercube.workshop.midiworkshop.common.*;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.*;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -70,17 +70,17 @@ public class MidiMonitor {
         }
     }
 
+    private void filterEvent(CustomMidiEvent evt, MidiOutDevice out) {
+        log.info("MIDI: " + evt.getHexValues());
+        out.send(evt);
+    }
+
     void filter(MidiInDevice in, MidiOutDevice out) {
         try {
             in.listen((device, evt) -> filterEvent(evt, out));
         } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + in.getName());
         }
-    }
-
-    private void filterEvent(CustomMidiEvent evt, MidiOutDevice out) {
-        log.info("MIDI: " + evt.getHexValues());
-        out.send(evt);
     }
 
 }

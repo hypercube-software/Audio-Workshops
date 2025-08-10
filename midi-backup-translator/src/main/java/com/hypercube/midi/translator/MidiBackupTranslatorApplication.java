@@ -1,6 +1,6 @@
 package com.hypercube.midi.translator;
 
-import com.hypercube.workshop.midiworkshop.common.errors.ErrorHandler;
+import com.hypercube.workshop.midiworkshop.api.errors.ErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

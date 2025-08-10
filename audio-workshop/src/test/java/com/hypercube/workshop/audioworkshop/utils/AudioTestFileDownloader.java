@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.utils;
 
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;

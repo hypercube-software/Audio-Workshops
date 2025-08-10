@@ -1,9 +1,9 @@
 package com.hypercube.midi.translator.model;
 
 import com.hypercube.midi.translator.config.project.ProjectDevice;
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

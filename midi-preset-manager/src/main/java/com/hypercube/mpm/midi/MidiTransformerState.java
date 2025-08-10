@@ -1,6 +1,6 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 
 import java.util.HashMap;
 import java.util.Map;

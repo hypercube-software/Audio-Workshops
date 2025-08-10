@@ -1,6 +1,6 @@
 package com.hypercube.workshop.synthripper.preset.decent;
 
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.model.MidiZone;
 import com.hypercube.workshop.synthripper.model.RecordedSynthNote;

@@ -1,10 +1,10 @@
 package com.hypercube.midi.translator;
 
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

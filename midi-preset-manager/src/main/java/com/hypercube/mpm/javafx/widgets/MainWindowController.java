@@ -13,16 +13,18 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.properties.SceneListener;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.importer.PatchImporter;
-import javafx.application.Platform;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sound.midi.MidiUnavailableException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -53,17 +55,62 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
-        initDevices();
+
+        try {
+            initDevices();
+        } catch (MidiError e) {
+            showError(e);
+        }
     }
 
     @Override
     public void onSceneAttach(Scene newValue) {
-        restoreConfigSelection();
+        try {
+            restoreConfigSelection();
+        } catch (MidiError e) {
+            showError(e);
+        }
     }
 
     @Override
     public void onSceneDetach(Scene oldValue) {
 
+    }
+
+    private void showError(Throwable error) {
+        String errorClassName = error.getClass()
+                .getSimpleName();
+        String deviceName = null;
+        if (error instanceof MidiError midiError) {
+            deviceName = midiError.getDeviceName(); // can be null
+        }
+        String msg = getMessageFromError(error);
+        String title = "Unexpected error" + Optional.ofNullable(deviceName)
+                .map(name -> " on device '" + name + "'")
+                .orElse("");
+
+        runOnJavaFXThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("A %s occured".formatted(errorClassName));
+            alert.setTitle(title);
+            alert.setContentText(msg);
+            alert.showAndWait();
+        });
+    }
+
+    private String getMessageFromError(Throwable error) {
+        String msg = error.getMessage();
+        while (error.getCause() != null) {
+            if (error.getCause() instanceof MidiUnavailableException) {
+                msg = "The MIDI device is already taken by another application";
+                break;
+            } else {
+                msg = error.getCause()
+                        .getMessage();
+            }
+            error = error.getCause();
+        }
+        return msg;
     }
 
     /**
@@ -91,7 +138,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * @param message to be displayed to the user
      */
     private void onMidiController(String message) {
-        Platform.runLater(() -> getModel().setEventInfo(message));
+        runOnJavaFXThread(() -> getModel().setEventInfo(message));
     }
 
     /**
@@ -174,7 +221,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
-
     private void onSearchPatches(SearchPatchesEvent searchPatchesEvent) {
         refreshPatches();
     }
@@ -186,14 +232,16 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
         switch (widgetId) {
-            case WidgetIdentifiers.WIDGET_ID_DEVICE -> onDeviceChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_MODE -> onModeChanged(selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_DEVICE -> runLongTask(() -> onDeviceChanged(selectionChangedEvent));
+            case WidgetIdentifiers.WIDGET_ID_MODE -> runLongTask(() -> onModeChanged(selectionChangedEvent));
             case WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL -> onChannelChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_CATEGORY -> onCategoriesChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_BANK -> onBankChanged(selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PATCH -> onPatchChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS -> onSecondaryOutputsChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS -> onMasterInputChanged(selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
+                    runLongTask(() -> onSecondaryOutputsChanged(selectionChangedEvent));
+            case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS ->
+                    runLongTask(() -> onMasterInputsChanged(selectionChangedEvent));
         }
     }
 
@@ -211,15 +259,14 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void restoreConfigSelection() {
-        Optional.ofNullable(cfg.getSelectedInput())
-                .ifPresent(selectedInput -> {
-                    String inputPort = getModel().getMidiInPorts()
+        Optional.ofNullable(cfg.getSelectedInputs())
+                .ifPresent(selectedInputs -> {
+                    List<String> inputPorts = getModel().getMidiInPorts()
                             .stream()
-                            .filter(p -> p.equals(selectedInput))
-                            .findFirst()
-                            .orElse(null);
-                    getModel().setSelectedInputPort(inputPort);
-                    midiRouter.changeMainSource(inputPort);
+                            .filter(selectedInputs::contains)
+                            .toList();
+                    getModel().setSelectedInputPorts(inputPorts);
+                    midiRouter.changeMasterInputs(inputPorts);
                 });
         Optional.ofNullable(cfg.getSelectedSecondaryOutputs())
                 .ifPresent(selectedSecondaryOutputPorts -> {
@@ -228,15 +275,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 });
     }
 
-    private void onMasterInputChanged(SelectionChangedEvent selectionChangedEvent) {
-        String deviceOrPortName = selectionChangedEvent.getSelectedItems()
+    private void onMasterInputsChanged(SelectionChangedEvent selectionChangedEvent) {
+        List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems()
                 .stream()
                 .map(String.class::cast)
-                .findFirst()
-                .orElse(null);
-        midiRouter.changeMainSource(deviceOrPortName);
-        cfg.setSelectedInput(deviceOrPortName);
-        configurationFactory.saveConfig(cfg);
+                .toList();
+        try {
+            midiRouter.changeMasterInputs(deviceOrPortNames);
+            cfg.setSelectedInputs(deviceOrPortNames);
+            configurationFactory.saveConfig(cfg);
+        } catch (MidiError e) {
+            showError(e);
+        }
     }
 
     private void onSecondaryOutputsChanged(SelectionChangedEvent selectionChangedEvent) {
@@ -317,6 +367,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void onDeviceChanged(SelectionChangedEvent selectionChangedEvent) {
         MidiDeviceDefinition device = Optional.ofNullable(selectionChangedEvent)
                 .map(evt -> selectionChangedEvent.getSelectedIndexes())
+                .filter(selectedIndexes -> selectedIndexes.size() == 1)
                 .map(selectedIndexes -> {
                     String deviceName = getModel()
                             .getDevices()
@@ -327,9 +378,14 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                             .orElseThrow();
                 })
                 .orElse(null);
-        deviceStateManager.onDeviceChanged(device);
-        midiRouter.changeMainDestination(device);
-        refreshPatches();
+        if (getModel().getCurrentDeviceState() == null || device == null || !getModel().getCurrentDeviceState()
+                .getMidiOutDevice()
+                .getName()
+                .equals(device.getOutputMidiDevice())) {
+            deviceStateManager.onDeviceChanged(device);
+            midiRouter.changeMainDestination(device);
+            refreshPatches();
+        }
     }
 
     private void refreshPatches() {

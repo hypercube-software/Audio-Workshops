@@ -1,11 +1,11 @@
 package com.hypercube.workshop.audioworkshop.synth.sine;
 
-import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
+import com.hypercube.workshop.audioworkshop.api.device.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.synth.vca.AdsrVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.VCA;

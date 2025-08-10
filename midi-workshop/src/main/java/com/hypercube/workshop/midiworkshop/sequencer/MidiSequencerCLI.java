@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.sequencer;
 
-import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
-import com.hypercube.workshop.midiworkshop.common.clock.MidiClockType;
+import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.clock.MidiClockType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;

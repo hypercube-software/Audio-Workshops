@@ -1,8 +1,8 @@
 package com.hypercube.midi.translator.config.project;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiRequestSequence;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.Getter;
 import lombok.Setter;
 

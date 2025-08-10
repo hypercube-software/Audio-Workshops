@@ -1,5 +1,6 @@
 package com.hypercube.util.javafx.model;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,14 +40,14 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
  */
 @Slf4j
 public class ModelHelper {
-    private static SetterInterceptor setterInterceptor = new SetterInterceptor();
-    private static GetterInterceptor getterInterceptor = new GetterInterceptor();
-    private static GetterPropertyInterceptor getterPropertyInterceptor = new GetterPropertyInterceptor();
     private static final Map<String, Field> assignedFields = new HashMap<>();
     private static final Map<String, Method> propertySetters = new HashMap<>();
     private static final Map<String, Method> observableSetters = new HashMap<>();
     private static final Map<String, Field> observableProperties = new HashMap<>();
     private static final Map<Class, Class> observableModelClasses = new HashMap<>();
+    private static SetterInterceptor setterInterceptor = new SetterInterceptor();
+    private static GetterInterceptor getterInterceptor = new GetterInterceptor();
+    private static GetterPropertyInterceptor getterPropertyInterceptor = new GetterPropertyInterceptor();
 
     public static <T> T forgeMMVM(T model) {
         try {
@@ -223,33 +224,21 @@ public class ModelHelper {
                 .contains("ByteBuddy");
     }
 
-    // https://stackoverflow.com/questions/47104098/using-bytebuddy-to-intercept-setter
-    // If the caller try to set a list, we need to encapsulate it in a JavaFX ObservableList
-    public static class SetterInterceptor {
-
-        @RuntimeType
-        public void invoke(@This Object observableModel, @Origin Method method, @AllArguments Object[] args) throws Throwable {
-            String fieldName = getFieldNameFromAccessor(method);
-            Object value = args[0];
-            var property = getObservablePropertyInstance(observableModel, fieldName);
-            Method propertySetter = getObservablePropertySetter(property, fieldName);
-            if (value instanceof List && !(value instanceof ObservableList<?>)) {
-                List<?> newList = ((List<?>) value).stream()
-                        .map(ModelHelper::forgeMMVM)
-                        .toList();
-                var observableValue = FXCollections.observableList(newList);
-                getField(observableModel.getClass(), fieldName).set(observableModel, observableValue);
-                // at this point the JavaFX SimplePropertyList will call the getter for some reason...
+    private static void invokeSetterOnJavaFXThread(Method propertySetter, Object property, Object observableValue) {
+        runOnJavaFXThread(() -> {
+            try {
                 propertySetter.invoke(property, observableValue);
-            } else if (property instanceof SimpleObjectProperty<?>) {
-                var observableObject = forgeMMVM(value);
-                getField(observableModel.getClass(), fieldName).set(observableModel, observableObject);
-                propertySetter.invoke(property, observableObject);
-            } else {
-                getField(observableModel.getClass(), fieldName).set(observableModel, value);
-                propertySetter.invoke(property, value);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
             }
+        });
+    }
 
+    private static void runOnJavaFXThread(Runnable code) {
+        if (Platform.isFxApplicationThread()) {
+            code.run();
+        } else {
+            Platform.runLater(code);
         }
     }
 
@@ -308,6 +297,35 @@ public class ModelHelper {
         return observableModelClass.getName();
     }
 
+    // https://stackoverflow.com/questions/47104098/using-bytebuddy-to-intercept-setter
+    // If the caller try to set a list, we need to encapsulate it in a JavaFX ObservableList
+    public static class SetterInterceptor {
+
+        @RuntimeType
+        public void invoke(@This Object observableModel, @Origin Method method, @AllArguments Object[] args) throws Throwable {
+            String fieldName = getFieldNameFromAccessor(method);
+            Object value = args[0];
+            var property = getObservablePropertyInstance(observableModel, fieldName);
+            Method propertySetter = getObservablePropertySetter(property, fieldName);
+            if (value instanceof List && !(value instanceof ObservableList<?>)) {
+                List<?> newList = ((List<?>) value).stream()
+                        .map(ModelHelper::forgeMMVM)
+                        .toList();
+                var observableValue = FXCollections.observableList(newList);
+                getField(observableModel.getClass(), fieldName).set(observableModel, observableValue);
+                // at this point the JavaFX SimplePropertyList will call the getter for some reason...
+                invokeSetterOnJavaFXThread(propertySetter, property, observableValue);
+            } else if (property instanceof SimpleObjectProperty<?>) {
+                var observableObject = forgeMMVM(value);
+                getField(observableModel.getClass(), fieldName).set(observableModel, observableObject);
+                invokeSetterOnJavaFXThread(propertySetter, property, observableObject);
+            } else {
+                getField(observableModel.getClass(), fieldName).set(observableModel, value);
+                invokeSetterOnJavaFXThread(propertySetter, property, value);
+            }
+
+        }
+    }
 
     // https://stackoverflow.com/questions/47104098/using-bytebuddy-to-intercept-setter
     // JavaFX will first ask for the JavaFX Property, a method nameProperty()

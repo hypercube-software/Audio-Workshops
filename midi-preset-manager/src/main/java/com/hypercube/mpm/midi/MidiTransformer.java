@@ -1,9 +1,9 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.ControllerValueType;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,8 +100,8 @@ public class MidiTransformer {
         byte[] inComingPayload = msg
                 .getMessage();
         int command = inComingPayload[0] & 0xF0;
-        if (inComingPayload.length != 3 || command == 0xF0) {
-            return List.of(event); // Active Sensing, System or SysEx are untouched
+        if (inComingPayload.length != 3 || command == 0xF0 || command == 0xE0) {
+            return List.of(event); // Active Sensing, Pitch bend, System or SysEx are untouched
         }
         int inputChannel = inComingPayload[0] & 0x0F;
         int data1 = inComingPayload.length > 1 ? inComingPayload[1] & 0xFF : 0;

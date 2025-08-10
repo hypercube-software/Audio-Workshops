@@ -1,11 +1,11 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
-import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExTemplate;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.ControllerValueType;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceController;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

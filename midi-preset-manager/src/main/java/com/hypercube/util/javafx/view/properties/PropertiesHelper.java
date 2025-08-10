@@ -7,6 +7,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +29,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class PropertiesHelper implements SceneListener {
-    private record PropertyListener(String propertyName, StringProperty property, ChangeListener<String> listener) {
-    }
-
     private final List<PropertyListener> listeners = new ArrayList<>();
     private final View<?> view;
 
@@ -37,8 +36,9 @@ public class PropertiesHelper implements SceneListener {
      * This method must be called in all views to observe the scene change
      */
     public void installSceneObserver() {
-        ((Node) view).sceneProperty()
-                .addListener(this::onSceneChange);
+        Node node = (Node) view;
+        node.sceneProperty()
+                .addListener(this::onSceneWindowChange);
     }
 
     /**
@@ -63,23 +63,10 @@ public class PropertiesHelper implements SceneListener {
         listeners.add(new PropertyListener(propertyName, property, stringChangeListener));
     }
 
-    private Method getEventHandler(String propertyName) {
-        Method eventHandlerMethod = null;
-        try {
-            String methodName = "on" + propertyName.substring(0, 1)
-                    .toUpperCase() + propertyName.substring(1) + "Change";
-            eventHandlerMethod = view.getCtrl()
-                    .getClass()
-                    .getMethod(methodName, String.class, String.class);
-        } catch (NoSuchMethodException e) {
-        }
-        return eventHandlerMethod;
-    }
+    public void onSceneWindowChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+        setMinSizeForStageWindow(newValue);
 
-    public void onSceneChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
-        if (oldValue == null && newValue != null) {
-            onSceneAttach(newValue);
-        } else if (oldValue != null && newValue == null) {
+        if (oldValue != null && newValue == null) {
             onSceneDetach(oldValue);
         }
     }
@@ -96,6 +83,48 @@ public class PropertiesHelper implements SceneListener {
         if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneDetach(oldValue);
         }
+    }
+
+    /**
+     * Set the min size of window is painful. We need to wait "scene" is set, then "scene.window", then "scene.window.width" and "scene.window.height"
+     */
+    private void setMinSizeForStageWindow(Scene scene) {
+        if (scene != null) {
+            scene.windowProperty()
+                    .addListener((ObservableValue<? extends Window> observableWindowValue, Window oldWindowValue
+                            , Window window) -> {
+                        window.widthProperty()
+                                .addListener((ObservableValue<? extends Number> observableValue, Number oldWidthValue, Number newWidthValue) -> {
+                                    onSceneAttach(scene);
+                                    Stage stage = (Stage) window.getScene()
+                                            .getWindow();
+                                    if (stage.getMinWidth() == 0) {
+                                        stage.setMinWidth(newWidthValue.doubleValue());
+                                    }
+                                });
+                        window.heightProperty()
+                                .addListener((ObservableValue<? extends Number> observableValue, Number oldHeighValue, Number newHeightValue) -> {
+                                    Stage stage = (Stage) window.getScene()
+                                            .getWindow();
+                                    if (stage.getMinHeight() == 0) {
+                                        stage.setMinHeight(newHeightValue.doubleValue());
+                                    }
+                                });
+                    });
+        }
+    }
+
+    private Method getEventHandler(String propertyName) {
+        Method eventHandlerMethod = null;
+        try {
+            String methodName = "on" + propertyName.substring(0, 1)
+                    .toUpperCase() + propertyName.substring(1) + "Change";
+            eventHandlerMethod = view.getCtrl()
+                    .getClass()
+                    .getMethod(methodName, String.class, String.class);
+        } catch (NoSuchMethodException e) {
+        }
+        return eventHandlerMethod;
     }
 
     private void attachPropertyListener() {
@@ -115,5 +144,8 @@ public class PropertiesHelper implements SceneListener {
     private void detatchPropertyListener() {
         listeners.forEach(pl -> pl.property()
                 .removeListener(pl.listener()));
+    }
+
+    private record PropertyListener(String propertyName, StringProperty property, ChangeListener<String> listener) {
     }
 }

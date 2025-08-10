@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.files;
 
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
-import com.hypercube.workshop.audioworkshop.common.insights.EnvelopeFollower;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.insights.EnvelopeFollower;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffAudioInfo;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffReader;

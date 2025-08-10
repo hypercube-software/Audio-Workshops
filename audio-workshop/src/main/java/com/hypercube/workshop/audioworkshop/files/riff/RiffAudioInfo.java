@@ -1,8 +1,8 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffFmtChunk;
 import lombok.Getter;

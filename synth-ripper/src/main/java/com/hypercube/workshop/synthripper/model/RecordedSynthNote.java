@@ -1,6 +1,6 @@
 package com.hypercube.workshop.synthripper.model;
 
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import lombok.*;
 
 import java.io.File;

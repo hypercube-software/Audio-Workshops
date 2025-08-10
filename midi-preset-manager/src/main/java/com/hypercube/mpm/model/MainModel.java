@@ -2,7 +2,7 @@ package com.hypercube.mpm.model;
 
 import com.hypercube.util.javafx.model.ModelHelper;
 import com.hypercube.util.javafx.model.NotObservable;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,10 +17,10 @@ public class MainModel {
     private static MainModel observableInstance = null;
     private List<String> devices = new ArrayList<>();
     private List<String> midiInPorts = new ArrayList<>();
-    private String selectedInputPort;
+    private List<String> selectedInputPorts = new ArrayList<>();
     private List<String> midiThruPorts = new ArrayList<>();
     private List<String> selectedOutputPorts = new ArrayList<>();
-    
+
     private List<String> deviceModes = new ArrayList<>();
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<Integer> modeChannels = new ArrayList<>();

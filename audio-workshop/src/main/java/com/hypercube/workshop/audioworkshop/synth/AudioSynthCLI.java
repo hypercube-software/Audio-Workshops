@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.synth;
 
-import com.hypercube.workshop.audioworkshop.common.device.AudioDeviceManager;
-import com.hypercube.workshop.midiworkshop.common.MidiDeviceManager;
+import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;

@@ -1,8 +1,8 @@
 package com.hypercube.mpm.model;
 
 import com.hypercube.util.javafx.model.NotObservable;
-import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
 

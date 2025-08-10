@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.synth.vco;
 
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
 import lombok.AllArgsConstructor;
 

@@ -1,14 +1,14 @@
 package com.hypercube.workshop.audioworkshop.record;
 
-import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
-import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
-import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
-import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
-import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.common.record.WavRecordListener;
+import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
+import com.hypercube.workshop.audioworkshop.api.device.AudioInputDevice;
+import com.hypercube.workshop.audioworkshop.api.device.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.line.AudioInputLine;
+import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.api.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;

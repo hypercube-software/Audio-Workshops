@@ -4,8 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root stylesheets="@MainWindow.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
-         xmlns:fx="http://javafx.com/fxml/1">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@MainWindow.css" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12">
     <children>
         <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
             <menus>
@@ -34,7 +34,7 @@
                 </padding>
             </Label>
             <Region HBox.hgrow="ALWAYS"/>
-            <Label text="${controller.model.eventInfo}">
+            <Label minWidth="100.0" text="${controller.model.eventInfo}">
                 <padding>
                     <Insets right="10.0"/>
                 </padding>

@@ -4,10 +4,10 @@ import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
-import com.hypercube.workshop.midiworkshop.common.*;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
-import com.hypercube.workshop.midiworkshop.common.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -28,7 +28,7 @@ public class MidiBackupTranslatorShell {
 
     @ShellMethod(value = "Read MIDI input and send to another MIDI output limiting the throughput")
     public void translate() throws IOException {
-        final MidiDeviceManager m = new MidiDeviceManager();
+        final com.hypercube.workshop.midiworkshop.api.MidiDeviceManager m = new com.hypercube.workshop.midiworkshop.api.MidiDeviceManager();
         m.collectDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
         final MidiBackupTranslator midiBackupTranslator = new MidiBackupTranslator(configuration);
@@ -81,7 +81,7 @@ public class MidiBackupTranslatorShell {
 
     @ShellMethod(value = "Restore devices with Sysex")
     public void restore(@ShellOption(value = "-d", defaultValue = "") String deviceName) throws IOException {
-        final MidiDeviceManager m = new MidiDeviceManager();
+        final com.hypercube.workshop.midiworkshop.api.MidiDeviceManager m = new com.hypercube.workshop.midiworkshop.api.MidiDeviceManager();
         m.collectDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
 
@@ -108,7 +108,7 @@ public class MidiBackupTranslatorShell {
 
     @ShellMethod(value = "Backup devices with Sysex")
     public void backup(@ShellOption(value = "-d", defaultValue = "") String deviceName, @ShellOption(value = "-m", defaultValue = "") String macro) throws IOException, InvalidMidiDataException, MidiUnavailableException, InterruptedException {
-        MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
+        com.hypercube.workshop.midiworkshop.api.MidiDeviceManager midiDeviceManager = new com.hypercube.workshop.midiworkshop.api.MidiDeviceManager();
         midiDeviceManager.collectDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
         if (deviceName.isBlank() && macro.isBlank()) {
@@ -140,7 +140,7 @@ public class MidiBackupTranslatorShell {
         }
     }
 
-    private void backupDevice(ProjectDevice projectDevice, DeviceInstance deviceInstance, MidiDeviceManager midiDeviceManager, String macro) {
+    private void backupDevice(ProjectDevice projectDevice, DeviceInstance deviceInstance, com.hypercube.workshop.midiworkshop.api.MidiDeviceManager midiDeviceManager, String macro) {
         log.info("-------------------------------------------------------");
         log.info("Backup device: " + projectDevice.getName() + "...");
         log.info("inactivityTimeoutMs : " + deviceInstance.getInactivityTimeoutMs());
@@ -175,7 +175,7 @@ public class MidiBackupTranslatorShell {
         }
     }
 
-    private static void wakeUpDevice(MidiOutDevice out, DeviceInstance device) {
+    private static void wakeUpDevice(com.hypercube.workshop.midiworkshop.api.MidiOutDevice out, DeviceInstance device) {
         log.info("Wake up MIDI out device '{}' with ActiveSensing...", out.getName());
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 4000) {
@@ -185,14 +185,14 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
+    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, com.hypercube.workshop.midiworkshop.api.MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
         for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
                 .size(); requestIndex++) {
             var requests = projectDevice.getDumpRequestTemplates()
                     .get(requestIndex);
             for (var request : requests.getMidiRequests()) {
                 device.setCurrentRequest(request);
-                List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
+                List<com.hypercube.workshop.midiworkshop.api.CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
                 for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                     var customMidiEvent = requestInstances.get(requestInstanceIndex);
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());
@@ -220,7 +220,7 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void onSysEx(DeviceInstance device, MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
+    private void onSysEx(DeviceInstance device, com.hypercube.workshop.midiworkshop.api.MidiInDevice midiInDevice, com.hypercube.workshop.midiworkshop.api.CustomMidiEvent customMidiEvent) {
         byte[] data = customMidiEvent.getMessage()
                 .getMessage();
         if (device.getCurrentResponseSize() == 0) {
@@ -233,7 +233,7 @@ public class MidiBackupTranslatorShell {
 
     @ShellMethod(value = "List MIDI devices")
     public void list() {
-        MidiDeviceManager m = new MidiDeviceManager();
+        com.hypercube.workshop.midiworkshop.api.MidiDeviceManager m = new MidiDeviceManager();
         m.collectDevices();
         m.getInputs()
                 .forEach(d -> log.info(String.format("MIDI INPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
@@ -241,7 +241,7 @@ public class MidiBackupTranslatorShell {
                 .forEach(d -> log.info(String.format("MIDI OUTPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
     }
 
-    private String getDeviceAlias(AbstractMidiDevice midiDevice) {
+    private String getDeviceAlias(com.hypercube.workshop.midiworkshop.api.AbstractMidiDevice midiDevice) {
         return projectConfigurationFactory.getLibraryDeviceFromMidiPort(midiDevice
                         .getName())
                 .map(def -> " => bound to library device \"%s\"".formatted(def.getDeviceName()))

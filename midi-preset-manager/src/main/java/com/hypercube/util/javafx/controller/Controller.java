@@ -3,12 +3,16 @@ package com.hypercube.util.javafx.controller;
 import com.hypercube.util.javafx.binding.BindingManager;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.events.EventHelper;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Slf4j
 public abstract class Controller<T extends Node, M> {
-    private T view;
     protected BindingManager bindingManager = new BindingManager(this);
-
+    private T view;
     private ObjectProperty<M> model = new SimpleObjectProperty<>();
 
     public final M getModel() {
@@ -64,4 +67,33 @@ public abstract class Controller<T extends Node, M> {
         }
     }
 
+    public void runOnJavaFXThread(Runnable code) {
+        if (Platform.isFxApplicationThread()) {
+            code.run();
+        } else {
+            Platform.runLater(code);
+        }
+    }
+
+    public void runLongTask(Runnable code) {
+        Scene scene = getView().getScene();
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                code.run();
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                if (scene != null) {
+                    scene.setCursor(Cursor.DEFAULT);
+                }
+            });
+        });
+        if (scene != null) {
+            scene.setCursor(Cursor.WAIT);
+        }
+        new Thread(task).start();
+    }
 }

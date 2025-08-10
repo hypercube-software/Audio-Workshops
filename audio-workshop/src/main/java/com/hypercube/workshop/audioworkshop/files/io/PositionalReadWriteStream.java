@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.io;
 
-import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
+import com.hypercube.workshop.audioworkshop.api.utils.CachedRegExp;
 
 import java.io.Closeable;
 import java.io.File;

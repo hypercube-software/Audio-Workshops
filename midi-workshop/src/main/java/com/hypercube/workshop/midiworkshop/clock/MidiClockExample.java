@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.clock;
 
-import com.hypercube.workshop.midiworkshop.common.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.common.clock.*;
-import com.hypercube.workshop.midiworkshop.common.seq.TimeSignature;
+import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.clock.*;
+import com.hypercube.workshop.midiworkshop.api.seq.TimeSignature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

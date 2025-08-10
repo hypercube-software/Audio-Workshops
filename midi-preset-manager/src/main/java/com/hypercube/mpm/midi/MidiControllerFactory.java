@@ -1,10 +1,10 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.ControllerValueType;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.ControllerValueType;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceController;
 import lombok.experimental.UtilityClass;
 
 import javax.sound.midi.InvalidMidiDataException;

@@ -1,7 +1,7 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.device.MidiDeviceController;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceController;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.synth.sine;
 
-import com.hypercube.workshop.audioworkshop.common.device.AudioDeviceManager;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;

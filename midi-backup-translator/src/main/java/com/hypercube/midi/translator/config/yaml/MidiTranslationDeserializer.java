@@ -7,8 +7,8 @@ import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslationPayload;
 import com.hypercube.midi.translator.error.ConfigError;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.MidiDeviceLibrary;
-import com.hypercube.workshop.midiworkshop.common.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
 
 import java.io.File;
 import java.io.IOException;

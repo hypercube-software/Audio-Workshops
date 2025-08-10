@@ -1,7 +1,8 @@
 ; -----------------------------------------------------------------------------------------------------
 ; This AutoIt3 script retrieve automatically Program names and categories from Korg M1 VST
-; It relies on free OCR Tesseract so you need to install it somewhere
-; Most of it has been made using Google Gemini in less than 4 hours without knowing anything about it
+; - It relies on free OCR Tesseract so you need to install it somewhere
+; - You have to run the standalone version of the VST
+; Most of it has been made using Google Gemini in less than 4 hours without knowing anything about AutoIt3 API
 ; -----------------------------------------------------------------------------------------------------
 
 #Region

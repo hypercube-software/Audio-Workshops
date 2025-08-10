@@ -52,3 +52,8 @@ deviceModes:
       - "Ethnic"
       - "Percussive"
       - "Sound FX"
+
+controllers:        
+  - "01   | Modulation  | CC           | 0 | 127"
+  - "0B   | Expression  | CC           | 0 | 127"
+  - "40   | Sustain     | CC           | 0 | 127"

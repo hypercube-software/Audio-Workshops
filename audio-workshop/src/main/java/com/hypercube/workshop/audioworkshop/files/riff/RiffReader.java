@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.riff;
 
-import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
+import com.hypercube.workshop.audioworkshop.api.utils.CachedRegExp;
 import com.hypercube.workshop.audioworkshop.files.exceptions.AudioParserException;
 import com.hypercube.workshop.audioworkshop.files.exceptions.IncorrectRiffChunkParentSize;
 import com.hypercube.workshop.audioworkshop.files.exceptions.SampleCountException;

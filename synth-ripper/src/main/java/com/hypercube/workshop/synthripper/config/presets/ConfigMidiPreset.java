@@ -1,10 +1,10 @@
 package com.hypercube.workshop.synthripper.config.presets;
 
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.common.presets.DrumKitNote;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPreset;
-import com.hypercube.workshop.midiworkshop.common.presets.MidiPresetBuilder;
-import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import lombok.AllArgsConstructor;

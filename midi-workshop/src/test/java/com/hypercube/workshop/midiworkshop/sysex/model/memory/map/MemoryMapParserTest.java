@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.sysex.model.memory.map;
 
-import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.DeviceMemory;
-import com.hypercube.workshop.midiworkshop.common.sysex.device.memory.map.MemoryMapParser;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

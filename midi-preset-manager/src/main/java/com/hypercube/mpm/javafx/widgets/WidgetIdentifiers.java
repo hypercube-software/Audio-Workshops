@@ -2,6 +2,9 @@ package com.hypercube.mpm.javafx.widgets;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Those are the widget identifier used in the FXML
+ */
 @UtilityClass
 public class WidgetIdentifiers {
     public static final String WIDGET_ID_DEVICE = "device";

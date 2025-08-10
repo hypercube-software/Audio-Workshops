@@ -3,7 +3,7 @@ package com.hypercube.workshop.synthripper.config.yaml;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.hypercube.workshop.midiworkshop.common.sysex.macro.CommandMacro;
+import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,11 +1,11 @@
 package com.hypercube.workshop.audioworkshop.files.riff.insights;
 
-import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
-import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMConverter;
+import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
+import com.hypercube.workshop.audioworkshop.api.consumer.SampleBufferConsumer;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMConverter;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffReader;
 import com.hypercube.workshop.audioworkshop.files.riff.WaveChannels;

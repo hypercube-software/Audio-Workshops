@@ -1,9 +1,9 @@
 package com.hypercube.workshop.audioworkshop.record;
 
-import com.hypercube.workshop.audioworkshop.common.device.AudioInputDevice;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.line.AudioInputLine;
+import com.hypercube.workshop.audioworkshop.api.device.AudioInputDevice;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.line.AudioInputLine;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.File;

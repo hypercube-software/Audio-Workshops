@@ -1,9 +1,9 @@
 package com.hypercube.workshop.audioworkshop.files.riff.insights;
 
-import com.hypercube.workshop.audioworkshop.common.consumer.SampleBuffer;
-import com.hypercube.workshop.audioworkshop.common.consumer.SampleBufferConsumer;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMFormat;
+import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
+import com.hypercube.workshop.audioworkshop.api.consumer.SampleBufferConsumer;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

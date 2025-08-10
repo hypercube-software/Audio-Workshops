@@ -1,18 +1,18 @@
 package com.hypercube.workshop.audioworkshop.synth;
 
-import com.hypercube.workshop.audioworkshop.common.device.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.common.errors.AudioError;
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
+import com.hypercube.workshop.audioworkshop.api.device.AudioOutputDevice;
+import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
+import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMEncoding;
 import com.hypercube.workshop.audioworkshop.synth.vca.SimpleVCA;
 import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
 import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
 import com.hypercube.workshop.audioworkshop.synth.vco.VCO;
-import com.hypercube.workshop.midiworkshop.common.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.common.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.common.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

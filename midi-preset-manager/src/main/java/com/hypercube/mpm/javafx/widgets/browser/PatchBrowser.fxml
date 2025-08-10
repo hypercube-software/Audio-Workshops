@@ -12,7 +12,7 @@
                                title="Device" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="master" dataSource="model.midiInPorts" minHeight="-Infinity" minWidth="-Infinity"
                                title="Master Keyboard" GridPane.hgrow="NEVER" GridPane.rowIndex="1"
-                               selectedItems="model.selectedInputPort"
+                               selectedItems="model.selectedInputPorts" allowMultiSelection="true"
                                GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="passThru" allowMultiSelection="true" dataSource="model.midiThruPorts"
                                minHeight="-Infinity" minWidth="-Infinity" title="Pass Thru" GridPane.hgrow="NEVER"
@@ -48,7 +48,7 @@
                                minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBank" title="Bank"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
             <AttributeSelector fx:id="category" allowMultiSelection="true" dataSource="model.modeCategories"
-                               itemType="com.hypercube.workshop.midiworkshop.common.presets.MidiPresetCategory"
+                               itemType="com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory"
                                labelMethod="name" minWidth="-Infinity"
                                selectedItems="model.currentDeviceState.currentSelectedCategories" title="Categories"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>

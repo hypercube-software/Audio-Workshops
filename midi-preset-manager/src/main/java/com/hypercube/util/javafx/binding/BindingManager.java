@@ -19,8 +19,8 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class BindingManager implements Closeable {
-    private Map<String, PathBinding> pathListeners = new HashMap<>();
     private final Object rootObject;
+    private Map<String, PathBinding> pathListeners = new HashMap<>();
 
     public void observePath(String path, InvalidationListener listener) {
         String[] pathElements = path.split("\\.");
@@ -55,7 +55,9 @@ public class BindingManager implements Closeable {
         try {
             return (P) expression.getValue(rootObject);
         } catch (SpelEvaluationException e) {
-            log.warn("Unable to resolve path " + path, e);
+            // this exception is normal since sometimes the model is not complete
+            // we have things like: EL1007E: Property or field 'id' cannot be found on null
+            // log.warn("Unable to resolve path " + path, e);
             return null;
         }
     }

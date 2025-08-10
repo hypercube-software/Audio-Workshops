@@ -1,9 +1,9 @@
 package com.hypercube.workshop.synthripper.config;
 
-import com.hypercube.workshop.audioworkshop.common.format.PCMBufferFormat;
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
-import com.hypercube.workshop.audioworkshop.common.pcm.PCMEncoding;
-import com.hypercube.workshop.audioworkshop.common.utils.CachedRegExp;
+import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
+import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.api.pcm.PCMEncoding;
+import com.hypercube.workshop.audioworkshop.api.utils.CachedRegExp;
 import lombok.Getter;
 import lombok.Setter;
 

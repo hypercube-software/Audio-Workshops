@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop;
 
-import com.hypercube.workshop.midiworkshop.common.MidiNote;
-import com.hypercube.workshop.midiworkshop.common.seq.KeySignature;
+import com.hypercube.workshop.midiworkshop.api.MidiNote;
+import com.hypercube.workshop.midiworkshop.api.seq.KeySignature;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

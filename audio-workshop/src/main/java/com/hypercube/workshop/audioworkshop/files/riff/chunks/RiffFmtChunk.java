@@ -1,6 +1,6 @@
 package com.hypercube.workshop.audioworkshop.files.riff.chunks;
 
-import com.hypercube.workshop.audioworkshop.common.pcm.BitDepth;
+import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.files.riff.WaveChannels;
 import com.hypercube.workshop.audioworkshop.files.riff.WaveCodecs;
 import com.hypercube.workshop.audioworkshop.files.riff.WaveGUIDCodecs;
