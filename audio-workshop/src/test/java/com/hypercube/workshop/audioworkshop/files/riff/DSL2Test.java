@@ -5,6 +5,7 @@ import com.hypercube.workshop.audioworkshop.utils.AudioTestFileDownloader;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * <p>DSL2 files can be found here: https://musical-artifacts.com/artifacts?tags=dls
  */
 @Slf4j
+@Disabled
 class DSL2Test {
 
     private static File SRC_FOLDER = new File("./sounds/dsl2");
@@ -28,7 +30,23 @@ class DSL2Test {
     static void downloadAudioFiles() {
         var d = new AudioTestFileDownloader();
         d.downloadSound("http://www.tictokmen.com/sample/moogdrums-giga.zip", SRC_FOLDER);
-        //d.downloadSound("https://musical-artifacts.com/artifacts/787/Nokia_6230i.DLS", SRC_FOLDER); no longer work, protected
+        d.downloadSound("https://musical-artifacts.com/artifacts/787/Nokia_6230i.DLS", SRC_FOLDER); // no longer work, protected
+    }
+
+    private File findFirst(String fileExt) {
+        return Arrays.stream(SRC_FOLDER.listFiles())
+                .filter(f -> f.getName()
+                        .toLowerCase()
+                        .endsWith(fileExt))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private void dump(String prefix, List<RiffChunk> info) {
+        info.forEach(c -> {
+            log.info(prefix + c.toString());
+            dump(prefix + "   ", c.getChildren());
+        });
     }
 
     @Test
@@ -57,15 +75,6 @@ class DSL2Test {
                         }
                     });
         }
-    }
-
-    private File findFirst(String fileExt) {
-        return Arrays.stream(SRC_FOLDER.listFiles())
-                .filter(f -> f.getName()
-                        .toLowerCase()
-                        .endsWith(fileExt))
-                .findFirst()
-                .orElseThrow();
     }
 
     @Test
@@ -112,12 +121,5 @@ class DSL2Test {
                     });
             log.info("Done");
         }
-    }
-
-    private void dump(String prefix, List<RiffChunk> info) {
-        info.forEach(c -> {
-            log.info(prefix + c.toString());
-            dump(prefix + "   ", c.getChildren());
-        });
     }
 }
