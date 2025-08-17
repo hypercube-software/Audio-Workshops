@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
-        <ColumnConstraints minWidth="25.0"/>
+        <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="35.0"/>
-        <RowConstraints minHeight="70.0" prefHeight="70.0"/>
+        <RowConstraints/>
     </rowConstraints>
     <fx:define>
         <String fx:id="title"/>
         <String fx:id="itemType"/>
         <String fx:id="dataSource"/>
         <String fx:id="labelMethod"/>
-        <String fx:id="selectedItems"/>
-        <String fx:id="allowMultiSelection"/>
-        <String fx:id="allowDrop"/>
-        <String fx:id="acceptedFileTypes"/>
+        <String fx:id="selectedItem"/>
     </fx:define>
     <children>
         <HBox alignment="CENTER" styleClass="attributeSelectorHeader"
@@ -30,9 +26,7 @@
               GridPane.vgrow="NEVER">
             <Label fx:id="label" text="title"/>
         </HBox>
-        <ListView fx:id="attributes" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
+        <ComboBox fx:id="attributes" maxWidth="1.7976931348623157E308" onAction="#onAction" prefHeight="25.0"
+                  GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     </children>
-    <opaqueInsets>
-        <Insets bottom="2.0"/>
-    </opaqueInsets>
 </fx:root>

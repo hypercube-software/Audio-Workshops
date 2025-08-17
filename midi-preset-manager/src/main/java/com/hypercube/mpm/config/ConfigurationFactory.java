@@ -51,11 +51,6 @@ public class ConfigurationFactory {
         }
     }
 
-    private void initEmptyConfig() throws IOException {
-        ProjectConfiguration emptyConfig = new ProjectConfiguration();
-        saveConfig(emptyConfig);
-    }
-
     public void saveConfig(ProjectConfiguration configuration) {
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
@@ -74,7 +69,7 @@ public class ConfigurationFactory {
         saveFavoritePatches(favorites);
     }
 
-    public Patch getFavorite(Patch patch) {
+    public Patch getScoredPatchFromFavorite(Patch patch) {
         int idx = favorites.getFavorites()
                 .indexOf(patch);
         if (idx != -1) {
@@ -83,6 +78,11 @@ public class ConfigurationFactory {
                     .getScore());
         }
         return patch;
+    }
+
+    private void initEmptyConfig() throws IOException {
+        ProjectConfiguration emptyConfig = new ProjectConfiguration();
+        saveConfig(emptyConfig);
     }
 
     private void saveFavoritePatches(Favorites favorites) {

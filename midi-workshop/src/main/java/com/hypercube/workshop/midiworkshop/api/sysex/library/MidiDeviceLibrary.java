@@ -159,7 +159,7 @@ public class MidiDeviceLibrary {
                             }
                             String presetName = "@" + patchPath.getFileName()
                                     .toString();
-                            MidiDevicePreset preset = MidiDevicePreset.of(midiDeviceDefinition.getPresetFormat(), presetName);
+                            MidiDevicePreset preset = MidiDevicePreset.of(patchPath.toFile(), midiDeviceDefinition.getPresetFormat(), presetName);
                             if (!bank.getPresets()
                                     .contains(preset)) {
                                 bank.getPresets()
@@ -365,7 +365,7 @@ public class MidiDeviceLibrary {
             SimpleModule module = new SimpleModule();
             module.addDeserializer(CommandMacro.class, new CommandMacroDeserializer(midiDeviceFile));
             module.addDeserializer(MidiPresetCategory.class, new MidiPresetCategoryDeserializer());
-            module.addDeserializer(MidiDevicePreset.class, new MidiDevicePresetDeserializer(devices));
+            module.addDeserializer(MidiDevicePreset.class, new MidiDevicePresetDeserializer(devices, midiDeviceFile));
             module.addDeserializer(MidiDeviceController.class, new MidiDeviceControllerDeserializer());
             module.addDeserializer(MidiPresetDomain.class, new MidiPresetDomainDeserializer(midiDeviceFile));
             module.addDeserializer(int.class, new IntegerDeserializer());

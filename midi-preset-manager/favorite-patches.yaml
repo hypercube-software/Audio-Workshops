@@ -7,6 +7,7 @@ favorites:
   category: "Sound FX"
   command: "000175"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -15,7 +16,8 @@ favorites:
   category: "Sound FX"
   command: "000307"
   filename: null
-  score: 4
+  channel: 0
+  score: 5
 - device: "Micron"
   mode: "Program"
   bank: "Edit Bank"
@@ -23,6 +25,7 @@ favorites:
   category: "Sound FX"
   command: "000401"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -31,6 +34,7 @@ favorites:
   category: "Bass"
   command: "000311"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -39,6 +43,7 @@ favorites:
   category: "Bass"
   command: "000365"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -47,6 +52,7 @@ favorites:
   category: "Bass"
   command: "000446"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -55,6 +61,7 @@ favorites:
   category: "Bass"
   command: "000069"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -63,6 +70,7 @@ favorites:
   category: "Bass"
   command: "00012C"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -71,6 +79,7 @@ favorites:
   category: "Bass"
   command: "00027B"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -79,6 +88,7 @@ favorites:
   category: "Sound FX"
   command: "00004A"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -87,6 +97,7 @@ favorites:
   category: "Sound FX"
   command: "000071"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -95,6 +106,7 @@ favorites:
   category: "Sound FX"
   command: "000079"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -103,6 +115,7 @@ favorites:
   category: "Sound FX"
   command: "000120"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -111,6 +124,7 @@ favorites:
   category: "Sound FX"
   command: "000127"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -119,6 +133,7 @@ favorites:
   category: "Sound FX"
   command: "000130"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -127,6 +142,7 @@ favorites:
   category: "Sound FX"
   command: "000171"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -135,6 +151,7 @@ favorites:
   category: "Sound FX"
   command: "00034C"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -143,6 +160,7 @@ favorites:
   category: "Sound FX"
   command: "00043B"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -151,6 +169,7 @@ favorites:
   category: "Sound FX"
   command: "00043F"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -159,6 +178,7 @@ favorites:
   category: "String"
   command: "000313"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -167,6 +187,7 @@ favorites:
   category: "String"
   command: "000360"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -175,6 +196,7 @@ favorites:
   category: "Synth Comping"
   command: "000122"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -183,6 +205,7 @@ favorites:
   category: "Synth Comping"
   command: "000236"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -191,6 +214,7 @@ favorites:
   category: "Synth Comping"
   command: "000265"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -199,6 +223,7 @@ favorites:
   category: "Synth Comping"
   command: "00033F"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -207,6 +232,7 @@ favorites:
   category: "Synth Lead"
   command: "000272"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -215,6 +241,7 @@ favorites:
   category: "Synth Lead"
   command: "00040B"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -223,6 +250,7 @@ favorites:
   category: "Synth Lead"
   command: "00042E"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -231,6 +259,7 @@ favorites:
   category: "Synth Lead"
   command: "000438"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -239,6 +268,7 @@ favorites:
   category: "Synth Pad"
   command: "000125"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -247,6 +277,7 @@ favorites:
   category: "Synth Pad"
   command: "000152"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -255,6 +286,7 @@ favorites:
   category: "Synth Pad"
   command: "00015A"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -263,6 +295,7 @@ favorites:
   category: "Synth Pad"
   command: "00016A"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -271,6 +304,7 @@ favorites:
   category: "Synth Pad"
   command: "00017C"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -279,6 +313,7 @@ favorites:
   category: "Synth Pad"
   command: "00017F"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -287,6 +322,7 @@ favorites:
   category: "Synth Pad"
   command: "00020B"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -295,6 +331,7 @@ favorites:
   category: "Synth Pad"
   command: "00021A"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -303,6 +340,7 @@ favorites:
   category: "Synth Pad"
   command: "000220"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -311,6 +349,7 @@ favorites:
   category: "Synth Pad"
   command: "00022C"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -319,6 +358,7 @@ favorites:
   category: "Synth Pad"
   command: "000238"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -327,6 +367,7 @@ favorites:
   category: "Synth Pad"
   command: "00032C"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -335,6 +376,7 @@ favorites:
   category: "Synth Pad"
   command: "000337"
   filename: null
+  channel: null
   score: 2
 - device: "Micron"
   mode: "Program"
@@ -343,6 +385,7 @@ favorites:
   category: "Synth Pad"
   command: "00033D"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -351,6 +394,7 @@ favorites:
   category: "Synth Pad"
   command: "000347"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -359,6 +403,7 @@ favorites:
   category: "Synth Pad"
   command: "00034B"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -367,6 +412,7 @@ favorites:
   category: "Synth Pad"
   command: "000354"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -375,6 +421,7 @@ favorites:
   category: "Synth Pad"
   command: "00037D"
   filename: null
+  channel: null
   score: 5
 - device: "Micron"
   mode: "Program"
@@ -383,6 +430,7 @@ favorites:
   category: "Synth Pad"
   command: "000418"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -391,6 +439,7 @@ favorites:
   category: "Synth Pad"
   command: "000421"
   filename: null
+  channel: null
   score: 4
 - device: "Micron"
   mode: "Program"
@@ -399,6 +448,7 @@ favorites:
   category: "Synth Pad"
   command: "000437"
   filename: null
+  channel: null
   score: 3
 - device: "Micron"
   mode: "Program"
@@ -407,6 +457,7 @@ favorites:
   category: "Synth Pad"
   command: "000454"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -415,6 +466,7 @@ favorites:
   category: "Synth"
   command: "015C"
   filename: null
+  channel: null
   score: 5
 - device: "QS6.1"
   mode: "Program"
@@ -423,6 +475,7 @@ favorites:
   category: "Synth"
   command: "016A"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -431,6 +484,7 @@ favorites:
   category: "Synth"
   command: "0139"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -439,6 +493,7 @@ favorites:
   category: "Wave"
   command: "0155"
   filename: null
+  channel: null
   score: 5
 - device: "QS6.1"
   mode: "Program"
@@ -447,6 +502,7 @@ favorites:
   category: "Wave"
   command: "0167"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -455,6 +511,7 @@ favorites:
   category: "Percussions"
   command: "017E"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -463,6 +520,7 @@ favorites:
   category: "Percussions"
   command: "0263"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -471,6 +529,7 @@ favorites:
   category: "Sound FX"
   command: "006C"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -479,6 +538,7 @@ favorites:
   category: "Sound FX"
   command: "0075"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -487,6 +547,7 @@ favorites:
   category: "Sound FX"
   command: "0076"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -495,6 +556,7 @@ favorites:
   category: "Synth"
   command: "0057"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -503,6 +565,7 @@ favorites:
   category: "Synth"
   command: "0069"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -511,6 +574,7 @@ favorites:
   category: "Voice"
   command: "006E"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -519,6 +583,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "0012"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -527,6 +592,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "0054"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -535,6 +601,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "0159"
   filename: null
+  channel: null
   score: 5
 - device: "QS6.1"
   mode: "Program"
@@ -543,6 +610,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "0213"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -551,6 +619,7 @@ favorites:
   category: "Noise"
   command: "0147"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -559,6 +628,7 @@ favorites:
   category: "Noise"
   command: "0377"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -567,6 +637,7 @@ favorites:
   category: "Synth"
   command: "0253"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -575,6 +646,7 @@ favorites:
   category: "Synth"
   command: "0254"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -583,6 +655,7 @@ favorites:
   category: "Synth"
   command: "0257"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -591,6 +664,7 @@ favorites:
   category: "Synth"
   command: "0267"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -599,6 +673,7 @@ favorites:
   category: "Synth"
   command: "0352"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -607,6 +682,7 @@ favorites:
   category: "Synth"
   command: "035C"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -615,6 +691,7 @@ favorites:
   category: "Synth"
   command: "0461"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -623,6 +700,7 @@ favorites:
   category: "Synth"
   command: "002A"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -631,6 +709,7 @@ favorites:
   category: "Piano"
   command: "0007"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -639,6 +718,7 @@ favorites:
   category: "Custom"
   command: "051B"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -647,6 +727,7 @@ favorites:
   category: "String"
   command: "0335"
   filename: null
+  channel: null
   score: 2
 - device: "QS6.1"
   mode: "Program"
@@ -655,6 +736,7 @@ favorites:
   category: "Woodwinds"
   command: "0347"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -663,6 +745,7 @@ favorites:
   category: "Wave"
   command: "0349"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -671,6 +754,7 @@ favorites:
   category: "Woodwinds"
   command: "034E"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -679,6 +763,7 @@ favorites:
   category: "Voice"
   command: "0350"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -687,6 +772,7 @@ favorites:
   category: "Voice"
   command: "0351"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -695,6 +781,7 @@ favorites:
   category: "Voice"
   command: "0353"
   filename: null
+  channel: null
   score: 5
 - device: "QS6.1"
   mode: "Program"
@@ -703,6 +790,7 @@ favorites:
   category: "String"
   command: "0358"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -711,6 +799,7 @@ favorites:
   category: "Wave"
   command: "035D"
   filename: null
+  channel: null
   score: 4
 - device: "QS6.1"
   mode: "Program"
@@ -719,6 +808,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "0363"
   filename: null
+  channel: null
   score: 3
 - device: "QS6.1"
   mode: "Program"
@@ -727,6 +817,7 @@ favorites:
   category: "Unknown 23"
   command: "056F"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -735,6 +826,7 @@ favorites:
   category: "Choir"
   command: "000014"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -743,6 +835,7 @@ favorites:
   category: "Synth Pad"
   command: "00453A"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -751,6 +844,7 @@ favorites:
   category: "Ensemble"
   command: "004004"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -759,6 +853,7 @@ favorites:
   category: "Sound FX"
   command: "004007"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -767,6 +862,7 @@ favorites:
   category: "Synth Pad"
   command: "000327"
   filename: null
+  channel: null
   score: 5
 - device: "TG-500"
   mode: "Voice"
@@ -775,6 +871,7 @@ favorites:
   category: "Synth Pad"
   command: "000329"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -783,6 +880,7 @@ favorites:
   category: "Synth Pad"
   command: "000330"
   filename: null
+  channel: null
   score: 5
 - device: "TG-500"
   mode: "Voice"
@@ -791,6 +889,7 @@ favorites:
   category: "Synth Pad"
   command: "000331"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -799,6 +898,7 @@ favorites:
   category: "Synth Pad"
   command: "000835"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -807,6 +907,7 @@ favorites:
   category: "Synth Pad"
   command: "000837"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -815,6 +916,7 @@ favorites:
   category: "Synth Pad"
   command: "000839"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -823,6 +925,7 @@ favorites:
   category: "Synth Pad"
   command: "00083C"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -831,6 +934,7 @@ favorites:
   category: "Synth Pad"
   command: "001137"
   filename: null
+  channel: null
   score: 5
 - device: "TG-500"
   mode: "Voice"
@@ -839,6 +943,7 @@ favorites:
   category: "Synth Pad"
   command: "001138"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -847,6 +952,7 @@ favorites:
   category: "Synth Pad"
   command: "001139"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -855,6 +961,7 @@ favorites:
   category: "Synth Pad"
   command: "00113C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -863,6 +970,7 @@ favorites:
   category: "Synth Lead"
   command: "00082C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -871,6 +979,7 @@ favorites:
   category: "Synth Lead"
   command: "00112C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -879,6 +988,7 @@ favorites:
   category: "Synth Lead"
   command: "00112E"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -887,6 +997,7 @@ favorites:
   category: "Synth Lead"
   command: "00112F"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -895,6 +1006,7 @@ favorites:
   category: "Synth Lead"
   command: "001132"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -903,6 +1015,7 @@ favorites:
   category: "Sound FX"
   command: "000319"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -911,6 +1024,7 @@ favorites:
   category: "Ensemble"
   command: "000031"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Voice"
@@ -919,6 +1033,7 @@ favorites:
   category: "Sound FX"
   command: "00081F"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -927,6 +1042,7 @@ favorites:
   category: "Sound FX"
   command: "000820"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -935,6 +1051,7 @@ favorites:
   category: "Sound FX"
   command: "004011"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -943,6 +1060,7 @@ favorites:
   category: "Sound FX"
   command: "004516"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -951,6 +1069,7 @@ favorites:
   category: "Bass"
   command: "00422D"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -959,6 +1078,7 @@ favorites:
   category: "Bass"
   command: "004235"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -967,6 +1087,7 @@ favorites:
   category: "Bass"
   command: "00423D"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -975,6 +1096,7 @@ favorites:
   category: "Choir"
   command: "00420C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -983,6 +1105,7 @@ favorites:
   category: "Choir"
   command: "004214"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -991,6 +1114,7 @@ favorites:
   category: "Combination"
   command: "004030"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -999,6 +1123,7 @@ favorites:
   category: "Combination"
   command: "004530"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -1007,6 +1132,7 @@ favorites:
   category: "Ensemble"
   command: "00400E"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -1015,6 +1141,7 @@ favorites:
   category: "Ensemble"
   command: "00451C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -1023,6 +1150,7 @@ favorites:
   category: "Organ"
   command: "004231"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -1031,6 +1159,7 @@ favorites:
   category: "Sound FX"
   command: "004025"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -1039,6 +1168,7 @@ favorites:
   category: "Sound FX"
   command: "00402F"
   filename: null
+  channel: null
   score: 4
 - device: "TG-500"
   mode: "Performance"
@@ -1047,6 +1177,7 @@ favorites:
   category: "String"
   command: "004206"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -1055,6 +1186,7 @@ favorites:
   category: "String"
   command: "004236"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -1063,6 +1195,7 @@ favorites:
   category: "Synth Lead"
   command: "004035"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Performance"
@@ -1071,6 +1204,7 @@ favorites:
   category: "Synth Lead"
   command: "004503"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1079,6 +1213,7 @@ favorites:
   category: "Synth Chorus"
   command: "00053C"
   filename: null
+  channel: null
   score: 1
 - device: "TG-500"
   mode: "Voice"
@@ -1087,6 +1222,7 @@ favorites:
   category: "Synth Chorus"
   command: "00080D"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1095,6 +1231,7 @@ favorites:
   category: "Synth Lead"
   command: "000829"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1103,6 +1240,7 @@ favorites:
   category: "Synth Lead"
   command: "00082E"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1111,6 +1249,7 @@ favorites:
   category: "Synth Lead"
   command: "00082F"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1119,6 +1258,7 @@ favorites:
   category: "Synth Lead"
   command: "001129"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -1127,6 +1267,7 @@ favorites:
   category: "Wind"
   command: "00033E"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1135,6 +1276,7 @@ favorites:
   category: "Sound FX"
   command: "000233"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1143,6 +1285,7 @@ favorites:
   category: "Synth Chorus"
   command: "000213"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1151,6 +1294,7 @@ favorites:
   category: "Synth Chorus"
   command: "000013"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1159,6 +1303,7 @@ favorites:
   category: "Synth Lead"
   command: "000220"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1167,6 +1312,7 @@ favorites:
   category: "Synth Lead"
   command: "000221"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1175,6 +1321,7 @@ favorites:
   category: "Synth Lead"
   command: "000224"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1183,6 +1330,7 @@ favorites:
   category: "Synth Lead"
   command: "000227"
   filename: null
+  channel: null
   score: 5
 - device: "TG-33"
   mode: "Voice"
@@ -1191,6 +1339,7 @@ favorites:
   category: "Synth Pad"
   command: "000200"
   filename: null
+  channel: null
   score: 5
 - device: "TG-33"
   mode: "Voice"
@@ -1199,6 +1348,7 @@ favorites:
   category: "Synth Pad"
   command: "000204"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1207,6 +1357,7 @@ favorites:
   category: "Synth Pad"
   command: "000208"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1215,6 +1366,7 @@ favorites:
   category: "Synth Pad"
   command: "00020B"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1223,6 +1375,7 @@ favorites:
   category: "Synth Pad"
   command: "00020E"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1231,6 +1384,7 @@ favorites:
   category: "Wind"
   command: "00052F"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1239,6 +1393,7 @@ favorites:
   category: "Brass"
   command: "000527"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1247,6 +1402,7 @@ favorites:
   category: "Choir"
   command: "000538"
   filename: null
+  channel: null
   score: 2
 - device: "TG-33"
   mode: "Voice"
@@ -1255,6 +1411,7 @@ favorites:
   category: "Ensemble"
   command: "000228"
   filename: null
+  channel: null
   score: 5
 - device: "TG-33"
   mode: "Voice"
@@ -1263,6 +1420,7 @@ favorites:
   category: "Organ"
   command: "00050A"
   filename: null
+  channel: null
   score: 4
 - device: "TG-33"
   mode: "Voice"
@@ -1271,6 +1429,7 @@ favorites:
   category: "Organ"
   command: "00050B"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1279,6 +1438,7 @@ favorites:
   category: "Organ"
   command: "000509"
   filename: null
+  channel: null
   score: 2
 - device: "TG-33"
   mode: "Voice"
@@ -1287,6 +1447,7 @@ favorites:
   category: "Sequence"
   command: "000239"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1295,6 +1456,7 @@ favorites:
   category: "String"
   command: "000535"
   filename: null
+  channel: null
   score: 3
 - device: "TG-33"
   mode: "Voice"
@@ -1303,6 +1465,7 @@ favorites:
   category: "String"
   command: "000536"
   filename: null
+  channel: null
   score: 2
 - device: "TG-77"
   mode: "Voice"
@@ -1311,6 +1474,7 @@ favorites:
   category: "Synth Pad"
   command: "7C00"
   filename: null
+  channel: null
   score: 2
 - device: "TG-77"
   mode: "Voice"
@@ -1319,6 +1483,7 @@ favorites:
   category: "Synth Comp"
   command: "7504"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1327,6 +1492,7 @@ favorites:
   category: "Musical Effect"
   command: "753D"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1335,6 +1501,7 @@ favorites:
   category: "Musical Effect"
   command: "7C25"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1343,6 +1510,7 @@ favorites:
   category: "Musical Effect"
   command: "7C26"
   filename: null
+  channel: null
   score: 4
 - device: "TG-77"
   mode: "Voice"
@@ -1351,6 +1519,7 @@ favorites:
   category: "Sound FX"
   command: "7531"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1359,6 +1528,7 @@ favorites:
   category: "Sound FX"
   command: "7533"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1367,6 +1537,7 @@ favorites:
   category: "Synth Pad"
   command: "7A0A"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1375,6 +1546,7 @@ favorites:
   category: "Synth Pad"
   command: "7C07"
   filename: null
+  channel: null
   score: 4
 - device: "TG-77"
   mode: "Voice"
@@ -1383,6 +1555,7 @@ favorites:
   category: "Synth Pad"
   command: "7C08"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1391,6 +1564,7 @@ favorites:
   category: "Synth Pad"
   command: "7C09"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1399,6 +1573,7 @@ favorites:
   category: "Organ"
   command: "7521"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1407,6 +1582,7 @@ favorites:
   category: "Keyboard"
   command: "7512"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1415,6 +1591,7 @@ favorites:
   category: "Keyboard"
   command: "7511"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1423,6 +1600,7 @@ favorites:
   category: "Choir"
   command: "752E"
   filename: null
+  channel: null
   score: 4
 - device: "TG-77"
   mode: "Voice"
@@ -1431,6 +1609,7 @@ favorites:
   category: "Brass"
   command: "7535"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1439,6 +1618,7 @@ favorites:
   category: "Unknown"
   command: "7A0C"
   filename: null
+  channel: null
   score: 3
 - device: "TG-77"
   mode: "Voice"
@@ -1447,6 +1627,7 @@ favorites:
   category: "Synth Lead"
   command: "750F"
   filename: null
+  channel: null
   score: 5
 - device: "TG-77"
   mode: "Voice"
@@ -1455,6 +1636,7 @@ favorites:
   category: "Synth Lead"
   command: "750A"
   filename: null
+  channel: null
   score: 2
 - device: "TG-77"
   mode: "Voice"
@@ -1463,6 +1645,7 @@ favorites:
   category: "Synth Lead"
   command: "7509"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1471,6 +1654,7 @@ favorites:
   category: "Combination"
   command: "00"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1479,6 +1663,7 @@ favorites:
   category: "Synth Pad"
   command: "0D"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1487,6 +1672,7 @@ favorites:
   category: "Synth Pad"
   command: "04"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1495,6 +1681,7 @@ favorites:
   category: "Synth Pad"
   command: "50"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1503,6 +1690,7 @@ favorites:
   category: "Synth Pad"
   command: "51"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1511,6 +1699,7 @@ favorites:
   category: "Synth Pad"
   command: "53"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1519,6 +1708,7 @@ favorites:
   category: "Synth Lead"
   command: "43"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1527,6 +1717,7 @@ favorites:
   category: "Synth Lead"
   command: "42"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1535,6 +1726,7 @@ favorites:
   category: "Synth Lead"
   command: "40"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1543,6 +1735,7 @@ favorites:
   category: "Synth Lead"
   command: "3D"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1551,6 +1744,7 @@ favorites:
   category: "Synth Lead"
   command: "44"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1559,6 +1753,7 @@ favorites:
   category: "Synth Lead"
   command: "07"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1567,6 +1762,7 @@ favorites:
   category: "Synth Lead"
   command: "08"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1575,6 +1771,7 @@ favorites:
   category: "Synth FX"
   command: "00"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1583,6 +1780,7 @@ favorites:
   category: "Synth FX"
   command: "06"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1591,6 +1789,7 @@ favorites:
   category: "Synth FX"
   command: "08"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1599,6 +1798,7 @@ favorites:
   category: "Synth FX"
   command: "07"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1607,6 +1807,7 @@ favorites:
   category: "Synth FX"
   command: "09"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1615,6 +1816,7 @@ favorites:
   category: "Synth FX"
   command: "13"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1623,6 +1825,7 @@ favorites:
   category: "Synth FX"
   command: "62"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1631,6 +1834,7 @@ favorites:
   category: "Synth FX"
   command: "63"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1639,6 +1843,7 @@ favorites:
   category: "Synth Comping"
   command: "39"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1647,6 +1852,7 @@ favorites:
   category: "Synth Comping"
   command: "38"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1655,6 +1861,7 @@ favorites:
   category: "Synth Comping"
   command: "0E"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1663,6 +1870,7 @@ favorites:
   category: "Strings"
   command: "33"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1671,6 +1879,7 @@ favorites:
   category: "Strings"
   command: "30"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1679,6 +1888,7 @@ favorites:
   category: "Sound FX"
   command: "10"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1687,6 +1897,7 @@ favorites:
   category: "Sound FX"
   command: "0E"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1695,6 +1906,7 @@ favorites:
   category: "Sound FX"
   command: "11"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1703,6 +1915,7 @@ favorites:
   category: "Sequence"
   command: "11"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1711,6 +1924,7 @@ favorites:
   category: "Sequence"
   command: "10"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1719,6 +1933,7 @@ favorites:
   category: "Sequence"
   command: "1A"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1727,6 +1942,7 @@ favorites:
   category: "Sequence"
   command: "19"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1735,6 +1951,7 @@ favorites:
   category: "Sequence"
   command: "15"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1743,6 +1960,7 @@ favorites:
   category: "Sequence"
   command: "14"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1751,6 +1969,7 @@ favorites:
   category: "Sequence"
   command: "13"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1759,6 +1978,7 @@ favorites:
   category: "Sequence"
   command: "0A"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1767,6 +1987,7 @@ favorites:
   category: "Percussive"
   command: "5F"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1775,6 +1996,7 @@ favorites:
   category: "Percussive"
   command: "60"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1783,6 +2005,7 @@ favorites:
   category: "Combination"
   command: "14"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1791,6 +2014,7 @@ favorites:
   category: "Combination"
   command: "18"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1799,6 +2023,7 @@ favorites:
   category: "Combination"
   command: "55"
   filename: null
+  channel: null
   score: 2
 - device: "AN1x"
   mode: "Voice"
@@ -1807,6 +2032,7 @@ favorites:
   category: "Bass"
   command: "0B"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1815,6 +2041,7 @@ favorites:
   category: "Bass"
   command: "02"
   filename: null
+  channel: null
   score: 5
 - device: "AN1x"
   mode: "Voice"
@@ -1823,6 +2050,7 @@ favorites:
   category: "Bass"
   command: "19"
   filename: null
+  channel: null
   score: 3
 - device: "AN1x"
   mode: "Voice"
@@ -1831,6 +2059,7 @@ favorites:
   category: "Bass"
   command: "1C"
   filename: null
+  channel: null
   score: 4
 - device: "AN1x"
   mode: "Voice"
@@ -1839,6 +2068,7 @@ favorites:
   category: "Brass"
   command: "2D"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1847,6 +2077,7 @@ favorites:
   category: "Bass"
   command: "3F403C"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -1855,6 +2086,7 @@ favorites:
   category: "Bass"
   command: "3F403D"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -1863,6 +2095,7 @@ favorites:
   category: "Bass"
   command: "3F4133"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1871,6 +2104,7 @@ favorites:
   category: "Bass"
   command: "3F413E"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1879,6 +2113,7 @@ favorites:
   category: "Sound FX"
   command: "3F4074"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1887,6 +2122,7 @@ favorites:
   category: "Sound FX"
   command: "3F4173"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1895,6 +2131,7 @@ favorites:
   category: "Strings"
   command: "3F4153"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1903,6 +2140,7 @@ favorites:
   category: "Strings"
   command: "3F4069"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1911,6 +2149,7 @@ favorites:
   category: "Strings"
   command: "3F4068"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1919,6 +2158,7 @@ favorites:
   category: "Synth Comping"
   command: "3F4011"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1927,6 +2167,7 @@ favorites:
   category: "Synth Comping"
   command: "3F4018"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1935,6 +2176,7 @@ favorites:
   category: "Synth Comping"
   command: "3F401E"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1943,6 +2185,7 @@ favorites:
   category: "Synth Comping"
   command: "3F4123"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1951,6 +2194,7 @@ favorites:
   category: "Synth FX"
   command: "3F401F"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -1959,6 +2203,7 @@ favorites:
   category: "Synth FX"
   command: "3F4026"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1967,6 +2212,7 @@ favorites:
   category: "Synth FX"
   command: "3F4028"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1975,6 +2221,7 @@ favorites:
   category: "Synth FX"
   command: "3F4165"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -1983,6 +2230,7 @@ favorites:
   category: "Synth FX"
   command: "3F4169"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1991,6 +2239,7 @@ favorites:
   category: "Synth FX"
   command: "3F416B"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -1999,6 +2248,7 @@ favorites:
   category: "Synth FX"
   command: "3F416E"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2007,6 +2257,7 @@ favorites:
   category: "Synth FX"
   command: "3F4114"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2015,6 +2266,7 @@ favorites:
   category: "Organ"
   command: "3F4057"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2023,6 +2275,7 @@ favorites:
   category: "Organ"
   command: "3F4059"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2031,6 +2284,7 @@ favorites:
   category: "Organ"
   command: "3F405A"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2039,6 +2293,7 @@ favorites:
   category: "Guitar"
   command: "3F414D"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2047,6 +2302,7 @@ favorites:
   category: "Guitar"
   command: "3F404C"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2055,6 +2311,7 @@ favorites:
   category: "Combination"
   command: "3F4078"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2063,6 +2320,7 @@ favorites:
   category: "Combination"
   command: "3F4077"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2071,6 +2329,7 @@ favorites:
   category: "Combination"
   command: "3F4110"
   filename: null
+  channel: null
   score: 2
 - device: "CS1x"
   mode: "Performance"
@@ -2079,6 +2338,7 @@ favorites:
   category: "Synth Pad"
   command: "3F415C"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2087,6 +2347,7 @@ favorites:
   category: "Synth Pad"
   command: "3F415B"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -2095,6 +2356,7 @@ favorites:
   category: "Synth Pad"
   command: "3F4063"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2103,6 +2365,7 @@ favorites:
   category: "Synth Pad"
   command: "3F4061"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -2111,6 +2374,7 @@ favorites:
   category: "Synth Pad"
   command: "3F4060"
   filename: null
+  channel: null
   score: 2
 - device: "CS1x"
   mode: "Performance"
@@ -2119,6 +2383,7 @@ favorites:
   category: "Synth Pad"
   command: "3F405D"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -2127,6 +2392,7 @@ favorites:
   category: "Synth Pad"
   command: "3F405C"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2135,6 +2401,7 @@ favorites:
   category: "Synth Pad"
   command: "3F4064"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -2143,6 +2410,7 @@ favorites:
   category: "Synth Pad"
   command: "3F415E"
   filename: null
+  channel: null
   score: 2
 - device: "CS1x"
   mode: "Performance"
@@ -2151,6 +2419,7 @@ favorites:
   category: "Synth Pad"
   command: "3F4160"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2159,6 +2428,7 @@ favorites:
   category: "Vocal"
   command: "3F4075"
   filename: null
+  channel: null
   score: 4
 - device: "CS1x"
   mode: "Performance"
@@ -2167,6 +2437,7 @@ favorites:
   category: "Vocal"
   command: "3F417A"
   filename: null
+  channel: null
   score: 5
 - device: "CS1x"
   mode: "Performance"
@@ -2175,6 +2446,7 @@ favorites:
   category: "Piano"
   command: "3F4051"
   filename: null
+  channel: null
   score: 3
 - device: "CS1x"
   mode: "Performance"
@@ -2183,6 +2455,7 @@ favorites:
   category: "Piano"
   command: "3F4053"
   filename: null
+  channel: null
   score: 2
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2191,6 +2464,7 @@ favorites:
   category: "Bass"
   command: "0A"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2199,6 +2473,7 @@ favorites:
   category: "Bass"
   command: "14"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2207,6 +2482,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "1D"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2215,6 +2491,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "05"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "Single"
@@ -2223,6 +2500,7 @@ favorites:
   category: "Bass"
   command: "0A"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "Single"
@@ -2231,6 +2509,7 @@ favorites:
   category: "Bass"
   command: "50"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2239,6 +2518,7 @@ favorites:
   category: "Voice"
   command: "02"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2247,6 +2527,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "1C"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "SingleModeD"
@@ -2255,6 +2536,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "05"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2263,6 +2545,7 @@ favorites:
   category: "Bass"
   command: "0A"
   filename: null
+  channel: null
   score: 4
 - device: "TX-81z"
   mode: "Single"
@@ -2271,6 +2554,7 @@ favorites:
   category: "Unknown"
   command: "01"
   filename: null
+  channel: null
   score: 2
 - device: "TX-81z"
   mode: "Single"
@@ -2279,6 +2563,7 @@ favorites:
   category: "String"
   command: "0B"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2287,6 +2572,7 @@ favorites:
   category: "Synth Lead"
   command: "11"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2295,6 +2581,7 @@ favorites:
   category: "Unknown"
   command: "18"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2303,6 +2590,7 @@ favorites:
   category: "Unknown"
   command: "0E"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2311,6 +2599,7 @@ favorites:
   category: "Unknown"
   command: "13"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2319,6 +2608,7 @@ favorites:
   category: "Bass"
   command: "14"
   filename: null
+  channel: null
   score: 5
 - device: "TX-81z"
   mode: "Single"
@@ -2327,6 +2617,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "1D"
   filename: null
+  channel: null
   score: 4
 - device: "TX-81z"
   mode: "Single"
@@ -2335,6 +2626,7 @@ favorites:
   category: "Synth Pad"
   command: "5B"
   filename: null
+  channel: null
   score: 2
 - device: "TX-81z"
   mode: "Single"
@@ -2343,6 +2635,7 @@ favorites:
   category: "Synth Lead"
   command: "14"
   filename: null
+  channel: null
   score: 4
 - device: "TX-81z"
   mode: "Single"
@@ -2351,6 +2644,7 @@ favorites:
   category: "Woodwinds"
   command: "5E"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Single"
@@ -2359,6 +2653,7 @@ favorites:
   category: "Keyboard"
   command: "25"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Performance"
@@ -2367,6 +2662,7 @@ favorites:
   category: "String"
   command: "26"
   filename: null
+  channel: null
   score: 3
 - device: "TX-81z"
   mode: "Performance"
@@ -2375,6 +2671,7 @@ favorites:
   category: "String"
   command: "31"
   filename: null
+  channel: null
   score: 4
 - device: "TX-81z"
   mode: "Performance"
@@ -2383,6 +2680,7 @@ favorites:
   category: "Synth Lead"
   command: "27"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2391,6 +2689,7 @@ favorites:
   category: "Motion Synth"
   command: "000000"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2399,6 +2698,7 @@ favorites:
   category: "Motion Synth"
   command: "000140"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2407,6 +2707,7 @@ favorites:
   category: "Motion Synth"
   command: "000160"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2415,6 +2716,7 @@ favorites:
   category: "Motion Synth"
   command: "000215"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2423,6 +2725,7 @@ favorites:
   category: "Motion Synth"
   command: "000256"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2431,6 +2734,7 @@ favorites:
   category: "Motion Synth"
   command: "000262"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2439,6 +2743,7 @@ favorites:
   category: "Sound FX"
   command: "00006E"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2447,6 +2752,7 @@ favorites:
   category: "Sound FX"
   command: "000073"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2455,6 +2761,7 @@ favorites:
   category: "Sound FX"
   command: "000033"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2463,6 +2770,7 @@ favorites:
   category: "Sound FX"
   command: "000051"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2471,6 +2779,7 @@ favorites:
   category: "Sound FX"
   command: "000171"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2479,6 +2788,7 @@ favorites:
   category: "Sound FX"
   command: "00017B"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2487,6 +2797,7 @@ favorites:
   category: "Sound FX"
   command: "00020C"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2495,6 +2806,7 @@ favorites:
   category: "Sound FX"
   command: "000243"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2503,6 +2815,7 @@ favorites:
   category: "Sound FX"
   command: "000311"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2511,6 +2824,7 @@ favorites:
   category: "Sound FX"
   command: "000321"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2519,6 +2833,7 @@ favorites:
   category: "Sound FX"
   command: "00034D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2527,6 +2842,7 @@ favorites:
   category: "Sound FX"
   command: "000350"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2535,6 +2851,7 @@ favorites:
   category: "Strings"
   command: "000043"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2543,6 +2860,7 @@ favorites:
   category: "Strings"
   command: "000057"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2551,6 +2869,7 @@ favorites:
   category: "Strings"
   command: "000127"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2559,6 +2878,7 @@ favorites:
   category: "Synth"
   command: "000069"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2567,6 +2887,7 @@ favorites:
   category: "Synth"
   command: "00006B"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2575,6 +2896,7 @@ favorites:
   category: "Synth"
   command: "000169"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2583,6 +2905,7 @@ favorites:
   category: "Synth"
   command: "000139"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2591,6 +2914,7 @@ favorites:
   category: "Synth"
   command: "000149"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2599,6 +2923,7 @@ favorites:
   category: "Synth"
   command: "000159"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2607,6 +2932,7 @@ favorites:
   category: "Synth"
   command: "000201"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2615,6 +2941,7 @@ favorites:
   category: "Synth"
   command: "00026B"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2623,6 +2950,7 @@ favorites:
   category: "Synth"
   command: "000221"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2631,6 +2959,7 @@ favorites:
   category: "Synth"
   command: "00022B"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2639,6 +2968,7 @@ favorites:
   category: "Synth"
   command: "000226"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2647,6 +2977,7 @@ favorites:
   category: "Synth"
   command: "000241"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2655,6 +2986,7 @@ favorites:
   category: "Synth"
   command: "000242"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2663,6 +2995,7 @@ favorites:
   category: "Synth"
   command: "000246"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2671,6 +3004,7 @@ favorites:
   category: "Synth"
   command: "00024B"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2679,6 +3013,7 @@ favorites:
   category: "Synth"
   command: "000252"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2687,6 +3022,7 @@ favorites:
   category: "Synth"
   command: "000369"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2695,6 +3031,7 @@ favorites:
   category: "Synth"
   command: "000302"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2703,6 +3040,7 @@ favorites:
   category: "Synth"
   command: "00031E"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2711,6 +3049,7 @@ favorites:
   category: "Synth"
   command: "000322"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2719,6 +3058,7 @@ favorites:
   category: "Synth"
   command: "00032E"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2727,6 +3067,7 @@ favorites:
   category: "Synth"
   command: "000331"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2735,6 +3076,7 @@ favorites:
   category: "Synth"
   command: "000332"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2743,6 +3085,7 @@ favorites:
   category: "Synth"
   command: "000338"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2751,6 +3094,7 @@ favorites:
   category: "Synth"
   command: "000340"
   filename: null
+  channel: null
   score: 1
 - device: "Tr-Rack"
   mode: "Program"
@@ -2759,6 +3103,7 @@ favorites:
   category: "Synth"
   command: "000342"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2767,6 +3112,7 @@ favorites:
   category: "Synth"
   command: "000348"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2775,6 +3121,7 @@ favorites:
   category: "Synth"
   command: "000359"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2783,6 +3130,7 @@ favorites:
   category: "Synth"
   command: "00035E"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2791,6 +3139,7 @@ favorites:
   category: "Synth Lead"
   command: "00001E"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2799,6 +3148,7 @@ favorites:
   category: "Synth Lead"
   command: "00010E"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2807,6 +3157,7 @@ favorites:
   category: "Synth Lead"
   command: "00013E"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2815,6 +3166,7 @@ favorites:
   category: "Synth Lead"
   command: "000204"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2823,6 +3175,7 @@ favorites:
   category: "Synth Lead"
   command: "000232"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2831,6 +3184,7 @@ favorites:
   category: "Synth Lead"
   command: "00023F"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2839,6 +3193,7 @@ favorites:
   category: "Synth Lead"
   command: "000244"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2847,6 +3202,7 @@ favorites:
   category: "Synth Lead"
   command: "000254"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2855,6 +3211,7 @@ favorites:
   category: "Synth Lead"
   command: "000368"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2863,6 +3220,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000013"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2871,6 +3229,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000023"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2879,6 +3238,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000103"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2887,6 +3247,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000133"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2895,6 +3256,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000163"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2903,6 +3265,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000264"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2911,6 +3274,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000317"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2919,6 +3283,7 @@ favorites:
   category: "Vocal/Airy"
   command: "000307"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2927,6 +3292,7 @@ favorites:
   category: "Woodwinds/Reeds"
   command: "000062"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2935,6 +3301,7 @@ favorites:
   category: "Woodwinds/Reeds"
   command: "00014B"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -2943,6 +3310,7 @@ favorites:
   category: "Woodwinds/Reeds"
   command: "000152"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2951,6 +3319,7 @@ favorites:
   category: "Woodwinds/Reeds"
   command: "000162"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -2959,6 +3328,7 @@ favorites:
   category: "Woodwinds/Reeds"
   command: "000259"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2967,6 +3337,7 @@ favorites:
   category: "Plucked"
   command: "00014F"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2975,6 +3346,7 @@ favorites:
   category: "Plucked"
   command: "00015F"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -2983,6 +3355,7 @@ favorites:
   category: "Plucked"
   command: "00001F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2991,6 +3364,7 @@ favorites:
   category: "Plucked"
   command: "00000F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -2999,6 +3373,7 @@ favorites:
   category: "Organ"
   command: "00000A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3007,6 +3382,7 @@ favorites:
   category: "Organ"
   command: "00006A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3015,6 +3391,7 @@ favorites:
   category: "Organ"
   command: "00001A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3023,6 +3400,7 @@ favorites:
   category: "Organ"
   command: "00002A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3031,6 +3409,7 @@ favorites:
   category: "Organ"
   command: "00004A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3039,6 +3418,7 @@ favorites:
   category: "Organ"
   command: "00010A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3047,6 +3427,7 @@ favorites:
   category: "Organ"
   command: "00017A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3055,6 +3436,7 @@ favorites:
   category: "Organ"
   command: "00012A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3063,6 +3445,7 @@ favorites:
   category: "Organ"
   command: "00014A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3071,6 +3454,7 @@ favorites:
   category: "Organ"
   command: "00015A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3079,6 +3463,7 @@ favorites:
   category: "Organ"
   command: "00015E"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3087,6 +3472,7 @@ favorites:
   category: "Organ"
   command: "000239"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3095,6 +3481,7 @@ favorites:
   category: "Organ"
   command: "00023B"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3103,6 +3490,7 @@ favorites:
   category: "Mallet"
   command: "00002D"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3111,6 +3499,7 @@ favorites:
   category: "Keyboard"
   command: "000111"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3119,6 +3508,7 @@ favorites:
   category: "Keyboard"
   command: "000121"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3127,6 +3517,7 @@ favorites:
   category: "Keyboard"
   command: "000131"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3135,6 +3526,7 @@ favorites:
   category: "Keyboard"
   command: "000151"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3143,6 +3535,7 @@ favorites:
   category: "Keyboard"
   command: "000266"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3151,6 +3544,7 @@ favorites:
   category: "Keyboard"
   command: "000217"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3159,6 +3553,7 @@ favorites:
   category: "Keyboard"
   command: "000366"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3167,6 +3562,7 @@ favorites:
   category: "Guitar"
   command: "00006F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3175,6 +3571,7 @@ favorites:
   category: "Guitar"
   command: "00007F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3183,6 +3580,7 @@ favorites:
   category: "Guitar"
   command: "000034"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3191,6 +3589,7 @@ favorites:
   category: "Guitar"
   command: "000134"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -3199,6 +3598,7 @@ favorites:
   category: "Guitar"
   command: "00035D"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3207,6 +3607,7 @@ favorites:
   category: "Drums / Perc"
   command: "000038"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3215,6 +3616,7 @@ favorites:
   category: "Drums / Perc"
   command: "000048"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3223,6 +3625,7 @@ favorites:
   category: "Drums / Perc"
   command: "000178"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3231,6 +3634,7 @@ favorites:
   category: "Drums / Perc"
   command: "000138"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3239,6 +3643,7 @@ favorites:
   category: "Drums / Perc"
   command: "000148"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3247,6 +3652,7 @@ favorites:
   category: "Drums / Perc"
   command: "00026A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3255,6 +3661,7 @@ favorites:
   category: "Drums / Perc"
   command: "00022A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3263,6 +3670,7 @@ favorites:
   category: "Drums / Perc"
   command: "00030A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3271,6 +3679,7 @@ favorites:
   category: "Drums / Perc"
   command: "00032A"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3279,6 +3688,7 @@ favorites:
   category: "Bell"
   command: "000065"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Program"
@@ -3287,6 +3697,7 @@ favorites:
   category: "Bell"
   command: "000015"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3295,6 +3706,7 @@ favorites:
   category: "Bell"
   command: "000105"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3303,6 +3715,7 @@ favorites:
   category: "Bell"
   command: "000145"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3311,6 +3724,7 @@ favorites:
   category: "Bell"
   command: "000155"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3319,6 +3733,7 @@ favorites:
   category: "Bell"
   command: "000224"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3327,6 +3742,7 @@ favorites:
   category: "Bass"
   command: "000076"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3335,6 +3751,7 @@ favorites:
   category: "Bass"
   command: "000036"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3343,6 +3760,7 @@ favorites:
   category: "Bass"
   command: "000056"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3351,6 +3769,7 @@ favorites:
   category: "Bass"
   command: "00004E"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -3359,6 +3778,7 @@ favorites:
   category: "Bass"
   command: "000126"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3367,6 +3787,7 @@ favorites:
   category: "Bass"
   command: "000265"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3375,6 +3796,7 @@ favorites:
   category: "Bass"
   command: "00026F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3383,6 +3805,7 @@ favorites:
   category: "Bass"
   command: "000273"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3391,6 +3814,7 @@ favorites:
   category: "Bass"
   command: "000219"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3399,6 +3823,7 @@ favorites:
   category: "Bass"
   command: "000229"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3407,6 +3832,7 @@ favorites:
   category: "Bass"
   command: "00022F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3415,6 +3841,7 @@ favorites:
   category: "Bass"
   command: "000205"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3423,6 +3850,7 @@ favorites:
   category: "Bass"
   command: "00023E"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3431,6 +3859,7 @@ favorites:
   category: "Bass"
   command: "00037B"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3439,6 +3868,7 @@ favorites:
   category: "Bass"
   command: "00037E"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Program"
@@ -3447,6 +3877,7 @@ favorites:
   category: "Bass"
   command: "000314"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3455,6 +3886,7 @@ favorites:
   category: "Bass"
   command: "000315"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3463,6 +3895,7 @@ favorites:
   category: "Bass"
   command: "00032C"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Program"
@@ -3471,6 +3904,7 @@ favorites:
   category: "Bass"
   command: "000305"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3479,6 +3913,7 @@ favorites:
   category: "Bass"
   command: "00033F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Program"
@@ -3487,6 +3922,7 @@ favorites:
   category: "Bass"
   command: "000345"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3495,6 +3931,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00001D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3503,6 +3940,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00003D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3511,6 +3949,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00017D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3519,6 +3958,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00011D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3527,6 +3967,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00020D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3535,6 +3976,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00024D"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3543,6 +3985,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00037D"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3551,6 +3994,7 @@ favorites:
   category: "Drums/Special FX"
   command: "00034D"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3559,6 +4003,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00011F"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3567,6 +4012,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00015F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3575,6 +4021,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00027F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3583,6 +4030,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00020F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3591,6 +4039,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00022F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3599,6 +4048,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00024F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3607,6 +4057,7 @@ favorites:
   category: "Bell & Mallet"
   command: "00034F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3615,6 +4066,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00001A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3623,6 +4075,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00002A"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3631,6 +4084,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00003A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3639,6 +4093,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00017A"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3647,6 +4102,7 @@ favorites:
   category: "Breathy/Airy"
   command: "000125"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3655,6 +4111,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00014A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3663,6 +4120,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00015A"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3671,6 +4129,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00021A"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3679,6 +4138,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00024A"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3687,6 +4147,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00025A"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3695,6 +4156,7 @@ favorites:
   category: "Breathy/Airy"
   command: "00030A"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3703,6 +4165,7 @@ favorites:
   category: "Keyboard"
   command: "000335"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3711,6 +4174,7 @@ favorites:
   category: "Keyboard"
   command: "000123"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3719,6 +4183,7 @@ favorites:
   category: "Keyboard"
   command: "000203"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3727,6 +4192,7 @@ favorites:
   category: "Motion Synth"
   command: "00007D"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3735,6 +4201,7 @@ favorites:
   category: "Motion Synth"
   command: "000012"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3743,6 +4210,7 @@ favorites:
   category: "Motion Synth"
   command: "000002"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3751,6 +4219,7 @@ favorites:
   category: "Motion Synth"
   command: "000175"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3759,6 +4228,7 @@ favorites:
   category: "Motion Synth"
   command: "000122"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3767,6 +4237,7 @@ favorites:
   category: "Motion Synth"
   command: "000142"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3775,6 +4246,7 @@ favorites:
   category: "Motion Synth"
   command: "00014F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3783,6 +4255,7 @@ favorites:
   category: "Motion Synth"
   command: "000152"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3791,6 +4264,7 @@ favorites:
   category: "Motion Synth"
   command: "00027D"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3799,6 +4273,7 @@ favorites:
   category: "Motion Synth"
   command: "000202"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3807,6 +4282,7 @@ favorites:
   category: "Motion Synth"
   command: "00022B"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3815,6 +4291,7 @@ favorites:
   category: "Motion Synth"
   command: "00023F"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3823,6 +4300,7 @@ favorites:
   category: "Motion Synth"
   command: "000252"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3831,6 +4309,7 @@ favorites:
   category: "Motion Synth"
   command: "00025C"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3839,6 +4318,7 @@ favorites:
   category: "Motion Synth"
   command: "000372"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3847,6 +4327,7 @@ favorites:
   category: "Motion Synth"
   command: "000332"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3855,6 +4336,7 @@ favorites:
   category: "Bass"
   command: "000134"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3863,6 +4345,7 @@ favorites:
   category: "Bass"
   command: "00022E"
   filename: null
+  channel: null
   score: 3
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3871,6 +4354,7 @@ favorites:
   category: "Bass"
   command: "000209"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3879,6 +4363,7 @@ favorites:
   category: "Bass"
   command: "000327"
   filename: null
+  channel: null
   score: 2
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3887,6 +4372,7 @@ favorites:
   category: "Complex"
   command: "000215"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3895,6 +4381,7 @@ favorites:
   category: "Complex"
   command: "000245"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3903,6 +4390,7 @@ favorites:
   category: "Complex"
   command: "000375"
   filename: null
+  channel: null
   score: 5
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3911,6 +4399,7 @@ favorites:
   category: "Complex"
   command: "000305"
   filename: null
+  channel: null
   score: 4
 - device: "Tr-Rack"
   mode: "Combi"
@@ -3919,6 +4408,7 @@ favorites:
   category: "Pad & Lead"
   command: "00020C"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3927,6 +4417,7 @@ favorites:
   category: "Arp"
   command: "0128"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3935,6 +4426,7 @@ favorites:
   category: "Arp"
   command: "0105"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3943,6 +4435,7 @@ favorites:
   category: "Arp"
   command: "027E"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3951,6 +4444,7 @@ favorites:
   category: "Arp"
   command: "022A"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3959,6 +4453,7 @@ favorites:
   category: "Arp"
   command: "0208"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -3967,6 +4462,7 @@ favorites:
   category: "Arp"
   command: "0261"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -3975,6 +4471,7 @@ favorites:
   category: "Sound FX"
   command: "0155"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -3983,6 +4480,7 @@ favorites:
   category: "Sound FX"
   command: "0201"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -3991,6 +4489,7 @@ favorites:
   category: "Sound FX"
   command: "0228"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -3999,6 +4498,7 @@ favorites:
   category: "Synth Pad"
   command: "016A"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4007,6 +4507,7 @@ favorites:
   category: "Synth Pad"
   command: "016D"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4015,6 +4516,7 @@ favorites:
   category: "Synth Pad"
   command: "016F"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4023,6 +4525,7 @@ favorites:
   category: "Synth Pad"
   command: "017A"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4031,6 +4534,7 @@ favorites:
   category: "Synth Pad"
   command: "013A"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4039,6 +4543,7 @@ favorites:
   category: "Synth Pad"
   command: "015C"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4047,6 +4552,7 @@ favorites:
   category: "Synth Pad"
   command: "0266"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4055,6 +4561,7 @@ favorites:
   category: "Synth Pad"
   command: "0270"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4063,6 +4570,7 @@ favorites:
   category: "Synth Pad"
   command: "0219"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4071,6 +4579,7 @@ favorites:
   category: "Synth Pad"
   command: "0205"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4079,6 +4588,7 @@ favorites:
   category: "Synth Poly"
   command: "0124"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4087,6 +4597,7 @@ favorites:
   category: "Synth Poly"
   command: "020E"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4095,6 +4606,7 @@ favorites:
   category: "Synth Lead"
   command: "0165"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4103,6 +4615,7 @@ favorites:
   category: "Synth Lead"
   command: "0104"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4111,6 +4624,7 @@ favorites:
   category: "Synth Lead"
   command: "012D"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4119,6 +4633,7 @@ favorites:
   category: "Synth Lead"
   command: "013F"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4127,6 +4642,7 @@ favorites:
   category: "Synth Lead"
   command: "0154"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4135,6 +4651,7 @@ favorites:
   category: "Synth Lead"
   command: "021A"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4143,6 +4660,7 @@ favorites:
   category: "Synth Lead"
   command: "025F"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4151,6 +4669,7 @@ favorites:
   category: "Motion Synth"
   command: "0167"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4159,6 +4678,7 @@ favorites:
   category: "Motion Synth"
   command: "016C"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4167,6 +4687,7 @@ favorites:
   category: "Motion Synth"
   command: "0176"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4175,6 +4696,7 @@ favorites:
   category: "Motion Synth"
   command: "0103"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4183,6 +4705,7 @@ favorites:
   category: "Motion Synth"
   command: "0135"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4191,6 +4714,7 @@ favorites:
   category: "Motion Synth"
   command: "0109"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4199,6 +4723,7 @@ favorites:
   category: "Motion Synth"
   command: "015D"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4207,6 +4732,7 @@ favorites:
   category: "Motion Synth"
   command: "0277"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4215,6 +4741,7 @@ favorites:
   category: "Keyboard"
   command: "0131"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4223,6 +4750,7 @@ favorites:
   category: "Keyboard"
   command: "0134"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4231,6 +4759,7 @@ favorites:
   category: "Keyboard"
   command: "0137"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4239,6 +4768,7 @@ favorites:
   category: "Keyboard"
   command: "0139"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4247,6 +4777,7 @@ favorites:
   category: "Keyboard"
   command: "0273"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4255,6 +4786,7 @@ favorites:
   category: "DrumPerc"
   command: "026E"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4263,6 +4795,7 @@ favorites:
   category: "DrumPerc"
   command: "0279"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4271,6 +4804,7 @@ favorites:
   category: "DrumPerc"
   command: "0236"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4279,6 +4813,7 @@ favorites:
   category: "Classic"
   command: "0145"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4287,6 +4822,7 @@ favorites:
   category: "Classic"
   command: "0275"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4295,6 +4831,7 @@ favorites:
   category: "Classic"
   command: "0278"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4303,6 +4840,7 @@ favorites:
   category: "Classic"
   command: "027C"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4311,6 +4849,7 @@ favorites:
   category: "Classic"
   command: "0202"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4319,6 +4858,7 @@ favorites:
   category: "Classic"
   command: "0225"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4327,6 +4867,7 @@ favorites:
   category: "Classic"
   command: "025B"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4335,6 +4876,7 @@ favorites:
   category: "Bell"
   command: "0111"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4343,6 +4885,7 @@ favorites:
   category: "Bell"
   command: "013E"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4351,6 +4894,7 @@ favorites:
   category: "Bell"
   command: "0272"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4359,6 +4903,7 @@ favorites:
   category: "Bell"
   command: "0210"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4367,6 +4912,7 @@ favorites:
   category: "Bass"
   command: "0101"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4375,6 +4921,7 @@ favorites:
   category: "Bass"
   command: "0170"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4383,6 +4930,7 @@ favorites:
   category: "Bass"
   command: "0172"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4391,6 +4939,7 @@ favorites:
   category: "Bass"
   command: "0174"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4399,6 +4948,7 @@ favorites:
   category: "Bass"
   command: "0175"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4407,6 +4957,7 @@ favorites:
   category: "Bass"
   command: "0179"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4415,6 +4966,7 @@ favorites:
   category: "Bass"
   command: "017E"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4423,6 +4975,7 @@ favorites:
   category: "Bass"
   command: "010D"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -4431,6 +4984,7 @@ favorites:
   category: "Bass"
   command: "0110"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4439,6 +4993,7 @@ favorites:
   category: "Bass"
   command: "0112"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4447,6 +5002,7 @@ favorites:
   category: "Bass"
   command: "012A"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4455,6 +5011,7 @@ favorites:
   category: "Bass"
   command: "012B"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4463,6 +5020,7 @@ favorites:
   category: "Bass"
   command: "0143"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4471,6 +5029,7 @@ favorites:
   category: "Bass"
   command: "0146"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4479,6 +5038,7 @@ favorites:
   category: "Bass"
   command: "014C"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4487,6 +5047,7 @@ favorites:
   category: "Bass"
   command: "0153"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4495,6 +5056,7 @@ favorites:
   category: "Bass"
   command: "0157"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4503,6 +5065,7 @@ favorites:
   category: "Bass"
   command: "020C"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4511,6 +5074,7 @@ favorites:
   category: "Bass"
   command: "020D"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4519,6 +5083,7 @@ favorites:
   category: "Bass"
   command: "0214"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4527,6 +5092,7 @@ favorites:
   category: "Bass"
   command: "0215"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4535,6 +5101,7 @@ favorites:
   category: "Bass"
   command: "021F"
   filename: null
+  channel: null
   score: 5
 - device: "Mininova"
   mode: "Single"
@@ -4543,6 +5110,7 @@ favorites:
   category: "Bass"
   command: "0221"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4551,6 +5119,7 @@ favorites:
   category: "Bass"
   command: "0229"
   filename: null
+  channel: null
   score: 3
 - device: "Mininova"
   mode: "Single"
@@ -4559,6 +5128,7 @@ favorites:
   category: "Bass"
   command: "025C"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -4567,6 +5137,7 @@ favorites:
   category: "String"
   command: "0212"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4575,6 +5146,7 @@ favorites:
   category: "Arp"
   command: "000120"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4583,6 +5155,7 @@ favorites:
   category: "Arp"
   command: "00020B"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4591,6 +5164,7 @@ favorites:
   category: "Arp"
   command: "000211"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4599,6 +5173,7 @@ favorites:
   category: "Arp"
   command: "00021F"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4607,6 +5182,7 @@ favorites:
   category: "Arp"
   command: "00025A"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4615,6 +5191,7 @@ favorites:
   category: "Synth Pad"
   command: "000170"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4623,6 +5200,7 @@ favorites:
   category: "Synth Pad"
   command: "000171"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4631,6 +5209,7 @@ favorites:
   category: "Synth Pad"
   command: "00011D"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4639,6 +5218,7 @@ favorites:
   category: "Synth Pad"
   command: "000104"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4647,6 +5227,7 @@ favorites:
   category: "Synth Pad"
   command: "000136"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4655,6 +5236,7 @@ favorites:
   category: "Synth Pad"
   command: "000106"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -4663,6 +5245,7 @@ favorites:
   category: "Synth Pad"
   command: "000163"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4671,6 +5254,7 @@ favorites:
   category: "Synth Pad"
   command: "000273"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4679,6 +5263,7 @@ favorites:
   category: "Synth Pad"
   command: "00027E"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4687,6 +5272,7 @@ favorites:
   category: "Synth Pad"
   command: "000216"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4695,6 +5281,7 @@ favorites:
   category: "Synth Pad"
   command: "000223"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4703,6 +5290,7 @@ favorites:
   category: "Synth Pad"
   command: "00025B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4711,6 +5299,7 @@ favorites:
   category: "Synth Pad"
   command: "00025C"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4719,6 +5308,7 @@ favorites:
   category: "Synth Pad"
   command: "000300"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4727,6 +5317,7 @@ favorites:
   category: "Synth Pad"
   command: "000373"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4735,6 +5326,7 @@ favorites:
   category: "Synth Pad"
   command: "00037C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4743,6 +5335,7 @@ favorites:
   category: "Synth Pad"
   command: "000319"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4751,6 +5344,7 @@ favorites:
   category: "Synth Pad"
   command: "000324"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -4759,6 +5353,7 @@ favorites:
   category: "Synth Pad"
   command: "000332"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4767,6 +5362,7 @@ favorites:
   category: "Synth Pad"
   command: "000348"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4775,6 +5371,7 @@ favorites:
   category: "Synth Pad"
   command: "00034C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4783,6 +5380,7 @@ favorites:
   category: "Sound FX"
   command: "000115"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4791,6 +5389,7 @@ favorites:
   category: "Sound FX"
   command: "000132"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4799,6 +5398,7 @@ favorites:
   category: "Sound FX"
   command: "00025D"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4807,6 +5407,7 @@ favorites:
   category: "Sound FX"
   command: "000362"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4815,6 +5416,7 @@ favorites:
   category: "Sound FX"
   command: "00035F"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4823,6 +5425,7 @@ favorites:
   category: "Motion Synth"
   command: "000176"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4831,6 +5434,7 @@ favorites:
   category: "Motion Synth"
   command: "00015A"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4839,6 +5443,7 @@ favorites:
   category: "Motion Synth"
   command: "000214"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4847,6 +5452,7 @@ favorites:
   category: "Motion Synth"
   command: "000217"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4855,6 +5461,7 @@ favorites:
   category: "Motion Synth"
   command: "000203"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4863,6 +5470,7 @@ favorites:
   category: "Motion Synth"
   command: "000238"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4871,6 +5479,7 @@ favorites:
   category: "Motion Synth"
   command: "000310"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4879,6 +5488,7 @@ favorites:
   category: "String"
   command: "00015F"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4887,6 +5497,7 @@ favorites:
   category: "String"
   command: "000251"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4895,6 +5506,7 @@ favorites:
   category: "Bass"
   command: "000165"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4903,6 +5515,7 @@ favorites:
   category: "Bass"
   command: "000103"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4911,6 +5524,7 @@ favorites:
   category: "Bass"
   command: "000143"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -4919,6 +5533,7 @@ favorites:
   category: "Bass"
   command: "000144"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4927,6 +5542,7 @@ favorites:
   category: "Bass"
   command: "000146"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4935,6 +5551,7 @@ favorites:
   category: "Bass"
   command: "000147"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4943,6 +5560,7 @@ favorites:
   category: "Bass"
   command: "00014C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4951,6 +5569,7 @@ favorites:
   category: "Bass"
   command: "000150"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4959,6 +5578,7 @@ favorites:
   category: "Bass"
   command: "000274"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4967,6 +5587,7 @@ favorites:
   category: "Bass"
   command: "00020F"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4975,6 +5596,7 @@ favorites:
   category: "Bass"
   command: "00023D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -4983,6 +5605,7 @@ favorites:
   category: "Bass"
   command: "000253"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4991,6 +5614,7 @@ favorites:
   category: "Bass"
   command: "000254"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -4999,6 +5623,7 @@ favorites:
   category: "Bass"
   command: "00025F"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5007,6 +5632,7 @@ favorites:
   category: "Bass"
   command: "000306"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5015,6 +5641,7 @@ favorites:
   category: "Bass"
   command: "00033D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5023,6 +5650,7 @@ favorites:
   category: "Bass"
   command: "00034B"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5031,6 +5659,7 @@ favorites:
   category: "Bass"
   command: "00035E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5039,6 +5668,7 @@ favorites:
   category: "Bell"
   command: "000174"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5047,6 +5677,7 @@ favorites:
   category: "Bell"
   command: "00017B"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5055,6 +5686,7 @@ favorites:
   category: "Bell"
   command: "000105"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5063,6 +5695,7 @@ favorites:
   category: "Bell"
   command: "000213"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5071,6 +5704,7 @@ favorites:
   category: "Bell"
   command: "000250"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5079,6 +5713,7 @@ favorites:
   category: "Classic"
   command: "000167"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5087,6 +5722,7 @@ favorites:
   category: "Classic"
   command: "000107"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5095,6 +5731,7 @@ favorites:
   category: "Classic"
   command: "000152"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5103,6 +5740,7 @@ favorites:
   category: "Classic"
   command: "000157"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5111,6 +5749,7 @@ favorites:
   category: "Classic"
   command: "000220"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5119,6 +5758,7 @@ favorites:
   category: "Classic"
   command: "00024C"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5127,6 +5767,7 @@ favorites:
   category: "Classic"
   command: "00024D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5135,6 +5776,7 @@ favorites:
   category: "Classic"
   command: "000261"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5143,6 +5785,7 @@ favorites:
   category: "DrumPerc"
   command: "00037E"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5151,6 +5794,7 @@ favorites:
   category: "Keyboard"
   command: "000102"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5159,6 +5803,7 @@ favorites:
   category: "Keyboard"
   command: "000137"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5167,6 +5812,7 @@ favorites:
   category: "Keyboard"
   command: "000129"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5175,6 +5821,7 @@ favorites:
   category: "Keyboard"
   command: "00014B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5183,6 +5830,7 @@ favorites:
   category: "Keyboard"
   command: "000243"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5191,6 +5839,7 @@ favorites:
   category: "Synth Poly"
   command: "000100"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5199,6 +5848,7 @@ favorites:
   category: "Synth Lead"
   command: "00016D"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5207,6 +5857,7 @@ favorites:
   category: "Synth Lead"
   command: "00012C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5215,6 +5866,7 @@ favorites:
   category: "Synth Lead"
   command: "00013B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5223,6 +5875,7 @@ favorites:
   category: "Synth Lead"
   command: "00020E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5231,6 +5884,7 @@ favorites:
   category: "Synth Lead"
   command: "000212"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5239,6 +5893,7 @@ favorites:
   category: "Synth Lead"
   command: "00022B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5247,6 +5902,7 @@ favorites:
   category: "Synth Lead"
   command: "000206"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5255,6 +5911,7 @@ favorites:
   category: "Synth Lead"
   command: "000318"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5263,6 +5920,7 @@ favorites:
   category: "Synth Lead"
   command: "000323"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5271,6 +5929,7 @@ favorites:
   category: "Synth Lead"
   command: "000357"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5279,6 +5938,7 @@ favorites:
   category: "Synth Poly"
   command: "000101"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5287,6 +5947,7 @@ favorites:
   category: "Synth Poly"
   command: "000166"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5295,6 +5956,7 @@ favorites:
   category: "Synth Poly"
   command: "000168"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5303,6 +5965,7 @@ favorites:
   category: "Synth Poly"
   command: "00017C"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5311,6 +5974,7 @@ favorites:
   category: "Synth Poly"
   command: "000114"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5319,6 +5983,7 @@ favorites:
   category: "Synth Poly"
   command: "000118"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5327,6 +5992,7 @@ favorites:
   category: "Synth Poly"
   command: "000122"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5335,6 +6001,7 @@ favorites:
   category: "Synth Poly"
   command: "000123"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5343,6 +6010,7 @@ favorites:
   category: "Synth Poly"
   command: "000124"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5351,6 +6019,7 @@ favorites:
   category: "Synth Poly"
   command: "000134"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5359,6 +6028,7 @@ favorites:
   category: "Synth Poly"
   command: "000135"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5367,6 +6037,7 @@ favorites:
   category: "Synth Poly"
   command: "00013E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5375,6 +6046,7 @@ favorites:
   category: "Synth Poly"
   command: "000141"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5383,6 +6055,7 @@ favorites:
   category: "Synth Poly"
   command: "000145"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5391,6 +6064,7 @@ favorites:
   category: "Synth Poly"
   command: "000148"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5399,6 +6073,7 @@ favorites:
   category: "Synth Poly"
   command: "000149"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5407,6 +6082,7 @@ favorites:
   category: "Synth Poly"
   command: "000109"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5415,6 +6091,7 @@ favorites:
   category: "Synth Poly"
   command: "000215"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5423,6 +6100,7 @@ favorites:
   category: "Synth Poly"
   command: "00021C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5431,6 +6109,7 @@ favorites:
   category: "Synth Poly"
   command: "00021E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5439,6 +6118,7 @@ favorites:
   category: "Synth Poly"
   command: "000224"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5447,6 +6127,7 @@ favorites:
   category: "Synth Poly"
   command: "000226"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5455,6 +6136,7 @@ favorites:
   category: "Synth Poly"
   command: "000207"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5463,6 +6145,7 @@ favorites:
   category: "Synth Poly"
   command: "000208"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5471,6 +6154,7 @@ favorites:
   category: "Synth Poly"
   command: "000365"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5479,6 +6163,7 @@ favorites:
   category: "Synth Poly"
   command: "000366"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5487,6 +6172,7 @@ favorites:
   category: "Synth Poly"
   command: "000375"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5495,6 +6181,7 @@ favorites:
   category: "Synth Poly"
   command: "00037A"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5503,6 +6190,7 @@ favorites:
   category: "Synth Poly"
   command: "000313"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5511,6 +6199,7 @@ favorites:
   category: "Synth Poly"
   command: "000321"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5519,6 +6208,7 @@ favorites:
   category: "Synth Poly"
   command: "000328"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5527,6 +6217,7 @@ favorites:
   category: "Synth Poly"
   command: "00032C"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5535,6 +6226,7 @@ favorites:
   category: "Synth Poly"
   command: "000341"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Single"
@@ -5543,6 +6235,7 @@ favorites:
   category: "Synth Poly"
   command: "00034E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5551,6 +6244,7 @@ favorites:
   category: "Synth Poly"
   command: "000355"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5559,6 +6253,7 @@ favorites:
   category: "Synth Poly"
   command: "000359"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5567,6 +6262,7 @@ favorites:
   category: "Synth Poly"
   command: "00035D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5575,6 +6271,7 @@ favorites:
   category: "Synth Poly"
   command: "000360"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5583,6 +6280,7 @@ favorites:
   category: "Synth Poly"
   command: "000361"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5591,6 +6289,7 @@ favorites:
   category: "Synth Poly"
   command: "000305"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5599,6 +6298,7 @@ favorites:
   category: "Synth Poly"
   command: "000333"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Single"
@@ -5607,6 +6307,7 @@ favorites:
   category: "Synth Poly"
   command: "000336"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Single"
@@ -5615,6 +6316,7 @@ favorites:
   category: "Synth Poly"
   command: "00032E"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5623,6 +6325,7 @@ favorites:
   category: "Synth Poly"
   command: "000327"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5631,6 +6334,7 @@ favorites:
   category: "Synth Poly"
   command: "000316"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Single"
@@ -5639,6 +6343,7 @@ favorites:
   category: "Synth Poly"
   command: "000315"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5647,6 +6352,7 @@ favorites:
   category: "Layer"
   command: "000101"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5655,6 +6361,7 @@ favorites:
   category: "Layer"
   command: "000171"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5663,6 +6370,7 @@ favorites:
   category: "Layer"
   command: "000173"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5671,6 +6379,7 @@ favorites:
   category: "Layer"
   command: "00017A"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5679,6 +6388,7 @@ favorites:
   category: "Layer"
   command: "00010D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5687,6 +6397,7 @@ favorites:
   category: "Layer"
   command: "00010E"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5695,6 +6406,7 @@ favorites:
   category: "Layer"
   command: "000112"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5703,6 +6415,7 @@ favorites:
   category: "Layer"
   command: "000114"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5711,6 +6424,7 @@ favorites:
   category: "Layer"
   command: "000115"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5719,6 +6433,7 @@ favorites:
   category: "Layer"
   command: "000116"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5727,6 +6442,7 @@ favorites:
   category: "Layer"
   command: "00011C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5735,6 +6451,7 @@ favorites:
   category: "Layer"
   command: "00011F"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5743,6 +6460,7 @@ favorites:
   category: "Layer"
   command: "000124"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5751,6 +6469,7 @@ favorites:
   category: "Layer"
   command: "000104"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5759,6 +6478,7 @@ favorites:
   category: "Layer"
   command: "000128"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5767,6 +6487,7 @@ favorites:
   category: "Layer"
   command: "000129"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5775,6 +6496,7 @@ favorites:
   category: "Layer"
   command: "00012B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5783,6 +6505,7 @@ favorites:
   category: "Layer"
   command: "00012C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5791,6 +6514,7 @@ favorites:
   category: "Layer"
   command: "00012E"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5799,6 +6523,7 @@ favorites:
   category: "Layer"
   command: "000130"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5807,6 +6532,7 @@ favorites:
   category: "Layer"
   command: "000131"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5815,6 +6541,7 @@ favorites:
   category: "Layer"
   command: "000134"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5823,6 +6550,7 @@ favorites:
   category: "Layer"
   command: "00013B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5831,6 +6559,7 @@ favorites:
   category: "Layer"
   command: "00013C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5839,6 +6568,7 @@ favorites:
   category: "Layer"
   command: "000141"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5847,6 +6577,7 @@ favorites:
   category: "Layer"
   command: "000142"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5855,6 +6586,7 @@ favorites:
   category: "Layer"
   command: "000143"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5863,6 +6595,7 @@ favorites:
   category: "Layer"
   command: "000147"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5871,6 +6604,7 @@ favorites:
   category: "Layer"
   command: "000148"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -5879,6 +6613,7 @@ favorites:
   category: "Layer"
   command: "00014B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5887,6 +6622,7 @@ favorites:
   category: "Layer"
   command: "00014E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5895,6 +6631,7 @@ favorites:
   category: "Layer"
   command: "000108"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5903,6 +6640,7 @@ favorites:
   category: "Layer"
   command: "000150"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5911,6 +6649,7 @@ favorites:
   category: "Layer"
   command: "000152"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5919,6 +6658,7 @@ favorites:
   category: "Layer"
   command: "000155"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5927,6 +6667,7 @@ favorites:
   category: "Layer"
   command: "000158"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -5935,6 +6676,7 @@ favorites:
   category: "Layer"
   command: "000160"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -5943,6 +6685,7 @@ favorites:
   category: "Layer"
   command: "000161"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5951,6 +6694,7 @@ favorites:
   category: "Layer"
   command: "000201"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -5959,6 +6703,7 @@ favorites:
   category: "Layer"
   command: "000268"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5967,6 +6712,7 @@ favorites:
   category: "Layer"
   command: "00026D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5975,6 +6721,7 @@ favorites:
   category: "Layer"
   command: "000272"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -5983,6 +6730,7 @@ favorites:
   category: "Layer"
   command: "000273"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -5991,6 +6739,7 @@ favorites:
   category: "Layer"
   command: "000275"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -5999,6 +6748,7 @@ favorites:
   category: "Layer"
   command: "000277"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6007,6 +6757,7 @@ favorites:
   category: "Layer"
   command: "00020C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6015,6 +6766,7 @@ favorites:
   category: "Layer"
   command: "000278"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6023,6 +6775,7 @@ favorites:
   category: "Layer"
   command: "00027C"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6031,6 +6784,7 @@ favorites:
   category: "Layer"
   command: "00027F"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6039,6 +6793,7 @@ favorites:
   category: "Layer"
   command: "000210"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6047,6 +6802,7 @@ favorites:
   category: "Layer"
   command: "00021A"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6055,6 +6811,7 @@ favorites:
   category: "Layer"
   command: "00021C"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6063,6 +6820,7 @@ favorites:
   category: "Layer"
   command: "000221"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6071,6 +6829,7 @@ favorites:
   category: "Layer"
   command: "000224"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6079,6 +6838,7 @@ favorites:
   category: "Layer"
   command: "000229"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6087,6 +6847,7 @@ favorites:
   category: "Layer"
   command: "000230"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6095,6 +6856,7 @@ favorites:
   category: "Layer"
   command: "000231"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6103,6 +6865,7 @@ favorites:
   category: "Layer"
   command: "000236"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6111,6 +6874,7 @@ favorites:
   category: "Layer"
   command: "00023B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6119,6 +6883,7 @@ favorites:
   category: "Layer"
   command: "00023E"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6127,6 +6892,7 @@ favorites:
   category: "Layer"
   command: "000240"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6135,6 +6901,7 @@ favorites:
   category: "Layer"
   command: "000247"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6143,6 +6910,7 @@ favorites:
   category: "Layer"
   command: "000248"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6151,6 +6919,7 @@ favorites:
   category: "Layer"
   command: "00024B"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6159,6 +6928,7 @@ favorites:
   category: "Layer"
   command: "000208"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6167,6 +6937,7 @@ favorites:
   category: "Layer"
   command: "000251"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6175,6 +6946,7 @@ favorites:
   category: "Layer"
   command: "000256"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6183,6 +6955,7 @@ favorites:
   category: "Layer"
   command: "000257"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6191,6 +6964,7 @@ favorites:
   category: "Layer"
   command: "000259"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6199,6 +6973,7 @@ favorites:
   category: "Layer"
   command: "00025B"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6207,6 +6982,7 @@ favorites:
   category: "Layer"
   command: "00025D"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6215,6 +6991,7 @@ favorites:
   category: "Layer"
   command: "00025E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6223,6 +7000,7 @@ favorites:
   category: "Layer"
   command: "000261"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6231,6 +7009,7 @@ favorites:
   category: "Layer"
   command: "000262"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6239,6 +7018,7 @@ favorites:
   category: "Layer"
   command: "000364"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6247,6 +7027,7 @@ favorites:
   category: "Layer"
   command: "000365"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6255,6 +7036,7 @@ favorites:
   category: "Layer"
   command: "000368"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6263,6 +7045,7 @@ favorites:
   category: "Layer"
   command: "00036A"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6271,6 +7054,7 @@ favorites:
   category: "Layer"
   command: "00036C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6279,6 +7063,7 @@ favorites:
   category: "Layer"
   command: "00036F"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6287,6 +7072,7 @@ favorites:
   category: "Layer"
   command: "000370"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6295,6 +7081,7 @@ favorites:
   category: "Layer"
   command: "000371"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6303,6 +7090,7 @@ favorites:
   category: "Layer"
   command: "000372"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6311,6 +7099,7 @@ favorites:
   category: "Layer"
   command: "000374"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6319,6 +7108,7 @@ favorites:
   category: "Layer"
   command: "000376"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6327,6 +7117,7 @@ favorites:
   category: "Layer"
   command: "000377"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6335,6 +7126,7 @@ favorites:
   category: "Layer"
   command: "000379"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6343,6 +7135,7 @@ favorites:
   category: "Layer"
   command: "00037A"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6351,6 +7144,7 @@ favorites:
   category: "Layer"
   command: "00037E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6359,6 +7153,7 @@ favorites:
   category: "Layer"
   command: "00037F"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6367,6 +7162,7 @@ favorites:
   category: "Layer"
   command: "00030E"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6375,6 +7171,7 @@ favorites:
   category: "Layer"
   command: "00031A"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6383,6 +7180,7 @@ favorites:
   category: "Layer"
   command: "00031C"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6391,6 +7189,7 @@ favorites:
   category: "Layer"
   command: "00031E"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6399,6 +7198,7 @@ favorites:
   category: "Layer"
   command: "000327"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6407,6 +7207,7 @@ favorites:
   category: "Layer"
   command: "000304"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6415,6 +7216,7 @@ favorites:
   category: "Layer"
   command: "00032A"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6423,6 +7225,7 @@ favorites:
   category: "Layer"
   command: "00032E"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6431,6 +7234,7 @@ favorites:
   category: "Layer"
   command: "000330"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6439,6 +7243,7 @@ favorites:
   category: "Layer"
   command: "000334"
   filename: null
+  channel: null
   score: 2
 - device: "Summit"
   mode: "Multi"
@@ -6447,6 +7252,7 @@ favorites:
   category: "Layer"
   command: "000338"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6455,6 +7261,7 @@ favorites:
   category: "Layer"
   command: "000339"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6463,6 +7270,7 @@ favorites:
   category: "Layer"
   command: "00033A"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6471,6 +7279,7 @@ favorites:
   category: "Layer"
   command: "00033B"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6479,6 +7288,7 @@ favorites:
   category: "Layer"
   command: "00033D"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6487,6 +7297,7 @@ favorites:
   category: "Layer"
   command: "000340"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6495,6 +7306,7 @@ favorites:
   category: "Layer"
   command: "000353"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6503,6 +7315,7 @@ favorites:
   category: "Layer"
   command: "000357"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6511,6 +7324,7 @@ favorites:
   category: "Layer"
   command: "000358"
   filename: null
+  channel: null
   score: 3
 - device: "Summit"
   mode: "Multi"
@@ -6519,6 +7333,7 @@ favorites:
   category: "Layer"
   command: "00035D"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6527,6 +7342,7 @@ favorites:
   category: "Layer"
   command: "00035F"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6535,6 +7351,7 @@ favorites:
   category: "Layer"
   command: "000360"
   filename: null
+  channel: null
   score: 5
 - device: "Summit"
   mode: "Multi"
@@ -6543,6 +7360,7 @@ favorites:
   category: "Layer"
   command: "000361"
   filename: null
+  channel: null
   score: 4
 - device: "Summit"
   mode: "Multi"
@@ -6551,6 +7369,7 @@ favorites:
   category: "Layer"
   command: "000363"
   filename: null
+  channel: null
   score: 4
 - device: "Mininova"
   mode: "Single"
@@ -6559,6 +7378,7 @@ favorites:
   category: null
   command: "null"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -6567,6 +7387,7 @@ favorites:
   category: null
   command: "null"
   filename: null
+  channel: null
   score: 2
 - device: "Mininova"
   mode: "Single"
@@ -6575,6 +7396,7 @@ favorites:
   category: null
   command: "null"
   filename: null
+  channel: null
   score: 1
 - device: "Mininova"
   mode: "Single"
@@ -6583,6 +7405,7 @@ favorites:
   category: null
   command: "null"
   filename: null
+  channel: null
   score: 3
 - device: "TG-500"
   mode: "Voice"
@@ -6591,6 +7414,7 @@ favorites:
   category: "Bass"
   command: "000000"
   filename: "202 [000000,Bass] BA FM-Bs.syx"
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6599,6 +7423,7 @@ favorites:
   category: "Synth Pad"
   command: "5031"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6607,6 +7432,7 @@ favorites:
   category: "Synth Pad"
   command: "500B"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6615,6 +7441,7 @@ favorites:
   category: "Synth Pad"
   command: "5037"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6623,6 +7450,7 @@ favorites:
   category: "Synth Pad"
   command: "517A"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6631,6 +7459,7 @@ favorites:
   category: "Synth Pad"
   command: "5014"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6639,6 +7468,7 @@ favorites:
   category: "Synth Pad"
   command: "5038"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6647,6 +7477,7 @@ favorites:
   category: "Synth Lead"
   command: "501B"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6655,6 +7486,7 @@ favorites:
   category: "Voice"
   command: "5153"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6663,6 +7495,7 @@ favorites:
   category: "Voice"
   command: "5156"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6671,6 +7504,7 @@ favorites:
   category: "Voice"
   command: "5151"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6679,6 +7513,7 @@ favorites:
   category: "Voice"
   command: "5155"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6687,6 +7522,7 @@ favorites:
   category: "Voice"
   command: "5154"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6695,6 +7531,7 @@ favorites:
   category: "Woodwinds"
   command: "5005"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6703,6 +7540,7 @@ favorites:
   category: "Woodwinds"
   command: "5174"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6711,6 +7549,7 @@ favorites:
   category: "Woodwinds"
   command: "502F"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6719,6 +7558,7 @@ favorites:
   category: "Woodwinds"
   command: "516D"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6727,6 +7567,7 @@ favorites:
   category: "Woodwinds"
   command: "516B"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6735,6 +7576,7 @@ favorites:
   category: "Woodwinds"
   command: "516C"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6743,6 +7585,7 @@ favorites:
   category: "String"
   command: "514A"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6751,6 +7594,7 @@ favorites:
   category: "String"
   command: "5142"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6759,6 +7603,7 @@ favorites:
   category: "String"
   command: "514E"
   filename: null
+  channel: null
   score: 5
 - device: "JV-880"
   mode: "Patch"
@@ -6767,6 +7612,7 @@ favorites:
   category: "String"
   command: "5148"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6775,6 +7621,7 @@ favorites:
   category: "String"
   command: "514F"
   filename: null
+  channel: null
   score: 5
 - device: "JV-880"
   mode: "Patch"
@@ -6783,6 +7630,7 @@ favorites:
   category: "Organ"
   command: "511B"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6791,6 +7639,7 @@ favorites:
   category: "Organ"
   command: "5118"
   filename: null
+  channel: null
   score: 5
 - device: "JV-880"
   mode: "Patch"
@@ -6799,6 +7648,7 @@ favorites:
   category: "Keyboard"
   command: "510C"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6807,6 +7657,7 @@ favorites:
   category: "Keyboard"
   command: "501D"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6815,6 +7666,7 @@ favorites:
   category: "Guitar"
   command: "5034"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6823,6 +7675,7 @@ favorites:
   category: "Guitar"
   command: "5129"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6831,6 +7684,7 @@ favorites:
   category: "Guitar"
   command: "512E"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6839,6 +7693,7 @@ favorites:
   category: "Drum"
   command: "5170"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6847,6 +7702,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "5022"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6855,6 +7711,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "5117"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6863,6 +7720,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "5114"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Patch"
@@ -6871,6 +7729,7 @@ favorites:
   category: "Chromatic Percussion"
   command: "502E"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6879,6 +7738,7 @@ favorites:
   category: "Bass"
   command: "5134"
   filename: null
+  channel: null
   score: 5
 - device: "JV-880"
   mode: "Patch"
@@ -6887,6 +7747,7 @@ favorites:
   category: "Bass"
   command: "5023"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6895,6 +7756,7 @@ favorites:
   category: "Bass"
   command: "5130"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Patch"
@@ -6903,6 +7765,7 @@ favorites:
   category: "Bass"
   command: "513E"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6911,6 +7774,7 @@ favorites:
   category: "Bass"
   command: "513D"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6919,6 +7783,7 @@ favorites:
   category: "Bass"
   command: "500D"
   filename: null
+  channel: null
   score: 3
 - device: "JV-880"
   mode: "Patch"
@@ -6927,6 +7792,7 @@ favorites:
   category: "Bass"
   command: "5131"
   filename: null
+  channel: null
   score: 2
 - device: "JV-880"
   mode: "Performance"
@@ -6935,6 +7801,7 @@ favorites:
   category: "Unknown"
   command: "5002"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Performance"
@@ -6943,6 +7810,7 @@ favorites:
   category: "Unknown"
   command: "500C"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Performance"
@@ -6951,6 +7819,7 @@ favorites:
   category: "Unknown"
   command: "500E"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Performance"
@@ -6959,6 +7828,7 @@ favorites:
   category: "Unknown"
   command: "500B"
   filename: null
+  channel: null
   score: 4
 - device: "JV-880"
   mode: "Performance"
@@ -6967,4 +7837,5 @@ favorites:
   category: "Unknown"
   command: "510E"
   filename: null
+  channel: null
   score: 3

@@ -1,28 +1,99 @@
-.header {
-    -fx-background-color: #91B4FF;
+.root {
+    -theme-color: #005678;
+    -text-color: #FFFFFFAA;
+    -selected-text-color: #11111144;
+    /*-fx-background-color: linear-gradient(from 0% 0% to 100% 100%   ,#005678,  #000000);*/
+    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
+}
+.PatchFilter {
+    -fx-font-family: "Arial";
+        -fx-font-size: 16px;
+        -fx-font-weight: bold;
+        -fx-text-fill: white;
 }
 
+.attributeSelectorHeader {
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1px 0px 1px 0px;
+    -fx-border-style: solid;
+    -fx-background-color: #11111199;
+}
+.attributeSelectorHeader .label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.table-view .column-header-background {
+    -fx-background-color: #11111199;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+.placeholder .label {
+    -fx-text-fill:  -text-color;
+}
+.list-view, .list-cell, .table-view, .table-row-cell,.header {
+    -fx-background-color: transparent
+}
+.combo-box {
+    -fx-background-color: transparent;
+}
+.combo-box .arrow-button {
+    -fx-background-color: -selected-text-color;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: -theme-color;
+}
+.combo-box-popup .list-cell {
+    -fx-background-color: -theme-color;
+}
+
+
 .list-cell .label {
-    -fx-text-fill: #00FF00;
+    -fx-text-fill: -text-color;
 }
 
 .list-view, .list-cell, .table-view, .table-row-cell {
-    -fx-background-color: #000000;
-    -fx-text-fill: #00FF00;
+    -fx-text-fill: -text-color;
     -fx-font-family: "Arial";
-    -fx-font-weight: bold;
+    -fx-font-weight: lighter ;
     -fx-font-size: 14px;
 }
 .table-cell {
-    -fx-text-fill: #00FF00;
+    -fx-text-fill: -text-color;
 }
 
 .list-cell:selected , .table-row-cell:selected  {
-    -fx-background-color: #005500; /* Darker green for selected items */
+    -fx-background-color: -selected-text-color;
 }
 
 .list-view , .table-view, .table-row-cell, .list-view:focused {
     -fx-border-insets: 0;
     -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.scroll-bar:vertical > .track, .scroll-bar:horizontal > .track {
+    -fx-background-color: derive(-theme-color,-20%);
+    -fx-background-insets: 0;
+}
+.scroll-bar > .thumb {
+    -fx-background-color: derive(-theme-color,-30%);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button {
+    -fx-background-color: derive(-theme-color,30%);
     -fx-background-insets: 0;
 }

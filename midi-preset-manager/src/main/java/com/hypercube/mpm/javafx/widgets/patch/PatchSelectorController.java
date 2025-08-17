@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.patch;
 
+import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
@@ -7,6 +8,7 @@ import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
@@ -21,11 +23,13 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
 import java.util.List;
@@ -33,9 +37,9 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Slf4j
-
 public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
-
+    @Autowired
+    PatchesManager patchesManager;
     @FXML
     TableView patchList;
     @FXML
@@ -49,12 +53,14 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     @FXML
     TableColumn colBank;
     @FXML
-    TableColumn colCategory;
+    TableColumn<Patch, String> colCategory;
     @FXML
     TableColumn colScore;
     @FXML
     TableColumn colCommand;
 
+    // boolean used to distinguish user action and programmatic action
+    private boolean userAction = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -64,19 +70,54 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colMode.setCellValueFactory(new PropertyValueFactory<Patch, String>("mode"));
         colBank.setCellValueFactory(new PropertyValueFactory<Patch, String>("bank"));
         colCategory.setCellValueFactory(new PropertyValueFactory<Patch, String>("category"));
+        colCategory.setEditable(true);
+        colCategory.setOnEditCommit(cellEditEvent -> {
+            Patch item = cellEditEvent.getRowValue();
+            String newValue = cellEditEvent.getNewValue();
+            if (!item.getCategory()
+                    .equals(newValue)) {
+                patchesManager.changePatchCategory(item, newValue);
+            }
+        });
+
         colScore.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Patch, Patch>, ObservableValue<Patch>>) patch -> new SimpleObjectProperty<>(patch.getValue()));
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
         colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
         bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChanged);
         bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChanged);
-
+        bindingManager.observePath("model.modeCategories", this::onModeCategoriesChanged);
+        ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.modeCategories");
+        currentPatchProperty.addListener(this::onModeCategoriesChanged);
         SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
         searchBox.textProperty()
                 .bindBidirectional(currentPatchNameFilterProperty);
         searchBox.setOnAction(this::onSearch);
 
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
+
+        patchList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            userAction = true;
+        });
+        patchList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            userAction = true;
+        });
+        patchList.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (userAction) {
+                        onSelectedItemChange();
+                        userAction = false;
+                    }
+                });
+    }
+
+    private void onModeCategoriesChanged(Observable observable) {
+        String[] array = getModel().getModeCategories()
+                .stream()
+                .map(MidiPresetCategory::name)
+                .toArray(String[]::new);
+        colCategory.setCellFactory(ComboBoxTableCell.forTableColumn(array));
     }
 
     private void onSearchOutputChanged(Observable observable) {
@@ -124,14 +165,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
     private int getSearchScore() {
         return Integer.parseInt(scoreFilter.getScore());
-    }
-
-    public void onMouseClicked(MouseEvent event) {
-        onSelectedItemChange();
-    }
-
-    public void onKeyReleased(KeyEvent event) {
-        onSelectedItemChange();
     }
 
     private void onSelectedItemChange() {

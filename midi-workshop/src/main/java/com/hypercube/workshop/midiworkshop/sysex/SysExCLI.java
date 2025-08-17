@@ -202,7 +202,7 @@ public class SysExCLI {
                         .stream()
                         .map(drumKitNote -> "%02X | %s".formatted(drumKitNote.note(), drumKitNote.title()))
                         .toList();
-                MidiDevicePreset midiDevicePreset = new MidiDevicePreset(midiPreset.getId()
+                MidiDevicePreset midiDevicePreset = new MidiDevicePreset(null, midiPreset.getId()
                         .name(), command, midiPreset.getId()
                         .category(), "", drumMap);
                 bank.getPresets()

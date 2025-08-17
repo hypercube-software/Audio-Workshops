@@ -18,9 +18,12 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.MenuItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,6 +46,30 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     PatchesManager patchesManager;
     @Autowired
     ConfigurationFactory configurationFactory;
+
+    @FXML
+    MenuItem updateCategoriesMenuItem;
+
+    public void onUpdateCategories(ActionEvent event) {
+        runLongTask(() -> {
+            getModel().getCurrentDeviceState()
+                    .getCurrentSearchOutput()
+                    .stream()
+                    .filter(patch -> patch.getCategory() == null | patch.getCategory()
+                            .equals(MidiPresetCategory.UNKNOWN))
+                    .forEach(patch -> {
+                        getModel().getModeCategories()
+                                .stream()
+                                .filter(c -> c.matches(patch.getName()))
+                                .findFirst()
+                                .ifPresent(category -> {
+                                    log.info("'{}' is category '{}'", patch.getName(), category);
+                                    patchesManager.changePatchCategory(patch, category.name());
+                                });
+                    });
+            refreshPatches();
+        });
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -341,7 +368,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
-
     /**
      * Called when the user change device mode
      */
@@ -378,7 +404,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                             .orElseThrow();
                 })
                 .orElse(null);
-        if (getModel().getCurrentDeviceState() == null || device == null || !getModel().getCurrentDeviceState()
+        if (getModel().getCurrentDeviceState() == null || getModel().getCurrentDeviceState()
+                .getMidiOutDevice() == null || device == null || !getModel().getCurrentDeviceState()
                 .getMidiOutDevice()
                 .getName()
                 .equals(device.getOutputMidiDevice())) {

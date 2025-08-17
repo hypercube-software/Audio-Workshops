@@ -35,11 +35,9 @@ public class BindingManager implements Closeable {
         pathBinding.binding()
                 .addListener(listener);
 
-        // if the path is valid, notify all listeners
         if (pathBinding.binding()
-                .isValid()) {
-            pathBinding.binding()
-                    .invalidate();
+                .get() != null) {
+            listener.invalidated(pathBinding.binding());
         }
     }
 

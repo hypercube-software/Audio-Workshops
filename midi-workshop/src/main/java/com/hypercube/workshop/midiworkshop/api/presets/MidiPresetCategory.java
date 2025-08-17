@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 public class MidiPresetCategory {
+    public static String UNKNOWN = "Unknown";
     private String name;
     private MidiPresetCategoryType type;
     private List<String> aliases;
@@ -53,6 +54,11 @@ public class MidiPresetCategory {
         };
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     private boolean matchesRegular(String presetName) {
         return aliases.stream()
                 .filter(a -> presetName.toLowerCase()
@@ -66,10 +72,5 @@ public class MidiPresetCategory {
                 .filter(a -> presetName.startsWith(a))
                 .findFirst()
                 .isPresent();
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 }

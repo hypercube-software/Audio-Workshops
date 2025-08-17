@@ -42,10 +42,12 @@ public class MidiOutDevice extends AbstractMidiDevice {
 
     @Override
     public void close() throws IOException {
-        Optional.ofNullable(receiver)
-                .ifPresent(Receiver::close);
-        receiver = null;
         super.close();
+        if (getOpenCount() == 0) {
+            Optional.ofNullable(receiver)
+                    .ifPresent(Receiver::close);
+            receiver = null;
+        }
     }
 
     @Override

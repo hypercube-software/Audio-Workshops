@@ -10,6 +10,7 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -17,21 +18,12 @@ import java.util.Map;
 
 public class MidiDevicePresetDeserializer extends StdDeserializer<MidiDevicePreset> {
     private final Map<String, MidiDeviceDefinition> devices;
+    private final File definitionFile;
 
-    public MidiDevicePresetDeserializer(Map<String, MidiDeviceDefinition> devices) {
+    public MidiDevicePresetDeserializer(Map<String, MidiDeviceDefinition> devices, File definitionFile) {
         super((Class<?>) null);
         this.devices = devices;
-    }
-
-    private <T> T findInstance(Class<T> clazz, JsonParser jsonParser) {
-        for (JsonStreamContext ctx = jsonParser.getParsingContext(); ctx != null; ctx = ctx.getParent()) {
-            Object instance = ctx.getCurrentValue();
-            if (instance != null && instance.getClass()
-                    .equals(clazz)) {
-                return (T) instance;
-            }
-        }
-        return null;
+        this.definitionFile = definitionFile;
     }
 
     @Override
@@ -42,7 +34,7 @@ public class MidiDevicePresetDeserializer extends StdDeserializer<MidiDevicePres
         if (jsonParser.getCurrentToken() == JsonToken.VALUE_STRING) {
             // short spec
             String value = jsonParser.getText();
-            return MidiDevicePreset.of(mainDeviceDefinition.getPresetFormat(), value);
+            return MidiDevicePreset.of(definitionFile, mainDeviceDefinition.getPresetFormat(), value);
         } else if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
             // complete spec
             String command = null;
@@ -74,11 +66,22 @@ public class MidiDevicePresetDeserializer extends StdDeserializer<MidiDevicePres
                     }
                 }
             }
-            return new MidiDevicePreset(name, command, category, null, drumMap);
+            return new MidiDevicePreset(definitionFile, name, command, category, null, drumMap);
         }
 
         throw new MidiError("Wrong ConfigMidiPreset definition at line " + jsonParser.currentLocation()
                 .getLineNr());
 
+    }
+
+    private <T> T findInstance(Class<T> clazz, JsonParser jsonParser) {
+        for (JsonStreamContext ctx = jsonParser.getParsingContext(); ctx != null; ctx = ctx.getParent()) {
+            Object instance = ctx.getCurrentValue();
+            if (instance != null && instance.getClass()
+                    .equals(clazz)) {
+                return (T) instance;
+            }
+        }
+        return null;
     }
 }

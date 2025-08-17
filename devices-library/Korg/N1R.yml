@@ -49,6 +49,24 @@ decodingKey:
     - 0 F6 F5 F4 F3 F2 F1 F0
     - 0 G6 G5 G4 G3 G2 G1 G0
 
+categories:
+  - "Keyboard: piano,clav"
+  - "Organ: pipe,rotary,drawbar"
+  - "Mallet"
+  - "Bell"
+  - "Strings: bow,violin,cello"
+  - "Vocal/Airy: vox,voice"
+  - "Brass: horn"
+  - "Woodwinds/Reeds"
+  - "Guitar: gt,nylon"
+  - "Bass: slap,upright"
+  - "Plucked"
+  - "Synth"
+  - "Synth Lead"
+  - "Motion Synth: Pad"
+  - "Sound FX: sfx"
+  - "Drums / Perc: Kit"
+  
 deviceModes:
   Multi:
     command: MultiMode()

@@ -1,7 +1,12 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +15,29 @@ import java.util.stream.Collectors;
 /**
  * Describe a factory patch which can be selected via program change or a SysEx patch which can be loaded from disk
  */
-public record MidiDevicePreset(String name, String command, String category, String filename, List<String> drumMap) {
+@Getter
+@Accessors(fluent = true)
+@EqualsAndHashCode
+public final class MidiDevicePreset {
+    private final String name;
+    private final String command;
+    private final List<String> drumMap;
+    @Setter
+    private String filename;
+    @Setter
+    private File definitionFile;
+    @Setter
+    private String category;
+
+    public MidiDevicePreset(File definitionFile, String name, String command, String category, String filename, List<String> drumMap) {
+        this.definitionFile = definitionFile;
+        this.name = name;
+        this.command = command;
+        this.filename = filename;
+        this.category = category;
+        this.drumMap = drumMap;
+    }
+
     /**
      * Typical definition found in YAML are:
      * <ul>
@@ -18,7 +45,7 @@ public record MidiDevicePreset(String name, String command, String category, Str
      *     <li>"@filename where filename is "prefix [command,category] name.syx" or "prefix [category] name.syx"</li>
      * </ul>
      */
-    public static MidiDevicePreset of(MidiBankFormat midiBankFormat, String definition) {
+    public static MidiDevicePreset of(File definitionFile, MidiBankFormat midiBankFormat, String definition) {
         final String command;
         final String category;
         final String name;
@@ -57,7 +84,7 @@ public record MidiDevicePreset(String name, String command, String category, Str
             name = parts.get(2)
                     .trim();
         }
-        return new MidiDevicePreset(name, normalizeCommand(midiBankFormat, command), category, filename, new ArrayList<>());
+        return new MidiDevicePreset(definitionFile, name, normalizeCommand(midiBankFormat, command), category, filename, new ArrayList<>());
     }
 
     private static String normalizeCommand(MidiBankFormat midiBankFormat, String command) {

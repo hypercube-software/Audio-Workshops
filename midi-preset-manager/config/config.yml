@@ -1,9 +1,9 @@
 ---
 selectedOutput: null
 selectedInputs:
-- "FromDAW"
+- "Summit"
 selectedSecondaryOutputs:
-- "FromDAW"
+- "Summit"
 selectedPatches:
 - device: "TG-33"
   mode: "Voice"
@@ -23,15 +23,6 @@ selectedPatches:
   filename: null
   channel: 0
   score: 0
-- device: "Mininova"
-  mode: "Single"
-  bank: "Bank A"
-  name: "AlaskaSplitLoC"
-  category: "Classic"
-  command: "0145"
-  filename: null
-  channel: 0
-  score: 2
 - device: "DS-330"
   mode: "GS Standard"
   bank: "SC"
@@ -41,30 +32,12 @@ selectedPatches:
   filename: null
   channel: 1
   score: 0
-- device: "JV-880"
-  mode: "Performance"
-  bank: "Internal Bank"
-  name: "Encounter X"
-  category: "Unknown"
-  command: "5001"
-  filename: null
-  channel: 0
-  score: 0
 - device: "DS-330"
   mode: "GS Standard"
   bank: "SC"
   name: "Agogo"
   category: "Percussive"
   command: "0071"
-  filename: null
-  channel: 0
-  score: 0
-- device: "TG-500"
-  mode: "Voice"
-  bank: "Preset 1 Voices"
-  name: "AP Grand"
-  category: "Piano"
-  command: "000200"
   filename: null
   channel: 0
   score: 0
@@ -88,19 +61,73 @@ selectedPatches:
   score: 5
 - device: "M1 VST"
   mode: "Program"
-  bank: "06 MPC-04 ORCHESTRA 1"
-  name: "BreathBass"
-  category: "Bass"
-  command: "000624"
+  bank: "22 LEGACY COLLECTION PRESETS"
+  name: "4th SEQ Syn"
+  category: "Synth Lead"
+  command: "001555"
   filename: null
   channel: 0
   score: 0
+- device: "AN1x"
+  mode: "Voice"
+  bank: "Voices"
+  name: "CS80 Brass"
+  category: "Brass"
+  command: "2D"
+  filename: null
+  channel: 0
+  score: 4
 - device: "CS1x"
   mode: "XG"
-  bank: "XG 035 (Octave 1)"
-  name: "70's Drawbar Organ 1"
-  category: "Organ"
-  command: "002310"
+  bank: "XG 064 (Other waves 1)"
+  name: "60's Electric Piano 1"
+  category: "Piano"
+  command: "004004"
+  filename: null
+  channel: 0
+  score: 0
+- device: "TG-500"
+  mode: "Voice"
+  bank: "Top40"
+  name: "AP Brght.syx"
+  category: "Ethnic"
+  command: "000000"
+  filename: "001 [000000,Ethnic] AP Brght.syx"
+  channel: 0
+  score: 0
+- device: "Mininova"
+  mode: "Single"
+  bank: "UNDF-Vol2-b"
+  name: "()UltraGasm() DF.syx"
+  category: "None"
+  command: null
+  filename: "029 [None] ()UltraGasm() DF.syx"
+  channel: 0
+  score: 0
+- device: "Micron"
+  mode: "Program"
+  bank: "Edit Bank"
+  name: "+Bass2 timfloy"
+  category: "Bass"
+  command: "000449"
+  filename: null
+  channel: 0
+  score: 0
+- device: "N1R"
+  mode: "Multi"
+  bank: "CmbB"
+  name: "12 Stereo"
+  category: "Unknown"
+  command: "5A0022"
+  filename: null
+  channel: 0
+  score: 0
+- device: "JV-880"
+  mode: "Performance"
+  bank: "Preset A Bank"
+  name: "Bossa nova"
+  category: "Unknown"
+  command: "5102"
   filename: null
   channel: 0
   score: 0

@@ -85,7 +85,7 @@ public class MidiResponseMapper {
                 .filter(c -> c.matches(presetName))
                 .findFirst()
                 .map(MidiPresetCategory::name)
-                .orElse("Unknown"));
+                .orElse(MidiPresetCategory.UNKNOWN));
     }
 
     private void extractString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {

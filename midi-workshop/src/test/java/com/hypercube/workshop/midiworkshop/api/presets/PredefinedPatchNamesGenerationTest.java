@@ -125,7 +125,7 @@ class PredefinedPatchNamesGenerationTest {
             String category = device.getCategories()
                     .get(catId)
                     .name();
-            MidiDevicePreset midiDevicePreset = new MidiDevicePreset(programName, command, category, null, List.of());
+            MidiDevicePreset midiDevicePreset = new MidiDevicePreset(null, programName, command, category, null, List.of());
 
             currentBank.getPresets()
                     .add(midiDevicePreset);

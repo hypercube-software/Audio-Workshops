@@ -8,6 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -80,17 +81,25 @@ public abstract class Controller<T extends Node, M> {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                code.run();
+                try {
+                    code.run();
+                } catch (Throwable e) {
+                    log.error("Unexpected error", e);
+                    e.printStackTrace();
+                }
                 return null;
             }
         };
-        task.setOnSucceeded(e -> {
+        EventHandler<WorkerStateEvent> resetCursor = e -> {
             Platform.runLater(() -> {
                 if (scene != null) {
                     scene.setCursor(Cursor.DEFAULT);
                 }
             });
-        });
+        };
+        task.setOnSucceeded(resetCursor);
+        task.setOnFailed(resetCursor);
+        task.setOnCancelled(resetCursor);
         if (scene != null) {
             scene.setCursor(Cursor.WAIT);
         }

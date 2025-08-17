@@ -241,15 +241,16 @@ public class DeviceStateManager {
                 .get(state.getId()
                         .getMode());
         if (mode != null) {
-            log.info("Set categories from mode {}", mode.getName());
-            model.setModeCategories(mode.getCategories()
+            List<MidiPresetCategory> categories = mode.getCategories()
                     .stream()
                     .sorted(Comparator.comparing(MidiPresetCategory::name))
-                    .toList());
-            log.info("Set channels from mode {}", mode.getName());
+                    .toList();
+            log.info("Set {} categories from mode {}", categories.size(), mode.getName());
+            model.setModeCategories(categories);
+            log.info("Set {} channels from mode {}", mode.getChannels()
+                    .size(), mode.getName());
             model.setModeChannels(mode.getChannels());
-            log.info("Set banks from mode {}", mode.getName());
-            model.setModeBanks(mode.getBanks()
+            List<String> banks = mode.getBanks()
                     .values()
                     .stream()
                     .sorted((b1, b2) -> {
@@ -263,7 +264,9 @@ public class DeviceStateManager {
                         }
                     })
                     .map(MidiDeviceBank::getName)
-                    .toList());
+                    .toList();
+            log.info("Set {} banks from mode {}", banks.size(), mode.getName());
+            model.setModeBanks(banks);
         } else {
             log.warn("No mode selected, emptying everything...");
             model.setModeCategories(List.of());

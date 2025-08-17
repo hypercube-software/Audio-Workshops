@@ -2,6 +2,7 @@ package com.hypercube.mpm.app;
 
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
@@ -16,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -117,7 +121,7 @@ public class PatchesManager {
                                     .stream()
                                     .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))
                                     .map(preset ->
-                                            configurationFactory.getFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
+                                            configurationFactory.getScoredPatchFromFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
                                     .filter(this::patchScoreMatches))
                             .sorted(Comparator.comparing(Patch::getName))
                             .toList();
@@ -195,8 +199,84 @@ public class PatchesManager {
         }
     }
 
+    public void changePatchCategory(Patch patch, String newCategory) {
+        var def = patch.getDefinitionFile();
+        if (def == null) {
+            return;
+        }
+        log.info("Update patch category '%s' in %s".formatted(newCategory, def.toString()));
+        patch.setCategory(newCategory);
+        if (def
+                .endsWith(".yaml") || def
+                .endsWith(".yml")) {
+            MidiDevicePreset preset = cfg.getMidiDeviceLibrary()
+                    .getDevice(patch.getDevice())
+                    .flatMap(device -> device.getBank(patch.getBank()))
+                    .flatMap(bank -> bank.getPresets()
+                            .stream()
+                            .filter(p -> p.command()
+                                    .equals(patch.getCommand()))
+                            .findFirst())
+                    .get();
+            preset.category(patch.getCategory());
+            String prefix = "%s | ".formatted(patch.getCommand());
+            String suffix = " | %s".formatted(patch.getName());
+            try {
+                Path definitionPath = Path.of(def);
+                List<String> lines = Files.readAllLines(definitionPath);
+                for (int i = 0; i < lines.size(); i++) {
+                    String l = lines.get(i);
+                    int idx1 = l.indexOf(prefix);
+                    int idx2 = l.indexOf(suffix);
+                    if (idx1 != -1 && idx2 != 2) {
+                        log.info(l);
+                        idx1 += prefix.length();
+                        String newLine = l.substring(0, idx1) + patch.getCategory() + l.substring(idx2);
+                        log.info(newLine);
+                        lines.set(i, newLine);
+                    }
+                }
+                Files.write(definitionPath, lines);
+            } catch (IOException e) {
+                throw new ApplicationError(e);
+            }
+        } else if (def
+                .endsWith(".syx")) {
+            MidiDevicePreset preset = cfg.getMidiDeviceLibrary()
+                    .getDevice(patch.getDevice())
+                    .flatMap(device -> device.getBank(patch.getBank()))
+                    .flatMap(bank -> bank.getPresets()
+                            .stream()
+                            .filter(p -> p.filename()
+                                    .equals(patch.getFilename()))
+                            .findFirst())
+                    .get();
+            preset.category(patch.getCategory());
+            String prefix = "%s,".formatted(patch.getCommand());
+            String suffix = "] %s".formatted(patch.getName());
+            int idx1 = def.indexOf(prefix);
+            int idx2 = def.indexOf(suffix);
+            if (idx1 != -1 && idx2 != 2) {
+                idx1 += prefix.length();
+                String filePath = def.substring(0, idx1) + patch.getCategory() + def.substring(idx2);
+                File actual = new File(def);
+                File newFile = new File(filePath);
+                log.info("rename file to {}", filePath);
+                if (actual.renameTo(newFile)) {
+                    preset.definitionFile(newFile);
+                    preset.filename(filePath);
+                    patch.setDefinitionFile(filePath);
+                    patch.setFilename(filePath);
+                } else {
+                    log.error("Unable to rename !");
+                }
+            }
+        }
+    }
+
     private Patch forgePatch(String deviceName, String currentModeName, int channel, String bankName, MidiDevicePreset preset) {
-        return new Patch(deviceName, currentModeName, bankName, preset.name(), preset.category(), preset.command(), preset.filename(), channel, 0);
+        return new Patch(preset.definitionFile()
+                .getAbsolutePath(), deviceName, currentModeName, bankName, preset.name(), preset.category(), preset.command(), preset.filename(), channel, 0);
     }
 
     private boolean patchScoreMatches(Patch patch) {

@@ -39,9 +39,26 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     private List<String> acceptedFileTypes = List.of();
 
+    // boolean used to distinguish user action and programmatic action
+    private boolean userAction = false;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
+        attributes.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            userAction = true;
+        });
+        attributes.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            userAction = true;
+        });
+        attributes.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (userAction) {
+                        onSelectedItemChange();
+                        userAction = false;
+                    }
+                });
     }
 
     public void onDataSourceChange(String oldValue, String newValue) {
@@ -102,18 +119,6 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
             attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    @FXML
-    public void onMouseClicked(MouseEvent event) {
-        onSelectedItemChange();
-    }
-
-    @FXML
-    public void onKeyReleased(KeyEvent event) {
-        if (event.getCode() != KeyCode.TAB) {
-            onSelectedItemChange();
         }
     }
 

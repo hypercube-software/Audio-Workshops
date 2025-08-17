@@ -7,8 +7,10 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"definitionFile", "channel", "score"})
 public class Patch {
+    @JsonIgnore
+    private String definitionFile;
     private String device;
     private String mode;
     private String bank;
@@ -16,9 +18,7 @@ public class Patch {
     private String category;
     private String command;
     private String filename;
-    @EqualsAndHashCode.Exclude
     private Integer channel;
-    @EqualsAndHashCode.Exclude
     private int score;
 
     @Override

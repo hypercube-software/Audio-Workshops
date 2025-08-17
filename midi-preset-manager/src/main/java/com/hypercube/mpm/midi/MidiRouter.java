@@ -160,6 +160,7 @@ public class MidiRouter {
 
     /**
      * The GUI controller call this method to change the master inputs (MIDI controller devices)
+     * <p>Secondary output need to be restarted because their transformers are not the same anymore</p>
      */
     public void changeMasterInputs(List<String> deviceOrPortNames) {
         closeSecondaryOutputs();
@@ -304,26 +305,26 @@ public class MidiRouter {
     }
 
     private void openSecondaryOutputs() {
-        // open outputs
-        secondaryOutputs = deviceOrPortNames.stream()
-                .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
-                        .getDevice(deviceOrPortName)
-                        .map(MidiDeviceDefinition::getInputMidiDevice)
-                        .orElse(deviceOrPortName))
-                .map(cfg.getMidiDeviceManager()::getOutput)
-                .flatMap(Optional::stream)
-                .collect(Collectors.toList());
-
-        // install transformers
-        cfg.getMidiDeviceLibrary()
-                .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
-                .ifPresent(dawDevice -> {
-                    sources.values()
-                            .forEach(src ->
-                                    secondaryOutputs.forEach(out -> src.addSecondaryOutputTransformer(out, dawDevice, controllerMessageListener)));
-                });
-
         synchronized (secondaryOutputsGuardian) {
+            // open outputs
+            secondaryOutputs = deviceOrPortNames.stream()
+                    .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
+                            .getDevice(deviceOrPortName)
+                            .map(MidiDeviceDefinition::getInputMidiDevice)
+                            .orElse(deviceOrPortName))
+                    .map(cfg.getMidiDeviceManager()::getOutput)
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toList());
+
+            // install transformers
+            cfg.getMidiDeviceLibrary()
+                    .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
+                    .ifPresent(dawDevice -> {
+                        sources.values()
+                                .forEach(src ->
+                                        secondaryOutputs.forEach(out -> src.addSecondaryOutputTransformer(out, dawDevice, controllerMessageListener)));
+                    });
+
             for (MidiOutDevice midiOut : secondaryOutputs) {
                 midiOut.open();
             }

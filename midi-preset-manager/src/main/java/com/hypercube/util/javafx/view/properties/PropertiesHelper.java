@@ -31,6 +31,8 @@ import java.util.List;
 public class PropertiesHelper implements SceneListener {
     private final List<PropertyListener> listeners = new ArrayList<>();
     private final View<?> view;
+    private boolean widthSet = false;
+    private boolean heightSet = false;
 
     /**
      * This method must be called in all views to observe the scene change
@@ -95,19 +97,25 @@ public class PropertiesHelper implements SceneListener {
                             , Window window) -> {
                         window.widthProperty()
                                 .addListener((ObservableValue<? extends Number> observableValue, Number oldWidthValue, Number newWidthValue) -> {
-                                    onSceneAttach(scene);
-                                    Stage stage = (Stage) window.getScene()
-                                            .getWindow();
-                                    if (stage.getMinWidth() == 0) {
-                                        stage.setMinWidth(newWidthValue.doubleValue());
+                                    if (!widthSet) {
+                                        onSceneAttach(scene);
+                                        Stage stage = (Stage) window.getScene()
+                                                .getWindow();
+                                        if (stage.getMinWidth() == 0) {
+                                            stage.setMinWidth(newWidthValue.doubleValue());
+                                        }
+                                        widthSet = true;
                                     }
                                 });
                         window.heightProperty()
                                 .addListener((ObservableValue<? extends Number> observableValue, Number oldHeighValue, Number newHeightValue) -> {
-                                    Stage stage = (Stage) window.getScene()
-                                            .getWindow();
-                                    if (stage.getMinHeight() == 0) {
-                                        stage.setMinHeight(newHeightValue.doubleValue());
+                                    if (!heightSet) {
+                                        Stage stage = (Stage) window.getScene()
+                                                .getWindow();
+                                        if (stage.getMinHeight() == 0) {
+                                            stage.setMinHeight(newHeightValue.doubleValue());
+                                        }
+                                        heightSet = true;
                                     }
                                 });
                     });
