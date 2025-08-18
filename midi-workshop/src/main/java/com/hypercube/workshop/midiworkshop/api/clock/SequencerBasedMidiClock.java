@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.clock;
 
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.seq.MidiSequence;
 import lombok.extern.slf4j.Slf4j;

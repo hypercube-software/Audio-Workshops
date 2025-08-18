@@ -1,5 +1,6 @@
-package com.hypercube.workshop.midiworkshop.api;
+package com.hypercube.workshop.midiworkshop.api.devices;
 
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import lombok.extern.slf4j.Slf4j;

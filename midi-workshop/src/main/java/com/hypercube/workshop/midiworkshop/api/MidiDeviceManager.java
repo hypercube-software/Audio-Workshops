@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api;
 
+import com.hypercube.workshop.midiworkshop.api.devices.*;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,29 @@ import java.util.Optional;
 public class MidiDeviceManager {
     private final List<MidiInDevice> inputs = new ArrayList<>();
     private final List<MidiOutDevice> outputs = new ArrayList<>();
+
+    public static boolean isJdkVersionAtLeast(int requiredMajorVersion) {
+        String javaVersion = System.getProperty("java.version");
+
+        // Before JDK 9
+        if (javaVersion.startsWith("1.")) {
+            try {
+                int majorVersion = Integer.parseInt(javaVersion.substring(2, 3));
+                return majorVersion >= requiredMajorVersion;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            // JDK9+
+            try {
+                String[] parts = javaVersion.split("\\.");
+                int majorVersion = Integer.parseInt(parts[0]);
+                return majorVersion >= requiredMajorVersion;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    }
 
     public void collectDevices() {
         if (!isJdkVersionAtLeast(23)) {
@@ -53,10 +77,19 @@ public class MidiDeviceManager {
     }
 
     public Optional<MidiOutDevice> getOutput(String name) {
-        return getOutputs().stream()
+        return Optional.ofNullable(getOutputs().stream()
                 .filter(d -> d.getName()
                         .equals(name))
-                .findFirst();
+                .findFirst()
+                .orElseGet(() -> {
+                    if (UDPMidiOutDevice.isUDPAddress(name)) {
+                        MidiOutDevice device = new UDPMidiOutDevice(name);
+                        outputs.add(device);
+                        return device;
+                    } else {
+                        return null;
+                    }
+                }));
     }
 
     public MidiOutDevice openOutput(String name) {
@@ -87,28 +120,5 @@ public class MidiDeviceManager {
         inputs
                 .forEach(o -> log.info("IN :" + o.getName()));
 
-    }
-
-    public static boolean isJdkVersionAtLeast(int requiredMajorVersion) {
-        String javaVersion = System.getProperty("java.version");
-
-        // Before JDK 9
-        if (javaVersion.startsWith("1.")) {
-            try {
-                int majorVersion = Integer.parseInt(javaVersion.substring(2, 3));
-                return majorVersion >= requiredMajorVersion;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        } else {
-            // JDK9+
-            try {
-                String[] parts = javaVersion.split("\\.");
-                int majorVersion = Integer.parseInt(parts[0]);
-                return majorVersion >= requiredMajorVersion;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
     }
 }

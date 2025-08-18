@@ -97,3 +97,27 @@
     -fx-background-color: derive(-theme-color,30%);
     -fx-background-insets: 0;
 }
+
+.dialog-pane {
+    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
+}
+.dialog-pane > .header-panel > .label {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.dialog-pane > .content.label {
+    -fx-text-fill: white;
+}
+.dialog-pane > .header-panel {
+    -fx-background-color: transparent;
+}
+.dialog-pane .button {
+    -fx-background-color: -theme-color;
+    -fx-text-fill: white;
+}
+.dialog-pane .button:hover {
+    -fx-background-color: derive(-theme-color,+20%);
+}
+
+

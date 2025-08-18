@@ -1,7 +1,7 @@
 package com.hypercube.workshop.syntheditor.infra.provider.mapper;
 
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.syntheditor.infra.provider.dto.MidiDeviceDTO;
 import com.hypercube.workshop.syntheditor.infra.provider.dto.MidiDevicesDTO;
 import org.mapstruct.Mapper;

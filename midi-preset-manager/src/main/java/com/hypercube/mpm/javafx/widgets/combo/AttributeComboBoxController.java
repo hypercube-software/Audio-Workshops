@@ -96,7 +96,8 @@ public class AttributeComboBoxController extends Controller<AttributeComboBox, M
      * @param observable
      */
     private void onModelSelectedItemsChange(Observable observable) {
-        log.info("onModelSelectedItemsChange {} for {}", getView().getSelectedItem(), getView().getTitle());
+        log.info("{}::onModelSelectedItemsChange {} for {}", this.getClass()
+                .getSimpleName(), getView().getSelectedItem(), getView().getTitle());
         Object selectedItem = null;
 
         if (observable instanceof IntegerProperty integerProperty) {
@@ -110,7 +111,7 @@ public class AttributeComboBoxController extends Controller<AttributeComboBox, M
             selectedItem = value == value;
         } else if (observable instanceof SimpleListProperty simpleListProperty) {
             ObservableList<Object> value = simpleListProperty.getValue();
-            selectedItem = value;
+            selectedItem = value.isEmpty() ? null : value.getFirst();
         } else if (observable instanceof SelectBinding.AsObject<?> pathObserver) {
             var value = pathObserver.getValue();
             if (value == null) {

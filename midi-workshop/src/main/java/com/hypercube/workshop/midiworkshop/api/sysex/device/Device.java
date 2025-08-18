@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.device;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
@@ -58,11 +58,6 @@ public abstract class Device {
         this.code = code;
     }
 
-    @Override
-    public String toString() {
-        return "%s [0x%02X %s]".formatted(getClass().getSimpleName(), code, name);
-    }
-
     /**
      * @param midiOutDevice where to send the request
      * @param sysExChannel  between [0-15] or 127 for broadcast
@@ -83,6 +78,11 @@ public abstract class Device {
         }
     }
 
+    @Override
+    public String toString() {
+        return "%s [0x%02X %s]".formatted(getClass().getSimpleName(), code, name);
+    }
+
     /**
      * Send an appropriate SysEx message to query the memory content of a MIDI device
      *
@@ -100,17 +100,6 @@ public abstract class Device {
      * @param value         value to send
      */
     public abstract void sendData(MidiOutDevice midiOutDevice, MemoryInt24 address, int value);
-
-    private File getSysExFolder() {
-        String[] folders = new String[]{System.getProperty("SYSEX_FOLDER"), "./sysex", "../sysex"};
-        return Arrays.stream(folders)
-                .map(Optional::ofNullable)
-                .flatMap(Optional::stream)
-                .map(File::new)
-                .filter(File::exists)
-                .findFirst()
-                .orElseThrow(() -> new MidiError("SysEx folder not found"));
-    }
 
     /**
      * We store device memory maps in predefined folders
@@ -147,5 +136,16 @@ public abstract class Device {
         } catch (InterruptedException e) {
             throw new MidiError(e);
         }
+    }
+
+    private File getSysExFolder() {
+        String[] folders = new String[]{System.getProperty("SYSEX_FOLDER"), "./sysex", "../sysex"};
+        return Arrays.stream(folders)
+                .map(Optional::ofNullable)
+                .flatMap(Optional::stream)
+                .map(File::new)
+                .filter(File::exists)
+                .findFirst()
+                .orElseThrow(() -> new MidiError("SysEx folder not found"));
     }
 }

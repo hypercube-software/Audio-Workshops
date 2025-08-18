@@ -12,6 +12,8 @@ import javax.sound.midi.SysexMessage;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -54,17 +56,31 @@ public class SysExBuilder {
 
     private static CustomMidiEvent forgeMidiEvent(String inputRawString) {
         byte[] result = forgeBytesFromString(inputRawString);
+        return forgeCustomMidiEvent(result);
+    }
+
+    public static CustomMidiEvent forgeCustomMidiEvent(byte[] result) {
         try {
             if ((result[0] & 0xFF) == 0xF0) {
                 return new CustomMidiEvent(new SysexMessage(result, result.length));
             } else if (result.length == 3) {
                 return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, result[2] & 0xFF));
+            } else if (result.length == 2) {
+                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, result[1] & 0xFF, 0));
+            } else if (result.length == 1) {
+                return new CustomMidiEvent(new ShortMessage(result[0] & 0xFF, 0, 0));
             } else {
-                throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + inputRawString);
+                throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + toHexaString(result));
             }
         } catch (InvalidMidiDataException e) {
-            throw new MidiError("Unexpected message forged: " + inputRawString, e);
+            throw new MidiError("Unexpected message forged: " + toHexaString(result), e);
         }
+    }
+
+    private static String toHexaString(byte[] result) {
+        return IntStream.range(0, result.length)
+                .mapToObj(i -> String.format("%02X", result[i] & 0xFF))
+                .collect(Collectors.joining(" "));
     }
 
     public static byte[] forgeBytesFromString(String inputRawString) {

@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.listener;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

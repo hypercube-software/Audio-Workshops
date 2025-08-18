@@ -2,7 +2,7 @@ package com.hypercube.midi.translator.model;
 
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +50,6 @@ public class DeviceInstance {
     public int getSysexPauseMs() {
         return Optional.ofNullable(setting.getSysExPauseMs())
                 .orElse(DEFAULT_SYSEX_PAUSE_MS);
-    }
-
-    private void readyToReceiveNextResponse() {
-        updateLastTimeReceiveMs();
-        currentResponseSize = 0;
     }
 
     public void updateLastTimeReceiveMs() {
@@ -109,14 +104,6 @@ public class DeviceInstance {
         }
     }
 
-    private void waitReceive(MidiOutDevice out, int previousSize) {
-        log.info("    Waiting data...");
-        long now = System.currentTimeMillis();
-        while (getStateSize() == previousSize && (System.currentTimeMillis() - now < 3000)) {
-            sleep(out, NOOP_TIME_MS);
-        }
-    }
-
     /**
      * Despite we want to sleep, we still need to send ActiveSensing
      *
@@ -140,6 +127,27 @@ public class DeviceInstance {
         }
     }
 
+    public void sendAndWaitResponse(MidiOutDevice out, CustomMidiEvent customMidiEvent) {
+        int previousSize = getStateSize();
+        readyToReceiveNextResponse();
+        out.send(customMidiEvent);
+        waitReceive(out, previousSize);
+        waitIdle(out);
+    }
+
+    private void readyToReceiveNextResponse() {
+        updateLastTimeReceiveMs();
+        currentResponseSize = 0;
+    }
+
+    private void waitReceive(MidiOutDevice out, int previousSize) {
+        log.info("    Waiting data...");
+        long now = System.currentTimeMillis();
+        while (getStateSize() == previousSize && (System.currentTimeMillis() - now < 3000)) {
+            sleep(out, NOOP_TIME_MS);
+        }
+    }
+
     private void waitIdle(MidiOutDevice out) {
         for (; ; ) {
             long now = System.currentTimeMillis();
@@ -153,14 +161,6 @@ public class DeviceInstance {
 
     private boolean isResponseComplete() {
         return currentRequest.getResponseSize() != null && currentResponseSize == currentRequest.getResponseSize();
-    }
-
-    public void sendAndWaitResponse(MidiOutDevice out, CustomMidiEvent customMidiEvent) {
-        int previousSize = getStateSize();
-        readyToReceiveNextResponse();
-        out.send(customMidiEvent);
-        waitReceive(out, previousSize);
-        waitIdle(out);
     }
 
     private CustomMidiEvent forgeSysExEvent(ByteArrayOutputStream eventPayload) throws InvalidMidiDataException {

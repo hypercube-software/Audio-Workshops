@@ -11,7 +11,7 @@ import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
 import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
 import com.hypercube.workshop.audioworkshop.synth.vco.VCO;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,6 +28,24 @@ public class AudioSynth {
     private volatile int midiNode;
     private volatile boolean stop;
 
+    private void onMidiEvent(CustomMidiEvent evt, VCA vca) {
+        MidiMessage msg = evt.getMessage();
+        if (msg.getStatus() == ShortMessage.NOTE_ON) {
+            midiNode = msg.getMessage()[1];
+            int midiVelocity = msg.getMessage()[2];
+            midiVelocity = Math.min(midiVelocity, 110);
+            log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), midiVelocity, msg.getStatus()));
+            vca.onNoteOn(midiVelocity / 127.f);
+        } else if (msg.getStatus() == ShortMessage.NOTE_OFF) {
+            int receivedMidiNodeOff = msg.getMessage()[1];
+            if (midiNode == receivedMidiNodeOff) {
+                vca.onNoteOff();
+                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), 0, msg.getStatus()));
+            }
+        } else if (msg.getStatus() == ShortMessage.PITCH_BEND) {
+            stop = true;
+        }
+    }
 
     void synth(MidiInDevice midiInDevice, AudioOutputDevice audioOutputDevice) {
         try {
@@ -58,25 +76,6 @@ public class AudioSynth {
             midiInDevice.listen((device, evt) -> onMidiEvent(evt, vca));
         } catch (MidiError e) {
             log.error("The Output device is Unavailable: " + midiInDevice.getName());
-        }
-    }
-
-    private void onMidiEvent(CustomMidiEvent evt, VCA vca) {
-        MidiMessage msg = evt.getMessage();
-        if (msg.getStatus() == ShortMessage.NOTE_ON) {
-            midiNode = msg.getMessage()[1];
-            int midiVelocity = msg.getMessage()[2];
-            midiVelocity = Math.min(midiVelocity, 110);
-            log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), midiVelocity, msg.getStatus()));
-            vca.onNoteOn(midiVelocity / 127.f);
-        } else if (msg.getStatus() == ShortMessage.NOTE_OFF) {
-            int receivedMidiNodeOff = msg.getMessage()[1];
-            if (midiNode == receivedMidiNodeOff) {
-                vca.onNoteOff();
-                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), 0, msg.getStatus()));
-            }
-        } else if (msg.getStatus() == ShortMessage.PITCH_BEND) {
-            stop = true;
         }
     }
 }

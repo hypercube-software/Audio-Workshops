@@ -1,20 +1,22 @@
 package com.hypercube.mpm.midi;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = "port.name")
-public final class RoutingSource {
+public final class RoutingSource implements Closeable {
     /**
      * Input device, can be null, in this case the source is just a midi port, no transformers can be used
      */
@@ -81,5 +83,10 @@ public final class RoutingSource {
         return Optional.ofNullable(device)
                 .map(MidiDeviceDefinition::getDeviceName)
                 .orElse(null);
+    }
+
+    @Override
+    public void close() throws IOException {
+        port.close();
     }
 }

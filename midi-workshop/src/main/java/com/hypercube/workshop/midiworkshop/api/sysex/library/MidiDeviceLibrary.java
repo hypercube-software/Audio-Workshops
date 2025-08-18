@@ -43,7 +43,8 @@ public class MidiDeviceLibrary {
     public static final String MACRO_CALL_SEPARATOR = ";";
     private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     @Getter
-    private Map<String, MidiDeviceDefinition> devices;
+    private Map<String, MidiDeviceDefinition> devices = new HashMap<>();
+    private Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new HashMap<>();
     @Getter
     private boolean loaded;
 
@@ -81,7 +82,7 @@ public class MidiDeviceLibrary {
     }
 
     public void load(File applicationFolder) {
-        devices = new HashMap<>();
+        devices.clear();
         File libraryFolder = Optional.ofNullable(System.getenv(ENV_MDL_FOLDER))
                 .map(File::new)
                 .orElse(new File(applicationFolder.getAbsolutePath(), DEVICES_LIBRARY_FOLDER));
@@ -260,6 +261,14 @@ public class MidiDeviceLibrary {
                 .toList();
         Integer totalSize = computeTotalSize(commandMacro, result);
         return new MidiRequestSequence(totalSize, result);
+    }
+
+    public MidiDeviceDefinition getDeviceByNetworkId(long networkId) {
+        return devicesPerNetworkId.computeIfAbsent(networkId, key -> devices.values()
+                .stream()
+                .filter(d -> d.matchNetworkId(networkId))
+                .findFirst()
+                .orElseThrow(() -> new MidiConfigError("Device with network id %4X not found".formatted(networkId))));
     }
 
     private String getDevicesNames() {

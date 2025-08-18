@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.sequencer;
 
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.clock.MidiClockType;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.seq.KeySignature;
 import com.hypercube.workshop.midiworkshop.api.seq.MidiSequence;

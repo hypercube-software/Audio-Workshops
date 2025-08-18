@@ -1,5 +1,6 @@
-package com.hypercube.workshop.midiworkshop.api;
+package com.hypercube.workshop.midiworkshop.api.devices;
 
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -105,6 +107,8 @@ public class MidiInDevice extends AbstractMidiDevice {
                 //log.info("%d listeners, receive %s".formatted(listeners.size(), event.toString()));
                 for (MidiListener listener : listeners) {
                     try {
+                        Thread.currentThread()
+                                .setName("MIDI Listener for '%s'".formatted(getName()));
                         listener.onEvent(MidiInDevice.this, event);
                     } catch (RuntimeException e) {
                         log.error("Unexpected error in midi listener", e);
@@ -114,7 +118,6 @@ public class MidiInDevice extends AbstractMidiDevice {
 
             @Override
             public void close() {
-                stopListening();
             }
         };
         transmitter.setReceiver(receiver);
@@ -127,6 +130,12 @@ public class MidiInDevice extends AbstractMidiDevice {
             throw new MidiError(device, e);
         }
         isListening = true;
+    }
+
+    @Override
+    public void close() throws IOException {
+        stopListening();
+        super.close();
     }
 
     public void stopListening() {
@@ -151,7 +160,11 @@ public class MidiInDevice extends AbstractMidiDevice {
     private void closeTransmitter() {
         Optional.ofNullable(transmitter)
                 .ifPresent(t -> {
-                    t.setReceiver(null);
+                    Optional.ofNullable(t.getReceiver())
+                            .ifPresent(receiver -> {
+                                receiver.close();
+                                t.setReceiver(null);
+                            });
                     t.close();
                 });
         transmitter = null;

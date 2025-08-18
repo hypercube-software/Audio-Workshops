@@ -1,5 +1,7 @@
-package com.hypercube.workshop.midiworkshop.api;
+package com.hypercube.workshop.midiworkshop.api.devices;
 
+import com.hypercube.workshop.midiworkshop.api.ControlChangeFilter;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
     private final ShortMessage resumeMessage;
     private Receiver receiver;
 
-    public MidiOutDevice(MidiDevice device) throws MidiUnavailableException {
+    public MidiOutDevice(MidiDevice device) {
         super(device);
         try {
             clockMessage = new ShortMessage(ShortMessage.TIMING_CLOCK);

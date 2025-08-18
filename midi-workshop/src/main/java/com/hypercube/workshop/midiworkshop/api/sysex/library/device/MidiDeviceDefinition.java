@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
+import com.hypercube.workshop.midiworkshop.api.devices.UDPMidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
@@ -197,6 +198,15 @@ public class MidiDeviceDefinition {
             }
         }
         return Optional.empty();
+    }
+
+    public boolean matchNetworkId(long networkId) {
+        log.info("%40s: %08X".formatted(getDeviceName(), getDeviceNetworkId()) + " %08X".formatted(networkId));
+        return getDeviceNetworkId() == networkId;
+    }
+
+    public long getDeviceNetworkId() {
+        return UDPMidiOutDevice.getDeviceNetworkId(this.deviceName);
     }
 
     private int parseBankNumber(String bankNameOrId) {

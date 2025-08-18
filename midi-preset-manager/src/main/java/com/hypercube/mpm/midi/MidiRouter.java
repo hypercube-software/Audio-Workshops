@@ -3,8 +3,8 @@ package com.hypercube.mpm.midi;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
@@ -270,7 +270,9 @@ public class MidiRouter {
                 log.info("Close {}", currentMidiOut.getName());
                 currentMidiOut.close();
             }
-            closeMainSourceListener();
+            for (RoutingSource sources : sources.values()) {
+                sources.close();
+            }
             closeMainDestinationListener();
             for (MidiInDevice dawMidiIn : secondaryInputs) {
                 log.info("Stop listening {}", dawMidiIn.getName());

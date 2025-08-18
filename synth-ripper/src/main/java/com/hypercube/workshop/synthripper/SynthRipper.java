@@ -11,7 +11,7 @@ import com.hypercube.workshop.audioworkshop.api.line.AudioInputLine;
 import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
@@ -39,13 +39,13 @@ import java.util.function.Supplier;
 @Service
 public class SynthRipper {
     public static final int NOISE_FLOOR_CAPTURE_DURATION_IN_SEC = 4;
+    private final ThreadLogger threadLogger;
+    private final SynthRipperState state = new SynthRipperState();
+    private final List<PresetGenerator> presetGenerators;
     SynthRipperConfiguration conf;
     private PCMBufferFormat format;
     private PCMBufferFormat wavFormat;
     private MidiOutDevice midiOutDevice;
-    private final ThreadLogger threadLogger;
-    private final SynthRipperState state = new SynthRipperState();
-    private final List<PresetGenerator> presetGenerators;
     private WavRecorder wavRecorder;
 
 
@@ -63,6 +63,41 @@ public class SynthRipper {
         initState();
     }
 
+    public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
+        createOutputDir();
+        state.nbChannels = format.getNbChannels();
+        state.maxNoteReleaseDurationSec = conf.getMidi()
+                .getMaxNoteReleaseDurationSec();
+        state.maxNoteDurationSec = conf.getMidi()
+                .getMaxNoteDurationSec();
+        this.midiOutDevice = midiDevice;
+        this.midiOutDevice.open();
+        try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
+            try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
+                try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
+                    try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
+                        midiDevice.sendAllOff();
+                        threadLogger.start();
+                        outputLine.start();
+                        inputLine.record((sampleBuffer, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermFFTCalculator, sampleBuffer, pcmBuffer, pcmSize), outputLine);
+                    } finally {
+                        threadLogger.stop();
+                    }
+                }
+            }
+        } catch (LineUnavailableException | IOException e) {
+            throw new AudioError(e);
+        } finally {
+            try {
+                midiDevice.sendAllOff();
+                midiDevice.close();
+            } catch (IOException e) {
+                throw new MidiError(e);
+            }
+        }
+        savePresets();
+    }
+
     private void initState() {
         MidiSettings midiSettings = conf.getMidi();
         state.noiseFloorFrequencies = new double[format.getSampleBufferSize() / 2];
@@ -75,73 +110,6 @@ public class SynthRipper {
 
     private int boundValue(int value) {
         return Math.max(Math.min(127, value), 0);
-    }
-
-    List<RecordedSynthNote> generateBatch() {
-        MidiSettings midiSettings = conf.getMidi();
-        int veloIncrement = (int) Math.ceil(128f / midiSettings
-                .getVelocityPerNote());
-        int upperBoundVelocity = veloIncrement * (midiSettings.getVelocityPerNote() + 1);
-
-        int defaultLowestNote = midiSettings.getLowestNoteInt();
-        int defaultHighestNote = midiSettings.getHighestNoteInt();
-        int defaultNoteIncrement = 12 / midiSettings.getNotesPerOctave();
-        int ccIncrement = (int) Math.ceil(128f / midiSettings
-                .getCcPerNote());
-        int upperBoundCC = ccIncrement * (midiSettings.getCcPerNote() + 1);
-        return conf.getSelectedPresets()
-                .stream()
-                .flatMap(preset -> {
-                    log.info("=========== {} ===========", preset.getId());
-                    List<RecordedSynthNote> samples = new ArrayList<>();
-                    int prevCcValue = 0;
-                    for (int cc : preset.getControlChanges()) {
-                        if (cc == MidiPreset.NO_CC) {
-                            log.info("Without CC:");
-                        } else {
-                            log.info("With CC " + cc + ":");
-                        }
-                        for (int ccValue = 1; ccValue < upperBoundCC; ccValue += ccIncrement) {
-                            int lowestNote = getLowestNote(defaultLowestNote, preset);
-                            int highestNote = getHighestNote(defaultHighestNote, preset);
-                            int noteIncrement = getNoteIncrement(defaultNoteIncrement, preset);
-                            for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
-                                for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
-                                    RecordedSynthNote rs = new RecordedSynthNote();
-                                    rs.setChannel(preset.getZeroBasedChannel());
-                                    rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
-
-                                    rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
-
-                                    if (cc == MidiPreset.NO_CC) {
-                                        // normal sample without any CC
-                                        rs.setControlChange(MidiPreset.NO_CC);
-                                        rs.setCcValue(null);
-                                        prevCcValue = 0;
-                                    } else {
-                                        // apply a CC to the sound
-                                        rs.setControlChange(cc);
-                                        rs.setCcValue(computeControlChangeMidiZone(prevCcValue, ccValue));
-                                    }
-                                    rs.setName(getNoteName(preset, note));
-                                    rs.setPreset(preset);
-                                    rs.setFile(getOutputFile(rs));
-                                    samples.add(rs);
-
-                                    log.info("Note %s Velocity %s = %s".formatted(rs.getNote(), rs.getVelocity(), rs.getFile()
-                                            .getName()));
-                                }
-                            }
-                            if (cc == MidiPreset.NO_CC) {
-                                break;
-                            } else {
-                                prevCcValue = ccValue + 1;
-                            }
-                        }
-                    }
-                    return samples.stream();
-                })
-                .toList();
     }
 
     private String getNoteName(MidiPreset preset, int note) {
@@ -203,42 +171,6 @@ public class SynthRipper {
             }
         };
         return new MidiZone(low.get(), high.get(), boundValue(note));
-    }
-
-
-    public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
-        createOutputDir();
-        state.nbChannels = format.getNbChannels();
-        state.maxNoteReleaseDurationSec = conf.getMidi()
-                .getMaxNoteReleaseDurationSec();
-        state.maxNoteDurationSec = conf.getMidi()
-                .getMaxNoteDurationSec();
-        this.midiOutDevice = midiDevice;
-        this.midiOutDevice.open();
-        try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
-            try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
-                try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
-                    try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
-                        midiDevice.sendAllOff();
-                        threadLogger.start();
-                        outputLine.start();
-                        inputLine.record((sampleBuffer, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermFFTCalculator, sampleBuffer, pcmBuffer, pcmSize), outputLine);
-                    } finally {
-                        threadLogger.stop();
-                    }
-                }
-            }
-        } catch (LineUnavailableException | IOException e) {
-            throw new AudioError(e);
-        } finally {
-            try {
-                midiDevice.sendAllOff();
-                midiDevice.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
-            }
-        }
-        savePresets();
     }
 
     private void createOutputDir() {
@@ -490,6 +422,73 @@ public class SynthRipper {
 
     private boolean finished() {
         return state.state == SynthRipperStateEnum.IDLE && state.getCurrentRecordedSynthNote() == null;
+    }
+
+    List<RecordedSynthNote> generateBatch() {
+        MidiSettings midiSettings = conf.getMidi();
+        int veloIncrement = (int) Math.ceil(128f / midiSettings
+                .getVelocityPerNote());
+        int upperBoundVelocity = veloIncrement * (midiSettings.getVelocityPerNote() + 1);
+
+        int defaultLowestNote = midiSettings.getLowestNoteInt();
+        int defaultHighestNote = midiSettings.getHighestNoteInt();
+        int defaultNoteIncrement = 12 / midiSettings.getNotesPerOctave();
+        int ccIncrement = (int) Math.ceil(128f / midiSettings
+                .getCcPerNote());
+        int upperBoundCC = ccIncrement * (midiSettings.getCcPerNote() + 1);
+        return conf.getSelectedPresets()
+                .stream()
+                .flatMap(preset -> {
+                    log.info("=========== {} ===========", preset.getId());
+                    List<RecordedSynthNote> samples = new ArrayList<>();
+                    int prevCcValue = 0;
+                    for (int cc : preset.getControlChanges()) {
+                        if (cc == MidiPreset.NO_CC) {
+                            log.info("Without CC:");
+                        } else {
+                            log.info("With CC " + cc + ":");
+                        }
+                        for (int ccValue = 1; ccValue < upperBoundCC; ccValue += ccIncrement) {
+                            int lowestNote = getLowestNote(defaultLowestNote, preset);
+                            int highestNote = getHighestNote(defaultHighestNote, preset);
+                            int noteIncrement = getNoteIncrement(defaultNoteIncrement, preset);
+                            for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
+                                for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
+                                    RecordedSynthNote rs = new RecordedSynthNote();
+                                    rs.setChannel(preset.getZeroBasedChannel());
+                                    rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
+
+                                    rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
+
+                                    if (cc == MidiPreset.NO_CC) {
+                                        // normal sample without any CC
+                                        rs.setControlChange(MidiPreset.NO_CC);
+                                        rs.setCcValue(null);
+                                        prevCcValue = 0;
+                                    } else {
+                                        // apply a CC to the sound
+                                        rs.setControlChange(cc);
+                                        rs.setCcValue(computeControlChangeMidiZone(prevCcValue, ccValue));
+                                    }
+                                    rs.setName(getNoteName(preset, note));
+                                    rs.setPreset(preset);
+                                    rs.setFile(getOutputFile(rs));
+                                    samples.add(rs);
+
+                                    log.info("Note %s Velocity %s = %s".formatted(rs.getNote(), rs.getVelocity(), rs.getFile()
+                                            .getName()));
+                                }
+                            }
+                            if (cc == MidiPreset.NO_CC) {
+                                break;
+                            } else {
+                                prevCcValue = ccValue + 1;
+                            }
+                        }
+                    }
+                    return samples.stream();
+                })
+                .toList();
     }
 
 }

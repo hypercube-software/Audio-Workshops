@@ -118,6 +118,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
         runOnJavaFXThread(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.getDialogPane()
+                    .getStylesheets()
+                    .add(MainWindowController.class.getResource("MainWindow.css")
+                            .toExternalForm());
+            alert.getDialogPane()
+                    .getStyleClass()
+                    .add("dialog-pane");
             alert.setHeaderText("A %s occured".formatted(errorClassName));
             alert.setTitle(title);
             alert.setContentText(msg);

@@ -1,5 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api;
 
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;

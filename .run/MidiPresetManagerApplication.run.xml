@@ -8,7 +8,7 @@
     <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.hypercube.mpm.*" />
+        <option name="PATTERN" value="com.hypercube.mpm.cli.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

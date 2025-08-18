@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.behringer;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;

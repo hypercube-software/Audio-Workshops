@@ -5,7 +5,7 @@ import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;

@@ -1,6 +1,10 @@
 package com.hypercube.workshop.midiworkshop.monitor;
 
-import com.hypercube.workshop.midiworkshop.api.*;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.MidiControl;
+import com.hypercube.workshop.midiworkshop.api.MidiNote;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.clock;
 
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -28,40 +28,6 @@ public class TimerBasedMidiClock implements MidiClock {
         calibrate();
         thread = new Thread(this::threadLoop);
         thread.start();
-    }
-
-    private void calibrate() {
-        int nb = 1000;
-        long start = System.nanoTime();
-        for (int i = 0; i < nb; i++) {
-            clock.sendActiveSensing();
-        }
-        long end = System.nanoTime();
-        avgSendDurationInNanoSec = (end - start) / nb;
-    }
-
-    private void threadLoop() {
-        log.info("Clock started");
-        try {
-            Thread.currentThread()
-                    .setPriority(Thread.MAX_PRIORITY);
-            long tickStart = -1;
-            while (!exit) {
-                while (tickStart != -1 && System.nanoTime() - tickStart < clockPeriod) {
-                    // active loop
-                }
-                tickStart = System.nanoTime();
-                if (!mute) {
-                    clock.sendClock();
-                    synchronized (signal) {
-                        signal.notifyAll();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Unexpected error", e);
-        }
-        log.info("Clock terminated");
     }
 
     @Override
@@ -114,5 +80,39 @@ public class TimerBasedMidiClock implements MidiClock {
     @Override
     public int getResolutionPPQ() {
         return MIDI_CLOCK_PPQ;
+    }
+
+    private void calibrate() {
+        int nb = 1000;
+        long start = System.nanoTime();
+        for (int i = 0; i < nb; i++) {
+            clock.sendActiveSensing();
+        }
+        long end = System.nanoTime();
+        avgSendDurationInNanoSec = (end - start) / nb;
+    }
+
+    private void threadLoop() {
+        log.info("Clock started");
+        try {
+            Thread.currentThread()
+                    .setPriority(Thread.MAX_PRIORITY);
+            long tickStart = -1;
+            while (!exit) {
+                while (tickStart != -1 && System.nanoTime() - tickStart < clockPeriod) {
+                    // active loop
+                }
+                tickStart = System.nanoTime();
+                if (!mute) {
+                    clock.sendClock();
+                    synchronized (signal) {
+                        signal.notifyAll();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error", e);
+        }
+        log.info("Clock terminated");
     }
 }

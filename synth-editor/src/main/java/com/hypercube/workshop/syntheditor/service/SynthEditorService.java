@@ -1,8 +1,8 @@
 package com.hypercube.workshop.syntheditor.service;
 
 import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
@@ -47,32 +47,6 @@ public class SynthEditorService implements SynthEditorBusListener {
         midiDeviceManager.collectDevices();
         device = Manufacturer.ROLAND.getDevice("DS-330");
         collectDS330Parameters();
-    }
-
-    private void collectDS330Parameters() {
-        editableParameters.clear();
-        device.loadMemoryMap();
-        DeviceMemoryDumper dumper = new DeviceMemoryDumper(device.getMemory());
-        dumper.visitMemory(new DeviceMemoryVisitor() {
-            final List<String> mapOfInterest = List.of("CommonPatchParams Zone", "PatchParams Zone", "PatchSends");
-            MemoryMap currentMap;
-
-            @Override
-            public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
-                currentMap = memoryMap;
-            }
-
-            @Override
-            public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
-                if (mapOfInterest.contains(currentMap.getName()) && !field.getName()
-                        .equals("reserved")) {
-                    String paramPath = path.substring(currentMap.getName()
-                            .length() + 1);
-                    editableParameters.add(new EditableParameter(paramPath, addr.packedValue(), field.getSize()
-                            .value(), 0));
-                }
-            }
-        });
     }
 
     public void updateParameters() {
@@ -145,5 +119,31 @@ public class SynthEditorService implements SynthEditorBusListener {
     public void onSessionClosed() {
         closeCurrentInputDevice();
         closeCurrentOutputDevice();
+    }
+
+    private void collectDS330Parameters() {
+        editableParameters.clear();
+        device.loadMemoryMap();
+        DeviceMemoryDumper dumper = new DeviceMemoryDumper(device.getMemory());
+        dumper.visitMemory(new DeviceMemoryVisitor() {
+            final List<String> mapOfInterest = List.of("CommonPatchParams Zone", "PatchParams Zone", "PatchSends");
+            MemoryMap currentMap;
+
+            @Override
+            public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
+                currentMap = memoryMap;
+            }
+
+            @Override
+            public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+                if (mapOfInterest.contains(currentMap.getName()) && !field.getName()
+                        .equals("reserved")) {
+                    String paramPath = path.substring(currentMap.getName()
+                            .length() + 1);
+                    editableParameters.add(new EditableParameter(paramPath, addr.packedValue(), field.getSize()
+                            .value(), 0));
+                }
+            }
+        });
     }
 }

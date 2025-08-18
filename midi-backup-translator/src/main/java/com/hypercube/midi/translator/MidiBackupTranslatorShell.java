@@ -5,6 +5,9 @@ import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
 import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
@@ -25,6 +28,15 @@ import java.util.Optional;
 @AllArgsConstructor
 public class MidiBackupTranslatorShell {
     private final ProjectConfigurationFactory projectConfigurationFactory;
+
+    private static void wakeUpDevice(MidiOutDevice out, DeviceInstance device) {
+        log.info("Wake up MIDI out device '{}' with ActiveSensing...", out.getName());
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 4000) {
+            out.sendActiveSensing();
+            device.sleep(out, 200);
+        }
+    }
 
     @ShellMethod(value = "Read MIDI input and send to another MIDI output limiting the throughput")
     public void translate() throws IOException {
@@ -140,6 +152,16 @@ public class MidiBackupTranslatorShell {
         }
     }
 
+    @ShellMethod(value = "List MIDI devices")
+    public void list() {
+        com.hypercube.workshop.midiworkshop.api.MidiDeviceManager m = new MidiDeviceManager();
+        m.collectDevices();
+        m.getInputs()
+                .forEach(d -> log.info(String.format("MIDI INPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
+        m.getOutputs()
+                .forEach(d -> log.info(String.format("MIDI OUTPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
+    }
+
     private void backupDevice(ProjectDevice projectDevice, DeviceInstance deviceInstance, com.hypercube.workshop.midiworkshop.api.MidiDeviceManager midiDeviceManager, String macro) {
         log.info("-------------------------------------------------------");
         log.info("Backup device: " + projectDevice.getName() + "...");
@@ -175,17 +197,8 @@ public class MidiBackupTranslatorShell {
         }
     }
 
-    private static void wakeUpDevice(com.hypercube.workshop.midiworkshop.api.MidiOutDevice out, DeviceInstance device) {
-        log.info("Wake up MIDI out device '{}' with ActiveSensing...", out.getName());
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 4000) {
-            out.sendActiveSensing();
-            device.sleep(out, 200);
-        }
-    }
-
     @SuppressWarnings("java:S106")
-    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, com.hypercube.workshop.midiworkshop.api.MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
+    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
         for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
                 .size(); requestIndex++) {
             var requests = projectDevice.getDumpRequestTemplates()
@@ -220,7 +233,7 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void onSysEx(DeviceInstance device, com.hypercube.workshop.midiworkshop.api.MidiInDevice midiInDevice, com.hypercube.workshop.midiworkshop.api.CustomMidiEvent customMidiEvent) {
+    private void onSysEx(DeviceInstance device, MidiInDevice midiInDevice, com.hypercube.workshop.midiworkshop.api.CustomMidiEvent customMidiEvent) {
         byte[] data = customMidiEvent.getMessage()
                 .getMessage();
         if (device.getCurrentResponseSize() == 0) {
@@ -231,17 +244,7 @@ public class MidiBackupTranslatorShell {
         System.out.flush();
     }
 
-    @ShellMethod(value = "List MIDI devices")
-    public void list() {
-        com.hypercube.workshop.midiworkshop.api.MidiDeviceManager m = new MidiDeviceManager();
-        m.collectDevices();
-        m.getInputs()
-                .forEach(d -> log.info(String.format("MIDI INPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
-        m.getOutputs()
-                .forEach(d -> log.info(String.format("MIDI OUTPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
-    }
-
-    private String getDeviceAlias(com.hypercube.workshop.midiworkshop.api.AbstractMidiDevice midiDevice) {
+    private String getDeviceAlias(AbstractMidiDevice midiDevice) {
         return projectConfigurationFactory.getLibraryDeviceFromMidiPort(midiDevice
                         .getName())
                 .map(def -> " => bound to library device \"%s\"".formatted(def.getDeviceName()))

@@ -2,8 +2,8 @@ package com.hypercube.midi.translator;
 
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,29 +32,6 @@ public class MidiBackupTranslator {
     public void close() {
         if (midiInDevice != null) {
             midiInDevice.stopListening();
-        }
-    }
-
-    void translate(MidiInDevice in, MidiOutDevice out, Integer bandwidth) {
-        try {
-            this.midiInDevice = in;
-            this.midiOutDevice = out;
-            // Midi throughtput 3125 bytes / sec
-            this.bandwidth = Optional.ofNullable(bandwidth)
-                    .orElse(3125);
-            consumer = new Thread(this::consumerLoop);
-            consumer.setPriority(Thread.MAX_PRIORITY);
-            consumer.start();
-            in.listen(this::onMidiEvent);
-        } catch (MidiError e) {
-            log.error("The Output device is Unavailable: " + in.getName());
-        } finally {
-            stop = true;
-            try {
-                consumer.join();
-            } catch (InterruptedException e) {
-                throw new MidiError(e);
-            }
         }
     }
 
@@ -128,6 +105,29 @@ public class MidiBackupTranslator {
             }
         } else {
             eventQueue.add(customMidiEvent);
+        }
+    }
+
+    void translate(MidiInDevice in, MidiOutDevice out, Integer bandwidth) {
+        try {
+            this.midiInDevice = in;
+            this.midiOutDevice = out;
+            // Midi throughtput 3125 bytes / sec
+            this.bandwidth = Optional.ofNullable(bandwidth)
+                    .orElse(3125);
+            consumer = new Thread(this::consumerLoop);
+            consumer.setPriority(Thread.MAX_PRIORITY);
+            consumer.start();
+            in.listen(this::onMidiEvent);
+        } catch (MidiError e) {
+            log.error("The Output device is Unavailable: " + in.getName());
+        } finally {
+            stop = true;
+            try {
+                consumer.join();
+            } catch (InterruptedException e) {
+                throw new MidiError(e);
+            }
         }
     }
 }
