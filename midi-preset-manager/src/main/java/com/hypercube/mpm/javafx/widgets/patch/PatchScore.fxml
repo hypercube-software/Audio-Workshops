@@ -3,12 +3,9 @@
 <?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.String?>
 <fx:root xmlns:fx="http://javafx.com/fxml" fx:id="root" hgap="5.0" type="GridPane"
          xmlns="http://javafx.com/javafx">
-    <fx:define>
-        <String fx:id="score"/>
-    </fx:define>
+    <!-- DEFINE PROPERTY score -->
     <children>
         <ImageView fx:id="star1" GridPane.columnIndex="1" GridPane.valignment="CENTER">
             <image>

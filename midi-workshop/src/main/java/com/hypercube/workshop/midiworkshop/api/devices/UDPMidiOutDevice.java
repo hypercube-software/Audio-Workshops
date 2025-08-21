@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.CRC32;
 
 @Slf4j
@@ -16,6 +17,7 @@ public class UDPMidiOutDevice extends MidiOutDevice {
     private final int port;
     private final String device;
     private final long networkId;
+    private final AtomicLong paquetId = new AtomicLong();
     private final InetAddress addr;
     private DatagramSocket clientSocket;
 
@@ -77,6 +79,7 @@ public class UDPMidiOutDevice extends MidiOutDevice {
         int size = msg.getLength();
         ByteBuffer buffer = ByteBuffer.allocate(size + 4 + 2);
         buffer.putInt((int) networkId);
+        buffer.putLong(paquetId.incrementAndGet());
         buffer.putShort((short) size);
         buffer.put(data);
         byte[] payload = buffer.array();

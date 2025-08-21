@@ -11,13 +11,18 @@
             <menus>
                 <Menu text="File">
                     <items>
-                        <MenuItem text="Close"/>
+                        <MenuItem text="Exit" onAction="#onMenuExit"/>
                     </items>
                 </Menu>
                 <Menu text="Edit">
                     <items>
-                        <MenuItem fx:id="updateCategoriesMenuItem" text="Update Categories..."
+                        <MenuItem text="Restore devices state..."
+                                  onAction="#onMenuRestoreDeviceState"/>
+                        <MenuItem text="Update Categories..."
                                   onAction="#onUpdateCategories"/>
+                        <SeparatorMenuItem/>
+                        <CheckMenuItem fx:id="menuAlwaysOnTop" text="Always on top"
+                                       onAction="#onMenuAlwaysOnTop"/>
                     </items>
                 </Menu>
                 <Menu text="Help">

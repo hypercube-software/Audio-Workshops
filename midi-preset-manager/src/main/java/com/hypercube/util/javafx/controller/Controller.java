@@ -1,5 +1,6 @@
 package com.hypercube.util.javafx.controller;
 
+import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
 import com.hypercube.util.javafx.binding.BindingManager;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.events.EventHelper;
@@ -76,6 +77,35 @@ public abstract class Controller<T extends Node, M> {
         }
     }
 
+    public void runLongTaskWithDialog(ProgressDialogController diag, Runnable code) {
+        Scene scene = getView().getScene();
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    while (!diag.isAttacedToScene()) {
+                        sleep(100);
+                    }
+                    code.run();
+                } catch (Throwable e) {
+                    log.error("Unexpected error", e);
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        EventHandler<WorkerStateEvent> closeDialog = e -> {
+            Platform.runLater(() -> {
+                diag.close();
+            });
+        };
+        task.setOnSucceeded(closeDialog);
+        task.setOnFailed(closeDialog);
+        task.setOnCancelled(closeDialog);
+        new Thread(task).start();
+        diag.showAndWait();
+    }
+
     public void runLongTask(Runnable code) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {
@@ -104,5 +134,13 @@ public abstract class Controller<T extends Node, M> {
             scene.setCursor(Cursor.WAIT);
         }
         new Thread(task).start();
+    }
+
+    public void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

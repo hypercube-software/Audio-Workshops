@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
@@ -14,16 +13,14 @@
         <RowConstraints minHeight="35.0"/>
         <RowConstraints minHeight="70.0" prefHeight="70.0"/>
     </rowConstraints>
-    <fx:define>
-        <String fx:id="title"/>
-        <String fx:id="itemType"/>
-        <String fx:id="dataSource"/>
-        <String fx:id="labelMethod"/>
-        <String fx:id="selectedItems"/>
-        <String fx:id="allowMultiSelection"/>
-        <String fx:id="allowDrop"/>
-        <String fx:id="acceptedFileTypes"/>
-    </fx:define>
+    <!-- DEFINE PROPERTY title -->
+    <!-- DEFINE PROPERTY itemType -->
+    <!-- DEFINE PROPERTY dataSource -->
+    <!-- DEFINE PROPERTY labelMethod -->
+    <!-- DEFINE PROPERTY selectedItems -->
+    <!-- DEFINE PROPERTY allowMultiSelection -->
+    <!-- DEFINE PROPERTY allowDrop -->
+    <!-- DEFINE PROPERTY acceptedFileTypes -->
     <children>
         <HBox alignment="CENTER" styleClass="attributeSelectorHeader"
               GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER"

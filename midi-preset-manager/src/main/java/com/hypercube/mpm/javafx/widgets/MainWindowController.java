@@ -8,6 +8,7 @@ import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
+import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
@@ -18,12 +19,14 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.CheckMenuItem;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,9 +49,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     PatchesManager patchesManager;
     @Autowired
     ConfigurationFactory configurationFactory;
-
     @FXML
-    MenuItem updateCategoriesMenuItem;
+    CheckMenuItem menuAlwaysOnTop;
 
     public void onUpdateCategories(ActionEvent event) {
         runLongTask(() -> {
@@ -104,6 +106,23 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     }
 
+    @FXML
+    public void onMenuExit(ActionEvent event) {
+        Platform.exit();
+    }
+
+    public void onMenuRestoreDeviceState(ActionEvent event) {
+        initDevices();
+    }
+
+    @FXML
+    public void onMenuAlwaysOnTop(ActionEvent event) {
+        Stage stage = (Stage) getView().getScene()
+                .getWindow();
+        stage.setAlwaysOnTop(!stage.isAlwaysOnTop());
+        menuAlwaysOnTop.setSelected(stage.isAlwaysOnTop());
+    }
+
     private void showError(Throwable error) {
         String errorClassName = error.getClass()
                 .getSimpleName();
@@ -151,15 +170,27 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Restore the state of all devices when the application start
      */
     private void initDevices() {
-        cfg.getSelectedPatches()
-                .forEach(selectedPatch ->
-                {
+        if (!cfg.getSelectedPatches()
+                .isEmpty()) {
+            var dlg = ProgressDialogController.buildDialog();
+            dlg.updateTextHeader("Restore %d device state...".formatted(cfg.getSelectedPatches()
+                    .size()));
+            runLongTaskWithDialog(dlg, () -> {
+                var sp = cfg.getSelectedPatches();
+                for (int i = 0; i < sp.size(); i++) {
+                    var selectedPatch = sp.get(i);
+                    double progress = (double) i / sp.size();
+                    dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(selectedPatch.getName(), selectedPatch.getDevice()));
                     deviceStateManager.initDeviceStateWithPatch(selectedPatch);
                     patchesManager.sendPatchToDevice(selectedPatch);
-                });
-        onDeviceChanged(null);
-        midiRouter.setControllerMessageListener(this::onMidiController);
-        midiRouter.listenDawOutputs();
+                }
+                onDeviceChanged(null);
+                midiRouter.setControllerMessageListener(this::onMidiController);
+                midiRouter.listenDawOutputs();
+                dlg.updateProgress(1, "Done");
+                sleep(4000);
+            });
+        }
     }
 
     private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {

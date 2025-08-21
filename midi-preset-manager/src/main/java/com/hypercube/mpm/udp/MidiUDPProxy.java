@@ -11,29 +11,42 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MidiUDPProxy {
+
+
     private final ConfigurationFactory configurationFactory;
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
+    private final Map<Long, ChannelState> channels = new HashMap<>();
+    private final ScheduledExecutorService cleanupScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public void start(int port) {
         ProjectConfiguration config = configurationFactory.loadConfig();
+        cleanupScheduler.scheduleAtFixedRate(() -> {
+            channels.forEach((networkId, state) -> state.cleanupStalePaquets(ChannelState.CLEANUP_INTERVAL_SECONDS));
+        }, ChannelState.CLEANUP_INTERVAL_SECONDS, ChannelState.CLEANUP_INTERVAL_SECONDS, TimeUnit.SECONDS);
+
         try {
             log.info("Wait incoming messages on UDP port %d".formatted(port));
             DatagramSocket serverSocket = new DatagramSocket(port);
             for (; ; ) {
                 DatagramPacket packet = listen(serverSocket);
-                executor.execute(new MIDIUDPTask(config, packet));
+                executor.execute(new MIDIUDPTask(config, channels, packet));
             }
         } catch (SocketException e) {
             throw new MidiError("Unable to listen on port " + port, e);
         }
     }
+
 
     private DatagramPacket listen(DatagramSocket serverSocket) {
         byte[] receiveData = new byte[65507];

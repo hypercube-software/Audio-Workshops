@@ -49,6 +49,26 @@ String calculateClassName(Path filePath, String baseDir) {
             .replace(fileName, fileName.replace(".fxml", ""));
     return className;
 }
+List<String> extractPropertiesDefinitions(Element fxRoot) {
+    Pattern propertyDefinition = Pattern.compile("DEFINE PROPERTY ([A-Za-z0-9]+)");
+    NodeList childNodes = fxRoot.getChildNodes();
+    List<String> properties = IntStream.range(0, childNodes.getLength())
+            .mapToObj(childNodes::item)
+            .filter(node -> node.getNodeType() == Node.COMMENT_NODE)
+            .filter(node -> node.getTextContent()
+                    .contains("DEFINE PROPERTY"))
+            .map(node -> {
+                Matcher m = propertyDefinition.matcher(node.getTextContent());
+                if (m.find()) {
+                    return Optional.of(m.group(1));
+                } else {
+                    return Optional.<String>empty();
+                }
+            })
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
+    return properties;
+}
 
 String generateJavaCode(String className, String typeAttribute, List<String> widgetProperties) {
         String packageName = className.substring(0, className.lastIndexOf("."));
@@ -140,20 +160,21 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                             String typeAttribute = fxRoot.getAttribute("type");
                             String className = calculateClassName(path, baseDir);
 
-                            List<String> widgetProperties = new ArrayList<>();
-                                                            var result = fxRoot.getElementsByTagName("fx:define");
-                                                            if (result.getLength() > 0) {
-                                                                Element fxDefine = (Element) result.item(0);
-                                                                NodeList childNodes = fxDefine.getChildNodes();
-                                                                for (int idx = 0; idx < childNodes.getLength(); idx++) {
-                                                                    Node child = childNodes.item(idx);
-                                                                    if (child instanceof Element element) {
-                                                                        String id = element.getAttribute("fx:id");
-                                                                        System.out.println("Widget property: " + id);
-                                                                        widgetProperties.add(id);
-                                                                    }
-                                                                }
-                                                            }
+                            List<String> widgetProperties = extractPropertiesDefinitions(fxRoot);
+
+                            var result = fxRoot.getElementsByTagName("fx:define");
+                            if (result.getLength() > 0) {
+                                Element fxDefine = (Element) result.item(0);
+                                NodeList childNodes = fxDefine.getChildNodes();
+                                for (int idx = 0; idx < childNodes.getLength(); idx++) {
+                                    Node child = childNodes.item(idx);
+                                    if (child instanceof Element element) {
+                                        String id = element.getAttribute("fx:id");
+                                        System.out.println("Widget property: " + id);
+                                        widgetProperties.add(id);
+                                    }
+                                }
+                            }
 
                             String javaCode = generateJavaCode(className, typeAttribute,widgetProperties);
                             String relativePath = Paths.get(baseDir).relativize(path).getParent().toString();

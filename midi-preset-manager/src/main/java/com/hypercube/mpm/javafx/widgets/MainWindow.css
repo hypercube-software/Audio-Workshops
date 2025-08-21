@@ -98,9 +98,25 @@
     -fx-background-insets: 0;
 }
 
-.dialog-pane {
+.progressDialog, .dialog-pane {
     -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
 }
+.progressDialog {
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 8, 8);
+}
+
+.progressDialog > .label {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+
+.progress-bar .bar {
+    -fx-accent: green;
+}
+
 .dialog-pane > .header-panel > .label {
     -fx-font-size: 1.2em;
     -fx-font-weight: bold;
