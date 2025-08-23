@@ -25,6 +25,12 @@
                                        onAction="#onMenuAlwaysOnTop"/>
                     </items>
                 </Menu>
+                <Menu text="Midi">
+                    <items>
+                        <MenuItem text="All notes off"
+                                  onAction="#onAllNotesOff"/>
+                    </items>
+                </Menu>
                 <Menu text="Help">
                     <items>
                         <MenuItem text="About"/>

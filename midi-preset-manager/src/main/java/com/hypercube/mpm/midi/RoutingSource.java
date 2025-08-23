@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@EqualsAndHashCode(of = "port.name")
+@EqualsAndHashCode(of = "name")
 public final class RoutingSource implements Closeable {
     /**
      * Input device, can be null, in this case the source is just a midi port, no transformers can be used
@@ -26,6 +26,10 @@ public final class RoutingSource implements Closeable {
      * Low level MIDI port (bound {@link #device} if not null)
      */
     private final MidiInDevice port;
+    /**
+     * Name of the routing source (which is the port name)
+     */
+    private final String name;
     /**
      * RoutingSource towards secondary outputs (DAW) if {@link #device} is not null
      * <p>{@link MidiTransformer} are bound to a specific {@link MidiOutDevice} name
@@ -38,6 +42,7 @@ public final class RoutingSource implements Closeable {
         if (port == null) {
             throw new IllegalArgumentException("Port cannot be null");
         }
+        this.name = port.getName();
     }
 
     public void startListening() {

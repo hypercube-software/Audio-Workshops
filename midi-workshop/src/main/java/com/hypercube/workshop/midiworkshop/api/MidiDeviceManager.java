@@ -70,6 +70,9 @@ public class MidiDeviceManager {
     }
 
     public Optional<MidiInDevice> getInput(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
         return getInputs().stream()
                 .filter(d -> d.getName()
                         .equals(name))
@@ -77,6 +80,9 @@ public class MidiDeviceManager {
     }
 
     public Optional<MidiOutDevice> getOutput(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(getOutputs().stream()
                 .filter(d -> d.getName()
                         .equals(name))

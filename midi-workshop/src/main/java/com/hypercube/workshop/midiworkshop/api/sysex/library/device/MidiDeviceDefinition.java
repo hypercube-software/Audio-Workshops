@@ -201,7 +201,6 @@ public class MidiDeviceDefinition {
     }
 
     public boolean matchNetworkId(long networkId) {
-        log.info("%40s: %08X".formatted(getDeviceName(), getDeviceNetworkId()) + " %08X".formatted(networkId));
         return getDeviceNetworkId() == networkId;
     }
 

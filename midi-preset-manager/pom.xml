@@ -51,11 +51,6 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
@@ -205,4 +200,30 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <finalName>mpm-win</finalName>
+            </build>
+        </profile>
+
+        <profile>
+            <id>osx</id>
+
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <finalName>mpm-mac</finalName>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -39,6 +39,7 @@ public final class ChannelState {
                 packets.remove(packetNumber);
                 packetNumber = nextPacketNumber.incrementAndGet();
             } else {
+                log.info("Wait packet {}", packetNumber);
                 break;
             }
         }

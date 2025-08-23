@@ -21,38 +21,38 @@ public class MIDIUDPTask implements Runnable {
 
     @Override
     public void run() {
-        log.info("Receive {} bytes", datagramPacket.getLength());
         ByteBuffer buffer = ByteBuffer.wrap(datagramPacket.getData());
         long networkId = buffer.getInt() & 0xFFFFFFFFL;
         long packetNumber = buffer.getLong();
         int size = buffer.getShort() & 0xFFFF;
         byte[] data = new byte[size];
         buffer.get(data);
-        ChannelState state = channels.get(networkId);
-        if (state == null) {
-            state = new ChannelState(networkId);
-            channels.put(networkId, state);
-        }
-        state.addNewPacket(packetNumber, data);
-        state.consumePackets(payload -> {
-            MidiDeviceDefinition device = config.getMidiDeviceLibrary()
-                    .getDeviceByNetworkId(networkId);
-            config.getMidiDeviceManager()
-                    .getOutput(device.getOutputMidiDevice())
-                    .ifPresentOrElse(port -> {
-                        if (!(port instanceof UDPMidiOutDevice)) {
-                            CustomMidiEvent evt = SysExBuilder.forgeCustomMidiEvent(payload);
-                            log.info("Send " + evt.getHexValues() + " to device " + device.getDeviceName());
-                            if (!port.isOpen()) {
-                                port.open();
+        MidiDeviceDefinition device = config.getMidiDeviceLibrary()
+                .getDeviceByNetworkId(networkId);
+        log.info("Receive {} bytes ,packet {}, networkId {} => {}", data.length, packetNumber, networkId, device.getDeviceName());
+        synchronized (device) {
+            ChannelState state = channels.get(networkId);
+            if (state == null) {
+                state = new ChannelState(networkId);
+                channels.put(networkId, state);
+            }
+            state.addNewPacket(packetNumber, data);
+            state.consumePackets(payload -> {
+                config.getMidiDeviceManager()
+                        .getOutput(device.getOutputMidiDevice())
+                        .ifPresentOrElse(port -> {
+                            if (!(port instanceof UDPMidiOutDevice)) {
+                                CustomMidiEvent evt = SysExBuilder.forgeCustomMidiEvent(payload);
+                                log.info("Send " + evt.getHexValues() + " to device " + device.getDeviceName());
+                                if (!port.isOpen()) {
+                                    port.open();
+                                }
+                                port.send(evt);
+                            } else {
+                                log.error("The port " + port.getName() + " is not a MIDI port");
                             }
-                            port.send(evt);
-                        } else {
-                            log.error("The port " + port.getName() + " is not a MIDI port");
-                        }
-                    }, () -> {
-                        log.error("The port '{}' for device '{}' is not available. Did you switch on the device ?", device.getOutputMidiDevice(), device.getDeviceName());
-                    });
-        });
+                        }, () -> log.error("The port '{}' for device '{}' is not available. Did you switch on the device ?", device.getOutputMidiDevice(), device.getDeviceName()));
+            });
+        }
     }
 }

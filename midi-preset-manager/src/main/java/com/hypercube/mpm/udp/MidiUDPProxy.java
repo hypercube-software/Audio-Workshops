@@ -28,23 +28,33 @@ public class MidiUDPProxy {
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
     private final Map<Long, ChannelState> channels = new HashMap<>();
     private final ScheduledExecutorService cleanupScheduler = Executors.newSingleThreadScheduledExecutor();
+    private boolean shutdown = false;
 
     public void start(int port) {
         ProjectConfiguration config = configurationFactory.loadConfig();
         cleanupScheduler.scheduleAtFixedRate(() -> {
             channels.forEach((networkId, state) -> state.cleanupStalePaquets(ChannelState.CLEANUP_INTERVAL_SECONDS));
         }, ChannelState.CLEANUP_INTERVAL_SECONDS, ChannelState.CLEANUP_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        Thread shutdownHook = new Thread(() -> {
+            log.info("JVM Shutdown...");
+            shutdown = true;
+        });
+        Runtime.getRuntime()
+                .addShutdownHook(shutdownHook);
 
         try {
             log.info("Wait incoming messages on UDP port %d".formatted(port));
             DatagramSocket serverSocket = new DatagramSocket(port);
-            for (; ; ) {
+            while (!shutdown) {
                 DatagramPacket packet = listen(serverSocket);
                 executor.execute(new MIDIUDPTask(config, channels, packet));
             }
+            serverSocket.close();
         } catch (SocketException e) {
             throw new MidiError("Unable to listen on port " + port, e);
         }
+        cleanupScheduler.shutdown();
+        log.info("MIDIUDPProxy done");
     }
 
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +45,7 @@ public class MidiDeviceLibrary {
     private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     @Getter
     private Map<String, MidiDeviceDefinition> devices = new HashMap<>();
-    private Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new HashMap<>();
+    private Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new ConcurrentHashMap<>();
     @Getter
     private boolean loaded;
 
@@ -273,7 +274,7 @@ public class MidiDeviceLibrary {
 
     private String getDevicesNames() {
 
-        return devices.size() == 0 ? "empty" : devices.keySet()
+        return devices.isEmpty() ? "empty" : devices.keySet()
                 .stream()
                 .sorted()
                 .collect(Collectors.joining(","));

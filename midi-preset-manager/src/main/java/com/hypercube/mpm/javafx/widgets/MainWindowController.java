@@ -14,6 +14,7 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.properties.SceneListener;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
@@ -123,6 +124,21 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         menuAlwaysOnTop.setSelected(stage.isAlwaysOnTop());
     }
 
+    @FXML
+    public void onAllNotesOff(ActionEvent event) {
+        cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .forEach((name, device) -> {
+                    cfg.getMidiDeviceManager()
+                            .getOutput(device.getOutputMidiDevice())
+                            .filter(MidiOutDevice::isOpen)
+                            .ifPresent(port -> {
+                                log.info("Send all off to MIDI port '{}'...", port.getName());
+                                port.sendAllOff();
+                            });
+                });
+    }
+
     private void showError(Throwable error) {
         String errorClassName = error.getClass()
                 .getSimpleName();
@@ -173,7 +189,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (!cfg.getSelectedPatches()
                 .isEmpty()) {
             var dlg = ProgressDialogController.buildDialog();
-            dlg.updateTextHeader("Restore %d device state...".formatted(cfg.getSelectedPatches()
+            dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
                     .size()));
             runLongTaskWithDialog(dlg, () -> {
                 var sp = cfg.getSelectedPatches();
