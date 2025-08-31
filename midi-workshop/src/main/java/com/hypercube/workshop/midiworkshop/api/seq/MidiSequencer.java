@@ -137,7 +137,7 @@ public class MidiSequencer implements Closeable {
             try {
                 Thread.sleep(4000);
             } catch (InterruptedException e) {
-                log.warn("Inerruped", e);
+                log.warn("Interrupted", e);
                 Thread.currentThread()
                         .interrupt();
             }

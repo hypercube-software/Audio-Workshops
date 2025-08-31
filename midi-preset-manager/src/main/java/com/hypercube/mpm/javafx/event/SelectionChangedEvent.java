@@ -9,12 +9,12 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class SelectionChangedEvent extends Event {
+public class SelectionChangedEvent<T> extends Event {
     private final String widgetId;
     private final List<Integer> selectedIndexes;
-    private final List<Object> selectedItems;
+    private final List<T> selectedItems;
 
-    public SelectionChangedEvent(Object view, EventTarget target, EventType<?> eventType, String widgetId, List<Integer> selectedIndexes, List<Object> selectedItems) {
+    public SelectionChangedEvent(Object view, EventTarget target, EventType<?> eventType, String widgetId, List<Integer> selectedIndexes, List<T> selectedItems) {
         super(view, target, eventType);
         this.widgetId = widgetId;
         this.selectedIndexes = selectedIndexes;

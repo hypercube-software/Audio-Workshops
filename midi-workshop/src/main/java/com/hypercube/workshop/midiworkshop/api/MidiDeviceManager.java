@@ -1,6 +1,10 @@
 package com.hypercube.workshop.midiworkshop.api;
 
-import com.hypercube.workshop.midiworkshop.api.devices.*;
+import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.MultiMidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.udp.UDPMidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

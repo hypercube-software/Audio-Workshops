@@ -77,10 +77,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
-        MainModel model = getModel();
-        model.setDevices(buildDeviceList());
-        model.setMidiInPorts(buildMidiInPortsList());
-        model.setMidiThruPorts(buildMidiThruPortsList());
+        deviceStateManager.initModel();
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
@@ -110,6 +107,21 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @FXML
     public void onMenuExit(ActionEvent event) {
         Platform.exit();
+    }
+
+    @FXML
+    public void onMenuReloadMidiDeviceLibrary(ActionEvent event) {
+        deviceStateManager.reloadMidiDeviceLibrary();
+        Optional.ofNullable(getModel().getCurrentDeviceState())
+                .flatMap(state -> cfg.getMidiDeviceLibrary()
+                        .getDevice(state
+                                .getId()
+                                .getName()))
+                .ifPresent(device -> {
+                    getModel().setCurrentDeviceState(null);
+                    forceDeviceChange(device.getDeviceName());
+                });
+        refreshPatches();
     }
 
     public void onMenuRestoreDeviceState(ActionEvent event) {
@@ -203,10 +215,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 onDeviceChanged(null);
                 midiRouter.setControllerMessageListener(this::onMidiController);
                 midiRouter.listenDawOutputs();
+                Optional.ofNullable(cfg.getSelectedOutput())
+                        .ifPresent(this::forceDeviceChange);
+
                 dlg.updateProgress(1, "Done");
                 sleep(4000);
             });
         }
+    }
+
+    private void forceDeviceChange(String deviceName) {
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, List.of(), List.of(deviceName));
     }
 
     private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {
@@ -222,59 +241,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         runOnJavaFXThread(() -> getModel().setEventInfo(message));
     }
 
-    /**
-     * When possible we replace the MIDI port name by a known device
-     */
-    private List<String> buildMidiInPortsList() {
-        return cfg.getMidiDeviceManager()
-                .getInputs()
-                .stream()
-                .map(port -> {
-                    for (var device : cfg.getMidiDeviceLibrary()
-                            .getDevices()
-                            .values()) {
-                        if (port.getName()
-                                .equals(device.getInputMidiDevice())) {
-                            return device.getDeviceName();
-                        }
-                    }
-                    return port.getName();
-                })
-                .sorted()
-                .toList();
-    }
-
-    /**
-     * When possible we replace the MIDI port name by a known device
-     */
-    private List<String> buildMidiThruPortsList() {
-        return cfg.getMidiDeviceManager()
-                .getOutputs()
-                .stream()
-                .map(port -> {
-                    for (var device : cfg.getMidiDeviceLibrary()
-                            .getDevices()
-                            .values()) {
-                        if (port.getName()
-                                .equals(device.getOutputMidiDevice())) {
-                            return device.getDeviceName();
-                        }
-                    }
-                    return port.getName();
-                })
-                .sorted()
-                .toList();
-    }
-
-    private List<String> buildDeviceList() {
-        return cfg.getMidiDeviceLibrary()
-                .getDevices()
-                .values()
-                .stream()
-                .map(MidiDeviceDefinition::getDeviceName)
-                .sorted()
-                .toList();
-    }
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
         try {
@@ -326,11 +292,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
-    private void onChannelChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onChannelChanged(SelectionChangedEvent<Integer> selectionChangedEvent) {
         var model = getModel();
         selectionChangedEvent.getSelectedItems()
                 .stream()
-                .map(Integer.class::cast)
                 .findFirst()
                 .ifPresent(channel -> {
                     deviceStateManager.onChannelChanged(model, channel);
@@ -340,6 +305,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void restoreConfigSelection() {
+        Optional.ofNullable(cfg.getSelectedOutput())
+                .ifPresent(deviceName -> {
+                    getModel().setSelectedDevice(deviceName);
+                });
         Optional.ofNullable(cfg.getSelectedInputs())
                 .ifPresent(selectedInputs -> {
                     List<String> inputPorts = getModel().getMidiInPorts()
@@ -356,11 +325,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 });
     }
 
-    private void onMasterInputsChanged(SelectionChangedEvent selectionChangedEvent) {
-        List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems()
-                .stream()
-                .map(String.class::cast)
-                .toList();
+    private void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems();
         try {
             midiRouter.changeMasterInputs(deviceOrPortNames);
             cfg.setSelectedInputs(deviceOrPortNames);
@@ -444,15 +410,16 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     /**
      * Update the view given a selected device and select this device as the main destination for the MIDI router
      */
-    private void onDeviceChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onDeviceChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         MidiDeviceDefinition device = Optional.ofNullable(selectionChangedEvent)
-                .map(evt -> selectionChangedEvent.getSelectedIndexes())
-                .filter(selectedIndexes -> selectedIndexes.size() == 1)
-                .map(selectedIndexes -> {
-                    String deviceName = getModel()
-                            .getDevices()
-                            .get(selectedIndexes
-                                    .getFirst());
+                .map(evt -> selectionChangedEvent.getSelectedItems())
+                .filter(selectedItems -> selectedItems.size() == 1)
+                .map(selectedItems -> {
+                    String deviceName = selectedItems
+                            .getFirst();
+                    getModel().setSelectedDevice(deviceName);
+                    cfg.setSelectedOutput(deviceName);
+                    configurationFactory.saveConfig(cfg);
                     return cfg.getMidiDeviceLibrary()
                             .getDevice(deviceName)
                             .orElseThrow();
@@ -460,9 +427,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .orElse(null);
         if (getModel().getCurrentDeviceState() == null || getModel().getCurrentDeviceState()
                 .getMidiOutDevice() == null || device == null || !getModel().getCurrentDeviceState()
-                .getMidiOutDevice()
+                .getId()
                 .getName()
-                .equals(device.getOutputMidiDevice())) {
+                .equals(device.getDeviceName())) {
             deviceStateManager.onDeviceChanged(device);
             midiRouter.changeMainDestination(device);
             refreshPatches();

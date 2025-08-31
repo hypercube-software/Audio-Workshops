@@ -5,8 +5,8 @@
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchSelector?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="true"
-         type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="true" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12">
     <children>
         <GridPane GridPane.columnIndex="0">
             <AttributeSelector fx:id="master" allowMultiSelection="true" dataSource="model.midiInPorts"
@@ -16,7 +16,8 @@
             <AttributeComboBox fx:id="passThru" dataSource="model.midiThruPorts" minHeight="-Infinity"
                                minWidth="-Infinity" selectedItem="model.selectedOutputPorts" title="DAW"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER"/>
-            <AttributeComboBox fx:id="device" dataSource="model.devices" minHeight="-Infinity" minWidth="-Infinity"
+            <AttributeComboBox fx:id="device" dataSource="model.devices" selectedItem="model.selectedDevice"
+                               minHeight="-Infinity" minWidth="-Infinity"
                                title="Device" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="NEVER"/>
             <AttributeSelector fx:id="mode" dataSource="model.deviceModes" maxHeight="301.0" minHeight="-Infinity"
                                minWidth="-Infinity" prefHeight="144.0" prefWidth="248.0"
@@ -36,7 +37,7 @@
                 <RowConstraints/>
             </rowConstraints>
         </GridPane>
-        <GridPane style="-fx-border-width: 0 0 0 2; -fx-border-color: red;" GridPane.columnIndex="1">
+        <GridPane GridPane.columnIndex="1">
             <AttributeSelector fx:id="bank" acceptedFileTypes="syx,mid" allowDrop="true" dataSource="model.modeBanks"
                                minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBank" title="Bank"
                                GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>

@@ -1,5 +1,6 @@
 package com.hypercube.mpm.app;
 
+import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.DeviceStateId;
@@ -42,9 +43,11 @@ import java.util.List;
 public class DeviceStateManager {
     private final MainModel model;
     private final ProjectConfiguration cfg;
+    private final ConfigurationFactory configurationFactory;
 
-    public DeviceStateManager(ProjectConfiguration cfg) {
+    public DeviceStateManager(ProjectConfiguration cfg, ConfigurationFactory configurationFactory) {
         this.cfg = cfg;
+        this.configurationFactory = configurationFactory;
         this.model = MainModel.getObservableInstance();
     }
 
@@ -273,6 +276,75 @@ public class DeviceStateManager {
             model.setModeBanks(List.of());
             model.setModeChannels(List.of());
         }
+    }
+
+    public void reloadMidiDeviceLibrary() {
+        configurationFactory.forceLoadLibrary();
+        initModel();
+    }
+
+    public void initModel() {
+        model.setDevices(buildDeviceList());
+        model.setMidiInPorts(buildMidiInPortsList());
+        model.setMidiThruPorts(buildMidiThruPortsList());
+    }
+
+    /**
+     * When possible we replace the MIDI port name by a known device
+     */
+    private List<String> buildMidiInPortsList() {
+        return cfg.getMidiDeviceManager()
+                .getInputs()
+                .stream()
+                .map(port -> {
+                    for (var device : cfg.getMidiDeviceLibrary()
+                            .getDevices()
+                            .values()) {
+                        if (port.getName()
+                                .equals(device.getInputMidiDevice())) {
+                            return device.getDeviceName();
+                        }
+                    }
+                    return port.getName();
+                })
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * When possible we replace the MIDI port name by a known device
+     */
+    private List<String> buildMidiThruPortsList() {
+        return cfg.getMidiDeviceManager()
+                .getOutputs()
+                .stream()
+                .map(port -> {
+                    for (var device : cfg.getMidiDeviceLibrary()
+                            .getDevices()
+                            .values()) {
+                        if (port.getName()
+                                .equals(device.getOutputMidiDevice())) {
+                            return device.getDeviceName();
+                        }
+                    }
+                    return port.getName();
+                })
+                .sorted()
+                .toList();
+    }
+
+    private List<String> buildDeviceList() {
+        return cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .values()
+                .stream()
+                .filter(d -> d.getOutputMidiDevice() != null && !d.getOutputMidiDevice()
+                        .isEmpty() && cfg.getMidiDeviceManager()
+                        .getOutput(d.getOutputMidiDevice())
+                        .isPresent())
+                .map(MidiDeviceDefinition::getDeviceName)
+                .sorted()
+                .toList();
     }
 
     /**

@@ -84,6 +84,7 @@ public class MidiDeviceLibrary {
 
     public void load(File applicationFolder) {
         devices.clear();
+        devicesPerNetworkId.clear();
         File libraryFolder = Optional.ofNullable(System.getenv(ENV_MDL_FOLDER))
                 .map(File::new)
                 .orElse(new File(applicationFolder.getAbsolutePath(), DEVICES_LIBRARY_FOLDER));

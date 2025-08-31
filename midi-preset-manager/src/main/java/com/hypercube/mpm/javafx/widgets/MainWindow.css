@@ -11,6 +11,9 @@
         -fx-font-weight: bold;
         -fx-text-fill: white;
 }
+.InfoBar .label {
+    -fx-text-fill: white;
+}
 
 .attributeSelectorHeader {
     -fx-border-color: lightgrey;

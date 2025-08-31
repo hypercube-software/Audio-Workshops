@@ -28,6 +28,8 @@ public class MainModel {
     private DeviceState currentDeviceState;
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
+    private String selectedDevice;
+
     @NotObservable
     private Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
     /**

@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.util;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import lombok.RequiredArgsConstructor;
@@ -60,18 +61,22 @@ public class SysExBuilder {
     }
 
     public static CustomMidiEvent forgeCustomMidiEvent(byte[] payload) {
+        return forgeCustomMidiEvent(payload, MidiOutDevice.NO_TIME_STAMP);
+    }
+
+    public static CustomMidiEvent forgeCustomMidiEvent(byte[] payload, long ticks) {
         try {
             if (payload == null || payload.length == 0) {
                 throw new MidiError("Empty byte buffer passed to forgeCustomMidiEvent");
             }
             if ((payload[0] & 0xFF) == 0xF0) {
-                return new CustomMidiEvent(new SysexMessage(payload, payload.length));
+                return new CustomMidiEvent(new SysexMessage(payload, payload.length), ticks);
             } else if (payload.length == 3) {
-                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, payload[1] & 0xFF, payload[2] & 0xFF));
+                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, payload[1] & 0xFF, payload[2] & 0xFF), ticks);
             } else if (payload.length == 2) {
-                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, payload[1] & 0xFF, 0));
+                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, payload[1] & 0xFF, 0), ticks);
             } else if (payload.length == 1) {
-                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, 0, 0));
+                return new CustomMidiEvent(new ShortMessage(payload[0] & 0xFF, 0, 0), ticks);
             } else {
                 throw new MidiError("Unexpected message forged, it is neither a Sysex, neither a short message: " + toHexaString(payload));
             }

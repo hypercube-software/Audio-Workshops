@@ -90,6 +90,10 @@ public final class RoutingSource implements Closeable {
                 .orElse(null);
     }
 
+    public void open() {
+        port.open();
+    }
+
     @Override
     public void close() throws IOException {
         port.close();

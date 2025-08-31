@@ -80,6 +80,13 @@ public class ConfigurationFactory {
         return patch;
     }
 
+    public void forceLoadLibrary() {
+        midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class));
+        midiDeviceLibrary.getDevices()
+                .values()
+                .forEach(d -> midiDeviceLibrary.collectCustomPatches(d));
+    }
+
     private void initEmptyConfig() throws IOException {
         ProjectConfiguration emptyConfig = new ProjectConfiguration();
         saveConfig(emptyConfig);
@@ -118,10 +125,7 @@ public class ConfigurationFactory {
 
     private void loadLibary() {
         if (!midiDeviceLibrary.isLoaded()) {
-            midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class));
-            midiDeviceLibrary.getDevices()
-                    .values()
-                    .forEach(d -> midiDeviceLibrary.collectCustomPatches(d));
+            forceLoadLibrary();
         }
     }
 }

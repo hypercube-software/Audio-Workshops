@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public abstract class AbstractMidiDevice implements Closeable {
     protected final MidiDevice device;
-    private final AtomicInteger openCount = new AtomicInteger();
+    protected final AtomicInteger openCount = new AtomicInteger();
 
     public void open() {
         try {

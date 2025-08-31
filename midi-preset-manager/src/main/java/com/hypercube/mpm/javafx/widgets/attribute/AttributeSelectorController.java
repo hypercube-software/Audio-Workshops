@@ -57,6 +57,8 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                     if (userAction) {
                         onSelectedItemChange();
                         userAction = false;
+                    } else {
+                        attributes.scrollTo(newValue);
                     }
                 });
     }

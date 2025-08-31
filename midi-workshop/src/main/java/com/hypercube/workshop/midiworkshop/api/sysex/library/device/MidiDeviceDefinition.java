@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
-import com.hypercube.workshop.midiworkshop.api.devices.UDPMidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.udp.UDPMidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;

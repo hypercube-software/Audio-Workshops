@@ -81,7 +81,7 @@ public class MidiRouter {
     /**
      * List of secondary outputs given by the GUI (device names, or ports names)
      */
-    private List<String> deviceOrPortNames = new ArrayList<>();
+    private List<String> secondaryOutputNames = new ArrayList<>();
     /**
      * Input master Keyboard controllers, the map key is the input midi port name
      */
@@ -158,37 +158,64 @@ public class MidiRouter {
         log.info("------------------------------------------------------------------------");
     }
 
+    public RoutingSource getRoutingSourceByName(String deviceOrPortName) {
+        Optional<MidiDeviceDefinition> optionalDevice = cfg.getMidiDeviceLibrary()
+                .getDevice(deviceOrPortName);
+
+        var device = optionalDevice.orElse(null);
+
+        var portName = optionalDevice
+                .map(MidiDeviceDefinition::getInputMidiDevice)
+                .orElse(deviceOrPortName);
+
+        var port = cfg.getMidiDeviceManager()
+                .getInput(portName)
+                .orElseThrow(() ->
+                        optionalDevice.map(d -> new MidiError("The port '" + portName +
+                                        "' declared in the device '" + d.getDeviceName() + "' does not exists in the system. If you just plugged in the device, restart this application"))
+                                .orElse(new MidiError("The port " + portName +
+                                        " does not exists in the system. If you just plugged in the device, restart this application")));
+        return new RoutingSource(device, port);
+    }
+
     /**
      * The GUI controller call this method to change the master inputs (MIDI controller devices)
      * <p>Secondary output need to be restarted because their transformers are not the same anymore</p>
      */
-    public void changeMasterInputs(List<String> deviceOrPortNames) {
+    public void changeMasterInputs(List<String> masterInputsNames) {
+        List<RoutingSource> newRoutingSources = masterInputsNames.stream()
+                .map(this::getRoutingSourceByName)
+                .toList();
+
+        List<RoutingSource> routingSourcesToClose = sources.values()
+                .stream()
+                .filter(routingSource -> !newRoutingSources.contains(routingSource))
+                .toList();
+        List<RoutingSource> routingSourcesAlreadyOpen = sources.values()
+                .stream()
+                .filter(routingSource -> newRoutingSources.contains(routingSource))
+                .toList();
+        routingSourcesToClose.forEach(routingSource -> {
+            try {
+                routingSource.close();
+            } catch (IOException e) {
+                throw new MidiError(e);
+            }
+        });
+        List<String> secondaryOutputsNamesBackup = new ArrayList<>(secondaryOutputNames);
         closeSecondaryOutputs();
         closeMainSourceListener();
         sources.clear();
-        deviceOrPortNames.stream()
-                .forEach(deviceOrPortName -> {
-                    Optional<MidiDeviceDefinition> optionalDevice = cfg.getMidiDeviceLibrary()
-                            .getDevice(deviceOrPortName);
-
-                    var device = optionalDevice.orElse(null);
-
-                    var portName = optionalDevice
-                            .map(MidiDeviceDefinition::getInputMidiDevice)
-                            .orElse(deviceOrPortName);
-
-                    var port = cfg.getMidiDeviceManager()
-                            .getInput(portName)
-                            .orElseThrow(() ->
-                                    optionalDevice.map(d -> new MidiError("The port '" + portName +
-                                                    "' declared in the device '" + d.getDeviceName() + "' does not exists in the system. If you just plugged in the device, restart this application"))
-                                            .orElse(new MidiError("The port " + portName +
-                                                    " does not exists in the system. If you just plugged in the device, restart this application")));
-                    port.open();
-                    sources.put(port.getName(), new RoutingSource(device, port));
+        newRoutingSources
+                .forEach(routingSource -> {
+                    if (!routingSourcesAlreadyOpen.contains(routingSource)) {
+                        routingSource.open();
+                    }
+                    sources.put(routingSource.getPortName(), routingSource);
                 });
 
         installMainSourceListenerWithTransformer(mainDestination);
+        secondaryOutputNames = secondaryOutputsNamesBackup;
         openSecondaryOutputs();
     }
 
@@ -198,6 +225,7 @@ public class MidiRouter {
      */
     public void changeMainDestination(MidiDeviceDefinition device) {
         closeMainDestinationListener();
+        closeMainOutput();
         if (device != null) {
             mainDestination = device;
             mainDestinationMidiOut = cfg.getMidiDeviceManager()
@@ -228,7 +256,7 @@ public class MidiRouter {
      */
     public void changeSecondaryOutputs(List<String> deviceOrPortNames) {
         closeSecondaryOutputs();
-        this.deviceOrPortNames = new ArrayList<>(deviceOrPortNames); // make it read/write
+        secondaryOutputNames = new ArrayList<>(deviceOrPortNames); // make it read/write
         openSecondaryOutputs();
     }
 
@@ -280,14 +308,25 @@ public class MidiRouter {
                 log.info("Close {}", dawMidiIn.getName());
                 dawMidiIn.close();
             }
+
         } catch (IOException e) {
             throw new ApplicationError(e);
         }
         log.info("Midi Router terminated.");
     }
 
+    private void closeMainOutput() {
+        if (mainDestinationMidiOut != null) {
+            try {
+                mainDestinationMidiOut.close();
+            } catch (IOException e) {
+                throw new MidiError(e);
+            }
+        }
+    }
+
     private void closeSecondaryOutputs() {
-        deviceOrPortNames.stream()
+        secondaryOutputNames.stream()
                 .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
                         .getDevice(deviceOrPortName))
                 .flatMap(Optional::stream)
@@ -303,13 +342,13 @@ public class MidiRouter {
             }
             secondaryOutputs.clear();
         }
-        deviceOrPortNames.clear();
+        secondaryOutputNames.clear();
     }
 
     private void openSecondaryOutputs() {
         synchronized (secondaryOutputsGuardian) {
             // open outputs
-            secondaryOutputs = deviceOrPortNames.stream()
+            secondaryOutputs = secondaryOutputNames.stream()
                     .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
                             .getDevice(deviceOrPortName)
                             .map(MidiDeviceDefinition::getInputMidiDevice)
