@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.sequencer;
 
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.clock.MidiClockType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class MidiSequencerCLI {
 
     @ShellMethod(value = "Reset all MIDI out devices")
     public void reset() {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.getOutputs()
                 .forEach(o -> {
@@ -29,7 +29,7 @@ public class MidiSequencerCLI {
 
     @ShellMethod(value = "Play something")
     public void elise(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
@@ -39,7 +39,7 @@ public class MidiSequencerCLI {
 
     @ShellMethod(value = "Play something")
     public void bach(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-t") int tempo) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
@@ -49,7 +49,7 @@ public class MidiSequencerCLI {
 
     @ShellMethod(value = "Play something")
     public void play1(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
         try (var clock = m.openOutput(clockDevice)) {
@@ -61,7 +61,7 @@ public class MidiSequencerCLI {
 
     @ShellMethod(value = "Play something")
     public void play2(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") String clockDevice, @ShellOption(value = "-t") int tempo) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
         try (var clock = m.openOutput(clockDevice)) {

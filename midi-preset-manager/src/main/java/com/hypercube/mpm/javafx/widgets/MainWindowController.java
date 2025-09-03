@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sound.midi.MidiUnavailableException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -141,7 +142,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .forEach((name, device) -> {
-                    cfg.getMidiDeviceManager()
+                    cfg.getMidiPortsManager()
                             .getOutput(device.getOutputMidiDevice())
                             .filter(MidiOutDevice::isOpen)
                             .ifPresent(port -> {
@@ -211,6 +212,15 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(selectedPatch.getName(), selectedPatch.getDevice()));
                     deviceStateManager.initDeviceStateWithPatch(selectedPatch);
                     patchesManager.sendPatchToDevice(selectedPatch);
+                    MidiOutDevice port = getModel().getCurrentDeviceState()
+                            .getMidiOutDevice();
+                    if (port != null) {
+                        try {
+                            port.close();
+                        } catch (IOException e) {
+                            log.error("Unexpected error closing MIDI port {}", port.getName(), e);
+                        }
+                    }
                 }
                 onDeviceChanged(null);
                 midiRouter.setControllerMessageListener(this::onMidiController);
@@ -431,7 +441,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .getName()
                 .equals(device.getDeviceName())) {
             deviceStateManager.onDeviceChanged(device);
-            midiRouter.changeMainDestination(device);
+            try {
+                midiRouter.changeMainDestination(device);
+            } catch (MidiError e) {
+                log.error("Unexpected error in Midi Router", e);
+            }
             refreshPatches();
         }
     }

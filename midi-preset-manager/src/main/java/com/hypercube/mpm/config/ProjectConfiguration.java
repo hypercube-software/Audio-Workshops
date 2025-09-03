@@ -2,7 +2,7 @@ package com.hypercube.mpm.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hypercube.mpm.model.Patch;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,5 +21,5 @@ public class ProjectConfiguration {
     @JsonIgnore
     private MidiDeviceLibrary midiDeviceLibrary;
     @JsonIgnore
-    private MidiDeviceManager midiDeviceManager;
+    private MidiPortsManager midiPortsManager;
 }

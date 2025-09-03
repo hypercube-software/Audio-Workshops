@@ -232,9 +232,9 @@ public class MidiDeviceLibrary {
         checkLoaded();
         return devices.values()
                 .stream()
-                .filter(def -> def.getOutputMidiDevice()
-                        .equals(midiPort) || def.getInputMidiDevice()
-                        .equals(midiPort))
+                .filter(def -> midiPort
+                        .equals(def.getOutputMidiDevice()) || midiPort
+                        .equals(def.getInputMidiDevice()))
                 .findFirst();
     }
 

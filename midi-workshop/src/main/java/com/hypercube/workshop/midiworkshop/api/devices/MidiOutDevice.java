@@ -56,7 +56,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
     public void open() {
         super.open();
         try {
-            if (isOpen()) {
+            if (isOpen() && device != null) {
                 receiver = device.getReceiver();
             } else {
                 receiver = null;

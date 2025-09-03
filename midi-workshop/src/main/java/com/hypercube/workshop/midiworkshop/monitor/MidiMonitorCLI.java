@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.monitor;
 
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class MidiMonitorCLI {
 
     @ShellMethod(value = "Monitor MIDI input")
     public void monitor(@ShellOption(value = "-i", defaultValue = "") String inputDevice) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         if (!inputDevice.isEmpty()) {
             try (var in = m.openInput(inputDevice)) {
@@ -35,7 +35,7 @@ public class MidiMonitorCLI {
 
     @ShellMethod(value = "Read MIDI input and send to another MIDI output")
     public void filter(@ShellOption(value = "-i", defaultValue = "") String inputDevice, @ShellOption(value = "-o") String outputDevice) throws IOException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         if (!inputDevice.isEmpty()) {
             try (var in = m.openInput(inputDevice)) {
@@ -60,7 +60,7 @@ public class MidiMonitorCLI {
 
     @ShellMethod(value = "List MIDI devices")
     public void list() {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.getInputs()
                 .forEach(d -> log.info(String.format("INPUT  Device \"%s\"", d.getName())));

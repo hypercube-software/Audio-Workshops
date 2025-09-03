@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.MidiPresetManagerApplication;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.yaml.ObservableSerializer;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class ConfigurationFactory {
 
     @Bean
     public ProjectConfiguration loadConfig() {
-        loadLibary();
+        loadMidiDeviceLibrary();
         favorites = loadFavoritePatches();
         try {
             if (!configFile.exists() || configFile.length() == 0) {
@@ -42,8 +42,8 @@ public class ConfigurationFactory {
             var mapper = new ObjectMapper(new YAMLFactory());
             ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
             config.setMidiDeviceLibrary(midiDeviceLibrary);
-            config.setMidiDeviceManager(new MidiDeviceManager());
-            config.getMidiDeviceManager()
+            config.setMidiPortsManager(new MidiPortsManager());
+            config.getMidiPortsManager()
                     .collectDevices();
             return config;
         } catch (IOException e) {
@@ -80,11 +80,11 @@ public class ConfigurationFactory {
         return patch;
     }
 
-    public void forceLoadLibrary() {
+    public void forceLoadMidiDeviceLibrary() {
         midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class));
         midiDeviceLibrary.getDevices()
                 .values()
-                .forEach(d -> midiDeviceLibrary.collectCustomPatches(d));
+                .forEach(midiDeviceLibrary::collectCustomPatches);
     }
 
     private void initEmptyConfig() throws IOException {
@@ -123,9 +123,9 @@ public class ConfigurationFactory {
         }
     }
 
-    private void loadLibary() {
+    private void loadMidiDeviceLibrary() {
         if (!midiDeviceLibrary.isLoaded()) {
-            forceLoadLibrary();
+            forceLoadMidiDeviceLibrary();
         }
     }
 }

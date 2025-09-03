@@ -3,12 +3,10 @@ package com.hypercube.workshop.midiworkshop;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.seq.KeySignature;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false")
 class MidiWorkshopApplicationTests {
     @Test
     void testMidiNote() {

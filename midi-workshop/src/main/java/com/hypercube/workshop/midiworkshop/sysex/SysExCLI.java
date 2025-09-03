@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
@@ -83,7 +83,7 @@ public class SysExCLI {
             @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,
             @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
             @ShellOption(value = "-f") File output) throws IOException, MidiUnavailableException, InterruptedException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
@@ -112,7 +112,7 @@ public class SysExCLI {
                            @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
                            @ShellOption(value = "-a", help = "Roland Packed Address of a parameter") String address,
                            @ShellOption(value = "-s", help = "Parameter size in bytes") int size) throws IOException, MidiUnavailableException {
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
 
@@ -138,7 +138,7 @@ public class SysExCLI {
         if (output.exists()) {
             Files.delete(output.toPath());
         }
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         m.listPorts();
 

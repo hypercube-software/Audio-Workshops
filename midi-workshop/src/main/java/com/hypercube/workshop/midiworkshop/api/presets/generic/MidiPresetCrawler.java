@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.presets.generic;
 
 import com.hypercube.workshop.midiworkshop.MidiWorkshopApplication;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
@@ -100,13 +100,13 @@ public class MidiPresetCrawler {
         MidiDeviceDefinition device = library.getDevice(deviceName)
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + deviceName));
 
-        MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
-        midiDeviceManager.collectDevices();
+        MidiPortsManager midiPortsManager = new MidiPortsManager();
+        midiPortsManager.collectDevices();
         String outputMidiDevice = device.getOutputMidiDevice();
-        MidiOutDevice out = midiDeviceManager.getOutput(outputMidiDevice)
+        MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
                 .orElse(null);
         String inputMidiDevice = device.getInputMidiDevice();
-        MidiInDevice in = midiDeviceManager.getInput(inputMidiDevice)
+        MidiInDevice in = midiPortsManager.getInput(inputMidiDevice)
                 .orElse(null);
         if (out == null) {
             throw new MidiConfigError("MIDI OUT Device not found: '%s".formatted(outputMidiDevice));

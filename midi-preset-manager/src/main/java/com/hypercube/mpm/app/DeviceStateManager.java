@@ -100,7 +100,7 @@ public class DeviceStateManager {
         deviceState.setId(new DeviceStateId(id.getName(), id.getMode(), selectedPatch == null ? id.getChannel() : selectedPatch.getChannel()));
         if (deviceState.getMidiOutDevice() == null & device.getOutputMidiDevice() != null) {
             try {
-                deviceState.setMidiOutDevice(cfg.getMidiDeviceManager()
+                deviceState.setMidiOutDevice(cfg.getMidiPortsManager()
                         .openOutput(device.getOutputMidiDevice()));
             } catch (MidiError e) {
                 log.error("Unable to open device {}", device.getOutputMidiDevice(), e);
@@ -279,7 +279,7 @@ public class DeviceStateManager {
     }
 
     public void reloadMidiDeviceLibrary() {
-        configurationFactory.forceLoadLibrary();
+        configurationFactory.forceLoadMidiDeviceLibrary();
         initModel();
     }
 
@@ -293,7 +293,7 @@ public class DeviceStateManager {
      * When possible we replace the MIDI port name by a known device
      */
     private List<String> buildMidiInPortsList() {
-        return cfg.getMidiDeviceManager()
+        return cfg.getMidiPortsManager()
                 .getInputs()
                 .stream()
                 .map(port -> {
@@ -315,7 +315,7 @@ public class DeviceStateManager {
      * When possible we replace the MIDI port name by a known device
      */
     private List<String> buildMidiThruPortsList() {
-        return cfg.getMidiDeviceManager()
+        return cfg.getMidiPortsManager()
                 .getOutputs()
                 .stream()
                 .map(port -> {
@@ -339,7 +339,7 @@ public class DeviceStateManager {
                 .values()
                 .stream()
                 .filter(d -> d.getOutputMidiDevice() != null && !d.getOutputMidiDevice()
-                        .isEmpty() && cfg.getMidiDeviceManager()
+                        .isEmpty() && cfg.getMidiPortsManager()
                         .getOutput(d.getOutputMidiDevice())
                         .isPresent())
                 .map(MidiDeviceDefinition::getDeviceName)

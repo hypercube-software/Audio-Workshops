@@ -1,6 +1,6 @@
 package com.hypercube.workshop.syntheditor.service;
 
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
@@ -35,7 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SynthEditorService implements SynthEditorBusListener {
     private final WebSocketBus bus;
-    private final MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
+    private final MidiPortsManager midiPortsManager = new MidiPortsManager();
     private MidiInDevice inputDevice;
     private MidiOutDevice outputDevice;
     private RolandDevice device;
@@ -44,7 +44,7 @@ public class SynthEditorService implements SynthEditorBusListener {
     @PostConstruct
     public void init() {
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, "DS-330"); // Because Roland don't use unique ids for Sound Canvas
-        midiDeviceManager.collectDevices();
+        midiPortsManager.collectDevices();
         device = Manufacturer.ROLAND.getDevice("DS-330");
         collectDS330Parameters();
     }
@@ -94,7 +94,7 @@ public class SynthEditorService implements SynthEditorBusListener {
 
     public synchronized void changeInput(String deviceName) {
         closeCurrentInputDevice();
-        inputDevice = midiDeviceManager.getInput(deviceName)
+        inputDevice = midiPortsManager.getInput(deviceName)
                 .orElseThrow(() -> new MidiError("Device not found:" + deviceName));
         log.info("Open INPUT Device: {}", deviceName);
         inputDevice.open();
@@ -102,7 +102,7 @@ public class SynthEditorService implements SynthEditorBusListener {
 
     public synchronized void changeOutput(String deviceName) {
         closeCurrentOutputDevice();
-        outputDevice = midiDeviceManager.getOutput(deviceName)
+        outputDevice = midiPortsManager.getOutput(deviceName)
                 .orElseThrow(() -> new MidiError("Device not found:" + deviceName));
         log.info("Open OUTPUT Device: {}", deviceName);
         outputDevice.open();

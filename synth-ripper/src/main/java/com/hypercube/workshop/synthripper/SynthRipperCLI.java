@@ -2,7 +2,7 @@ package com.hypercube.workshop.synthripper;
 
 import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
 import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import lombok.AllArgsConstructor;
@@ -25,9 +25,9 @@ public class SynthRipperCLI {
     @ShellMethod(value = "Get device infos")
     public void info(@ShellOption(value = "-v", defaultValue = "false") boolean verbose) {
         log.info("Available devices:");
-        MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
-        midiDeviceManager.collectDevices();
-        midiDeviceManager.getOutputs()
+        MidiPortsManager midiPortsManager = new MidiPortsManager();
+        midiPortsManager.collectDevices();
+        midiPortsManager.getOutputs()
                 .forEach(d -> log.info("MIDI OUT : " + d.getName()));
 
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
@@ -55,8 +55,8 @@ public class SynthRipperCLI {
 
         SynthRipperConfiguration cfg = SynthRipperConfiguration.loadConfig(configFile);
         cfg.getSelectedPresets();
-        MidiDeviceManager midiDeviceManager = new MidiDeviceManager();
-        midiDeviceManager.collectDevices();
+        MidiPortsManager midiPortsManager = new MidiPortsManager();
+        midiPortsManager.collectDevices();
 
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
         audioDeviceManager.collectDevices();
@@ -69,7 +69,7 @@ public class SynthRipperCLI {
                         .getOutputAudioDevice())
                 .orElseThrow(() -> new AudioError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getOutputAudioDevice()));
-        var midiOutDevice = midiDeviceManager.getOutput(cfg.getDevices()
+        var midiOutDevice = midiPortsManager.getOutput(cfg.getDevices()
                         .getOutputMidiDevice())
                 .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getDevices()
                         .getOutputMidiDevice()));

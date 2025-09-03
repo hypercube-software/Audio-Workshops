@@ -21,7 +21,7 @@ public class ApiController {
 
     @GetMapping("/devices")
     MidiDevicesDTO getAllDevices() {
-        var deviceMgr = synthEditorService.getMidiDeviceManager();
+        var deviceMgr = synthEditorService.getMidiPortsManager();
         return midiDevicesMapper.toDTO(deviceMgr.getInputs(), deviceMgr.getOutputs());
     }
 

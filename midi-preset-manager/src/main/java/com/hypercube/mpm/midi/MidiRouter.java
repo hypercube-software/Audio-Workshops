@@ -126,10 +126,10 @@ public class MidiRouter {
                 .stream()
                 .filter(d -> d.getDawMidiDevice() != null && d.getOutputMidiDevice() != null)
                 .forEach(outputDevice -> {
-                    MidiInDevice dawMidiInDevice = cfg.getMidiDeviceManager()
+                    MidiInDevice dawMidiInDevice = cfg.getMidiPortsManager()
                             .getInput(outputDevice.getDawMidiDevice())
                             .orElse(null);
-                    MidiOutDevice midiOutDevice = cfg.getMidiDeviceManager()
+                    MidiOutDevice midiOutDevice = cfg.getMidiPortsManager()
                             .getOutput(outputDevice.getOutputMidiDevice())
                             .orElse(null);
                     if (dawMidiInDevice != null && midiOutDevice != null) {
@@ -168,7 +168,7 @@ public class MidiRouter {
                 .map(MidiDeviceDefinition::getInputMidiDevice)
                 .orElse(deviceOrPortName);
 
-        var port = cfg.getMidiDeviceManager()
+        var port = cfg.getMidiPortsManager()
                 .getInput(portName)
                 .orElseThrow(() ->
                         optionalDevice.map(d -> new MidiError("The port '" + portName +
@@ -228,10 +228,10 @@ public class MidiRouter {
         closeMainOutput();
         if (device != null) {
             mainDestination = device;
-            mainDestinationMidiOut = cfg.getMidiDeviceManager()
+            mainDestinationMidiOut = cfg.getMidiPortsManager()
                     .getOutput(device.getOutputMidiDevice())
                     .orElse(null);
-            mainDestinationMidiIn = cfg.getMidiDeviceManager()
+            mainDestinationMidiIn = cfg.getMidiPortsManager()
                     .getInput(device.getInputMidiDevice())
                     .orElse(null);
             if (mainDestinationMidiOut != null) {
@@ -353,7 +353,7 @@ public class MidiRouter {
                             .getDevice(deviceOrPortName)
                             .map(MidiDeviceDefinition::getInputMidiDevice)
                             .orElse(deviceOrPortName))
-                    .map(cfg.getMidiDeviceManager()::getOutput)
+                    .map(cfg.getMidiPortsManager()::getOutput)
                     .flatMap(Optional::stream)
                     .collect(Collectors.toList());
 

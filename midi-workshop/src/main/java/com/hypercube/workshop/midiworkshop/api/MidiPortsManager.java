@@ -4,10 +4,11 @@ import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MultiMidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.udp.UDPMidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.remote.client.MidiOutNetworkDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.sound.midi.*;
 import java.util.ArrayList;
@@ -17,7 +18,8 @@ import java.util.Optional;
 
 @Slf4j
 @Getter
-public class MidiDeviceManager {
+@Service
+public class MidiPortsManager {
     private final List<MidiInDevice> inputs = new ArrayList<>();
     private final List<MidiOutDevice> outputs = new ArrayList<>();
 
@@ -92,8 +94,8 @@ public class MidiDeviceManager {
                         .equals(name))
                 .findFirst()
                 .orElseGet(() -> {
-                    if (UDPMidiOutDevice.isUDPAddress(name)) {
-                        MidiOutDevice device = new UDPMidiOutDevice(name);
+                    if (MidiOutNetworkDevice.isUDPAddress(name)) {
+                        MidiOutDevice device = new MidiOutNetworkDevice(name);
                         outputs.add(device);
                         return device;
                     } else {

@@ -1,7 +1,7 @@
 package com.hypercube.workshop.audioworkshop.synth;
 
 import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
-import com.hypercube.workshop.midiworkshop.api.MidiDeviceManager;
+import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -21,7 +21,7 @@ public class AudioSynthCLI {
         var audioMgr = new AudioDeviceManager();
         audioMgr.collectDevices();
 
-        MidiDeviceManager m = new MidiDeviceManager();
+        MidiPortsManager m = new MidiPortsManager();
         m.collectDevices();
         try (var in = m.openInput(inputDevice)) {
             audioMgr.getOutput(outputDevice)
@@ -39,7 +39,7 @@ public class AudioSynthCLI {
         m.getOutputs()
                 .forEach(d -> log.info(String.format("AUDIO OUTPUT Device \"%s\"", d.getName())));
 
-        MidiDeviceManager midi = new MidiDeviceManager();
+        MidiPortsManager midi = new MidiPortsManager();
         midi.collectDevices();
         midi.getInputs()
                 .forEach(d -> log.info(String.format("MIDI INPUT  Device \"%s\"", d.getName())));

@@ -19,7 +19,7 @@ public abstract class AbstractMidiDevice implements Closeable {
     public void open() {
         try {
             openCount.incrementAndGet();
-            if (!device.isOpen()) {
+            if (device != null && !device.isOpen()) {
                 device.open();
             }
         } catch (MidiUnavailableException e) {
@@ -31,10 +31,8 @@ public abstract class AbstractMidiDevice implements Closeable {
     public void close() throws IOException {
         int count = openCount.decrementAndGet();
         log.info("Close MIDI port '{}' (client count is {})", getName(), count);
-        if (count == 0) {
-            if (device.isOpen()) {
-                device.close();
-            }
+        if (count == 0 && device != null && device.isOpen()) {
+            device.close();
         }
     }
 
@@ -43,7 +41,7 @@ public abstract class AbstractMidiDevice implements Closeable {
     }
 
     public boolean isOpen() {
-        return device.isOpen();
+        return device != null && device.isOpen();
     }
 
     public String getName() {
