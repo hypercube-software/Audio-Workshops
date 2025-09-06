@@ -36,7 +36,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Build with Maven
+      - name: Build with Maven for Windows
         run: mvn -B package --file pom.xml
+      - name: Build with Maven for OSX
+        run: mvn  -DskipTests -Posx -Djavafx.platform=mac -B package --file pom.xml
 
   

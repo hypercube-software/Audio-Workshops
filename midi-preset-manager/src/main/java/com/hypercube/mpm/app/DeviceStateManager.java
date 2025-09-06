@@ -54,23 +54,20 @@ public class DeviceStateManager {
     public void initDeviceStateWithPatch(Patch selectedPatch) {
         initDeviceStateFromConfig(selectedPatch.getDeviceStateId(), selectedPatch);
         refreshCurrentDeviceState(selectedPatch.getDeviceStateId());
+        changeModeOnDevice(getSelectedDevice(), model.getCurrentDeviceState(), selectedPatch.getMode(), true);
     }
 
-    public void onModeChanged(List<Object> selectedMode) {
+    public void onModeChanged(List<String> selectedMode) {
         if (model.getCurrentDeviceState() == null || selectedMode == null || selectedMode.isEmpty()) {
             return;
         }
-        var device = cfg.getMidiDeviceLibrary()
-                .getDevice(model.getCurrentDeviceState()
-                        .getId()
-                        .getName())
-                .orElseThrow();
+        var device = getSelectedDevice();
         var currentState = model.getCurrentDeviceState();
         if (!selectedMode.isEmpty()) {
             String modeName = (String) selectedMode.getFirst();
             log.info("Switch from mode '{}' to mode '{}' ", currentState.getId()
                     .getMode(), modeName);
-            changeModeOnDevice(device, currentState, modeName);
+            changeModeOnDevice(device, currentState, modeName, false);
             var stateId = getOrCreateDeviceStateId(device, modeName);
             currentState = model.getDeviceStates()
                     .get(stateId);
@@ -189,10 +186,10 @@ public class DeviceStateManager {
     /**
      * If the mode is changed, change effectively the mode in the hardware device via MIDI
      */
-    public void changeModeOnDevice(MidiDeviceDefinition device, DeviceState currentState, String newModeName) {
+    public void changeModeOnDevice(MidiDeviceDefinition device, DeviceState currentState, String newModeName, boolean force) {
         if (!currentState.getId()
                 .getMode()
-                .equals(newModeName)) {
+                .equals(newModeName) || force) {
             String modeCommand = device.getDeviceModes()
                     .get(newModeName)
                     .getCommand();
@@ -220,6 +217,7 @@ public class DeviceStateManager {
                                 throw new MidiError(e);
                             }
                         }));
+                midiOutDevice.sleep(device.getModeLoadTimeMs());
             }
         } else {
             log.info("Already in mode: {}", newModeName);
@@ -287,6 +285,14 @@ public class DeviceStateManager {
         model.setDevices(buildDeviceList());
         model.setMidiInPorts(buildMidiInPortsList());
         model.setMidiThruPorts(buildMidiThruPortsList());
+    }
+
+    private MidiDeviceDefinition getSelectedDevice() {
+        return cfg.getMidiDeviceLibrary()
+                .getDevice(model.getCurrentDeviceState()
+                        .getId()
+                        .getName())
+                .orElseThrow();
     }
 
     /**

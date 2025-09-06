@@ -180,4 +180,24 @@ public class MidiOutDevice extends AbstractMidiDevice {
                     sendAllSoundsOff(ch);
                 });
     }
+
+    /**
+     * send ActiveSensing for a period of time
+     */
+    public void sleep(long timeMs) {
+        try {
+            long start = System.currentTimeMillis();
+            for (; ; ) {
+                long now = System.currentTimeMillis();
+                long deltaMs = now - start;
+                if (deltaMs > timeMs) {
+                    break;
+                }
+                sendActiveSensing();
+                Thread.sleep(150);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

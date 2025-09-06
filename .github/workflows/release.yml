@@ -109,4 +109,44 @@ jobs:
           path: |
             synth-ripper/target/synth-ripper*.jar
             synth-ripper/target/config
-            synth-ripper/target/readme.txt            
+            synth-ripper/target/readme.txt
+      #
+      # Midi Device Library
+      #
+      - name: Set current date
+        id: get-date
+        run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: midi-devices-library-${{ env.TODAY }}
+          path: |
+            devices-library
+      #
+      # Midi Preset Manager
+      #
+      - name: Prepare mpm distrib
+        run: |
+          ls -la midi-preset-manager/target
+          cp midi-preset-manager/doc/readme.txt midi-preset-manager/target
+          cp midi-preset-manager/mpm.cmd midi-preset-manager/target    
+          cp midi-preset-manager/mpm.sh midi-preset-manager/target
+          cp -R devices-library midi-preset-manager/target
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: midi-preset-manager-x64
+          path: |
+            midi-preset-manager/target/mpm-win.jar
+            midi-preset-manager/target/mpm.cmd
+            midi-preset-manager/target/devices-library
+            midi-preset-manager/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          name: midi-preset-manager-osx
+          path: |
+            midi-preset-manager/target/mpm-mac.jar
+            midi-preset-manager/target/mpm.sh
+            midi-preset-manager/target/devices-library
+            midi-preset-manager/target/readme.txt

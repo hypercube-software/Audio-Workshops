@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable, SceneListener {
@@ -204,6 +205,27 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .size()));
             runLongTaskWithDialog(dlg, () -> {
                 var sp = cfg.getSelectedPatches();
+                dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
+                IntStream.range(0, sp.size())
+                        .parallel()
+                        .forEach(i -> {
+                            var device = cfg.getMidiDeviceLibrary()
+                                    .getDevice(sp.get(i)
+                                            .getDevice())
+                                    .orElseThrow();
+                            cfg.getMidiPortsManager()
+                                    .getOutput(device.getOutputMidiDevice())
+                                    .ifPresent(out -> {
+                                        log.info("Wake up device '{}' on MIDI port '{}'", device.getDeviceName(), out.getName());
+                                        try {
+                                            out.open();
+                                            out.sleep(4000);
+                                            out.close();
+                                        } catch (IOException e) {
+                                            log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
+                                        }
+                                    });
+                        });
                 for (int i = 0; i < sp.size(); i++) {
                     var selectedPatch = sp.get(i);
                     double progress = (double) i / sp.size();

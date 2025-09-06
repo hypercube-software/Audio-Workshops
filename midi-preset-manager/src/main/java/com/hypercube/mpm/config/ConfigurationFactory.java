@@ -25,7 +25,7 @@ import java.io.IOException;
 public class ConfigurationFactory {
     private final MidiDeviceLibrary midiDeviceLibrary;
 
-    @Value("${mpm-config:./config.yml}")
+    @Value("${mpm-config:./mpm-config.yml}")
     private File configFile;
 
     private Favorites favorites;
