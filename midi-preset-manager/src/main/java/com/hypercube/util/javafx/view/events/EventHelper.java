@@ -47,7 +47,7 @@ public class EventHelper {
         try {
             var constructor = eventClass.getDeclaredConstructors()[0];
             return (T) constructor.newInstance(constructorParams);
-        } catch (InvocationTargetException | InstantiationException |
+        } catch (InvocationTargetException | InstantiationException | IllegalArgumentException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }

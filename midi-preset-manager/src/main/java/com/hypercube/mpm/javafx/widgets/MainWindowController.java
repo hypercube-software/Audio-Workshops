@@ -4,10 +4,7 @@ import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
-import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
-import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
-import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
-import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
+import com.hypercube.mpm.javafx.event.*;
 import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.MainModel;
@@ -83,6 +80,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
+        addEventListener(MuteOutputDeviceEvent.class, this::onMuteOutputDevice);
 
         try {
             initDevices();
@@ -316,9 +314,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void restoreConfigSelection() {
         Optional.ofNullable(cfg.getSelectedOutput())
-                .ifPresent(deviceName -> {
-                    getModel().setSelectedDevice(deviceName);
-                });
+                .ifPresent(this::forceDeviceChange);
         Optional.ofNullable(cfg.getSelectedInputs())
                 .ifPresent(selectedInputs -> {
                     List<String> inputPorts = getModel().getMidiInPorts()
@@ -333,6 +329,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     getModel().setSelectedOutputPorts(selectedSecondaryOutputPorts);
                     midiRouter.changeSecondaryOutputs(selectedSecondaryOutputPorts);
                 });
+    }
+
+    private void onMuteOutputDevice(MuteOutputDeviceEvent muteOutputDeviceEvent) {
+        midiRouter.mute(muteOutputDeviceEvent.getDevice(), muteOutputDeviceEvent.isMute());
     }
 
     private void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {

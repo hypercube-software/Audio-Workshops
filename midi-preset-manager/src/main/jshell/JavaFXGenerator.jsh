@@ -50,7 +50,7 @@ String calculateClassName(Path filePath, String baseDir) {
     return className;
 }
 List<String> extractPropertiesDefinitions(Element fxRoot) {
-    Pattern propertyDefinition = Pattern.compile("DEFINE PROPERTY ([A-Za-z0-9]+)");
+    Pattern propertyDefinition = Pattern.compile("DEFINE PROPERTY ([A-Za-z0-9:]+)");
     NodeList childNodes = fxRoot.getChildNodes();
     List<String> properties = IntStream.range(0, childNodes.getLength())
             .mapToObj(childNodes::item)
@@ -75,30 +75,38 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
         String simpleClassName = className.substring(className.lastIndexOf(".") + 1);
 
         String properties = widgetProperties.stream()
-                .map(propertyName -> {
+                .map(property -> {
+                    String[] v = property.split(":");
+                    String propertyName = v.length==2?v[1]:v[0];
+                    String propertyType = v.length==2?v[0]:"String";
                     String camelPropertyName = propertyName.substring(0, 1)
                             .toUpperCase() + propertyName.substring(1);
                     return """
                                 // PROPERTY @@NAME@@ ------------------------------------------------
-                                private final StringProperty @@NAME@@ = new SimpleStringProperty();
-                                public String get@@CAMELNAME@@() {
+                                private final @@TYPE@@Property @@NAME@@ = new Simple@@TYPE@@Property();
+                                public @@TYPE@@ get@@CAMELNAME@@() {
                                     return @@NAME@@.get();
                                 }
-                                public void set@@CAMELNAME@@(String value) {
+                                public void set@@CAMELNAME@@(@@TYPE@@ value) {
                                     this.@@NAME@@.set(value);
                                 }
-                                public StringProperty @@NAME@@Property() {
+                                public @@TYPE@@Property @@NAME@@Property() {
                                     return @@NAME@@;
                                 }
                             """.replace("@@NAME@@", propertyName)
+                            .replace("@@TYPE@@", propertyType)
                             .replace("@@CAMELNAME@@", camelPropertyName);
                 })
                 .collect(Collectors.joining());
 
         String installPropertiesListeners = widgetProperties.stream()
-                .map(propertyName -> """
+                .map(property -> {
+                String[] v = property.split(":");
+                String propertyName = v.length==2?v[1]:v[0];
+                return """
                                                  propertiesHelper.declareListener("@@NAME@@",@@NAME@@Property());
-                                     """.replace("@@NAME@@", propertyName))
+                                     """.replace("@@NAME@@", propertyName);
+                })
                 .collect(Collectors.joining());
 
         return """
@@ -111,6 +119,8 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                 import javafx.scene.layout.@@SUPERCLS@@;
                 import javafx.beans.property.SimpleStringProperty;
                 import javafx.beans.property.StringProperty;
+                import javafx.beans.property.SimpleBooleanProperty;
+                import javafx.beans.property.BooleanProperty;
 
                 //
                 // THIS FILE IS GENERATED, DON'T EDIT IT

@@ -48,7 +48,7 @@ public abstract class Controller<T extends Node, M> {
      * Widgets properties are all made available at the same time during creation. So they are all set when this method is called
      * <p>Note: they are NOT available in {@link javafx.fxml.Initializable#initialize}, this is why you have this method</p>
      */
-    public void onPropertyChange(View<?> widget, String property, ObservableValue<? extends String> observable, String oldValue, String newValue) {
+    public void onPropertyChange(View<?> widget, String property, ObservableValue<?> observable, Object oldValue, Object newValue) {
         log.info("Property " + widget.getClass()
                 .getName() + "::" + property + " changed: " + newValue);
     }

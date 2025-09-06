@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.combo;
 
+import com.hypercube.mpm.javafx.event.MuteOutputDeviceEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
@@ -11,9 +12,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SingleSelectionModel;
@@ -27,10 +30,13 @@ import java.util.ResourceBundle;
 
 @Slf4j
 public class AttributeComboBoxController extends Controller<AttributeComboBox, MainModel> implements Initializable {
+    private static final PseudoClass PSEUDOCLASS_SELECTED = PseudoClass.getPseudoClass("selected");
     @FXML
     Label label;
     @FXML
     ComboBox attributes;
+    @FXML
+    Button mute;
     // boolean used to distinguish user action and programmatic action
     private boolean userAction = false;
 
@@ -83,10 +89,23 @@ public class AttributeComboBoxController extends Controller<AttributeComboBox, M
     }
 
     @FXML
-    public void onAction(ActionEvent event) {
+    public void onSelectAttribute(ActionEvent event) {
         if (userAction) {
             onSelectedItemChange();
             userAction = false;
+        }
+    }
+
+    @FXML
+    public void onMute(ActionEvent event) {
+        var v = getView();
+        boolean invertedMuted = !v.getMuted();
+        v.setMuted(invertedMuted);
+        mute.pseudoClassStateChanged(PSEUDOCLASS_SELECTED, invertedMuted);
+        Object device = attributes.getSelectionModel()
+                .getSelectedItem();
+        if (device != null) {
+            fireEvent(MuteOutputDeviceEvent.class, device, invertedMuted);
         }
     }
 

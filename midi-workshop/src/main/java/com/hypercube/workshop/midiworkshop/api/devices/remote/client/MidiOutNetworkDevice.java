@@ -5,6 +5,7 @@ import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.NetworkIdBuilder;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.msg.*;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.errors.RemoteDeviceError;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiMessage;
@@ -45,7 +46,7 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
         try {
             this.inetAddress = InetAddress.getByName(host);
         } catch (UnknownHostException e) {
-            throw new MidiError("Unable to parse host " + host, e);
+            throw new RemoteDeviceError("Unable to parse host " + host, e);
         }
     }
 
@@ -117,7 +118,7 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
                     clientTCPSocket,
                     tcpOutputStream);
         } catch (IOException e) {
-            throw new MidiError("Unable to connect to %s (ip: %s)".formatted(getEndpoint(), inetAddress.toString()), e);
+            throw new RemoteDeviceError("Unable to connect to %s (ip: %s)".formatted(getEndpoint(), inetAddress.toString()), e);
         }
     }
 
@@ -127,7 +128,7 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
             sendViaUDP(msg);
             sendViaTCP(msg);
         } catch (IOException e) {
-            throw new MidiError("Unable to send packet to %s".formatted(getEndpoint()), e);
+            throw new RemoteDeviceError("Unable to send packet to %s".formatted(getEndpoint()), e);
         }
     }
 

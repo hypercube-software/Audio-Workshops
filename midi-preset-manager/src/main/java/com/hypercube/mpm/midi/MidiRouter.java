@@ -83,6 +83,10 @@ public class MidiRouter {
      */
     private List<String> secondaryOutputNames = new ArrayList<>();
     /**
+     * The user can temporarily disable the output
+     */
+    private boolean secondaryOutputsMuted;
+    /**
      * Input master Keyboard controllers, the map key is the input midi port name
      */
     private Map<String, RoutingSource> sources = new HashMap<>();
@@ -102,6 +106,10 @@ public class MidiRouter {
      * {@link MidiOutDevice} bound to the OUTPUT of the synth currently used (only used to display CC information to the user)
      */
     private MidiOutDevice mainDestinationMidiOut;
+    /**
+     * The user can temporarily disable the output
+     */
+    private boolean mainDestinationMidiOutMuted;
     /**
      * Override the Midi channel of incoming messages from {@link #mainDestinationMidiIn}
      * <p>Range is [0-15], not [1-16]</p>
@@ -275,11 +283,12 @@ public class MidiRouter {
         List<CustomMidiEvent> transformed = Optional.ofNullable(inputTransformers.get(midiInDevice.getName()))
                 .map(t -> t.transform(outputChannel, event))
                 .orElse(List.of(event));
-        if (mainDestinationMidiOut != null) {
+        if (mainDestinationMidiOut != null && !mainDestinationMidiOutMuted) {
             redirectTrafficToMainOutput(source, event, transformed);
         }
-
-        redirectTrafficToSecondaryOutputs(source, event);
+        if (!secondaryOutputsMuted) {
+            redirectTrafficToSecondaryOutputs(source, event);
+        }
     }
 
     public void changeOutputChannel(Integer channel) {
@@ -313,6 +322,16 @@ public class MidiRouter {
             throw new ApplicationError(e);
         }
         log.info("Midi Router terminated.");
+    }
+
+    public void mute(String device, boolean mute) {
+        if (mainDestination != null && mainDestination.getDeviceName()
+                .equals(device)) {
+            mainDestinationMidiOutMuted = mute;
+        }
+        if (secondaryOutputNames.contains(device)) {
+            secondaryOutputsMuted = mute;
+        }
     }
 
     private void closeMainOutput() {

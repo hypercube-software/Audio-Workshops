@@ -338,10 +338,17 @@ public class DeviceStateManager {
                 .getDevices()
                 .values()
                 .stream()
-                .filter(d -> d.getOutputMidiDevice() != null && !d.getOutputMidiDevice()
-                        .isEmpty() && cfg.getMidiPortsManager()
-                        .getOutput(d.getOutputMidiDevice())
-                        .isPresent())
+                .filter(d -> {
+                    try {
+                        return d.getOutputMidiDevice() != null && !d.getOutputMidiDevice()
+                                .isEmpty() && cfg.getMidiPortsManager()
+                                .getOutput(d.getOutputMidiDevice())
+                                .isPresent();
+                    } catch (MidiError e) {
+                        log.error("Unexpected error on device {}. Disabled.", d.getDeviceName(), e);
+                        return false;
+                    }
+                })
                 .map(MidiDeviceDefinition::getDeviceName)
                 .sorted()
                 .toList();

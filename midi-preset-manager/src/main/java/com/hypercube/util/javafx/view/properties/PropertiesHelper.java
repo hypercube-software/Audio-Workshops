@@ -2,6 +2,7 @@ package com.hypercube.util.javafx.view.properties;
 
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.View;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -51,7 +52,7 @@ public class PropertiesHelper implements SceneListener {
      * @param property
      */
     public void declareListener(String propertyName, StringProperty property) {
-        final Method m = getEventHandler(propertyName);
+        final Method m = getEventHandler(propertyName, String.class);
         ChangeListener<String> stringChangeListener = (observableValue, oldValue, newValue) -> {
             view.getCtrl()
                     .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
@@ -63,6 +64,28 @@ public class PropertiesHelper implements SceneListener {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, stringChangeListener));
+    }
+
+    /**
+     * This method must be used to observe any property change in a view ({@link BooleanProperty} only)
+     * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
+     *
+     * @param propertyName
+     * @param property
+     */
+    public void declareListener(String propertyName, BooleanProperty property) {
+        final Method m = getEventHandler(propertyName, Boolean.class);
+        ChangeListener<Boolean> booleanChangeListener = (observableValue, oldValue, newValue) -> {
+            view.getCtrl()
+                    .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+            try {
+                if (m != null) {
+                    m.invoke(view.getCtrl(), oldValue, newValue);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+            }
+        };
+        listeners.add(new PropertyListener(propertyName, property, booleanChangeListener));
     }
 
     public void onSceneWindowChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -81,7 +104,7 @@ public class PropertiesHelper implements SceneListener {
     }
 
     public void onSceneDetach(Scene oldValue) {
-        detatchPropertyListener();
+        detachPropertyListener();
         if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneDetach(oldValue);
         }
@@ -122,14 +145,14 @@ public class PropertiesHelper implements SceneListener {
         }
     }
 
-    private Method getEventHandler(String propertyName) {
+    private Method getEventHandler(String propertyName, Class<?> propertyType) {
         Method eventHandlerMethod = null;
         try {
             String methodName = "on" + propertyName.substring(0, 1)
                     .toUpperCase() + propertyName.substring(1) + "Change";
             eventHandlerMethod = view.getCtrl()
                     .getClass()
-                    .getMethod(methodName, String.class, String.class);
+                    .getMethod(methodName, propertyType, propertyType);
         } catch (NoSuchMethodException e) {
         }
         return eventHandlerMethod;
@@ -137,23 +160,34 @@ public class PropertiesHelper implements SceneListener {
 
     private void attachPropertyListener() {
         listeners.forEach(pl -> {
-            var listener = pl.listener();
-            pl.property()
-                    .addListener(listener);
-            // force a notification in case we started late
-            if (pl.property()
-                    .get() != null) {
-                listener.changed(pl.property(), null, pl.property()
-                        .get());
+            if (pl.property() instanceof StringProperty sp) {
+                ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
+                sp.addListener(listener);
+                // force a notification in case we started late
+                if (sp.get() != null) {
+                    listener.changed(sp, null, sp.get());
+                }
+            } else if (pl.property() instanceof BooleanProperty bp) {
+                ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
+                bp.addListener(listener);
+                // force a notification in case we started late
+                listener.changed(bp, null, bp.get());
             }
         });
     }
 
-    private void detatchPropertyListener() {
-        listeners.forEach(pl -> pl.property()
-                .removeListener(pl.listener()));
+    private void detachPropertyListener() {
+        listeners.forEach(pl -> {
+            if (pl.property() instanceof StringProperty sp) {
+                ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
+                sp.removeListener(listener);
+            } else if (pl.property() instanceof BooleanProperty bp) {
+                ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
+                bp.removeListener(listener);
+            }
+        });
     }
 
-    private record PropertyListener(String propertyName, StringProperty property, ChangeListener<String> listener) {
+    private record PropertyListener(String propertyName, Object property, ChangeListener<?> listener) {
     }
 }

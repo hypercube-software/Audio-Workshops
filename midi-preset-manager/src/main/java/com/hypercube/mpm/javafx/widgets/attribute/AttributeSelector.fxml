@@ -21,15 +21,13 @@
     <!-- DEFINE PROPERTY allowMultiSelection -->
     <!-- DEFINE PROPERTY allowDrop -->
     <!-- DEFINE PROPERTY acceptedFileTypes -->
-    <children>
-        <HBox alignment="CENTER" styleClass="attributeSelectorHeader"
-              GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER"
-              GridPane.vgrow="NEVER">
-            <Label fx:id="label" text="title"/>
-        </HBox>
-        <ListView fx:id="attributes" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
-    </children>
     <opaqueInsets>
         <Insets bottom="2.0"/>
     </opaqueInsets>
+    <HBox alignment="CENTER" styleClass="attributeSelectorHeader"
+          GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER"
+          GridPane.vgrow="NEVER">
+        <Label fx:id="label" text="title"/>
+    </HBox>
+    <ListView fx:id="attributes" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
 </fx:root>
