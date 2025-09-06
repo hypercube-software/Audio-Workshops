@@ -370,7 +370,7 @@ public class MidiRouter {
             secondaryOutputs = secondaryOutputNames.stream()
                     .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
                             .getDevice(deviceOrPortName)
-                            .map(MidiDeviceDefinition::getInputMidiDevice)
+                            .map(MidiDeviceDefinition::getOutputMidiDevice)
                             .orElse(deviceOrPortName))
                     .map(cfg.getMidiPortsManager()::getOutput)
                     .flatMap(Optional::stream)
