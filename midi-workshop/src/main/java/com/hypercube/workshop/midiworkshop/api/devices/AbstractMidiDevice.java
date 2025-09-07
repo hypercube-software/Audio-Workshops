@@ -10,18 +10,25 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Our Midi device is artificially multi-client using {@link #openCount}
+ * <p>It means close does not really close until the counter is 1</p>
+ */
 @AllArgsConstructor
 @Slf4j
 public abstract class AbstractMidiDevice implements Closeable {
     protected final MidiDevice device;
     protected final AtomicInteger openCount = new AtomicInteger();
 
+    /**
+     * Most of the time {@link MidiDevice#open()} fail when the device is already open by another application
+     */
     public void open() {
         try {
-            openCount.incrementAndGet();
             if (device != null && !device.isOpen()) {
                 device.open();
             }
+            openCount.incrementAndGet();
         } catch (MidiUnavailableException e) {
             throw new MidiError(device, e);
         }
@@ -29,11 +36,12 @@ public abstract class AbstractMidiDevice implements Closeable {
 
     @Override
     public void close() throws IOException {
-        int count = openCount.decrementAndGet();
+        int count = openCount.get();
         log.info("Close MIDI port '{}' (client count is {})", getName(), count);
-        if (count == 0 && device != null && device.isOpen()) {
+        if (count == 1 && device != null && device.isOpen()) {
             device.close();
         }
+        openCount.decrementAndGet();
     }
 
     public int getOpenCount() {

@@ -6,11 +6,13 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import com.sun.javafx.binding.SelectBinding;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,10 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,22 +44,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setModel(MainModel.getObservableInstance());
-        attributes.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            userAction = true;
-        });
-        attributes.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            userAction = true;
-        });
-        attributes.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    if (userAction) {
-                        onSelectedItemChange();
-                        userAction = false;
-                    } else {
-                        attributes.scrollTo(newValue);
-                    }
-                });
+        addSelectionListener(attributes);
     }
 
     public void onDataSourceChange(String oldValue, String newValue) {
@@ -75,7 +59,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                 log.info("Datasource {} for {} just changed with {} items", getView().getDataSource(), getView().getTitle(), list.size());
             }
             attributes.setItems(list != null ? list : new SimpleListProperty());
-            // since the date source changed, we can update the selection
+            // since the data source changed, we can update the selection
             Observable selectedItem = bindingManager.resolvePropertyPath(getView().getSelectedItems());
             if (selectedItem != null) {
                 onModelSelectedItemsChange(selectedItem);
@@ -122,6 +106,37 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * JavaFX does not provide a simple way to distinguish selection change between user or program
+     * <p>Here a way to do it</p>
+     */
+    private void addSelectionListener(ListView widget) {
+        widget.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            userAction = true;
+        });
+        widget.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            userAction = true;
+        });
+        MultipleSelectionModel<?> selectionModel = widget.getSelectionModel();
+        ObservableList<Integer> selectedIndices = selectionModel.getSelectedIndices();
+        ObservableList<?> selectedItems = selectionModel
+                .getSelectedItems();
+        selectedItems.addListener((ListChangeListener<Object>) c -> {
+            // It is CRUCIAL to runLater because we are in the middle of a list update
+            // Any selection change inside the callback would raise a UnsupportedOperationExceptionPlatform.runLater(() -> {
+            Platform.runLater(() -> {
+                if (userAction) {
+                    onUserSelectedItems();
+                    userAction = false;
+                } else if (!selectedIndices.isEmpty()) {
+                    int itemIndex = selectedIndices.getFirst();
+                    log.info("selection changed, make item {} visible for {}", itemIndex, getView().getTitle());
+                    widget.scrollTo(itemIndex);
+                }
+            });
+        });
     }
 
     private void onDragDropped(DragEvent event) {
@@ -224,22 +239,17 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
                     .forEach(item -> {
                         selectionModel.select(item);
                     });
-
         }
     }
 
     /**
      * Called when the user do something, may be the selection didn't change, but we fire the event anyway
      */
-    private void onSelectedItemChange() {
-        List indexes = attributes.getSelectionModel()
-                .getSelectedIndices()
-                .stream()
-                .toList();
-        List items = attributes.getSelectionModel()
-                .getSelectedItems()
-                .stream()
-                .toList();
+    private void onUserSelectedItems() {
+        List indexes = new ArrayList(attributes.getSelectionModel()
+                .getSelectedIndices());
+        List items = new ArrayList(attributes.getSelectionModel()
+                .getSelectedItems());
         log.info("Selected item on {}: {}", getView()
                 .getTitle(), indexes.stream()
                 .map(Object::toString)

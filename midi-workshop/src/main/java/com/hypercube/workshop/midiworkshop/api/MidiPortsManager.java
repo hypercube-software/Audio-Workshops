@@ -94,7 +94,7 @@ public class MidiPortsManager {
                         .equals(name))
                 .findFirst()
                 .orElseGet(() -> {
-                    if (MidiOutNetworkDevice.isUDPAddress(name)) {
+                    if (MidiOutNetworkDevice.isRemoteAddress(name)) {
                         MidiOutDevice device = new MidiOutNetworkDevice(name);
                         outputs.add(device);
                         return device;

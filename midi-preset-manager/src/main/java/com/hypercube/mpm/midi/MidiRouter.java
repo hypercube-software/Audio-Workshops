@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +56,7 @@ public class MidiRouter {
      * For primary input and secondary inputs towards synths
      * <p>{@link MidiTransformer} are bound to a specific {@link MidiInDevice} name
      */
-    private final Map<String, MidiTransformer> inputTransformers = new HashMap<>();
+    private final Map<String, MidiTransformer> inputTransformers = new ConcurrentHashMap<>();
 
     /**
      * Configuration, especially, {@link MidiDeviceLibrary}
@@ -153,7 +154,7 @@ public class MidiRouter {
                             String key = outputDevice.getDeviceName();
                             var dup = inputTransformers.get(key);
                             if (dup != null) {
-                                throw new IllegalArgumentException("Transformer already set for " + key + ": " + dup.getOutputDevice()
+                                log.warn("Transformer already set for {}: {}, overriding...", key, dup.getOutputDevice()
                                         .getDeviceName());
                             }
                             inputTransformers.put(key, new MidiTransformer(dawDevice, outputDevice, controllerMessageListener));
@@ -216,10 +217,14 @@ public class MidiRouter {
         sources.clear();
         newRoutingSources
                 .forEach(routingSource -> {
-                    if (!routingSourcesAlreadyOpen.contains(routingSource)) {
-                        routingSource.open();
+                    try {
+                        if (!routingSourcesAlreadyOpen.contains(routingSource)) {
+                            routingSource.open();
+                        }
+                        sources.put(routingSource.getPortName(), routingSource);
+                    } catch (MidiError e) {
+                        log.error("Unable to open routing source for {}", routingSource.getDeviceName());
                     }
-                    sources.put(routingSource.getPortName(), routingSource);
                 });
 
         installMainSourceListenerWithTransformer(mainDestination);

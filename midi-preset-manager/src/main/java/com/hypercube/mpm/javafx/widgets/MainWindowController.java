@@ -302,23 +302,29 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
-    private void onSelectionChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onSelectionChanged(SelectionChangedEvent<?> selectionChangedEvent) {
         String widgetId = selectionChangedEvent.getWidgetId();
-        log.info("{} changed ! {}", widgetId, selectionChangedEvent.getSelectedIndexes()
+        log.info("{} changed ! Indexes: {}", widgetId, selectionChangedEvent.getSelectedIndexes()
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
         switch (widgetId) {
-            case WidgetIdentifiers.WIDGET_ID_DEVICE -> runLongTask(() -> onDeviceChanged(selectionChangedEvent));
-            case WidgetIdentifiers.WIDGET_ID_MODE -> runLongTask(() -> onModeChanged(selectionChangedEvent));
-            case WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL -> onChannelChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_CATEGORY -> onCategoriesChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_BANK -> onBankChanged(selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_PATCH -> onPatchChanged(selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_DEVICE ->
+                    runLongTask(() -> onDeviceChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+            case WidgetIdentifiers.WIDGET_ID_MODE ->
+                    runLongTask(() -> onModeChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+            case WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL ->
+                    onChannelChanged((SelectionChangedEvent<Integer>) selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_CATEGORY ->
+                    onCategoriesChanged((SelectionChangedEvent<MidiPresetCategory>) selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_BANK ->
+                    onBankChanged((SelectionChangedEvent<String>) selectionChangedEvent);
+            case WidgetIdentifiers.WIDGET_ID_PATCH ->
+                    onPatchChanged((SelectionChangedEvent<Patch>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
-                    runLongTask(() -> onSecondaryOutputsChanged(selectionChangedEvent));
+                    runLongTask(() -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent));
             case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS ->
-                    runLongTask(() -> onMasterInputsChanged(selectionChangedEvent));
+                    runLongTask(() -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent));
         }
     }
 
@@ -368,35 +374,27 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         }
     }
 
-    private void onSecondaryOutputsChanged(SelectionChangedEvent selectionChangedEvent) {
-        List<String> selectedItems = selectionChangedEvent.getSelectedItems()
-                .stream()
-                .map(String.class::cast)
-                .toList();
+    private void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         midiRouter.changeSecondaryOutputs(selectedItems);
         cfg.setSelectedSecondaryOutputs(selectedItems);
         configurationFactory.saveConfig(cfg);
     }
 
-    private void onCategoriesChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onCategoriesChanged(SelectionChangedEvent<MidiPresetCategory> selectionChangedEvent) {
         var model = getModel();
-        List<MidiPresetCategory> selectedItems = selectionChangedEvent.getSelectedItems()
-                .stream()
-                .map(MidiPresetCategory.class::cast)
-                .toList();
         var state = model.getCurrentDeviceState();
         if (state != null) {
-            state.setCurrentSelectedCategories(selectedItems);
+            state.setCurrentSelectedCategories(selectionChangedEvent.getSelectedItems());
         }
         refreshPatches();
     }
 
-    private void onBankChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onBankChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         var model = getModel();
-        if (!selectionChangedEvent.getSelectedItems()
-                .isEmpty()) {
-            String bankName = (String) selectionChangedEvent.getSelectedItems()
-                    .getFirst();
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems();
+        if (!selectedItems.isEmpty()) {
+            String bankName = selectedItems.getFirst();
             model.getCurrentDeviceState()
                     .setCurrentBank(bankName);
         } else {
@@ -406,11 +404,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
-    private void onPatchChanged(SelectionChangedEvent selectionChangedEvent) {
+    private void onPatchChanged(SelectionChangedEvent<Patch> selectionChangedEvent) {
         var model = getModel();
-        if (!selectionChangedEvent.getSelectedItems()
-                .isEmpty()) {
-            Patch patch = (Patch) selectionChangedEvent.getSelectedItems()
+        List<Patch> selectedItems = selectionChangedEvent.getSelectedItems();
+        if (!selectedItems.isEmpty()) {
+            Patch patch = selectedItems
                     .getFirst();
             if (!patch.equals(model.getCurrentDeviceState()
                     .getCurrentPatch())) {
@@ -423,9 +421,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     /**
      * Called when the user change device mode
      */
-    private void onModeChanged(SelectionChangedEvent selectionChangedEvent) {
-        if (selectionChangedEvent.getSelectedItems()
-                .isEmpty()) {
+    private void onModeChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems();
+        if (selectedItems.isEmpty()) {
             var model = getModel();
             log.info("No mode selected, emptying everything...");
             model.setModeCategories(List.of());
@@ -434,7 +432,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             model.getCurrentDeviceState()
                     .setCurrentSearchOutput(List.of());
         } else {
-            deviceStateManager.onModeChanged(selectionChangedEvent.getSelectedItems());
+            deviceStateManager.onModeChanged(selectedItems);
             refreshPatches();
         }
     }

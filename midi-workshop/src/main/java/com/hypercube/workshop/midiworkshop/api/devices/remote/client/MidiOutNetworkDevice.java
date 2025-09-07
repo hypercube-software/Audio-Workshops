@@ -50,7 +50,7 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
         }
     }
 
-    public static boolean isUDPAddress(String name) {
+    public static boolean isRemoteAddress(String name) {
         return name.split(":").length == 3;
     }
 

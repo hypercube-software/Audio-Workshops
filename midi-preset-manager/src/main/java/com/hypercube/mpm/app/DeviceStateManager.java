@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sound.midi.InvalidMidiDataException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class DeviceStateManager {
             updateLastUsed(model, currentState);
             model.setCurrentDeviceState(currentState);
             refreshModeProperties(device);
-            currentState.setCurrentSelectedCategories(List.of());
+            currentState.setCurrentSelectedCategories(new ArrayList<>());
             currentState.setCurrentBank(null);
             currentState.setCurrentSearchOutput(null);
         }

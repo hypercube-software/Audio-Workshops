@@ -144,8 +144,11 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
             sm.clearSelection();
             if (newValue != null) {
                 sm.select(newValue);
-                patchList.scrollTo(newValue);
             }
+        }
+        // scrollTo have the tendency to put items on top, so we don't call it if the user just selected the item
+        if (!userAction) {
+            patchList.scrollTo(newValue);
         }
     }
 
