@@ -5,6 +5,7 @@ import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.event.*;
+import com.hypercube.mpm.javafx.widgets.dialog.GenericDialogController;
 import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.MainModel;
@@ -24,6 +25,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @FXML
     CheckMenuItem menuAlwaysOnTop;
 
-    public void onUpdateCategories(ActionEvent event) {
+    @FXML
+    public void onMenuUpdateCategories(ActionEvent event) {
         runLongTask(() -> {
             getModel().getCurrentDeviceState()
                     .getCurrentSearchOutput()
@@ -83,16 +86,19 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         addEventListener(MuteOutputDeviceEvent.class, this::onMuteOutputDevice);
 
+    }
+
+    @Override
+    public void onSceneAttach(Scene newScene) {
         try {
             initDevices();
         } catch (MidiError e) {
             showError(e);
         }
-    }
 
-    @Override
-    public void onSceneAttach(Scene newValue) {
         try {
+            newScene.setOnKeyPressed(this::handleKeyPressed);
+            newScene.setOnKeyReleased(this::handleKeyReleased);
             restoreConfigSelection();
         } catch (MidiError e) {
             showError(e);
@@ -124,6 +130,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
+    @FXML
     public void onMenuRestoreDeviceState(ActionEvent event) {
         initDevices();
     }
@@ -149,6 +156,14 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 port.sendAllOff();
                             });
                 });
+    }
+
+    private void handleKeyReleased(KeyEvent keyEvent) {
+        midiRouter.onKeyboardNoteOff(keyEvent);
+    }
+
+    private void handleKeyPressed(KeyEvent keyEvent) {
+        midiRouter.onKeyboardNoteOn(keyEvent);
     }
 
     private void showError(Throwable error) {
@@ -198,7 +213,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Restore the state of all devices when the application start
      */
     private void initDevices() {
-        if (!cfg.getSelectedPatches()
+        if (cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .isEmpty()) {
+            var dlg = GenericDialogController.buildDialog();
+            dlg.updateText("First Launch", """
+                    This is the first time you run this application.
+                    There is no device enabled yet in your library.
+                    Please create a file <device>-user.yml to assign a MIDI Port to a device of your choice
+                    Then restart the application. It should appear in the list.
+                    """);
+            dlg.show();
+        } else if (!cfg.getSelectedPatches()
                 .isEmpty()) {
             var dlg = ProgressDialogController.buildDialog();
             dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()

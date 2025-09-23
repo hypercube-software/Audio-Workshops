@@ -115,6 +115,25 @@
     -fx-text-fill: white;
 }
 
+.genericDialog, .dialog-pane {
+    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
+}
+.genericDialog {
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 8, 8);
+}
+
+.genericDialog #textHeader {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.genericDialog #textMessage {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: lighter;
+    -fx-text-fill: white;
+}
+
 
 .progress-bar .bar {
     -fx-accent: green;

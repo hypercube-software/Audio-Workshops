@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,6 +23,8 @@ import java.net.URLDecoder;
  */
 @Slf4j
 public class JavaFXApplication extends Application {
+    @Getter
+    static Stage mainStage;
     private ConfigurableApplicationContext applicationContext;
 
     @Override
@@ -39,6 +42,15 @@ public class JavaFXApplication extends Application {
         applicationContext.publishEvent(new StageReadyEvent(primaryStage));
     }
 
+    @Override
+    public void stop() throws Exception {
+        MidiRouter midiRouter = applicationContext.getBeanFactory()
+                .getBean(MidiRouter.class);
+        midiRouter.terminate();
+        applicationContext.close();
+        Platform.exit();
+    }
+
     private void loadFont(String fontPath) {
         URL fontUrl = getClass().getClassLoader()
                 .getResource(fontPath);
@@ -53,15 +65,6 @@ public class JavaFXApplication extends Application {
         } else {
             log.error("Font not fount:" + fontPath);
         }
-    }
-
-    @Override
-    public void stop() throws Exception {
-        MidiRouter midiRouter = applicationContext.getBeanFactory()
-                .getBean(MidiRouter.class);
-        midiRouter.terminate();
-        applicationContext.close();
-        Platform.exit();
     }
 
 }

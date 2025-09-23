@@ -32,6 +32,7 @@ public class StageReadyListener implements ApplicationListener<StageReadyEvent> 
     @Override
     public void onApplicationEvent(StageReadyEvent stageReadyEvent) {
         Stage stage = stageReadyEvent.getStage();
+        JavaFXApplication.mainStage = stage;
         MainWindow mainWindow = new MainWindow();
         Scene scene = new Scene(mainWindow);
         stage.setScene(scene);
