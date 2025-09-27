@@ -4,7 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@MainWindow.css" type="GridPane"
+<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@MainWindow.css" styleClass="mainWindow" type="GridPane"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
         <ColumnConstraints/>

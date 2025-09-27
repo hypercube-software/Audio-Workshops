@@ -3,9 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: transparent;"
-         stylesheets="@../../MainWindow.css,@DevicesPortsDialog.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
-    <GridPane styleClass="genericDialog">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
+         stylesheets="@../../MainWindow.css,@../DialogCommon.css,@DevicesPortsDialog.css" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12">
+    <GridPane styleClass="mpmDialog">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="500.0"/>
         </columnConstraints>

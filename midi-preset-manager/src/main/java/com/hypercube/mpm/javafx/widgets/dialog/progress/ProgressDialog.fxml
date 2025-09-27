@@ -4,10 +4,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: transparent;"
-         stylesheets="@../../MainWindow.css"
+<fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
+         stylesheets="@../../MainWindow.css, @../DialogCommon.css, @ProgressDialog.css"
          type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
-    <GridPane styleClass="progressDialog">
+    <GridPane styleClass="mpmDialog,progressDialog">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="500.0"/>
         </columnConstraints>
@@ -18,7 +18,8 @@
             <RowConstraints minHeight="50.0"/>
             <RowConstraints minHeight="20.0"/>
         </rowConstraints>
-        <Label fx:id="textHeader" pickOnBounds="false" text="Restore Device State..." GridPane.rowIndex="1">
+        <Label fx:id="textHeader" pickOnBounds="false" text="Restore Device State..."
+               GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>

@@ -2,6 +2,8 @@
     -theme-color: #005678;
     -text-color: #FFFFFFAA;
     -selected-text-color: #11111144;
+}
+.mainWindow {
     /*-fx-background-color: linear-gradient(from 0% 0% to 100% 100%   ,#005678,  #000000);*/
     -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
 }
@@ -27,6 +29,10 @@
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
+
+/**
+ * Tables,Combo and scrollbars
+*/
 .table-view .column-header-background {
     -fx-background-color: #11111199;
     -fx-background-insets: 0 0 0 0;
@@ -101,63 +107,9 @@
     -fx-background-insets: 0;
 }
 
-.progressDialog, .dialog-pane {
-    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
-}
-.progressDialog {
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 8, 8);
-}
-
-.progressDialog > .label {
-    -fx-font-size: 1.2em;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-
-.genericDialog, .dialog-pane {
-    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
-}
-.genericDialog {
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 8, 8);
-}
-
-.genericDialog #textHeader {
-    -fx-font-size: 1.2em;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-.genericDialog #textMessage {
-    -fx-font-size: 1.2em;
-    -fx-font-weight: lighter;
-    -fx-text-fill: white;
-}
-
-
-.progress-bar .bar {
-    -fx-accent: green;
-}
-
-.dialog-pane > .header-panel > .label {
-    -fx-font-size: 1.2em;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-}
-.dialog-pane > .content.label {
-    -fx-text-fill: white;
-}
-.dialog-pane > .header-panel {
-    -fx-background-color: transparent;
-}
-.dialog-pane .button {
-    -fx-background-color: -theme-color;
-    -fx-text-fill: white;
-}
-.dialog-pane .button:hover {
-    -fx-background-color: derive(-theme-color,+20%);
-}
-
+/**
+ * Used to mute/unmute a Device routing
+*/
 .toggle-button {
     -fx-background-color: transparent;
     -fx-font-family: "Arial";

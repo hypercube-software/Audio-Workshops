@@ -1,0 +1,10 @@
+#textHeader {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+#textMessage {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: lighter;
+    -fx-text-fill: white;
+}

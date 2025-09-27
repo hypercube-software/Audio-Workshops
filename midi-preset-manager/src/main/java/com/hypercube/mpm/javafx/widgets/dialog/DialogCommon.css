@@ -1,0 +1,49 @@
+/**
+ MPM dialogs
+*/
+
+.mpmDialogShadow {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.mpmDialog .label  {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.mpmDialog {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 8, 8);
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+.mpmDialog * {
+    -fx-effect: none;
+}
+
+/**
+ ** standard JavaFX dialogs
+*/
+.dialog-pane {
+    -fx-background-color: radial-gradient(center 100% 100%, radius 100%, #000000,-theme-color);
+}
+.dialog-pane > .header-panel > .label {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+.dialog-pane > .content.label {
+    -fx-text-fill: white;
+}
+.dialog-pane > .header-panel {
+    -fx-background-color: transparent;
+}
+.dialog-pane .button {
+    -fx-background-color: -theme-color;
+    -fx-text-fill: white;
+}
+.dialog-pane .button:hover {
+    -fx-background-color: derive(-theme-color,+20%);
+}
