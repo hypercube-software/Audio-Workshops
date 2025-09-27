@@ -12,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @Slf4j
-public class DevicesPortsDialogController extends DialogController<DevicesPortsDialog, Void> implements Initializable {
+public class DevicesPortsDialogController extends DialogController<DevicesPortsDialog, Void> {
     @Autowired
     ProjectConfiguration cfg;
 
@@ -65,6 +64,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        super.initialize(url, resourceBundle);
         List<String> midiInPorts = cfg.getMidiPortsManager()
                 .getInputs()
                 .stream()
