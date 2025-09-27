@@ -26,6 +26,11 @@ presetNaming: STANDARD
 inputMidiDevice: "2- MIDISPORT Uno In"
 outputMidiDevice: "2- MIDISPORT Uno Out"
 #
+# MIDI port to send back DAW midi to the device through this application
+# This is critical to translate 8 bits CC to 14 bits CC if the DAW does not support it (most of them don't)
+#
+dawMidiDevice: "DAW to Device"
+#
 # How long we need to wait after a program change before querying the edit buffer
 # default is 1000
 #

@@ -4,13 +4,17 @@ import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.event.*;
-import com.hypercube.mpm.javafx.widgets.dialog.GenericDialogController;
-import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
+import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialog;
+import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
+import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
+import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.view.properties.SceneListener;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
@@ -144,6 +148,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     @FXML
+    public void onMenuDevicesPorts(ActionEvent event) {
+        var dlg = DialogController.buildDialog(DevicesPortsDialog.class, JavaFXApplication.getMainStage(), false);
+        dlg.showAndWait();
+    }
+
+    @FXML
     public void onAllNotesOff(ActionEvent event) {
         cfg.getMidiDeviceLibrary()
                 .getDevices()
@@ -216,17 +226,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .isEmpty()) {
-            var dlg = GenericDialogController.buildDialog();
+            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), true);
             dlg.updateText("First Launch", """
                     This is the first time you run this application.
                     There is no device enabled yet in your library.
-                    Please create a file <device>-user.yml to assign a MIDI Port to a device of your choice
-                    Then restart the application. It should appear in the list.
+                    You need to assign MIDI Ports to devices you want to use.
+                    Then restart the application. They will appear in the list.
                     """);
-            dlg.show();
+            dlg.showAndWait();
+            onMenuDevicesPorts(null);
         } else if (!cfg.getSelectedPatches()
                 .isEmpty()) {
-            var dlg = ProgressDialogController.buildDialog();
+            ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), true);
             dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
                     .size()));
             runLongTaskWithDialog(dlg, () -> {

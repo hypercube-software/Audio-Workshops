@@ -1,6 +1,6 @@
 package com.hypercube.util.javafx.controller;
 
-import com.hypercube.mpm.javafx.widgets.progress.ProgressDialogController;
+import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
 import com.hypercube.util.javafx.binding.BindingManager;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.events.EventHelper;
@@ -22,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * All controllers will own their widget for convenience
  *
- * @param <T> The widget bound to this controller
+ * @param <V> The widget bound to this controller
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class Controller<T extends Node, M> {
+public abstract class Controller<V extends Node, M> {
     protected BindingManager bindingManager = new BindingManager(this);
-    private T view;
+    private V view;
     private ObjectProperty<M> model = new SimpleObjectProperty<>();
 
     public final M getModel() {
@@ -83,13 +83,12 @@ public abstract class Controller<T extends Node, M> {
             @Override
             protected Void call() throws Exception {
                 try {
-                    while (!diag.isAttacedToScene()) {
+                    while (!diag.isAttachedToScene()) {
                         sleep(100);
                     }
                     code.run();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
-                    e.printStackTrace();
                 }
                 return null;
             }
@@ -115,7 +114,6 @@ public abstract class Controller<T extends Node, M> {
                     code.run();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
-                    e.printStackTrace();
                 }
                 return null;
             }

@@ -29,11 +29,11 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
     private final int port;
     private final String deviceName;
     private final long networkId;
-    private final InetAddress inetAddress;
     private final String definition;
     // MidiOutNetworkDevice is multi-clients, this mean connections are shared between instances using the same definition
     // The key of this hashmap is the "definition" string
     private final Map<String, MidiOutConnection> connections = new ConcurrentHashMap<>();
+    private InetAddress inetAddress;
 
     public MidiOutNetworkDevice(String definition) {
         super(null);
@@ -43,11 +43,6 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
         this.port = Integer.parseInt(parts[1]);
         this.deviceName = parts[2];
         this.networkId = NetworkIdBuilder.getDeviceNetworkId(deviceName);
-        try {
-            this.inetAddress = InetAddress.getByName(host);
-        } catch (UnknownHostException e) {
-            throw new RemoteDeviceError("Unable to parse host " + host, e);
-        }
     }
 
     public static boolean isRemoteAddress(String name) {
@@ -104,6 +99,7 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
 
     private MidiOutConnection openMidiOutConnection() throws IOException {
         try {
+            inetAddress = resolveHostIP();
             DatagramSocket clientUDPSocket = new DatagramSocket();
             Socket clientTCPSocket = new Socket();
             clientTCPSocket.setKeepAlive(true);
@@ -119,6 +115,14 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
                     tcpOutputStream);
         } catch (IOException e) {
             throw new RemoteDeviceError("Unable to connect to %s (ip: %s)".formatted(getEndpoint(), inetAddress.toString()), e);
+        }
+    }
+
+    private InetAddress resolveHostIP() {
+        try {
+            return InetAddress.getByName(host);
+        } catch (UnknownHostException e) {
+            throw new RemoteDeviceError("Unable to resolve IP for host " + host, e);
         }
     }
 

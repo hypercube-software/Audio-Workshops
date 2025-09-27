@@ -13,6 +13,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,7 +57,7 @@ public class ModelHelper {
             } else if (isObservable(model)) {
                 return model; // already observable
             } else if (model instanceof String || model instanceof Boolean || model instanceof Integer || model instanceof Long || model instanceof Float || model instanceof Double || model.getClass()
-                    .isEnum()) {
+                    .isEnum() || model instanceof File) {
                 return model;
             }
             //log.info("forgeMMVM(" + model.getClass().getName() + ")");

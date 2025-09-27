@@ -32,6 +32,8 @@
         <Menu text="Midi">
             <MenuItem text="All notes off"
                       onAction="#onAllNotesOff"/>
+            <MenuItem text="Devices ports..."
+                      onAction="#onMenuDevicesPorts"/>
         </Menu>
         <Menu text="Help">
             <MenuItem text="About"/>
