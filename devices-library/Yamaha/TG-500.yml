@@ -53,7 +53,6 @@ categories:
 #
 # Banks are listed in manual page 37
 # The TG-500 is tricky because it has 2 edit buffers: one for regular voices and one for drum voices
-# So we use fallBackQueryName to get the name of the drum voice
 #
 deviceModes:
   Voice:
@@ -121,6 +120,18 @@ deviceModes:
       "Card 2 Performance":
         command: "$0044"
         #presetDomain: 0-63
+  Multi:
+    midiChannels: 0-15
+    banks:
+      "Internal Multi":
+        command: "$0056"
+        presetDomain: 0-63
+      "Internal 1 Voices":
+        command: "$0020"
+        presetDomain: 0-62
+      "Internal 1 Drum":
+        command: "$0020"
+        presetDomain: 63
 
 #
 # How many times we have to wait to be sure the edit buffer is loaded after a program change
@@ -185,5 +196,5 @@ controllers:
   - "01                            | Modulation  | CC           | 0 | 127"
   - "0B                            | Expression  | CC           | 0 | 127"
   - "40                            | Sustain     | CC           | 0 | 127"
-  - "NormalVoiceParam(01,0B,0,lsb) | Filter Freq | SYSEX        | 0 | 127"
-  - "NormalVoiceParam(01,05,0,lsb) | Filter Res  | SYSEX        | 0 | 99"
+  - "NormalVoiceParam(01,0B,0,lsb) | Filter Freq | SYSEX | 0 | 127"
+  - "NormalVoiceParam(01,05,0,lsb) | Filter Res | SYSEX | 0 | 99"
