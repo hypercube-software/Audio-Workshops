@@ -18,13 +18,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class DialogController<V extends Node, M> extends Controller<V, M> implements Initializable {
+    protected DialogIcon dialogIcon;
     @Getter
-    Stage dialogStage;
-
+    protected Stage dialogStage;
     private double xOffset = 0;
     private double yOffset = 0;
 
-    public static <C extends DialogController<?, ?>, ViewClass extends View<C>> C buildDialog(Class<ViewClass> viewClass, Window owner, boolean modal) {
+    public static <C extends DialogController<?, ?>, ViewClass extends View<C>> C buildDialog(Class<ViewClass> viewClass, Window owner, DialogIcon dialogIcon, boolean modal) {
         try {
             // Creating the view will automatically load the FXML and create the controller for us
             ViewClass dialog = viewClass.getDeclaredConstructor()
@@ -36,6 +36,7 @@ public class DialogController<V extends Node, M> extends Controller<V, M> implem
             dialogStage.setScene(new Scene((Parent) dialog, Color.TRANSPARENT));
             dialogStage.initOwner(owner);
             dialog.getCtrl().dialogStage = dialogStage;
+            dialog.getCtrl().dialogIcon = dialogIcon;
             return dialog.getCtrl();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {

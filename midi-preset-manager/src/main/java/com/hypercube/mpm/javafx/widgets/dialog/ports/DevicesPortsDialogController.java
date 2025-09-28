@@ -5,6 +5,7 @@ import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialog;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.DialogIcon;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
@@ -148,7 +149,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
                 )
                 .toList();
         if (!undefinedDevices.isEmpty()) {
-            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), true);
+            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.WARNING, true);
             dlg.updateText("Configuration issue", """
                     Some devices use unknown Midi ports.
                     This mean you didn't switch on those before starting this application.

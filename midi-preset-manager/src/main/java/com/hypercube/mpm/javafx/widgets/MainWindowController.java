@@ -15,6 +15,7 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.DialogIcon;
 import com.hypercube.util.javafx.view.properties.SceneListener;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
@@ -157,7 +158,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     @FXML
     public void onMenuDevicesPorts(ActionEvent event) {
-        var dlg = DialogController.buildDialog(DevicesPortsDialog.class, JavaFXApplication.getMainStage(), false);
+        var dlg = DialogController.buildDialog(DevicesPortsDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, false);
         dlg.showAndWait();
     }
 
@@ -234,7 +235,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         if (cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .isEmpty()) {
-            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), true);
+            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
             dlg.updateText("First Launch", """
                     This is the first time you run this application.
                     There is no device enabled yet in your library.
@@ -245,7 +246,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             onMenuDevicesPorts(null);
         } else if (!cfg.getSelectedPatches()
                 .isEmpty()) {
-            ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), true);
+            ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
             dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
                     .size()));
             runLongTaskWithDialog(dlg, () -> {
