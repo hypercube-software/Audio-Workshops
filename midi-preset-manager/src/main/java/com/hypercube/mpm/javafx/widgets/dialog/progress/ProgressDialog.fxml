@@ -29,7 +29,7 @@
                 <Insets/>
             </GridPane.margin>
         </Label>
-        <ProgressBar fx:id="progressBar" prefWidth="252.0" progress="0.32" styleClass="progress-bar"
+        <ProgressBar fx:id="progressBar" prefWidth="252.0" progress="0" styleClass="progress-bar"
                      GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets/>

@@ -152,8 +152,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
             dlg.updateText("Configuration issue", """
                     Some devices use unknown Midi ports.
                     This mean you didn't switch on those before starting this application.
-                    Unfortunately Java can't refresh the MIDI device list on the fly.
-                    Restart the application to use them.
+                    You need to click on menu "Rescan MIDI Ports" to use them.
                     """);
             dlg.showAndWait();
             return false;

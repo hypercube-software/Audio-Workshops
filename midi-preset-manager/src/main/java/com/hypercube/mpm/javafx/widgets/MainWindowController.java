@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,6 +58,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     ConfigurationFactory configurationFactory;
     @FXML
     CheckMenuItem menuAlwaysOnTop;
+
+    @FXML
+    public void onMenuScanMidiPorts(ActionEvent event) {
+        cfg.getMidiPortsManager()
+                .collectDevices();
+        deviceStateManager.initModel();
+    }
 
     @FXML
     public void onMenuUpdateCategories(ActionEvent event) {
@@ -242,7 +250,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .size()));
             runLongTaskWithDialog(dlg, () -> {
                 var sp = cfg.getSelectedPatches();
+                int totalSteps = sp.size() * 2 + 1;
                 dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
+                AtomicInteger stepsCount = new AtomicInteger();
                 IntStream.range(0, sp.size())
                         .parallel()
                         .forEach(i -> {
@@ -262,10 +272,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                             log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
                                         }
                                     });
+                            double currentTotal = (double) stepsCount.incrementAndGet() / totalSteps;
+                            dlg.updateProgress(currentTotal);
                         });
                 for (int i = 0; i < sp.size(); i++) {
                     var selectedPatch = sp.get(i);
-                    double progress = (double) i / sp.size();
+                    double progress = (double) stepsCount.incrementAndGet() / totalSteps;
                     dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(selectedPatch.getName(), selectedPatch.getDevice()));
                     deviceStateManager.initDeviceStateWithPatch(selectedPatch);
                     patchesManager.sendPatchToDevice(selectedPatch);
@@ -286,7 +298,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                         .ifPresent(this::forceDeviceChange);
 
                 dlg.updateProgress(1, "Done");
-                sleep(4000);
+                sleep(3000);
             });
         }
     }

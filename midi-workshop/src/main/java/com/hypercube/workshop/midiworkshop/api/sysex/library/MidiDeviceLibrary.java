@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
@@ -52,34 +53,6 @@ public class MidiDeviceLibrary {
     private static MidiResponseMapper getMacroMapper(MidiDeviceDefinition device, CommandMacro macro) {
         return device.getMapper(macro.getMapperName())
                 .orElseThrow(() -> new MidiConfigError("Unknown mapper '%s' for device '%'".formatted(macro.getMapperName(), device.getDeviceName())));
-    }
-
-    private static void setModeAndBankNames(MidiDeviceDefinition midiDeviceDefinition) {
-        midiDeviceDefinition.getDeviceModes()
-                .forEach((modeName, mode) -> {
-                    mode.setName(modeName);
-                    // mode inherit from device categories unless they are defined
-                    if (mode.getCategories() == null || mode.getCategories()
-                            .isEmpty()) {
-                        mode.setCategories(midiDeviceDefinition.getCategories());
-                    }
-                    mode.getBanks()
-                            .forEach((bankName, bank) -> {
-                                bank.setName(bankName);
-                            });
-                });
-    }
-
-    private static void setMappersName(MidiDeviceDefinition midiDeviceDefinition) {
-        midiDeviceDefinition.getMappers()
-                .forEach((mapperName, midiResponseMapper) -> {
-                    midiResponseMapper.setName(mapperName);
-                    midiResponseMapper.setDevice(midiDeviceDefinition);
-                    midiResponseMapper.getFields()
-                            .forEach((fieldName, field) -> {
-                                field.setName(fieldName);
-                            });
-                });
     }
 
     public void load(File applicationFolder) {
@@ -271,6 +244,51 @@ public class MidiDeviceLibrary {
                 .filter(d -> d.matchNetworkId(networkId))
                 .findFirst()
                 .orElseThrow(() -> new MidiConfigError("Device with network id %4X not found".formatted(networkId))));
+    }
+
+    /**
+     * The {@link MidiPresetCategory#UNKNOWN} category must always be defined. We add it if it is missing
+     */
+    private void addUnknownCategory(MidiDeviceMode mode) {
+        if (mode.getCategories()
+                .stream()
+                .filter(c -> c.name()
+                        .equals(MidiPresetCategory.UNKNOWN))
+                .findFirst()
+                .isEmpty()) {
+            ArrayList<MidiPresetCategory> categories = new ArrayList<>(mode.getCategories());
+            categories.add(new MidiPresetCategory(MidiPresetCategory.UNKNOWN, MidiPresetCategoryType.REGULAR, List.of()));
+            mode.setCategories(categories);
+        }
+    }
+
+    private void setMappersName(MidiDeviceDefinition midiDeviceDefinition) {
+        midiDeviceDefinition.getMappers()
+                .forEach((mapperName, midiResponseMapper) -> {
+                    midiResponseMapper.setName(mapperName);
+                    midiResponseMapper.setDevice(midiDeviceDefinition);
+                    midiResponseMapper.getFields()
+                            .forEach((fieldName, field) -> {
+                                field.setName(fieldName);
+                            });
+                });
+    }
+
+    private void setModeAndBankNames(MidiDeviceDefinition midiDeviceDefinition) {
+        midiDeviceDefinition.getDeviceModes()
+                .forEach((modeName, mode) -> {
+                    mode.setName(modeName);
+                    // mode inherit from device categories unless they are defined
+                    if (mode.getCategories() == null || mode.getCategories()
+                            .isEmpty()) {
+                        mode.setCategories(midiDeviceDefinition.getCategories());
+                    }
+                    addUnknownCategory(mode);
+                    mode.getBanks()
+                            .forEach((bankName, bank) -> {
+                                bank.setName(bankName);
+                            });
+                });
     }
 
     private String getDevicesNames() {

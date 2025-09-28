@@ -41,6 +41,11 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-material2-pack</artifactId>
+            <version>12.4.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>

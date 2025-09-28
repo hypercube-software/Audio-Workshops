@@ -243,10 +243,7 @@ public class DeviceStateManager {
                 .get(state.getId()
                         .getMode());
         if (mode != null) {
-            List<MidiPresetCategory> categories = mode.getCategories()
-                    .stream()
-                    .sorted(Comparator.comparing(MidiPresetCategory::name))
-                    .toList();
+            List<MidiPresetCategory> categories = getModeCategories(mode);
             log.info("Set {} categories from mode {}", categories.size(), mode.getName());
             model.setModeCategories(categories);
             log.info("Set {} channels from mode {}", mode.getChannels()
@@ -286,6 +283,13 @@ public class DeviceStateManager {
         model.setDevices(buildDeviceList());
         model.setMidiInPorts(buildMidiInPortsList());
         model.setMidiThruPorts(buildMidiThruPortsList());
+    }
+
+    private List<MidiPresetCategory> getModeCategories(MidiDeviceMode mode) {
+        return mode.getCategories()
+                .stream()
+                .sorted(Comparator.comparing(MidiPresetCategory::name))
+                .toList();
     }
 
     private MidiDeviceDefinition getSelectedDevice() {

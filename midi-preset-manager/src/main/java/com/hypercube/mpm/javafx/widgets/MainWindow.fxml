@@ -32,6 +32,9 @@
         <Menu text="Midi">
             <MenuItem text="All notes off"
                       onAction="#onAllNotesOff"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Rescan MIDI ports..."
+                      onAction="#onMenuScanMidiPorts"/>
             <MenuItem text="Devices ports..."
                       onAction="#onMenuDevicesPorts"/>
         </Menu>
