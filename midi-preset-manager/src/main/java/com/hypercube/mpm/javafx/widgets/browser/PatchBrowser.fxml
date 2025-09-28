@@ -45,8 +45,9 @@
         </rowConstraints>
     </GridPane>
     <GridPane GridPane.columnIndex="1">
-        <AttributeSelector fx:id="bank" acceptedFileTypes="syx,mid" allowDrop="true" dataSource="model.modeBanks"
-                           minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBank" title="Bank"
+        <AttributeSelector fx:id="bank" acceptedFileTypes="syx,mid" allowMultiSelection="true" allowDrop="true"
+                           dataSource="model.modeBanks"
+                           minWidth="-Infinity" selectedItems="model.currentDeviceState.currentBanks" title="Bank"
                            GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
         <AttributeSelector fx:id="category" allowMultiSelection="true" dataSource="model.modeCategories"
                            itemType="com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory"

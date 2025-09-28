@@ -97,10 +97,10 @@ public class PatchesManager {
                     .getMode();
             if (currentModeName != null) {
                 log.info("Search patches for mode {}", currentModeName);
-                // Note: it is possible that currentModeBankName is not yet updated at this point
+                // Note: it is possible that currentModeBankNames is not yet updated at this point
                 // so midiDeviceMode will be null because it points to the previous selected device
-                String currentModeBankName = model.getCurrentDeviceState()
-                        .getCurrentBank();
+                List<String> currentModeBankNames = model.getCurrentDeviceState()
+                        .getCurrentBanks();
                 MidiDeviceMode midiDeviceMode = device.getDeviceModes()
                         .get(currentModeName);
                 if (midiDeviceMode != null) {
@@ -115,8 +115,8 @@ public class PatchesManager {
                             .getBanks()
                             .values()
                             .parallelStream()
-                            .filter(bank -> currentModeBankName == null || currentModeBankName
-                                    .equals(bank.getName()))
+                            .filter(bank -> currentModeBankNames == null || currentModeBankNames
+                                    .contains(bank.getName()))
                             .flatMap(bank -> bank.getPresets()
                                     .stream()
                                     .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))

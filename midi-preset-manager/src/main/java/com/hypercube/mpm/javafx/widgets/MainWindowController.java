@@ -368,7 +368,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             case WidgetIdentifiers.WIDGET_ID_CATEGORY ->
                     onCategoriesChanged((SelectionChangedEvent<MidiPresetCategory>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_BANK ->
-                    onBankChanged((SelectionChangedEvent<String>) selectionChangedEvent);
+                    onBanksChanged((SelectionChangedEvent<String>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PATCH ->
                     onPatchChanged((SelectionChangedEvent<Patch>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
@@ -440,16 +440,15 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
-    private void onBankChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private void onBanksChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         var model = getModel();
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         if (!selectedItems.isEmpty()) {
-            String bankName = selectedItems.getFirst();
             model.getCurrentDeviceState()
-                    .setCurrentBank(bankName);
+                    .setCurrentBanks(selectedItems);
         } else {
             model.getCurrentDeviceState()
-                    .setCurrentBank(null);
+                    .setCurrentBanks(null);
         }
         refreshPatches();
     }

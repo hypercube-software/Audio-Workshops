@@ -76,7 +76,7 @@ public class DeviceStateManager {
             model.setCurrentDeviceState(currentState);
             refreshModeProperties(device);
             currentState.setCurrentSelectedCategories(new ArrayList<>());
-            currentState.setCurrentBank(null);
+            currentState.setCurrentBanks(new ArrayList<>());
             currentState.setCurrentSearchOutput(null);
         }
     }
@@ -146,7 +146,7 @@ public class DeviceStateManager {
                             .getMode(),
                     current.getId()
                             .getChannel(),
-                    current.getCurrentBank(),
+                    current.getCurrentBanks(),
                     current.getCurrentSelectedCategories(),
                     current.getCurrentPatch()
             );
@@ -464,7 +464,7 @@ public class DeviceStateManager {
                         (source) -> log.info("         {} lastUsed: '{}' command '{}' categories '{}' patch '{}'",
                                 "%40s".formatted((source.isLastUsed() ? "->" : "  ") + source.getId()),
                                 source.isLastUsed(),
-                                source.getCurrentBank(),
+                                source.getCurrentBanks(),
                                 source.getCurrentSelectedCategories(),
                                 source.getCurrentPatch()
                         ));
@@ -479,7 +479,7 @@ public class DeviceStateManager {
         log.info("---------------------------------------------------------------------------------");
         log.info("Switch to {} lastUsed '{}' command '{}' categories '{}' patch '{}'", newState.getId(),
                 newState.isLastUsed(),
-                newState.getCurrentBank(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
+                newState.getCurrentBanks(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
         updateLastUsed(model, newState);
         model.setCurrentDeviceState(newState);
     }
