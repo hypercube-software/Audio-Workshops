@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.hypercube.mpm.MidiPresetManagerApplication" />
     <module name="midi-preset-manager" />
-    <option name="VM_PARAMETERS" value="-Dmpm-config=config/config.yml" />
+    <option name="VM_PARAMETERS" value="-Dmpm-config=config/mpm-config.yml" />
     <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>

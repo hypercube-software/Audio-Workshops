@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetNaming;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,11 +49,22 @@ public class MidiDeviceMode {
      * <p>0-15</p>
      */
     private String midiChannels = "0-15";
+    /**
+     * Used for "multi" to select a single patch inside a specific channel
+     * <p>Indicate which mode has to be used to provide the banks</p>
+     */
+    private MidiDeviceSubBanks subBanks;
+
+    @Getter(AccessLevel.NONE)
+    private Map<Integer, List<MidiDeviceBank>> banksMap;
 
     public Optional<MidiDeviceBank> getBank(String name) {
         return Optional.ofNullable(banks.get(name));
     }
 
+    /**
+     * Get mode channels accepting specific presets for this mode
+     */
     public List<Integer> getChannels() {
         String[] v = midiChannels.split("-");
         int start = Integer.parseInt(v[0]);
@@ -60,5 +72,42 @@ public class MidiDeviceMode {
         return IntStream.rangeClosed(start, end)
                 .boxed()
                 .toList();
+    }
+
+    /**
+     * Get all channels, include channels accepting multi and channels accepting presets
+     */
+    public List<Integer> getAllChannels() {
+        List<Integer> modeChannels = getChannels();
+        if (subBanks != null) {
+            List<Integer> allChannels = new ArrayList<>(modeChannels);
+            allChannels.addAll(subBanks.getChannels());
+            return allChannels.stream()
+                    .sorted()
+                    .distinct()
+                    .toList();
+        } else {
+            return modeChannels;
+        }
+    }
+
+    public List<MidiDeviceBank> getBanksForChannel(int channel) {
+        if (banksMap == null) {
+            banksMap = new HashMap<>();
+            var modeBanks = banks.values()
+                    .stream()
+                    .toList();
+            getChannels().forEach(ch -> banksMap.put(ch, modeBanks));
+            if (subBanks != null) {
+                var channelBank = subBanks.getMode()
+                        .getBanks()
+                        .values()
+                        .stream()
+                        .toList();
+                subBanks.getChannels()
+                        .forEach(ch -> banksMap.put(ch, channelBank));
+            }
+        }
+        return banksMap.getOrDefault(channel, List.of());
     }
 }

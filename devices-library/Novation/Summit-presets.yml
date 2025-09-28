@@ -525,7 +525,7 @@ deviceModes:
           - "00047F | None | Init Patch"
   Multi:
     banks:
-      Bank A:
+      Multi Bank A:
         presets:
           - "000100 | Layer | FM Singularity"
           - "000101 | Layer | Buzzy Brass"
@@ -655,7 +655,7 @@ deviceModes:
           - "00017D | Split | Find And Forget"
           - "00017E | Split | Was it a Dream?"
           - "00017F | Layer | We Must Hide!"
-      Bank B:
+      Multi Bank B:
         presets:
           - "000200 | Split | Dream Stance"
           - "000201 | Layer | Eighties Brass"
@@ -785,7 +785,7 @@ deviceModes:
           - "00027D | Split | Kosmic Hope"
           - "00027E | Split | Strung Out"
           - "00027F | Layer | Zen Orbit"
-      Bank C:
+      Multi Bank C:
         presets:
           - "000300 | Layer | Alchemy"
           - "000301 | Split | Anthropomorphize"
@@ -915,7 +915,7 @@ deviceModes:
           - "00037D | Split | EM"
           - "00037E | Layer | Jima"
           - "00037F | Layer | Miya"
-      Bank D:
+      Multi Bank D:
         presets:
           - "000400 | Dual | Init Multi"
           - "000401 | Dual | Init Multi"

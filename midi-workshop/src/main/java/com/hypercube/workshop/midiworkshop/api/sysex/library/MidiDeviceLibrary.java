@@ -275,7 +275,8 @@ public class MidiDeviceLibrary {
     }
 
     private void setModeAndBankNames(MidiDeviceDefinition midiDeviceDefinition) {
-        midiDeviceDefinition.getDeviceModes()
+        Map<String, MidiDeviceMode> deviceModes = midiDeviceDefinition.getDeviceModes();
+        deviceModes
                 .forEach((modeName, mode) -> {
                     mode.setName(modeName);
                     // mode inherit from device categories unless they are defined
@@ -288,6 +289,20 @@ public class MidiDeviceLibrary {
                             .forEach((bankName, bank) -> {
                                 bank.setName(bankName);
                             });
+                });
+        deviceModes
+                .values()
+                .stream()
+                .filter(m -> m.getSubBanks() != null)
+                .forEach(mode -> {
+                    var subBanks = mode.getSubBanks();
+                    String subBankMode = subBanks.getFromMode();
+                    if (deviceModes.containsKey(subBankMode)) {
+                        subBanks.setMode(deviceModes
+                                .get(subBankMode));
+                    } else {
+                        throw new MidiConfigError("Unknown mode '%s' in subBank of mode '%s'".formatted(subBankMode, mode.getName()));
+                    }
                 });
     }
 

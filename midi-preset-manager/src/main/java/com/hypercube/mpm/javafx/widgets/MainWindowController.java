@@ -445,10 +445,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         if (!selectedItems.isEmpty()) {
             model.getCurrentDeviceState()
-                    .setCurrentBanks(selectedItems);
+                    .setSelectedBankNames(selectedItems);
         } else {
             model.getCurrentDeviceState()
-                    .setCurrentBanks(null);
+                    .setSelectedBankNames(List.of());
         }
         refreshPatches();
     }

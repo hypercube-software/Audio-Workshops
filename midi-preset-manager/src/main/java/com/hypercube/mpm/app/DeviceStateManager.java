@@ -66,8 +66,10 @@ public class DeviceStateManager {
         var currentState = model.getCurrentDeviceState();
         if (!selectedMode.isEmpty()) {
             String modeName = (String) selectedMode.getFirst();
-            log.info("Switch from mode '{}' to mode '{}' ", currentState.getId()
-                    .getMode(), modeName);
+            int channel = currentState.getId()
+                    .getChannel();
+            log.info("Switch from mode '{}' to mode '{}' channel {}", currentState.getId()
+                    .getMode(), modeName, channel);
             changeModeOnDevice(device, currentState, modeName, false);
             var stateId = getOrCreateDeviceStateId(device, modeName);
             currentState = model.getDeviceStates()
@@ -76,8 +78,9 @@ public class DeviceStateManager {
             model.setCurrentDeviceState(currentState);
             refreshModeProperties(device);
             currentState.setCurrentSelectedCategories(new ArrayList<>());
-            currentState.setCurrentBanks(new ArrayList<>());
+            currentState.setSelectedBankNames(new ArrayList<>());
             currentState.setCurrentSearchOutput(null);
+
         }
     }
 
@@ -146,7 +149,7 @@ public class DeviceStateManager {
                             .getMode(),
                     current.getId()
                             .getChannel(),
-                    current.getCurrentBanks(),
+                    current.getSelectedBankNames(),
                     current.getCurrentSelectedCategories(),
                     current.getCurrentPatch()
             );
@@ -239,18 +242,19 @@ public class DeviceStateManager {
         DeviceState state = model.getCurrentDeviceState();
         log.info("Update mode properties: {}", state.getId()
                 .getMode());
-        var mode = device.getDeviceModes()
+        MidiDeviceMode mode = device.getDeviceModes()
                 .get(state.getId()
                         .getMode());
         if (mode != null) {
-            List<MidiPresetCategory> categories = getModeCategories(mode);
+            Integer channel = state.getId()
+                    .getChannel();
+            List<MidiPresetCategory> categories = getModeCategories(mode, channel);
             log.info("Set {} categories from mode {}", categories.size(), mode.getName());
             model.setModeCategories(categories);
-            log.info("Set {} channels from mode {}", mode.getChannels()
-                    .size(), mode.getName());
-            model.setModeChannels(mode.getChannels());
-            List<String> banks = mode.getBanks()
-                    .values()
+            List<Integer> modeChannels = mode.getAllChannels();
+            log.info("Set {} channels from mode {}", modeChannels.size(), mode.getName());
+            model.setModeChannels(modeChannels);
+            List<String> banks = mode.getBanksForChannel(channel)
                     .stream()
                     .sorted((b1, b2) -> {
                         if (b1.getCommand() == null && b2.getCommand() != null) {
@@ -264,7 +268,7 @@ public class DeviceStateManager {
                     })
                     .map(MidiDeviceBank::getName)
                     .toList();
-            log.info("Set {} banks from mode {}", banks.size(), mode.getName());
+            log.info("Set {} banks from mode {} on channel {}", banks.size(), mode.getName(), channel);
             model.setModeBanks(banks);
         } else {
             log.warn("No mode selected, emptying everything...");
@@ -285,7 +289,14 @@ public class DeviceStateManager {
         model.setMidiThruPorts(buildMidiThruPortsList());
     }
 
-    private List<MidiPresetCategory> getModeCategories(MidiDeviceMode mode) {
+    private List<MidiPresetCategory> getModeCategories(MidiDeviceMode mode, int channel) {
+
+        if (mode.getSubBanks() != null && mode.getSubBanks()
+                .getChannels()
+                .contains(channel)) {
+            mode = mode.getSubBanks()
+                    .getMode();
+        }
         return mode.getCategories()
                 .stream()
                 .sorted(Comparator.comparing(MidiPresetCategory::name))
@@ -464,7 +475,7 @@ public class DeviceStateManager {
                         (source) -> log.info("         {} lastUsed: '{}' command '{}' categories '{}' patch '{}'",
                                 "%40s".formatted((source.isLastUsed() ? "->" : "  ") + source.getId()),
                                 source.isLastUsed(),
-                                source.getCurrentBanks(),
+                                source.getSelectedBankNames(),
                                 source.getCurrentSelectedCategories(),
                                 source.getCurrentPatch()
                         ));
@@ -479,7 +490,7 @@ public class DeviceStateManager {
         log.info("---------------------------------------------------------------------------------");
         log.info("Switch to {} lastUsed '{}' command '{}' categories '{}' patch '{}'", newState.getId(),
                 newState.isLastUsed(),
-                newState.getCurrentBanks(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
+                newState.getSelectedBankNames(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
         updateLastUsed(model, newState);
         model.setCurrentDeviceState(newState);
     }

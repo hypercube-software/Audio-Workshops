@@ -14,8 +14,8 @@ import java.util.stream.IntStream;
 @Setter
 public class DeviceState {
     private DeviceStateId id = new DeviceStateId();
-    private List<String> currentBanks;
     private Patch currentPatch;
+    private List<String> selectedBankNames = new ArrayList<>();
     private List<Patch> currentSearchOutput = new ArrayList<>();
     private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
     private boolean lastUsed;

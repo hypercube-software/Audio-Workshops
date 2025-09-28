@@ -72,17 +72,20 @@ deviceModes:
     command: multiMode()
     queryName: MultiName()
     midiChannels: 0
+    subBanks:
+      midiChannels: 1-2
+      fromMode: Single
     banks:
-      "Bank A":
+      "Multi Bank A":
         command: "$0001"
         presetDomain: 0-127
-      "Bank B":
+      "Multi Bank B":
         command: "$0002"
         presetDomain: 0-127
-      "Bank C":
+      "Multi Bank C":
         command: "$0003"
         presetDomain: 0-127
-      "Bank D":
+      "Multi Bank D":
         command: "$0004"
         presetDomain: 0-127
     categories:
@@ -118,7 +121,7 @@ mappers:
 controllers:
   - "01   | Modulation   | CC         | 0 | 127"
   - "0B   | Expression   | CC         | 0 | 127"
-  - "40   | Sustain      | CC         | 0 | 127"  
+  - "40   | Sustain      | CC         | 0 | 127"
   - "1D3D | Filter Freq  | CC_MSB_LSB | 0 | 16320"
   - "4F   | Filter Res   | CC         | 0 | 127"
   - "50   | Overdire     | CC         | 0 | 127"

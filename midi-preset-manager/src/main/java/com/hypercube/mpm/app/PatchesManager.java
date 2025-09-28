@@ -10,6 +10,7 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
@@ -90,32 +91,33 @@ public class PatchesManager {
                             .getId()
                             .getName())
                     .orElseThrow();
+            int channel = model.getCurrentDeviceState()
+                    .getId()
+                    .getChannel();
             List<Patch> patches = List.of();
 
             String currentModeName = model.getCurrentDeviceState()
                     .getId()
                     .getMode();
             if (currentModeName != null) {
-                log.info("Search patches for mode {}", currentModeName);
-                // Note: it is possible that currentModeBankNames is not yet updated at this point
+                log.info("Search patches for mode {} on channel {}", currentModeName, channel);
+                // Note: it is possible that selectedBankNames is not yet updated at this point
                 // so midiDeviceMode will be null because it points to the previous selected device
-                List<String> currentModeBankNames = model.getCurrentDeviceState()
-                        .getCurrentBanks();
+                List<String> selectedBankNames = model.getCurrentDeviceState()
+                        .getSelectedBankNames();
                 MidiDeviceMode midiDeviceMode = device.getDeviceModes()
                         .get(currentModeName);
                 if (midiDeviceMode != null) {
-                    int channel = model.getCurrentDeviceState()
-                            .getId()
-                            .getChannel();
                     // Patches are stored by banks as String to keep space, we call them "presets"
                     // Once filtered, we convert string presets to a class Patch with score 0
                     // Then the score is updated configurationFactory.getFavorite()
                     // Finally they are sorted by name
-                    patches = midiDeviceMode
-                            .getBanks()
-                            .values()
+                    List<MidiDeviceBank> banksForChannel = midiDeviceMode
+                            .getBanksForChannel(channel);
+                    log.info("Scan patches and filter patches from {} banks...", banksForChannel.size());
+                    patches = banksForChannel
                             .parallelStream()
-                            .filter(bank -> currentModeBankNames == null || currentModeBankNames
+                            .filter(bank -> selectedBankNames.isEmpty() || selectedBankNames
                                     .contains(bank.getName()))
                             .flatMap(bank -> bank.getPresets()
                                     .stream()
