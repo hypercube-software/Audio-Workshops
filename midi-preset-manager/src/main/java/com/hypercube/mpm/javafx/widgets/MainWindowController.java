@@ -232,6 +232,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Restore the state of all devices when the application start
      */
     private void initDevices() {
+        log.info("Midi Device Library active: {}", cfg.getMidiDeviceLibrary()
+                .getDevices()
+                .size());
         if (cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .isEmpty()) {

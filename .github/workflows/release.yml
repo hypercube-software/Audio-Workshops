@@ -35,15 +35,92 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      # ------------------------------------------------------------------------------------------------------------
+      # Build
+      # ------------------------------------------------------------------------------------------------------------
       - name: Jar Build with Maven
         run: mvn clean install --file pom.xml -DskipTests
+
       - name: Native Build Synth-ripper with Maven
         run: mvn -Pnative native:compile --file synth-ripper/pom.xml -DskipTests
+
       - name: Native Build midi-backup-translator with Maven
         run: mvn -Pnative native:compile --file midi-backup-translator/pom.xml -DskipTests
-      #
+
+      - name: Build midi-preset-manager for all macOS archs
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          mvn -Posx-intel -Djavafx.platform=mac --file midi-preset-manager/pom.xml -DskipTests package
+          mvn -Posx-arm -Djavafx.platform=mac-aarch64 --file midi-preset-manager/pom.xml -DskipTests package
+
+      # ------------------------------------------------------------------------------------------------------------
+      # Midi Device Library
+      # ------------------------------------------------------------------------------------------------------------
+      - name: Set current date
+        id: get-date
+        run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: midi-devices-library-${{ env.TODAY }}
+          path: |
+            devices-library
+      # ------------------------------------------------------------------------------------------------------------
+      # Midi Preset Manager
+      # ------------------------------------------------------------------------------------------------------------
+      - name: Prepare mpm distrib
+        run: |
+          ls -la midi-preset-manager/target
+          cp midi-preset-manager/doc/readme.txt midi-preset-manager/target
+          cp midi-preset-manager/mpm.cmd midi-preset-manager/target    
+          cp midi-preset-manager/mpm.sh midi-preset-manager/target
+          cp -R devices-library midi-preset-manager/target
+      - name: Check Intel JAR existence
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          if [ ! -f midi-preset-manager/target/mpm-osx-intel.jar ]; then
+            echo "::error::mpm-osx-intel.jar is missing after build!"
+            exit 1 # Fails the job immediately if the file is missing
+          fi
+      - name: Check Intel JAR existence
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          if [ ! -f midi-preset-manager/target/mpm-osx-arm.jar ]; then
+            echo "::error::mpm-osx-arm.jar is missing after build!"
+            exit 1 # Fails the job immediately if the file is missing
+          fi      
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          name: midi-preset-manager-x64
+          path: |
+            midi-preset-manager/target/mpm-win.jar
+            midi-preset-manager/target/mpm.cmd
+            midi-preset-manager/target/devices-library
+            midi-preset-manager/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          name: midi-preset-manager-osx-arm
+          path: |
+            midi-preset-manager/target/mpm-osx-arm.jar
+            midi-preset-manager/target/mpm.sh
+            midi-preset-manager/target/devices-library
+            midi-preset-manager/target/readme.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          name: midi-preset-manager-osx-intel
+          path: |
+            midi-preset-manager/target/mpm-osx-intel.jar
+            midi-preset-manager/target/mpm.sh
+            midi-preset-manager/target/devices-library
+            midi-preset-manager/target/readme.txt
+
+      # ------------------------------------------------------------------------------------------------------------
       # midi-backup-translator
-      #
+      # ------------------------------------------------------------------------------------------------------------
       - name: Prepare midi-backup-translator distrib
         run: |
           cp midi-backup-translator/doc/readme.pdf midi-backup-translator/target
@@ -77,9 +154,9 @@ jobs:
             midi-backup-translator/target/config-example.yml
             midi-backup-translator/target/devices-library
             midi-backup-translator/target/readme.pdf
-      #
+      # ------------------------------------------------------------------------------------------------------------
       # synth-ripper
-      #
+      # ------------------------------------------------------------------------------------------------------------
       - name: Prepare synth-ripper distrib
         run: |
           ls -la synth-ripper/target
@@ -110,43 +187,3 @@ jobs:
             synth-ripper/target/synth-ripper*.jar
             synth-ripper/target/config
             synth-ripper/target/readme.txt
-      #
-      # Midi Device Library
-      #
-      - name: Set current date
-        id: get-date
-        run: echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          name: midi-devices-library-${{ env.TODAY }}
-          path: |
-            devices-library
-      #
-      # Midi Preset Manager
-      #
-      - name: Prepare mpm distrib
-        run: |
-          ls -la midi-preset-manager/target
-          cp midi-preset-manager/doc/readme.txt midi-preset-manager/target
-          cp midi-preset-manager/mpm.cmd midi-preset-manager/target    
-          cp midi-preset-manager/mpm.sh midi-preset-manager/target
-          cp -R devices-library midi-preset-manager/target
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          name: midi-preset-manager-x64
-          path: |
-            midi-preset-manager/target/mpm-win.jar
-            midi-preset-manager/target/mpm.cmd
-            midi-preset-manager/target/devices-library
-            midi-preset-manager/target/readme.txt
-      - uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'macOS' }}
-        with:
-          name: midi-preset-manager-osx
-          path: |
-            midi-preset-manager/target/mpm-mac.jar
-            midi-preset-manager/target/mpm.sh
-            midi-preset-manager/target/devices-library
-            midi-preset-manager/target/readme.txt

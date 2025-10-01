@@ -229,16 +229,26 @@
         </profile>
 
         <profile>
-            <id>osx</id>
-
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
+            <id>osx-intel</id>
             <build>
-                <finalName>mpm-mac</finalName>
+                <finalName>mpm-osx-intel</finalName>
             </build>
+            <properties>
+                <!-- This does not work and must be set in command line -->
+                <!-- Because we build on windows so the JavaFX pom override what we try to do here -->
+                <javafx.platform>mac</javafx.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>osx-arm</id>
+            <build>
+                <!-- This does not work and must be set in command line -->
+                <!-- Because we build on windows so the JavaFX pom override what we try to do here -->
+                <finalName>mpm-osx-arm</finalName>
+            </build>
+            <properties>
+                <javafx.platform>mac-aarch64</javafx.platform>
+            </properties>
         </profile>
     </profiles>
 </project>

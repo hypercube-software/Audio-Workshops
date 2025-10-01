@@ -38,7 +38,9 @@ jobs:
           node-version: 20
       - name: Build with Maven for Windows
         run: mvn -B package --file pom.xml
-      - name: Build with Maven for OSX
-        run: mvn  -DskipTests -Posx -Djavafx.platform=mac -B package --file pom.xml
+      - name: Build with Maven for OSX intel
+        run: mvn  -DskipTests -Posx-intel -Djavafx.platform=mac -B package --file pom.xml
+      - name: Build with Maven for OSX arm
+        run: mvn  -DskipTests -Posx-arm -Djavafx.platform=mac-aarch64 -B package --file pom.xml
 
   
