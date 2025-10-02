@@ -7,6 +7,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Paint;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -15,13 +17,13 @@ import java.util.ResourceBundle;
 
 @Slf4j
 public class GenericDialogController extends DialogController<GenericDialog, MainModel> {
-
+    @Setter
+    @Getter
+    public Runnable onCloseCallback;
     @FXML
     Label textMessage;
-
     @FXML
     Label textHeader;
-
     @FXML
     FontIcon icon;
 
@@ -51,6 +53,9 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
 
     @FXML
     public void onCloseButton(ActionEvent event) {
+        if (onCloseCallback != null) {
+            onCloseCallback.run();
+        }
         close();
     }
 

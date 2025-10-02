@@ -22,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +33,9 @@ import java.util.ResourceBundle;
 
 @Slf4j
 public class DevicesPortsDialogController extends DialogController<DevicesPortsDialog, Void> {
+    public static final String INPUT_MIDI_DEVICE_YAML_DEFINITION = "inputMidiDevice:";
+    public static final String OUTPUT_MIDI_DEVICE_YAML_DEFINITION = "outputMidiDevice:";
+    public static final String DAW_MIDI_DEVICE_YAML_DEFINITION = "dawMidiDevice:";
     @Autowired
     ProjectConfiguration cfg;
 
@@ -92,13 +97,40 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
         deviceList.setItems(FXCollections.observableArrayList(devices));
     }
 
+    private void writeDawMidiDevice(MidiDeviceDefinition midiDeviceDefinition, PrintWriter out) {
+        if (midiDeviceDefinition.getDawMidiDevice() != null) {
+            out.println("dawMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getDawMidiDevice()));
+        } else {
+            out.println("dawMidiDevice: null");
+        }
+    }
+
+    private void writeOutputMidiDevice(MidiDeviceDefinition midiDeviceDefinition, PrintWriter out) {
+        if (midiDeviceDefinition.getOutputMidiDevice() != null) {
+            out.println("outputMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getOutputMidiDevice()));
+        } else {
+            out.println("outputMidiDevice: null");
+        }
+    }
+
+    private void writeInputMidiDevice(MidiDeviceDefinition midiDeviceDefinition, PrintWriter out) {
+        if (midiDeviceDefinition.getInputMidiDevice() != null) {
+            out.println("inputMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getInputMidiDevice()));
+        } else {
+            out.println("inputMidiDevice: null");
+        }
+    }
+
     private void save() {
         devices.stream()
                 .filter(d -> d.getInputMidiDevice() != null || d.getOutputMidiDevice() != null || d.getDawMidiDevice() != null)
-                .forEach(this::saveUserDevice);
+                .forEach(this::saveOrUpdateUserDevice);
     }
 
-    private void saveUserDevice(MidiDeviceDefinition midiDeviceDefinition) {
+    /**
+     * This method will update the "user" YAML file without destroying its content
+     */
+    private void saveOrUpdateUserDevice(MidiDeviceDefinition midiDeviceDefinition) {
         File definitionFile = midiDeviceDefinition.getDefinitionFile();
         File userFile = new File(definitionFile.getAbsolutePath()
                 .replace(".yml", "-user.yml"));
@@ -109,30 +141,79 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
                 out.println("#");
                 out.println("# MIDI port used to receive messages from the device");
                 out.println("#");
-                if (midiDeviceDefinition.getInputMidiDevice() != null) {
-                    out.println("inputMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getInputMidiDevice()));
-                } else {
-                    out.println("inputMidiDevice: null");
-                }
+                writeInputMidiDevice(midiDeviceDefinition, out);
                 out.println("#");
                 out.println("# MIDI port used to send messages to the device");
                 out.println("#");
-                if (midiDeviceDefinition.getOutputMidiDevice() != null) {
-                    out.println("outputMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getOutputMidiDevice()));
-                } else {
-                    out.println("outputMidiDevice: null");
-                }
+                writeOutputMidiDevice(midiDeviceDefinition, out);
                 out.println("#");
                 out.println("# Virtual MIDI port used to convert back 8 bit CC from DAW to 16 CC to the device");
                 out.println("#");
-                if (midiDeviceDefinition.getDawMidiDevice() != null) {
-                    out.println("dawMidiDevice: \"%s\"".formatted(midiDeviceDefinition.getDawMidiDevice()));
-                } else {
-                    out.println("dawMidiDevice: null");
-                }
+                writeDawMidiDevice(midiDeviceDefinition, out);
             } catch (FileNotFoundException e) {
                 throw new ApplicationError(e);
             }
+        } else {
+            try {
+                List<String> lines = Files.readAllLines(userFile.toPath());
+                boolean inputMidiDeviceIsSet = false;
+                boolean outputMidiDeviceIsSet = false;
+                boolean dawMidiDeviceIsSet = false;
+                for (String line : lines) {
+                    String lineCut = removeComment(line);
+                    if (lineCut.contains(INPUT_MIDI_DEVICE_YAML_DEFINITION)) {
+                        inputMidiDeviceIsSet = true;
+                    } else if (lineCut.contains(OUTPUT_MIDI_DEVICE_YAML_DEFINITION)) {
+                        outputMidiDeviceIsSet = true;
+                    } else if (lineCut.contains(DAW_MIDI_DEVICE_YAML_DEFINITION)) {
+                        dawMidiDeviceIsSet = true;
+                    }
+                }
+                try (PrintWriter out = new PrintWriter(userFile)) {
+                    for (String line : lines) {
+                        String lineCut = removeComment(line);
+                        if (lineCut.contains(INPUT_MIDI_DEVICE_YAML_DEFINITION)) {
+                            writeInputMidiDevice(midiDeviceDefinition, out);
+                        } else if (lineCut.contains(OUTPUT_MIDI_DEVICE_YAML_DEFINITION)) {
+                            writeOutputMidiDevice(midiDeviceDefinition, out);
+                        } else if (lineCut.contains(DAW_MIDI_DEVICE_YAML_DEFINITION)) {
+                            writeDawMidiDevice(midiDeviceDefinition, out);
+                        } else {
+                            out.println(line);
+                        }
+
+                        if (line.contains(INPUT_MIDI_DEVICE_YAML_DEFINITION) && !inputMidiDeviceIsSet) {
+                            writeInputMidiDevice(midiDeviceDefinition, out);
+                            inputMidiDeviceIsSet = true;
+                        } else if (line.contains(OUTPUT_MIDI_DEVICE_YAML_DEFINITION) && !outputMidiDeviceIsSet) {
+                            writeOutputMidiDevice(midiDeviceDefinition, out);
+                            outputMidiDeviceIsSet = true;
+                        } else if (line.contains(DAW_MIDI_DEVICE_YAML_DEFINITION) && !dawMidiDeviceIsSet) {
+                            writeDawMidiDevice(midiDeviceDefinition, out);
+                            dawMidiDeviceIsSet = true;
+                        }
+                    }
+                    if (!inputMidiDeviceIsSet) {
+                        writeInputMidiDevice(midiDeviceDefinition, out);
+                    } else if (!outputMidiDeviceIsSet) {
+                        writeOutputMidiDevice(midiDeviceDefinition, out);
+                    } else if (!dawMidiDeviceIsSet) {
+                        writeDawMidiDevice(midiDeviceDefinition, out);
+                    }
+                }
+            } catch (IOException e) {
+                throw new ApplicationError(e);
+            }
+
+        }
+    }
+
+    private String removeComment(String line) {
+        int idx = line.indexOf("#");
+        if (idx != -1) {
+            return line.substring(0, idx);
+        } else {
+            return line;
         }
     }
 

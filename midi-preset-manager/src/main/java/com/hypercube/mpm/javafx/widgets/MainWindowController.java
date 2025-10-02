@@ -98,7 +98,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
         addEventListener(FilesDroppedEvent.class, this::onFilesDropped);
         addEventListener(MuteOutputDeviceEvent.class, this::onMuteOutputDevice);
-
     }
 
     @Override
@@ -108,7 +107,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         } catch (MidiError e) {
             showError(e);
         }
-
         try {
             newScene.setOnKeyPressed(this::handleKeyPressed);
             newScene.setOnKeyReleased(this::handleKeyReleased);
@@ -232,20 +230,20 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Restore the state of all devices when the application start
      */
     private void initDevices() {
-        log.info("Midi Device Library active: {}", cfg.getMidiDeviceLibrary()
-                .getDevices()
-                .size());
-        if (getModel().getDevices()
+        List<String> devices = getModel().getDevices();
+        log.info("Midi Device Library active: {}", devices.size());
+        if (devices
                 .isEmpty()) {
             var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
             dlg.updateText("First Launch", """
                     This is the first time you run this application.
                     There is no device enabled yet in your library.
                     You need to assign MIDI Ports to devices you want to use.
-                    Then restart the application. They will appear in the list.
+                    Then they will appear in the list.
                     """);
             dlg.showAndWait();
             onMenuDevicesPorts(null);
+            onMenuReloadMidiDeviceLibrary(null);
         } else if (!cfg.getSelectedPatches()
                 .isEmpty()) {
             ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);

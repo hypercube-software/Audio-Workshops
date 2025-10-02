@@ -89,10 +89,11 @@ public class PropertiesHelper implements SceneListener {
     }
 
     public void onSceneWindowChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
-        setMinSizeForStageWindow(newValue);
-
         if (oldValue != null && newValue == null) {
             onSceneDetach(oldValue);
+        } else if (oldValue == null && newValue != null) {
+            setMinSizeForStageWindow(newValue);
+            setShowingListener(newValue);
         }
     }
 
@@ -110,18 +111,35 @@ public class PropertiesHelper implements SceneListener {
         }
     }
 
+    private void setShowingListener(Scene scene) {
+
+        scene.windowProperty()
+                .addListener((ObservableValue<? extends Window> observableValue, Window oldValue, Window newValue) -> {
+                    if (oldValue == null && newValue != null) {
+                        newValue.showingProperty()
+                                .addListener((ObservableValue<? extends Boolean> observableValue2, Boolean oldBoolValue, Boolean newBoolValue) -> {
+                                            if (!oldBoolValue && newBoolValue) {
+                                                onSceneAttach(scene);
+                                            }
+                                        }
+                                );
+                    }
+                });
+    }
+
     /**
      * Set the min size of window is painful. We need to wait "scene" is set, then "scene.window", then "scene.window.width" and "scene.window.height"
      */
     private void setMinSizeForStageWindow(Scene scene) {
         if (scene != null) {
+
             scene.windowProperty()
                     .addListener((ObservableValue<? extends Window> observableWindowValue, Window oldWindowValue
                             , Window window) -> {
                         window.widthProperty()
                                 .addListener((ObservableValue<? extends Number> observableValue, Number oldWidthValue, Number newWidthValue) -> {
                                     if (!widthSet) {
-                                        onSceneAttach(scene);
+
                                         Stage stage = (Stage) window.getScene()
                                                 .getWindow();
                                         if (stage.getMinWidth() == 0) {
