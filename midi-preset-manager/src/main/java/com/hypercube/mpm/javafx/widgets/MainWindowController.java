@@ -235,8 +235,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         log.info("Midi Device Library active: {}", cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .size());
-        if (cfg.getMidiDeviceLibrary()
-                .getDevices()
+        if (getModel().getDevices()
                 .isEmpty()) {
             var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
             dlg.updateText("First Launch", """
