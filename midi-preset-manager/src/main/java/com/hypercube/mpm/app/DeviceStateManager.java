@@ -15,11 +15,10 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.sound.midi.InvalidMidiDataException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -210,16 +209,12 @@ public class DeviceStateManager {
                         .toList();
                 sequences.forEach(s -> s.getMidiRequests()
                         .forEach(r -> {
-                            try {
-                                List<CustomMidiEvent> requestInstances = SysExBuilder.parse(r.getValue());
-                                requestInstances.forEach(evt -> {
-                                    log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
-                                    midiOutDevice
-                                            .send(evt);
-                                });
-                            } catch (InvalidMidiDataException e) {
-                                throw new MidiError(e);
-                            }
+                            List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(r.getValue());
+                            requestInstances.forEach(evt -> {
+                                log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
+                                midiOutDevice
+                                        .send(evt);
+                            });
                         }));
                 midiOutDevice.sleep(device.getModeLoadTimeMs());
             }

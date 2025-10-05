@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.importer;
 
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ public record PatchOverride(String name, String mode, String command, OverrideCo
         if (condition == null) {
             return true;
         }
-        int offset = SysExBuilder.parseNumber(condition.offset());
-        String hexValues = SysExBuilder.resolveASCIIStrings(condition.value());
-        byte[] bytes = SysExBuilder.forgeBytesFromString(hexValues);
+        int offset = MidiEventBuilder.parseNumber(condition.offset());
+        String hexValues = MidiEventBuilder.resolveASCIIStrings(condition.value());
+        byte[] bytes = MidiEventBuilder.forgeBytesFromString(hexValues);
         for (int i = 0; i < bytes.length; i++) {
             if (patchData[i + offset] != bytes[i]) {
                 return false;

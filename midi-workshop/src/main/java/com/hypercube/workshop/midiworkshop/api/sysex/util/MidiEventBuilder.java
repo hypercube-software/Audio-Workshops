@@ -18,18 +18,22 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Utility class to construct a SysEx ith fluent API style
+ * Utility class to construct any Midi Event (SysEx, Note or CC)
+ * <ul>
+ *     <li>Can receive hexadecimal string as input to forge SysEx typically</li>
+ *     <li>Fluent API style can be used to compute SysEx checksum more easily</li>
+ * </ul>
  */
 @RequiredArgsConstructor
 @Slf4j
-public class SysExBuilder {
+public class MidiEventBuilder {
     public static final Pattern DECIMAL_OR_HEX_NUMBER = Pattern.compile("((0x|\\$)(?<hexadecimal>[0-9A-F]+))|(?<decimal>[0-9]+)");
     public static final Pattern nibbles = Pattern.compile("(^|\\s)(?<high>[0-9A-F])\\s+(?<low>[0-9A-F])\\s+");
     private final SysExChecksum sysExChecksum;
     private final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     private final State state = new State();
 
-    public static List<CustomMidiEvent> parse(String definitions) throws InvalidMidiDataException {
+    public static List<CustomMidiEvent> parse(String definitions) {
         return Arrays.stream(definitions.split(";"))
                 .flatMap(definition -> {
                     List<CustomMidiEvent> result = new ArrayList<>();
@@ -38,7 +42,7 @@ public class SysExBuilder {
                     if (ranges.size() > 1) {
                         throw new MidiError("SysEx template does not support more than one range for now");
                     }
-                    if (ranges.size() > 0) {
+                    if (!ranges.isEmpty()) {
                         for (SysExRange range : ranges) {
                             for (int i = range.from(); i <= range.to(); i++) {
                                 String hexaFormat = "%0" + range.size() + "X";
@@ -115,7 +119,7 @@ public class SysExBuilder {
                         }
                     }
                 });
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
         for (int i = 0; i < data.size(); i++) {
             if (i == checksum.getStartPosition()) {
                 sb.beginChecksum();
@@ -124,8 +128,7 @@ public class SysExBuilder {
             }
             sb.write(data.get(i));
         }
-        byte[] result = sb.buildBuffer();
-        return result;
+        return sb.buildBuffer();
     }
 
     /**
@@ -160,7 +163,7 @@ public class SysExBuilder {
         while (matcher.find()) {
             String fromStr = matcher.group("from");
             String toStr = matcher.group("to");
-            int size = computeRangeSize(fromStr, toStr);
+            int size = computeRangeSize(fromStr);
             int from = parseNumber(fromStr);
             int to = parseNumber(toStr);
             SysExRange r = new SysExRange(matcher.group(), size, matcher.start(), from, to);
@@ -169,7 +172,7 @@ public class SysExBuilder {
         return result;
     }
 
-    private static int computeRangeSize(String fromStr, String toStr) {
+    private static int computeRangeSize(String fromStr) {
         if (fromStr.startsWith("$")) {
             return fromStr.substring(1)
                     .length();
@@ -210,20 +213,20 @@ public class SysExBuilder {
     public static String resolveASCIIStrings(String payload) {
         var asciiString = Pattern.compile("'[^']+'");
         var matcher = asciiString.matcher(payload);
-        Map<String, String> remplacement = new HashMap<>();
+        Map<String, String> replacement = new HashMap<>();
         while (matcher.find()) {
             String str = matcher.group();
             int start = matcher.start();
             int end = matcher.end();
-            String hexaString = "";
+            StringBuilder hexaString = new StringBuilder();
             var chars = str.toCharArray();
             for (int idx = 1; idx < chars.length - 1; idx++) {
                 String hex = "%02X".formatted((int) chars[idx]);
-                hexaString += hex;
+                hexaString.append(hex);
             }
-            remplacement.put(str, hexaString);
+            replacement.put(str, hexaString.toString());
         }
-        for (Map.Entry<String, String> entry : remplacement.entrySet()) {
+        for (Map.Entry<String, String> entry : replacement.entrySet()) {
             String k = entry.getKey();
             String v = entry.getValue();
             payload = payload.replace(k, v);
@@ -231,7 +234,7 @@ public class SysExBuilder {
         return payload;
     }
 
-    public SysExBuilder write(int... values) {
+    public MidiEventBuilder write(int... values) {
         Arrays.stream(values)
                 .forEach(value -> {
                     byteStream.write(value);
@@ -243,12 +246,12 @@ public class SysExBuilder {
         return this;
     }
 
-    public SysExBuilder beginChecksum() {
+    public MidiEventBuilder beginChecksum() {
         state.updateChecksum = true;
         return this;
     }
 
-    public SysExBuilder writeChecksum() {
+    public MidiEventBuilder writeChecksum() {
         state.updateChecksum = false;
         byteStream.write(sysExChecksum.getValue());
         return this;

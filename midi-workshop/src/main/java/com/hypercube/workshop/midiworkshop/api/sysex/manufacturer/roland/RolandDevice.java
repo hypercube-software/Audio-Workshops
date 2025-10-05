@@ -7,7 +7,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -25,7 +25,7 @@ public final class RolandDevice extends Device {
     @Override
     public void requestData(MidiOutDevice midiOutDevice, MemoryInt24 address, MemoryInt24 size) {
         // This is what Roland call a One-Way request Data: RQ1
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
         sb.write(SYSEX_START, Manufacturer.ROLAND.getCode(), 0x00, code, 0x11);
         sb.beginChecksum();
         sb.write(address.getPackedBytes());
@@ -46,7 +46,7 @@ public final class RolandDevice extends Device {
     @Override
     public void sendData(MidiOutDevice midiOutDevice, MemoryInt24 address, int value) {
         // This is what Roland call a One-Way Data Set: DT1
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
         sb.write(SYSEX_START, Manufacturer.ROLAND.getCode(), 0x00, code, 0x12);
         sb.beginChecksum();
         sb.write(address.getPackedBytes());

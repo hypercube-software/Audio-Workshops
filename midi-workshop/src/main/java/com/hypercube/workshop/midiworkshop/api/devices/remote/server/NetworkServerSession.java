@@ -43,6 +43,9 @@ public final class NetworkServerSession {
      */
     private final BlockingQueue<NetworkPacket> blockingQueue = new LinkedBlockingQueue<>();
 
+    /**
+     * Block until new network packets are available
+     */
     public List<NetworkPacket> getCurrentPackets() {
         return receivedPackets.values()
                 .stream()

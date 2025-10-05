@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.devices.remote.msg;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -51,6 +51,6 @@ public class MidiNetworkMessage extends NetworkMessage {
         timeStamp = readInt32(in);
         int size = readInt16(in);
         byte[] data = in.readNBytes(size);
-        event = SysExBuilder.forgeCustomMidiEvent(data, timeStamp);
+        event = MidiEventBuilder.forgeCustomMidiEvent(data, timeStamp);
     }
 }

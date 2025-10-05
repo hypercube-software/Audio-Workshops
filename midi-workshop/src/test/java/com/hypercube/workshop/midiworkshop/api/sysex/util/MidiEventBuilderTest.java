@@ -10,7 +10,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SysExBuilderTest {
+class MidiEventBuilderTest {
 
     @ParameterizedTest
     @CsvSource({
@@ -20,14 +20,14 @@ class SysExBuilderTest {
             "F041004211480000001D10F7,0xF041004211480000001D10F7"
     })
     void parse(String input, String expected) throws InvalidMidiDataException {
-        var actual = SysExBuilder.parse(input);
+        var actual = MidiEventBuilder.parse(input);
         assertEquals(expected, actual.get(0)
                 .getHexValues());
     }
 
     @Test
     void parseRange() throws InvalidMidiDataException {
-        var actual = SysExBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-9] F7");
+        var actual = MidiEventBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-9] F7");
         assertEquals(10, actual.size());
         assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
                 .getHexValues());
@@ -37,7 +37,7 @@ class SysExBuilderTest {
 
     @Test
     void parseMultipleDefinitions() throws InvalidMidiDataException {
-        var actual = SysExBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-1] F7;F0 41 00 42 11 480000 001D10 CK3 F7");
+        var actual = MidiEventBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-1] F7;F0 41 00 42 11 480000 001D10 CK3 F7");
         assertEquals(3, actual.size());
         assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
                 .getHexValues());
@@ -52,6 +52,6 @@ class SysExBuilderTest {
             "F04100*4211480000001D10F7"
     })
     void parseWithError(String input) throws InvalidMidiDataException {
-        assertThrows(MidiError.class, () -> SysExBuilder.parse(input));
+        assertThrows(MidiError.class, () -> MidiEventBuilder.parse(input));
     }
 }

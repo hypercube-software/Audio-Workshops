@@ -19,7 +19,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.response.ExtractedF
 import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -281,17 +281,13 @@ public class MidiPresetCrawler {
     }
 
     private void send(MidiRequestSequence sequence, MidiOutDevice out) {
-        try {
-            for (var request : sequence.getMidiRequests()) {
-                List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
-                for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
-                    var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                    log.info("Send {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
-                    out.send(customMidiEvent);
-                }
+        for (var request : sequence.getMidiRequests()) {
+            List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue());
+            for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
+                var customMidiEvent = requestInstances.get(requestInstanceIndex);
+                log.info("Send {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
+                out.send(customMidiEvent);
             }
-        } catch (InvalidMidiDataException e) {
-            throw new MidiError(e);
         }
     }
 
@@ -365,7 +361,7 @@ public class MidiPresetCrawler {
         ExtractedFields response = null;
         expectedResponseSize = sequence.getTotalSize();
         for (var request : sequence.getMidiRequests()) {
-            List<CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue()
+            List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue()
                     .replace("program", "%02X".formatted(program))
                     .replace("bankMSB", "%02X".formatted(bankMSB))
                     .replace("bankLSB", "%02X".formatted(bankLSB))
@@ -411,7 +407,7 @@ public class MidiPresetCrawler {
     private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutDevice out) throws InvalidMidiDataException {
         if (preSequence != null) {
             for (var request : preSequence.getMidiRequests()) {
-                SysExBuilder.parse(request.getValue())
+                MidiEventBuilder.parse(request.getValue())
                         .forEach(evt -> {
                             log.info("Pre request command \"{}\": {}", request.getName(), evt.getHexValuesSpaced());
                             resetCurrentResponse();
@@ -431,7 +427,7 @@ public class MidiPresetCrawler {
     private void sendPostSequence(MidiDeviceDefinition device, MidiRequestSequence postSequence, MidiOutDevice out) throws InvalidMidiDataException {
         if (postSequence != null) {
             for (var request : postSequence.getMidiRequests()) {
-                SysExBuilder.parse(request.getValue())
+                MidiEventBuilder.parse(request.getValue())
                         .forEach(evt -> {
                             log.info("Post request command \"{}\": {}", request.getName(), evt.getHexValuesSpaced());
                             out.send(evt);

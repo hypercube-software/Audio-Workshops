@@ -1,14 +1,14 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.request;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * A {@link MidiRequest} is just a string of hexadecimal bytes
  * <p>Note: ranges and strings are not resolved at this point, so {@link #value} can be something like "F0 43 20 7A 'LM  0065PF' 0000000000000000000000000000 00 [0-63]    F7"</p>
- * <p>{@link SysExBuilder#parse(String)} will completely resolve the value and produce real Midi events</p>
+ * <p>{@link MidiEventBuilder#parse(String)} will completely resolve the value and produce real Midi events</p>
  */
 @RequiredArgsConstructor
 @Getter

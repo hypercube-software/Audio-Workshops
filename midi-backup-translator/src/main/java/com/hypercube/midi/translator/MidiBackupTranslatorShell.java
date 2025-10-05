@@ -10,7 +10,7 @@ import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -205,7 +205,7 @@ public class MidiBackupTranslatorShell {
                     .get(requestIndex);
             for (var request : requests.getMidiRequests()) {
                 device.setCurrentRequest(request);
-                List<com.hypercube.workshop.midiworkshop.api.CustomMidiEvent> requestInstances = SysExBuilder.parse(request.getValue());
+                List<com.hypercube.workshop.midiworkshop.api.CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue());
                 for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                     var customMidiEvent = requestInstances.get(requestInstanceIndex);
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValues());

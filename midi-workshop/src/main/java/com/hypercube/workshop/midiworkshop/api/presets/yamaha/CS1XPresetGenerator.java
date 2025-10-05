@@ -9,7 +9,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 
 import java.io.*;
 import java.net.URL;
@@ -22,33 +22,78 @@ import java.util.regex.Pattern;
 
 public class CS1XPresetGenerator {
     private final Pattern VOICE_DEFINITION = Pattern.compile("(\\d+)\\s(.+)");
+    private List<String> categoriesXG = List.of("Piano",
+            "Chromatic",
+            "Percussion",
+            "Organ",
+            "Guitar",
+            "Bass",
+            "Strings",
+            "Ensemble",
+            "Brass",
+            "Reed",
+            "Pipe",
+            "Synth Lead",
+            "Synth Pad",
+            "Synth Effects",
+            "Ethnic",
+            "Percussive",
+            "Sound Effects");
+    private List<String> categoryCodes = List.of(
+            "Pf", "Piano",
+            "Cp", "Chromatic Percussion",
+            "Or", "Organ",
+            "Gt", "Guitar",
+            "Ba", "Bass",
+            "St", "Strings",
+            "En", "Ensemble",
+            "Br", "Brass",
+            "Rd", "Reed",
+            "Pi", "Pipe",
+            "Ld", "Synth Lead",
+            "Pd", "Synth Pad",
+            "Fx", "Synth FX",
+            "Et", "Ethnic",
+            "Pc", "Percussive",
+            "Se", "Sound FX",
+            "Dr", "Drums",
+            "Sc", "Synth Comping",
+            "Vo", "Vocal",
+            "Co", "Combination",
+            "Wv", "Material Wave",
+            "Sq", "Sequence");
 
-    private List<String> readResourceLines(String path) {
-        URL resource = this.getClass()
-                .getClassLoader()
-                .getResource(path);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
-            return reader.lines()
-                    .toList();
-        } catch (Exception e) {
-            throw new MidiConfigError(e);
+    private static byte[] generatePerformance(String title, int category) {
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
+        int byteCount = 0x2E;
+        sb.write(0xF0, 0x43, 0x00, 0x4B, byteCount >>> 7, byteCount & 0x7F);
+        sb.write(0x60, 0x00, 0x00); // Current Performance Common
+        sb.beginChecksum();
+        for (int chIdx = 0; chIdx < 8; chIdx++) {
+            char c = chIdx < title.length() ? title.charAt(chIdx) : ' ';
+            sb.write(c);
         }
-    }
-
-    private byte[] readResourceBytes(String path) {
-        URL resource = this.getClass()
-                .getClassLoader()
-                .getResource(path);
-        try {
-            return resource.openStream()
-                    .readAllBytes();
-        } catch (IOException e) {
-            throw new MidiConfigError(e);
-        }
-    }
-
-    private String readResource(String path) {
-        return new String(readResourceBytes(path), StandardCharsets.UTF_8);
+        sb.write(category);
+        sb.write(100); // volume
+        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
+        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
+        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
+        sb.write(0x00, 0x00);
+        sb.write(0x00, 0x00);
+        sb.write(0x00, 0x00);
+        sb.write(0x00, 0x00);
+        sb.write(0x40);
+        sb.write(0x40);
+        sb.write(0x40);
+        sb.write(0x40);
+        sb.write(0x00);
+        sb.write(0x00, 110); // BPM 110
+        sb.write(9); // arpeg UpDnBlOct
+        sb.write(7); // 1/16
+        sb.write(0x00); // OFF
+        sb.writeChecksum();
+        sb.write(0xF7);
+        return sb.buildBuffer();
     }
 
     public void dumpCS1XVoices(String deviceName) {
@@ -124,46 +169,33 @@ public class CS1XPresetGenerator {
         return sb.toString();
     }
 
-    private List<String> categoriesXG = List.of("Piano",
-            "Chromatic",
-            "Percussion",
-            "Organ",
-            "Guitar",
-            "Bass",
-            "Strings",
-            "Ensemble",
-            "Brass",
-            "Reed",
-            "Pipe",
-            "Synth Lead",
-            "Synth Pad",
-            "Synth Effects",
-            "Ethnic",
-            "Percussive",
-            "Sound Effects");
-    private List<String> categoryCodes = List.of(
-            "Pf", "Piano",
-            "Cp", "Chromatic Percussion",
-            "Or", "Organ",
-            "Gt", "Guitar",
-            "Ba", "Bass",
-            "St", "Strings",
-            "En", "Ensemble",
-            "Br", "Brass",
-            "Rd", "Reed",
-            "Pi", "Pipe",
-            "Ld", "Synth Lead",
-            "Pd", "Synth Pad",
-            "Fx", "Synth FX",
-            "Et", "Ethnic",
-            "Pc", "Percussive",
-            "Se", "Sound FX",
-            "Dr", "Drums",
-            "Sc", "Synth Comping",
-            "Vo", "Vocal",
-            "Co", "Combination",
-            "Wv", "Material Wave",
-            "Sq", "Sequence");
+    private List<String> readResourceLines(String path) {
+        URL resource = this.getClass()
+                .getClassLoader()
+                .getResource(path);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+            return reader.lines()
+                    .toList();
+        } catch (Exception e) {
+            throw new MidiConfigError(e);
+        }
+    }
+
+    private byte[] readResourceBytes(String path) {
+        URL resource = this.getClass()
+                .getClassLoader()
+                .getResource(path);
+        try {
+            return resource.openStream()
+                    .readAllBytes();
+        } catch (IOException e) {
+            throw new MidiConfigError(e);
+        }
+    }
+
+    private String readResource(String path) {
+        return new String(readResourceBytes(path), StandardCharsets.UTF_8);
+    }
 
     private int searchCategory(MidiDeviceDefinition device, MidiDeviceMode mode, String bankName, int program, String categories, String title) {
         String category = bankName.startsWith("XG") ? categoriesXG.get(program / 8) : searchCategoryCode(device, categories, title);
@@ -202,7 +234,7 @@ public class CS1XPresetGenerator {
     private byte[] generateLayer(int l, int bank, int voice) {
         int bankMSB = bank >>> 8;
         int bankLSB = bank & 0x7F;
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
         int byteCount = 0x29;
         sb.write(0xF0, 0x43, 0x00, 0x4B, byteCount >>> 7, byteCount & 0x7F);
         sb.write(0x60, l + 1, 0x00); // Current Performance Common
@@ -229,39 +261,6 @@ public class CS1XPresetGenerator {
         sb.write(0x40, 0x40, 0x40);
         sb.write(0x40, 0x40, 0x40, 0x40);
         sb.write(0x40, 0x40);
-        sb.writeChecksum();
-        sb.write(0xF7);
-        return sb.buildBuffer();
-    }
-
-    private static byte[] generatePerformance(String title, int category) {
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
-        int byteCount = 0x2E;
-        sb.write(0xF0, 0x43, 0x00, 0x4B, byteCount >>> 7, byteCount & 0x7F);
-        sb.write(0x60, 0x00, 0x00); // Current Performance Common
-        sb.beginChecksum();
-        for (int chIdx = 0; chIdx < 8; chIdx++) {
-            char c = chIdx < title.length() ? title.charAt(chIdx) : ' ';
-            sb.write(c);
-        }
-        sb.write(category);
-        sb.write(100); // volume
-        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
-        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
-        sb.write(0x40, 0x40, 0x40, 0x40, 0x40, 0x40);
-        sb.write(0x00, 0x00);
-        sb.write(0x00, 0x00);
-        sb.write(0x00, 0x00);
-        sb.write(0x00, 0x00);
-        sb.write(0x40);
-        sb.write(0x40);
-        sb.write(0x40);
-        sb.write(0x40);
-        sb.write(0x00);
-        sb.write(0x00, 110); // BPM 110
-        sb.write(9); // arpeg UpDnBlOct
-        sb.write(7); // 1/16
-        sb.write(0x00); // OFF
         sb.writeChecksum();
         sb.write(0xF7);
         return sb.buildBuffer();

@@ -11,6 +11,7 @@ import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
 import com.hypercube.mpm.midi.MidiRouter;
+import com.hypercube.mpm.midi.VirtualKeyboard;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
@@ -30,7 +31,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +51,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     ProjectConfiguration cfg;
     @Autowired
     MidiRouter midiRouter;
+    @Autowired
+    VirtualKeyboard virtualKeyboard;
     @Autowired
     DeviceStateManager deviceStateManager;
     @Autowired
@@ -108,8 +110,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             showError(e);
         }
         try {
-            newScene.setOnKeyPressed(this::handleKeyPressed);
-            newScene.setOnKeyReleased(this::handleKeyReleased);
+            newScene.setOnKeyPressed(virtualKeyboard::translateKeyDown);
+            newScene.setOnKeyReleased(virtualKeyboard::translateKeyUp);
             restoreConfigSelection();
         } catch (MidiError e) {
             showError(e);
@@ -173,14 +175,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 port.sendAllOff();
                             });
                 });
-    }
-
-    private void handleKeyReleased(KeyEvent keyEvent) {
-        midiRouter.onKeyboardNoteOff(keyEvent);
-    }
-
-    private void handleKeyPressed(KeyEvent keyEvent) {
-        midiRouter.onKeyboardNoteOn(keyEvent);
     }
 
     private void showError(Throwable error) {

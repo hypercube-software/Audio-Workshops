@@ -10,7 +10,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMo
 import com.hypercube.workshop.midiworkshop.api.sysex.library.response.ExtractedFields;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExChecksum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,7 +130,7 @@ public class PatchImporter {
                     if (location.value()
                             .startsWith("CK")) {
                         SysExChecksum sysExChecksum = new DefaultChecksum();
-                        int offset = SysExBuilder.parseNumber(location.offset());
+                        int offset = MidiEventBuilder.parseNumber(location.offset());
                         int size = Integer.parseInt(location.value()
                                 .substring(2));
                         int start = offset - size;
@@ -145,10 +145,10 @@ public class PatchImporter {
                         ));
                         patchData[offset] = (byte) ck;
                     } else {
-                        int offset = SysExBuilder.parseNumber(location.offset());
+                        int offset = MidiEventBuilder.parseNumber(location.offset());
                         String hexValues = location.value()
-                                .startsWith("'") ? SysExBuilder.resolveASCIIStrings(location.value()) : "%02X".formatted(SysExBuilder.parseNumber(location.value()));
-                        byte[] bytes = SysExBuilder.forgeBytesFromString(hexValues);
+                                .startsWith("'") ? MidiEventBuilder.resolveASCIIStrings(location.value()) : "%02X".formatted(MidiEventBuilder.parseNumber(location.value()));
+                        byte[] bytes = MidiEventBuilder.forgeBytesFromString(hexValues);
                         byte[] overrided = new byte[bytes.length];
                         String h = "";
                         for (int i = 0; i < overrided.length; i++) {

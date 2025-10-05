@@ -7,7 +7,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -26,7 +26,7 @@ public class BehringerDevice extends Device {
         // REQUEST
         // F0 00 20 32 28 7F 05 F7
 
-        SysExBuilder sb = new SysExBuilder(new DefaultChecksum());
+        MidiEventBuilder sb = new MidiEventBuilder(new DefaultChecksum());
         sb.write(SYSEX_START, 0x00, 0x20, 0x32, 0x28, 0x7F, 0x05, SYSEX_END);
         sb.beginChecksum();
         sb.write(address.getPackedBytes());
