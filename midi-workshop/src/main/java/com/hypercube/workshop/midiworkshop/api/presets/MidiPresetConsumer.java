@@ -4,5 +4,5 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 
 @FunctionalInterface
 public interface MidiPresetConsumer {
-    void onNewMidiPreset(MidiDeviceDefinition device, MidiPreset midiPreset);
+    void onNewMidiPreset(MidiDeviceDefinition device, MidiPreset midiPreset, int currentCount, int totalCount);
 }

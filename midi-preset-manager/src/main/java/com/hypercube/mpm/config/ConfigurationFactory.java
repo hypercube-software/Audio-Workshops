@@ -10,10 +10,11 @@ import com.hypercube.util.javafx.yaml.ObservableSerializer;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,14 +25,24 @@ import java.io.IOException;
 @Slf4j
 public class ConfigurationFactory {
     private final MidiDeviceLibrary midiDeviceLibrary;
-
+    private final MidiPortsManager midiPortsManager;
     @Value("${mpm-config:./mpm-config.yml}")
+    @Setter
+    @Getter
     private File configFile;
-
     private Favorites favorites;
 
-    @Bean
-    public ProjectConfiguration loadConfig() {
+    private ProjectConfiguration projectConfiguration;
+
+    public ProjectConfiguration getProjectConfiguration() {
+        if (projectConfiguration == null) {
+            loadConfig();
+        }
+        return projectConfiguration;
+    }
+
+    public void loadConfig() {
+        midiPortsManager.collectDevices();
         loadMidiDeviceLibrary();
         favorites = loadFavoritePatches();
         try {
@@ -45,20 +56,20 @@ public class ConfigurationFactory {
             config.setMidiPortsManager(new MidiPortsManager());
             config.getMidiPortsManager()
                     .collectDevices();
-            return config;
+            projectConfiguration = config;
         } catch (IOException e) {
             throw new ConfigError(e);
         }
     }
 
-    public void saveConfig(ProjectConfiguration configuration) {
+    public void saveConfig() {
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule observableModule = new SimpleModule("observableModule");
             observableModule.setSerializerModifier(new ObservableSerializer());
             mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
             mapper.registerModule(observableModule);
-            mapper.writeValue(configFile, configuration);
+            mapper.writeValue(configFile, projectConfiguration);
         } catch (IOException e) {
             throw new ConfigError(e);
         }
@@ -88,8 +99,8 @@ public class ConfigurationFactory {
     }
 
     private void initEmptyConfig() throws IOException {
-        ProjectConfiguration emptyConfig = new ProjectConfiguration();
-        saveConfig(emptyConfig);
+        projectConfiguration = new ProjectConfiguration();
+        saveConfig();
     }
 
     private void saveFavoritePatches(Favorites favorites) {

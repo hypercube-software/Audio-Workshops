@@ -3,6 +3,8 @@ package com.hypercube.workshop.midiworkshop.api.sysex.library;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
@@ -12,6 +14,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest
 import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExTemplate;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.deserializer.*;
 import lombok.Getter;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -53,6 +57,38 @@ public class MidiDeviceLibrary {
     private static MidiResponseMapper getMacroMapper(MidiDeviceDefinition device, CommandMacro macro) {
         return device.getMapper(macro.getMapperName())
                 .orElseThrow(() -> new MidiConfigError("Unknown mapper '%s' for device '%'".formatted(macro.getMapperName(), device.getDeviceName())));
+    }
+
+    public void sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, CommandCall command) {
+        sendCommandToDevice(device, midiOutDevice, List.of(command));
+    }
+
+    public byte[] sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, List<CommandCall> commands) {
+        try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
+            for (CommandCall commandCall : commands) {
+                CommandMacro commandMacro = device.getMacro(commandCall);
+                responseBuffer.write(sendCommandToDevice(device, midiOutDevice, commandMacro, commandCall));
+            }
+            return responseBuffer.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public byte[] sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, CommandMacro macro, CommandCall commandCall) {
+        try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
+            for (MidiRequest r : forgeMidiRequestSequence(device.getDefinitionFile(), device.getDeviceName(), macro, commandCall).getMidiRequests()) {
+                for (CustomMidiEvent evt : MidiEventBuilder.parse(r.getValue())) {
+                    log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
+                    midiOutDevice.send(evt);
+                    responseBuffer.write(evt.getMessage()
+                            .getMessage());
+                }
+            }
+            return responseBuffer.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void load(File applicationFolder) {
@@ -426,12 +462,31 @@ public class MidiDeviceLibrary {
             setMappersName(midiDeviceDefinition);
             setModeAndBankNames(midiDeviceDefinition);
             midiDeviceDefinition.setDefinitionFile(midiDeviceFile);
+            setRemoteMidiPorts(midiDeviceDefinition);
             return midiDeviceDefinition;
         } catch (IOException e) {
             throw new MidiConfigError("Unable to load " + midiDeviceFile.toString(), e);
         }
     }
 
+    /**
+     * Complete remote midi ports with the name of the device
+     */
+    private void setRemoteMidiPorts(MidiDeviceDefinition midiDeviceDefinition) {
+        String outputMidiDevice = midiDeviceDefinition.getOutputMidiDevice();
+        if (outputMidiDevice != null) {
+            var count = outputMidiDevice.split(":", -1).length - 1;
+            if (count == 1) {
+                outputMidiDevice = "%s:%s".formatted(outputMidiDevice, midiDeviceDefinition.getDeviceName());
+                midiDeviceDefinition.setOutputMidiDevice(outputMidiDevice);
+                midiDeviceDefinition.setInputMidiDevice(outputMidiDevice);
+            }
+        }
+    }
+
+    /**
+     * Resolve all controllers macros
+     */
     private void setControllerSysExTemplate() {
         for (MidiDeviceDefinition midiDeviceDefinition : devices.values()) {
             midiDeviceDefinition.getControllers()

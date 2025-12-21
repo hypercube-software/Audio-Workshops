@@ -3,6 +3,8 @@ package com.hypercube.util.javafx.view.properties;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.view.View;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -86,6 +88,48 @@ public class PropertiesHelper implements SceneListener {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, booleanChangeListener));
+    }
+
+    /**
+     * This method must be used to observe any property change in a view ({@link BooleanProperty} only)
+     * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
+     *
+     * @param propertyName
+     * @param property
+     */
+    public void declareListener(String propertyName, IntegerProperty property) {
+        final Method m = getEventHandler(propertyName, Integer.class);
+        ChangeListener<Integer> integerChangeListener = (observableValue, oldValue, newValue) -> {
+            view.getCtrl()
+                    .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+            try {
+                if (m != null) {
+                    m.invoke(view.getCtrl(), oldValue, newValue);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+            }
+        };
+        listeners.add(new PropertyListener(propertyName, property, integerChangeListener));
+    }
+
+    /**
+     * This method must be used to observe any property change in a view ({@link ObjectProperty} only)
+     * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
+     *
+     */
+    public <T> void declareListener(String propertyName, ObjectProperty<T> property, Class<T> clazz) {
+        final Method m = getEventHandler(propertyName, clazz);
+        ChangeListener<T> changeListener = (observableValue, oldValue, newValue) -> {
+            view.getCtrl()
+                    .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+            try {
+                if (m != null) {
+                    m.invoke(view.getCtrl(), oldValue, newValue);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+            }
+        };
+        listeners.add(new PropertyListener(propertyName, property, changeListener));
     }
 
     public void onSceneWindowChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
@@ -190,6 +234,16 @@ public class PropertiesHelper implements SceneListener {
                 bp.addListener(listener);
                 // force a notification in case we started late
                 listener.changed(bp, null, bp.get());
+            } else if (pl.property() instanceof IntegerProperty bp) {
+                ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
+                bp.addListener(listener);
+                // force a notification in case we started late
+                listener.changed(bp, null, bp.get());
+            } else if (pl.property() instanceof ObjectProperty bp) {
+                ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
+                bp.addListener(listener);
+                // force a notification in case we started late
+                listener.changed(bp, null, bp.get());
             }
         });
     }
@@ -201,6 +255,12 @@ public class PropertiesHelper implements SceneListener {
                 sp.removeListener(listener);
             } else if (pl.property() instanceof BooleanProperty bp) {
                 ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
+                bp.removeListener(listener);
+            } else if (pl.property() instanceof IntegerProperty bp) {
+                ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
+                bp.removeListener(listener);
+            } else if (pl.property() instanceof ObjectProperty bp) {
+                ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
                 bp.removeListener(listener);
             }
         });

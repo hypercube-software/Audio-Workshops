@@ -1,6 +1,6 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
@@ -61,7 +61,7 @@ public class MidiRouter {
     /**
      * Configuration, especially, {@link MidiDeviceLibrary}
      */
-    private final ProjectConfiguration cfg;
+    private final ConfigurationFactory configurationFactory;
     /**
      * Used to protect the access of the list {@link #secondaryOutputs} in a threadsafe way
      */
@@ -129,6 +129,7 @@ public class MidiRouter {
     public void listenDawOutputs() {
         log.info("------------------------------------------------------------------------");
         log.info("Auto-routing DAW outputs to devices:");
+        var cfg = configurationFactory.getProjectConfiguration();
         cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .values()
@@ -168,6 +169,8 @@ public class MidiRouter {
     }
 
     public RoutingSource getRoutingSourceByName(String deviceOrPortName) {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         Optional<MidiDeviceDefinition> optionalDevice = cfg.getMidiDeviceLibrary()
                 .getDevice(deviceOrPortName);
 
@@ -237,6 +240,8 @@ public class MidiRouter {
      * <p>Not only we open the MIDI out of this device, but also the MIDI in</p>
      */
     public void changeMainDestination(MidiDeviceDefinition device) {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         closeMainDestinationListener();
         closeMainOutput();
         if (device != null) {
@@ -348,15 +353,12 @@ public class MidiRouter {
 
     private void closeMainOutput() {
         if (mainDestinationMidiOut != null) {
-            try {
-                mainDestinationMidiOut.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
-            }
+            mainDestinationMidiOut.close();
         }
     }
 
     private void closeSecondaryOutputs() {
+        var cfg = configurationFactory.getProjectConfiguration();
         secondaryOutputNames.stream()
                 .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
                         .getDevice(deviceOrPortName))
@@ -367,7 +369,7 @@ public class MidiRouter {
             for (MidiOutDevice midiOut : secondaryOutputs) {
                 try {
                     midiOut.close();
-                } catch (IOException e) {
+                } catch (MidiError e) {
                     log.warn("Unable to close {}", midiOut.getName());
                 }
             }
@@ -377,6 +379,8 @@ public class MidiRouter {
     }
 
     private void openSecondaryOutputs() {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         synchronized (secondaryOutputsGuardian) {
             // open outputs
             secondaryOutputs = secondaryOutputNames.stream()
@@ -501,11 +505,7 @@ public class MidiRouter {
             log.info("Stop listening {}", mainDestinationMidiIn.getName());
             mainDestinationMidiIn.stopListening();
             mainDestinationMidiIn.removeListener(mainDestinationEventListener);
-            try {
-                mainDestinationMidiIn.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
-            }
+            mainDestinationMidiIn.close();
             mainDestinationMidiIn = null;
         }
     }

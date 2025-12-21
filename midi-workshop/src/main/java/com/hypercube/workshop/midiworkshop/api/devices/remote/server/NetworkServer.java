@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.devices.remote.server;
 
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.msg.*;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
@@ -16,6 +17,7 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,7 +63,7 @@ public class NetworkServer {
 
     private void onNewUDPPacket(DatagramPacket packet) {
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet.getData())) {
-            onNewNetworkPacket(NetWorkMessageOrigin.UDP, in);
+            onNewNetworkPacket(NetWorkMessageOrigin.UDP, null, in);
         } catch (IOException e) {
             throw new MidiError(e);
         }
@@ -92,12 +94,12 @@ public class NetworkServer {
         shutdown = true;
     }
 
-    private boolean onNewNetworkPacket(NetWorkMessageOrigin origin, InputStream in) {
+    private boolean onNewNetworkPacket(NetWorkMessageOrigin origin, Socket clientSocket, InputStream in) {
         NetworkMessage msg = NetworkMessage.deserialize(origin, in);
         switch (msg.getType()) {
-            case OPEN_SESSION -> onOpenSession((OpenSesssionNetworkMessage) msg);
+            case OPEN_SESSION -> onOpenSession(clientSocket, (OpenSesssionNetworkMessage) msg);
             case CLOSE_SESSION -> onCloseSession((CloseSessionNetworkMessage) msg);
-            case MIDI_EVENT -> onMidiEvent((MidiNetworkMessage) msg);
+            case MIDI_EVENT -> onNetworkMidiEvent((MidiNetworkMessage) msg);
         }
         return msg.getType() == NetworkMessageType.CLOSE_SESSION;
     }
@@ -108,7 +110,7 @@ public class NetworkServer {
         try {
             var in = clientSocket.getInputStream();
             while (!shutdown) {
-                if (onNewNetworkPacket(NetWorkMessageOrigin.TCP, in)) {
+                if (onNewNetworkPacket(NetWorkMessageOrigin.TCP, clientSocket, in)) {
                     break; // session close event received, exit this thread
                 }
             }
@@ -120,7 +122,20 @@ public class NetworkServer {
                 .toString());
     }
 
-    private void onMidiEvent(MidiNetworkMessage msg) {
+    private void onRealMidiEvent(NetworkServerSession session, CustomMidiEvent customMidiEvent) {
+        try {
+            log.info("Send back to TCP midi message from {}: {}", session.getMidiInDevice()
+                    .getName(), customMidiEvent.getHexValuesSpaced());
+            MidiNetworkMessage msg = new MidiNetworkMessage(NetWorkMessageOrigin.TCP, session.getNetworkId(), session.getNextSentPacketCounter()
+                    .incrementAndGet(), customMidiEvent.getTick(), customMidiEvent);
+            msg.serialize(session.getClientSocket()
+                    .getOutputStream());
+        } catch (IOException e) {
+            log.error("Unable to serialize midi event to TCP", e);
+        }
+    }
+
+    private void onNetworkMidiEvent(MidiNetworkMessage msg) {
         MidiDeviceDefinition device = config.getDeviceByNetworkId(msg.getNetworkId());
         log.info("Receive {} bytes , packet {}, networkId {} => {}", msg.getEvent()
                 .getMessage()
@@ -140,17 +155,48 @@ public class NetworkServer {
 
 
     private void onCloseSession(CloseSessionNetworkMessage msg) {
+        log.info("close session {}", msg.getNetworkId());
+        Optional.ofNullable(getSessions().get(msg.getNetworkId()))
+                .ifPresent(s -> {
+                    var inputMidiPort = s.getMidiInDevice();
+                    if (inputMidiPort != null) {
+                        try {
+                            inputMidiPort.close();
+                        } catch (Exception e) {
+                            log.error("Unable to close device '{}'", inputMidiPort.getName(), e);
+                        }
+                    }
+                });
         getSessions()
                 .remove(msg.getNetworkId());
-        log.info("close session {}", msg.getNetworkId());
     }
 
-    private void onOpenSession(OpenSesssionNetworkMessage msg) {
-        NetworkServerSession session = new NetworkServerSession(msg.getNetworkId());
+    private void onOpenSession(Socket clientSocket, OpenSesssionNetworkMessage msg) {
+        MidiDeviceDefinition device = config.getDeviceByNetworkId(msg.getNetworkId());
+        var inputPort = config
+                .midiPortsManager()
+                .getInput(device.getInputMidiDevice())
+                .orElse(null);
+        if (inputPort == null) {
+            inputPort = config
+                    .midiPortsManager()
+                    .getInput("debug")
+                    .orElse(null);
+        }
+        NetworkServerSession session = new NetworkServerSession(clientSocket, msg.getNetworkId(), inputPort);
         getSessions()
                 .put(msg.getNetworkId(), session);
         log.info("open session {}", msg.getNetworkId());
+        if (inputPort == null) {
+            log.warn("No Midi input port found for device '{}'", device.getDeviceName());
+        } else {
+            log.info("Listening Midi port {}", inputPort.getName());
+            inputPort.open();
+            inputPort.addListener((midiInDevice, event) -> onRealMidiEvent(session, event));
+            inputPort.startListening();
+        }
     }
+
 
     private void udpListener() {
         log.info("UDP Listener started, Wait UDP clients on port {}", listenPort);

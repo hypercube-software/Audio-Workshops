@@ -1,5 +1,6 @@
 package com.hypercube.mpm.cli;
 
+import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.server.NetworkServer;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,11 @@ public class ListenerCli {
         networkServer.getConfig()
                 .midiPortsManager()
                 .collectDevices();
+        networkServer.getConfig()
+                .midiDeviceLibrary()
+                .load(ConfigHelper.getApplicationFolder(MidiPresetManagerCliApplication.class));
         listDevices();
-        networkServer.start(10092);
+        networkServer.start(8000);
     }
 
     private void listDevices() {

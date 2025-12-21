@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.dialog.progress;
 
+import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.view.properties.SceneListener;
@@ -49,6 +50,9 @@ public class ProgressDialogController extends DialogController<ProgressDialog, M
      * @param msg     if not null,  update the message
      */
     public void updateProgress(double percent, String msg) {
+        if (percent > 1) {
+            throw new ApplicationError("ProgressBar need a value in the range [0,1]");
+        }
         runOnJavaFXThread(() -> {
             animateProgress(percent, 500);
             if (msg != null) {

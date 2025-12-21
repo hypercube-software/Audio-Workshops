@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * <ul>
  *     <li>It operates at string level, not bytes, because it is way more convenient</li>
  *     <li>It is possible to call multiple macros inside a macro with ";"</li>
- *     <li>It is used like a function with parameters: A(), A(a,b) and parameters are injected in the generated payload</li>
+ *     <li>It is used like a function with parameters: A(); B(a,b) and parameters are injected in the generated payload</li>
  * </ul>
  * Note that:
  * <ul>
@@ -31,9 +31,11 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class CommandMacro {
+    public static final File UNSAVED_MACRO = new File("UnSaved");
+
     public static final String COMMAND_NAME_REGEXP = "[A-Z_ \\+\\-a-z0-9]+";
-    private static Pattern COMMAND_SIGNATURE_REGEXP = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(COMMAND_NAME_REGEXP));
     public static final Pattern MAPPER_NAME_REGEXP = Pattern.compile("[A-Za-z0-9]+");
+    private static Pattern COMMAND_SIGNATURE_REGEXP = Pattern.compile("^(?<name>%s)\\s*\\(((?<params>[^)]+))*\\)".formatted(COMMAND_NAME_REGEXP));
     private static Pattern DECIMAL_NUMBER_REGEXP = Pattern.compile("[0-9]+");
     /**
      * Where this macro is defined
@@ -97,12 +99,12 @@ public final class CommandMacro {
                 .matches();
         if (nbParts < 2 || nbParts > 4 || (nbParts == 4 && !definitionIncludeMapper)) {
             throw new MidiConfigError("""
-                    Invalid command definition: \"%s\" in file %s
+                    Invalid command definition: "%s" in file %s
                     It should be:
-                       \"name() : size : payload : mapper\"
-                       \"name() : payload : mapper\"
-                       \"name() : size : payload\"
-                       \"name() : payload\"
+                       "name() : size : payload : mapper"
+                       "name() : payload : mapper"
+                       "name() : size : payload"
+                       "name() : payload"
                     """.formatted(definition, definitionFile.toString()));
         }
 
@@ -138,12 +140,11 @@ public final class CommandMacro {
     }
 
     private static List<String> parseParameters(String params) {
-        List<String> paramArray = Optional.ofNullable(params)
+        return Optional.ofNullable(params)
                 .map(p -> Arrays.stream(p.split(","))
                         .map(String::trim)
                         .toList())
                 .orElse(List.of());
-        return paramArray;
     }
 
     /**
@@ -169,6 +170,71 @@ public final class CommandMacro {
         return result;
     }
 
+    @Override
+    public String toString() {
+        String params = parameters.stream()
+                .collect(Collectors.joining(","));
+        String file = Optional.ofNullable(definitionFile)
+                .map(p -> p.toString() + ": ")
+                .orElse("");
+        return "%s%s(%s) => %s".formatted(file, name, params, body);
+    }
+
+    /**
+     * Tell if a string contains a command call to this macro
+     *
+     * @param commandCall
+     * @return true if found
+     */
+    public boolean matches(String commandCall) {
+        var m = commandCallExp.matcher(commandCall);
+        var matches = m.find();
+        return matches;
+    }
+
+    /**
+     * Tell if a command call correspond to this macro
+     *
+     * @param commandCall
+     * @return true if found
+     */
+    public boolean matches(CommandCall commandCall) {
+        return commandCall.name()
+                .equals(name) && parameters.size() == commandCall.parameters()
+                .size();
+    }
+
+    public File definitionFile() {
+        return definitionFile;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public List<String> parameters() {
+        return parameters;
+    }
+
+    public String body() {
+        return body;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (CommandMacro) obj;
+        return Objects.equals(this.definitionFile, that.definitionFile) &&
+                Objects.equals(this.name, that.name) &&
+                Objects.equals(this.parameters, that.parameters) &&
+                Objects.equals(this.body, that.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(definitionFile, name, parameters, body);
+    }
 
     /**
      * Replace the occurrences of a parameter with its value
@@ -206,16 +272,6 @@ public final class CommandMacro {
         return currentBody;
     }
 
-    @Override
-    public String toString() {
-        String params = parameters.stream()
-                .collect(Collectors.joining(","));
-        String file = Optional.ofNullable(definitionFile)
-                .map(p -> p.toString() + ": ")
-                .orElse("");
-        return "%s%s(%s) => %s".formatted(file, name, params, body);
-    }
-
     /**
      * Parmaters values can express multiple bytes when they are in hexadecimal
      * <p>We allow "0x" and "$" syntax to express hexadecimal values</p>
@@ -250,65 +306,9 @@ public final class CommandMacro {
         }
     }
 
-    /**
-     * Tell if a string contains a command call to this macro
-     *
-     * @param commandCall
-     * @return true if found
-     */
-    public boolean matches(String commandCall) {
-        var m = commandCallExp.matcher(commandCall);
-        var matches = m.find();
-        return matches;
-    }
-
-    /**
-     * Tell if a command call correspond to this macro
-     *
-     * @param commandCall
-     * @return true if found
-     */
-    public boolean matches(CommandCall commandCall) {
-        return commandCall.name()
-                .equals(name) && parameters.size() == commandCall.parameters()
-                .size();
-    }
-
     private String nameToRegExp(String name) {
         return name.replace("+", "\\+")
                 .replace("-", "\\-");
-    }
-
-    public File definitionFile() {
-        return definitionFile;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public List<String> parameters() {
-        return parameters;
-    }
-
-    public String body() {
-        return body;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (CommandMacro) obj;
-        return Objects.equals(this.definitionFile, that.definitionFile) &&
-                Objects.equals(this.name, that.name) &&
-                Objects.equals(this.parameters, that.parameters) &&
-                Objects.equals(this.body, that.body);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(definitionFile, name, parameters, body);
     }
 
 }

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,11 +16,11 @@ import java.util.concurrent.CountDownLatch;
 
 @Slf4j
 public class MidiInDevice extends AbstractMidiDevice {
-    private final Set<MidiListener> listeners = ConcurrentHashMap.newKeySet();
-    CountDownLatch listenTerminated;
-    private Transmitter transmitter;
+    protected final Set<MidiListener> listeners = ConcurrentHashMap.newKeySet();
     @Getter
     private boolean isListening;
+    private CountDownLatch listenTerminated;
+    private Transmitter transmitter;
 
     public MidiInDevice(MidiDevice device) {
         super(device);
@@ -93,8 +92,46 @@ public class MidiInDevice extends AbstractMidiDevice {
             return;
         }
         listenTerminated = new CountDownLatch(1);
-        closeTransmitter();
+        setupTransmitter();
 
+        // Wait the Java MIDI API is ready to receive messages
+        // There is no other way to do this better
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new MidiError(device, e);
+        }
+        isListening = true;
+    }
+
+    @Override
+    public void close() {
+        stopListening();
+        super.close();
+    }
+
+    public void stopListening() {
+        log.info("Stop listening on device {}", this);
+        listeners.clear();
+        closeTransmitter();
+        isListening = false;
+        if (listenTerminated != null) {
+            listenTerminated.countDown();
+        }
+    }
+
+    public void waitNotListening() {
+        try {
+            if (listenTerminated != null) {
+                listenTerminated.await();
+            }
+        } catch (InterruptedException e) {
+            throw new MidiError(device, e);
+        }
+    }
+
+    protected void setupTransmitter() {
+        closeTransmitter();
         try {
             transmitter = device.getTransmitter();
         } catch (MidiUnavailableException e) {
@@ -121,40 +158,6 @@ public class MidiInDevice extends AbstractMidiDevice {
             }
         };
         transmitter.setReceiver(receiver);
-
-        // Wait the Java MIDI API is ready to receive messages
-        // There is no other way to do this better
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new MidiError(device, e);
-        }
-        isListening = true;
-    }
-
-    @Override
-    public void close() throws IOException {
-        stopListening();
-        super.close();
-    }
-
-    public void stopListening() {
-        listeners.clear();
-        closeTransmitter();
-        isListening = false;
-        if (listenTerminated != null) {
-            listenTerminated.countDown();
-        }
-    }
-
-    public void waitNotListening() {
-        try {
-            if (listenTerminated != null) {
-                listenTerminated.await();
-            }
-        } catch (InterruptedException e) {
-            throw new MidiError(device, e);
-        }
     }
 
     private void closeTransmitter() {

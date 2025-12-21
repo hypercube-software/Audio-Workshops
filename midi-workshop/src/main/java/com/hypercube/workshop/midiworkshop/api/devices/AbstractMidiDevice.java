@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -28,20 +27,27 @@ public abstract class AbstractMidiDevice implements Closeable {
             if (device != null && !device.isOpen()) {
                 device.open();
             }
-            openCount.incrementAndGet();
+            int count = openCount.incrementAndGet();
+            log.info("Open MIDI port '{}' (client count is {})", getName(), count);
         } catch (MidiUnavailableException e) {
             throw new MidiError(device, e);
         }
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         int count = openCount.get();
         log.info("Close MIDI port '{}' (client count is {})", getName(), count);
         if (count == 1 && device != null && device.isOpen()) {
-            device.close();
+            try {
+                device.close();
+            } catch (Exception e) {
+                throw new MidiError(e);
+            }
         }
-        openCount.decrementAndGet();
+        if (count >= 1) {
+            openCount.decrementAndGet();
+        }
     }
 
     public int getOpenCount() {

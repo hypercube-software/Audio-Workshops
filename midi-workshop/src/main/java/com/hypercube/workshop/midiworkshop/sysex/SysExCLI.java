@@ -174,7 +174,7 @@ public class SysExCLI {
         mapper.registerModule(module);
         try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(deviceName)))) {
             MidiDeviceDefinition devicePresets = new MidiDeviceDefinition();
-            midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset) -> {
+            midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset, currentCount, totalCount) -> {
                 devicePresets.setDeviceName(device.getDeviceName());
                 devicePresets.setBrand(device.getBrand());
                 String modeName = midiPreset.getId()

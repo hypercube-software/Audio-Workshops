@@ -14,7 +14,7 @@ class NetworkServerSessionTest {
 
     @BeforeEach
     void init() {
-        session = new NetworkServerSession(NETWORK_ID);
+        session = new NetworkServerSession(null, NETWORK_ID, null);
     }
 
     @Test

@@ -17,7 +17,6 @@ import com.hypercube.workshop.syntheditor.infra.bus.WebSocketBus;
 import com.hypercube.workshop.syntheditor.infra.bus.dto.ParameterUpdateDTO;
 import com.hypercube.workshop.syntheditor.model.EditableParameter;
 import com.hypercube.workshop.syntheditor.model.EditableParameters;
-import com.hypercube.workshop.syntheditor.model.error.SynthEditorException;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -70,25 +68,17 @@ public class SynthEditorService implements SynthEditorBusListener {
 
     public synchronized void closeCurrentInputDevice() {
         if (inputDevice != null) {
-            try {
-                log.info("Close INPUT Device: {}", inputDevice.getName());
-                inputDevice.close();
-                inputDevice = null;
-            } catch (IOException e) {
-                throw new SynthEditorException(e);
-            }
+            log.info("Close INPUT Device: {}", inputDevice.getName());
+            inputDevice.close();
+            inputDevice = null;
         }
     }
 
     public synchronized void closeCurrentOutputDevice() {
         if (outputDevice != null) {
-            try {
-                log.info("Close OUTPUT Device: {}", outputDevice.getName());
-                outputDevice.close();
-                outputDevice = null;
-            } catch (IOException e) {
-                throw new SynthEditorException(e);
-            }
+            log.info("Close OUTPUT Device: {}", outputDevice.getName());
+            outputDevice.close();
+            outputDevice = null;
         }
     }
 

@@ -35,11 +35,11 @@ public class MidiDeviceDefinition {
      */
     private String brand;
     /**
-     * Midi port receiving messages from the revice
+     * Midi port receiving messages from the device, or remote device host:port:name
      */
     private String inputMidiDevice;
     /**
-     * Midi port sending messages to the device
+     * Midi port sending messages to the device, or remote device host:port:name
      */
     private String outputMidiDevice;
     /**

@@ -6,11 +6,13 @@ import com.hypercube.workshop.midiworkshop.api.devices.remote.NetworkIdBuilder;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.msg.*;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.errors.RemoteDeviceError;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.util.Map;
@@ -34,6 +36,9 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
     // The key of this hashmap is the "definition" string
     private final Map<String, MidiOutConnection> connections = new ConcurrentHashMap<>();
     private InetAddress inetAddress;
+    private Thread listener;
+    @Getter
+    private MidiInNetworkDevice midiInNetworkDevice;
 
     public MidiOutNetworkDevice(String definition) {
         super(null);
@@ -50,18 +55,27 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         super.close();
         try {
             sendViaTCP(new CloseSessionNetworkMessage(NetWorkMessageOrigin.TCP, networkId));
-        } catch (MidiError e) {
+        } catch (MidiError | IOException e) {
             log.error("Unexpected error closing {}", definition, e);
         } finally {
             if (getOpenCount() == 0) {
+                if (getMidiInNetworkDevice() != null) {
+                    getMidiInNetworkDevice().close();
+                    listener.interrupt();
+                }
                 try {
                     getTcpOutputStream().close();
                 } catch (IOException e) {
-                    log.error("Unable to close TCP stream for {}", definition);
+                    log.error("Unable to close output TCP stream for {}", definition);
+                }
+                try {
+                    getTcpInputStream().close();
+                } catch (IOException e) {
+                    log.error("Unable to close input TCP stream for {}", definition);
                 }
                 connections.remove(definition);
             }
@@ -107,12 +121,30 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
             SocketAddress socketAddress = new InetSocketAddress(inetAddress, port);
             clientTCPSocket.connect(socketAddress, CONNECTION_TIMEOUT_MS);
             OutputStream tcpOutputStream = clientTCPSocket.getOutputStream();
+            InputStream tcpInputStream = clientTCPSocket.getInputStream();
             NetworkClientSession session = new NetworkClientSession();
+            midiInNetworkDevice = new MidiInNetworkDevice(definition, this);
+            listener = new Thread(() -> {
+                try {
+                    for (; ; ) {
+                        NetworkMessage msg = NetworkMessage.deserialize(NetWorkMessageOrigin.TCP, tcpInputStream);
+                        if (msg instanceof MidiNetworkMessage midiNetworkMessage) {
+                            midiInNetworkDevice.onNewMidiEvent(midiNetworkMessage.getEvent());
+                        } else {
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Stop MidiInNetworkDevice '{}': {}", midiInNetworkDevice.getName(), e.getMessage());
+                }
+            });
+            listener.start();
             return new MidiOutConnection(
                     session,
                     clientUDPSocket,
                     clientTCPSocket,
-                    tcpOutputStream);
+                    tcpOutputStream,
+                    tcpInputStream);
         } catch (IOException e) {
             throw new RemoteDeviceError("Unable to connect to %s (ip: %s)".formatted(getEndpoint(), inetAddress.toString()), e);
         }
@@ -139,6 +171,10 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
     private OutputStream getTcpOutputStream() {
         return getMidiOutConnection()
                 .tcpOutputStream();
+    }
+
+    private InputStream getTcpInputStream() {
+        return getMidiOutConnection().tcpInputStream();
     }
 
     private MidiOutConnection getMidiOutConnection() {

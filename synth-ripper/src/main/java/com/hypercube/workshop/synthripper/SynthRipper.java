@@ -12,7 +12,6 @@ import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
@@ -88,12 +87,8 @@ public class SynthRipper {
         } catch (LineUnavailableException | IOException e) {
             throw new AudioError(e);
         } finally {
-            try {
-                midiDevice.sendAllOff();
-                midiDevice.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
-            }
+            midiDevice.sendAllOff();
+            midiDevice.close();
         }
         savePresets();
     }
@@ -388,7 +383,7 @@ public class SynthRipper {
             midiOutDevice.send(controlChangeEvent);
         } else {
             threadLogger.log("Reset all controllers on channel " + currentRecordedSynthNote.getChannel());
-            midiOutDevice.sendAllcontrollersOff(currentRecordedSynthNote.getChannel());
+            midiOutDevice.sendAllControllersOff(currentRecordedSynthNote.getChannel());
         }
         MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote.getNote()
                 .value(), currentRecordedSynthNote.getVelocity()

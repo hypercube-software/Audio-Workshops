@@ -79,10 +79,25 @@ public class MidiPortsManager {
         if (name == null) {
             return Optional.empty();
         }
-        return getInputs().stream()
+        return Optional.ofNullable(getInputs().stream()
                 .filter(d -> d.getName()
                         .equals(name))
-                .findFirst();
+                .findFirst()
+                .orElseGet(() -> {
+                    if (MidiOutNetworkDevice.isRemoteAddress(name)) {
+                        return getOutput(name).map(o -> {
+                                    MidiOutNetworkDevice midiOutNetworkDevice = (MidiOutNetworkDevice) o;
+                                    var midiInNetworkDevice = midiOutNetworkDevice.getMidiInNetworkDevice();
+                                    if (midiInNetworkDevice != null && !inputs.contains(midiInNetworkDevice)) {
+                                        inputs.add(midiInNetworkDevice);
+                                    }
+                                    return midiInNetworkDevice;
+                                })
+                                .orElse(null);
+                    } else {
+                        return null;
+                    }
+                }));
     }
 
     public Optional<MidiOutDevice> getOutput(String name) {

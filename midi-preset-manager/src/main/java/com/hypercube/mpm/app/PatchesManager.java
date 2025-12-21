@@ -1,7 +1,6 @@
 package com.hypercube.mpm.app;
 
 import com.hypercube.mpm.config.ConfigurationFactory;
-import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
@@ -34,11 +33,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PatchesManager {
     private final MainModel model;
-    private final ProjectConfiguration cfg;
     private final ConfigurationFactory configurationFactory;
 
-    public PatchesManager(ProjectConfiguration cfg, ConfigurationFactory configurationFactory) {
-        this.cfg = cfg;
+    public PatchesManager(ConfigurationFactory configurationFactory) {
         this.configurationFactory = configurationFactory;
         this.model = MainModel.getObservableInstance();
     }
@@ -81,6 +78,7 @@ public class PatchesManager {
      * <p>This method also update the info bar on the bottom of the UI</p>
      */
     public void refreshPatches() {
+        var cfg = configurationFactory.getProjectConfiguration();
         if (model.getCurrentDeviceState() != null) {
             if (model.getCurrentDeviceState()
                     .getId()
@@ -145,6 +143,7 @@ public class PatchesManager {
      * Save the user selection to restore it when the application start
      */
     public void saveSelectedPatchToConfig(Patch selectedPatch) {
+        var cfg = configurationFactory.getProjectConfiguration();
         var list = cfg.getSelectedPatches()
                 .stream()
                 .filter(sp -> !sp.getDeviceStateId()
@@ -152,7 +151,7 @@ public class PatchesManager {
                 .collect(Collectors.toList());
         list.add(selectedPatch);
         cfg.setSelectedPatches(list);
-        configurationFactory.saveConfig(cfg);
+        configurationFactory.saveConfig();
     }
 
     /**
@@ -168,6 +167,7 @@ public class PatchesManager {
     }
 
     public void sendPatchToDevice(Patch selectedPatch) {
+        var cfg = configurationFactory.getProjectConfiguration();
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(selectedPatch.getDevice())
                 .orElseThrow();
@@ -202,6 +202,7 @@ public class PatchesManager {
     }
 
     public void changePatchCategory(Patch patch, String newCategory) {
+        var cfg = configurationFactory.getProjectConfiguration();
         var def = patch.getDefinitionFile();
         if (def == null) {
             return;

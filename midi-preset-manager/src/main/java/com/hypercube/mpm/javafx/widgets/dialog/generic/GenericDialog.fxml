@@ -22,6 +22,9 @@
             <GridPane.margin>
                 <Insets left="10.0" top="20.0"/>
             </GridPane.margin>
+            <padding>
+                <Insets bottom="20.0"/>
+            </padding>
         </Label>
         <Label fx:id="textMessage" text="message" GridPane.halignment="CENTER" GridPane.rowIndex="1">
             <GridPane.margin>
@@ -29,14 +32,14 @@
             </GridPane.margin>
         </Label>
         <FontIcon fx:id="icon" iconColor="#437fff" iconLiteral="mdrmz-warning" iconSize="64" GridPane.columnIndex="1"
-                  GridPane.rowIndex="0" GridPane.rowSpan="2">
+                  GridPane.rowIndex="0" GridPane.rowSpan="3">
             <GridPane.margin>
                 <Insets right="20.0"/>
             </GridPane.margin>
         </FontIcon>
         <Button minWidth="100.0" onAction="#onCloseButton" text="Ok" GridPane.columnSpan="2" GridPane.rowIndex="2">
             <GridPane.margin>
-                <Insets bottom="20.0" top="40.0"/>
+                <Insets bottom="20.0" top="20.0"/>
             </GridPane.margin>
         </Button>
 

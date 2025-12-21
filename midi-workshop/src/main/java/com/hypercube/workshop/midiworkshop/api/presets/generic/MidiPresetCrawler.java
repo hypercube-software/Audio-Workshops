@@ -115,6 +115,8 @@ public class MidiPresetCrawler {
             throw new MidiConfigError("MIDI IN Device not found: '%s".formatted(inputMidiDevice));
         }
 
+        int nbPresetToQuery = countPresets(device);
+        int currenPresetCount = 1;
         try {
             MidiPresetIdentity previousPatchIdentity = null;
             in.open();
@@ -194,14 +196,15 @@ public class MidiPresetCrawler {
                                 log.info("Patch name : " + midiPresetIdentity.name());
                                 log.info("Category   : " + midiPresetIdentity.category());
                                 log.info("Preset     : " + midiPreset.getCommand());
-                                if (midiPreset.getDrumKitNotes()
-                                        .size() > 0) {
+                                if (!midiPreset.getDrumKitNotes()
+                                        .isEmpty()) {
                                     log.info("DrumMap    : " + midiPreset.getDrumKitNotes()
                                             .size() + " notes");
                                 }
                                 log.info("");
                                 midiPreset.setId(midiPresetIdentity);
-                                midiPresetConsumer.onNewMidiPreset(device, midiPreset);
+                                midiPresetConsumer.onNewMidiPreset(device, midiPreset, currenPresetCount, nbPresetToQuery);
+                                currenPresetCount++;
                             }
                             previousPatchIdentity = midiPresetIdentity;
                         }
@@ -212,17 +215,31 @@ public class MidiPresetCrawler {
         } catch (InvalidMidiDataException e) {
             throw new MidiError(e);
         } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
-            }
-            try {
-                in.close();
-            } catch (IOException e) {
-                throw new MidiError(e);
+            out.close();
+            in.close();
+
+        }
+    }
+
+    private int countPresets(MidiDeviceDefinition device) {
+        int presetcount = 0;
+        for (var mode : device.getDeviceModes()
+                .values()) {
+            for (var bank : mode.getBanks()
+                    .values()) {
+                if (bank.getPresetDomain() == null) {
+                    continue;
+                }
+                for (var range : bank.getPresetDomain()
+                        .getRanges()) {
+                    for (int program : IntStream.rangeClosed(range.getFrom(), range.getTo())
+                            .toArray()) {
+                        presetcount++;
+                    }
+                }
             }
         }
+        return presetcount;
     }
 
     private void changeMode(MidiDeviceMode mode, MidiDeviceLibrary library, MidiDeviceDefinition device, MidiOutDevice out) {

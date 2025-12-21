@@ -7,7 +7,6 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -43,27 +42,39 @@ public class MidiOutDevice extends AbstractMidiDevice {
     }
 
     @Override
-    public void close() throws IOException {
-        super.close();
-        if (getOpenCount() == 0) {
+    public void close() {
+        if (getOpenCount() == 1) {
             Optional.ofNullable(receiver)
                     .ifPresent(Receiver::close);
             receiver = null;
         }
+        super.close();
     }
 
     @Override
     public void open() {
         super.open();
         try {
-            if (isOpen() && device != null) {
-                receiver = device.getReceiver();
+            if (super.isOpen()) {
+                if (receiver == null) {
+                    receiver = device.getReceiver();
+                } else {
+                    log.info("Receiver already set for " + getName());
+                }
             } else {
                 receiver = null;
             }
         } catch (MidiUnavailableException e) {
             throw new MidiError(device, e);
         }
+        if (receiver == null) {
+            throw new MidiError("Unable to listen " + getName());
+        }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return super.isOpen() && receiver != null;
     }
 
     public void send(MidiEvent evt) {
@@ -161,7 +172,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
         }
     }
 
-    public void sendAllcontrollersOff(int channel) {
+    public void sendAllControllersOff(int channel) {
         try {
             send(new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, CTRL_ALL_CONTROLLERS_OFF, CC_BANK_SELECT_MSB), NO_TIME_STAMP);
         } catch (InvalidMidiDataException e) {
@@ -176,7 +187,7 @@ public class MidiOutDevice extends AbstractMidiDevice {
         IntStream.range(0, 16)
                 .forEach(ch -> {
                     sendAllNoteOff(ch);
-                    sendAllcontrollersOff(ch);
+                    sendAllControllersOff(ch);
                     sendAllSoundsOff(ch);
                 });
     }

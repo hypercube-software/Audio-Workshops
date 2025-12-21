@@ -1,10 +1,12 @@
 package com.hypercube.workshop.midiworkshop.api.devices.remote.server;
 
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.msg.NetWorkMessageOrigin;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.Socket;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public final class NetworkServerSession {
     /**
+     * TCP socket bound to this session
+     */
+    private final Socket clientSocket;
+    /**
      * Which device is bound to this session
      */
     private final long networkId;
@@ -35,6 +41,10 @@ public final class NetworkServerSession {
      */
     private final AtomicLong nextPacketCounter = new AtomicLong();
     /**
+     * Counter of the next sent packet number
+     */
+    private final AtomicLong nextSentPacketCounter = new AtomicLong();
+    /**
      * When the session is created
      */
     private final long startTimestamp = System.nanoTime();
@@ -42,6 +52,10 @@ public final class NetworkServerSession {
      * Received packets ordered by their number
      */
     private final BlockingQueue<NetworkPacket> blockingQueue = new LinkedBlockingQueue<>();
+    /**
+     * Listen also the real device and send back to the network
+     */
+    private final MidiInDevice midiInDevice;
 
     /**
      * Block until new network packets are available

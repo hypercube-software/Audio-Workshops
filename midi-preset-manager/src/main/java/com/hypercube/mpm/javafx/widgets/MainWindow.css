@@ -67,7 +67,6 @@
     -fx-background-color: -theme-color;
 }
 
-
 .list-cell .label {
     -fx-text-fill: -text-color;
 }
@@ -123,4 +122,3 @@
 .toggle-button:selected {
     -fx-text-fill: red;
 }
-

@@ -1,0 +1,24 @@
+#hexTilePane,
+#hexScrollPane,
+#hexScrollPane .viewport,
+#hexScrollPane .content,
+ .hex-cell {
+    -fx-background-color: transparent;
+}
+
+.hex-cell {
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 6px;
+    -fx-font-weight: lighter ;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-width: 0.5px;
+    -fx-padding: 4px;
+
+    -fx-pref-width: 50px;
+    -fx-min-width: 50px;
+    -fx-max-width: 50px;
+}
+.hex-cell-highlight {
+    -fx-background-color: #FFFFFF44;
+}

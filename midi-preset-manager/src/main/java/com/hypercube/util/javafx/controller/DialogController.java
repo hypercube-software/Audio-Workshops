@@ -30,7 +30,7 @@ public class DialogController<V extends Node, M> extends Controller<V, M> implem
             ViewClass dialog = viewClass.getDeclaredConstructor()
                     .newInstance();
             Stage dialogStage = new Stage();
-            dialogStage.setAlwaysOnTop(true);
+            dialogStage.setAlwaysOnTop(modal);
             dialogStage.initModality(modal ? Modality.APPLICATION_MODAL : Modality.NONE);
             dialogStage.initStyle(StageStyle.TRANSPARENT);
             dialogStage.setScene(new Scene((Parent) dialog, Color.TRANSPARENT));

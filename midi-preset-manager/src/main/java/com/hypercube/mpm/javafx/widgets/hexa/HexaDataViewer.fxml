@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../MainWindow.css,@HexaDataViewer.css"
+         type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
+    <!-- DEFINE PROPERTY com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload:data -->
+    <!-- DEFINE PROPERTY Integer:gridHeight -->
+    <ScrollPane fx:id="hexScrollPane" fitToWidth="true" fitToHeight="true" minViewportHeight="40.0"
+                minViewportWidth="800.0"
+                GridPane.vgrow="ALWAYS">
+        <TilePane fx:id="hexTilePane" hgap="2" prefColumns="16" vgap="2">
+        </TilePane>
+    </ScrollPane>
+    <columnConstraints>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS"/>
+    </rowConstraints>
+</fx:root>

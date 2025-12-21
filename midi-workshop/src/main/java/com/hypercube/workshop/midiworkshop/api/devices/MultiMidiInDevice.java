@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,7 +38,7 @@ public class MultiMidiInDevice extends MidiInDevice {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         for (var device : devices) {
             device.close();
         }

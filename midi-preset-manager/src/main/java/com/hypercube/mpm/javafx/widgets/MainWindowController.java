@@ -1,6 +1,7 @@
 package com.hypercube.mpm.javafx.widgets;
 
 import com.hypercube.mpm.app.DeviceStateManager;
+import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
@@ -10,6 +11,7 @@ import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
+import com.hypercube.mpm.javafx.widgets.dialog.sysex.SysexToolboxDialog;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.midi.VirtualKeyboard;
 import com.hypercube.mpm.model.MainModel;
@@ -31,12 +33,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckMenuItem;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sound.midi.MidiUnavailableException;
-import java.io.IOException;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +51,6 @@ import java.util.stream.IntStream;
 @Slf4j
 public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable, SceneListener {
     @Autowired
-    ProjectConfiguration cfg;
-    @Autowired
     MidiRouter midiRouter;
     @Autowired
     VirtualKeyboard virtualKeyboard;
@@ -58,15 +59,45 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Autowired
     PatchesManager patchesManager;
     @Autowired
+    DeviceToolBox deviceToolBox;
+    @Autowired
     ConfigurationFactory configurationFactory;
     @FXML
     CheckMenuItem menuAlwaysOnTop;
 
     @FXML
     public void onMenuScanMidiPorts(ActionEvent event) {
-        cfg.getMidiPortsManager()
+        configurationFactory.getProjectConfiguration()
+                .getMidiPortsManager()
                 .collectDevices();
         deviceStateManager.initModel();
+    }
+
+    @FXML
+    public void onMenuExtractPatchNames(ActionEvent event) {
+        if (getModel().getCurrentDeviceState() == null) {
+            return;
+        }
+        var deviceName = getModel().getCurrentDeviceState()
+                .getId()
+                .getName();
+        ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
+        dlg.updateTextHeader("Extract patch names from device  '%s'...".formatted(deviceName));
+        dlg.updateProgress(0, "");
+        runLongTaskWithDialog(dlg, () -> {
+            deviceToolBox.dumpPresets(deviceName, (device, midiPreset, currentCount, totalCount) -> {
+                double progress = (double) currentCount / totalCount;
+                dlg.updateProgress(progress, "Preset %d/%d: '%s' category '%s'".formatted(currentCount, totalCount, midiPreset.getId()
+                        .name(), midiPreset.getId()
+                        .category()));
+            });
+        });
+    }
+
+    @FXML
+    public void onMenuOpenDeviceToolBox(ActionEvent event) {
+        var dlg = DialogController.buildDialog(SysexToolboxDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, false);
+        dlg.showAndWait();
     }
 
     @FXML
@@ -124,6 +155,52 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     @FXML
+    public void onMenuOpenProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
+                .getName());
+        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
+                .getParentFile());
+        fileChooser.setTitle("Save project as...");
+        fileChooser.getExtensionFilters()
+                .add(
+                        new FileChooser.ExtensionFilter("MPM Project", "mpm-config.yml")
+                );
+        fileChooser.getExtensionFilters()
+                .add(
+                        new FileChooser.ExtensionFilter("All files", "*.*")
+                );
+        File selectedFile = fileChooser.showOpenDialog(JavaFXApplication.getMainStage());
+        if (selectedFile != null) {
+            configurationFactory.setConfigFile(selectedFile);
+            configurationFactory.loadConfig();
+        }
+    }
+
+    @FXML
+    public void onMenuSaveProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
+                .getName());
+        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
+                .getParentFile());
+        fileChooser.setTitle("Save project as...");
+        fileChooser.getExtensionFilters()
+                .add(
+                        new FileChooser.ExtensionFilter("MPM Project", "mpm-config.yml")
+                );
+        fileChooser.getExtensionFilters()
+                .add(
+                        new FileChooser.ExtensionFilter("All files", "*.*")
+                );
+        File selectedFile = fileChooser.showSaveDialog(JavaFXApplication.getMainStage());
+        if (selectedFile != null) {
+            configurationFactory.setConfigFile(selectedFile);
+            configurationFactory.saveConfig();
+        }
+    }
+
+    @FXML
     public void onMenuExit(ActionEvent event) {
         Platform.exit();
     }
@@ -132,7 +209,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     public void onMenuReloadMidiDeviceLibrary(ActionEvent event) {
         deviceStateManager.reloadMidiDeviceLibrary();
         Optional.ofNullable(getModel().getCurrentDeviceState())
-                .flatMap(state -> cfg.getMidiDeviceLibrary()
+                .flatMap(state -> configurationFactory.getProjectConfiguration()
+                        .getMidiDeviceLibrary()
                         .getDevice(state
                                 .getId()
                                 .getName()))
@@ -164,10 +242,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     @FXML
     public void onAllNotesOff(ActionEvent event) {
-        cfg.getMidiDeviceLibrary()
+        ProjectConfiguration projectConfiguration = configurationFactory.getProjectConfiguration();
+        projectConfiguration
+                .getMidiDeviceLibrary()
                 .getDevices()
                 .forEach((name, device) -> {
-                    cfg.getMidiPortsManager()
+                    projectConfiguration
+                            .getMidiPortsManager()
                             .getOutput(device.getOutputMidiDevice())
                             .filter(MidiOutDevice::isOpen)
                             .ifPresent(port -> {
@@ -224,6 +305,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Restore the state of all devices when the application start
      */
     private void initDevices() {
+        var cfg = configurationFactory.getProjectConfiguration();
         List<String> devices = getModel().getDevices();
         log.info("Midi Device Library active: {}", devices.size());
         if (devices
@@ -263,7 +345,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                             out.open();
                                             out.sleep(4000);
                                             out.close();
-                                        } catch (IOException e) {
+                                        } catch (MidiError e) {
                                             log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
                                         }
                                     });
@@ -281,7 +363,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     if (port != null) {
                         try {
                             port.close();
-                        } catch (IOException e) {
+                        } catch (MidiError e) {
                             log.error("Unexpected error closing MIDI port {}", port.getName(), e);
                         }
                     }
@@ -318,6 +400,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
         try {
+            var cfg = configurationFactory.getProjectConfiguration();
+
             MainModel model = getModel();
             MidiDeviceLibrary midiDeviceLibrary = cfg.getMidiDeviceLibrary();
             PatchImporter patchImporter = new PatchImporter(midiDeviceLibrary);
@@ -385,6 +469,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void restoreConfigSelection() {
+        var cfg = configurationFactory.getProjectConfiguration();
         Optional.ofNullable(cfg.getSelectedOutput())
                 .ifPresent(this::forceDeviceChange);
         Optional.ofNullable(cfg.getSelectedInputs())
@@ -408,21 +493,25 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems();
         try {
             midiRouter.changeMasterInputs(deviceOrPortNames);
             cfg.setSelectedInputs(deviceOrPortNames);
-            configurationFactory.saveConfig(cfg);
+            configurationFactory.saveConfig();
         } catch (MidiError e) {
             showError(e);
         }
     }
 
     private void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         midiRouter.changeSecondaryOutputs(selectedItems);
         cfg.setSelectedSecondaryOutputs(selectedItems);
-        configurationFactory.saveConfig(cfg);
+        configurationFactory.saveConfig();
     }
 
     private void onCategoriesChanged(SelectionChangedEvent<MidiPresetCategory> selectionChangedEvent) {
@@ -484,6 +573,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Update the view given a selected device and select this device as the main destination for the MIDI router
      */
     private void onDeviceChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        var cfg = configurationFactory.getProjectConfiguration();
+
         MidiDeviceDefinition device = Optional.ofNullable(selectionChangedEvent)
                 .map(evt -> selectionChangedEvent.getSelectedItems())
                 .filter(selectedItems -> selectedItems.size() == 1)
@@ -492,7 +583,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                             .getFirst();
                     getModel().setSelectedDevice(deviceName);
                     cfg.setSelectedOutput(deviceName);
-                    configurationFactory.saveConfig(cfg);
+                    configurationFactory.saveConfig();
                     return cfg.getMidiDeviceLibrary()
                             .getDevice(deviceName)
                             .orElseThrow();
