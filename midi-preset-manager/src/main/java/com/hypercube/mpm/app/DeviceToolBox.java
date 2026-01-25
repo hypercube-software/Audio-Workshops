@@ -94,70 +94,80 @@ public class DeviceToolBox {
         }
     }
 
-    public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<byte[]> requestLogger) {
-        CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
-        CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
-                .getFirst();
-        String payload = cmd.expand(call);
-        try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
-                .orElse(null)) {
-            if (output == null) {
-                log.warn("Output MIDI Device not found: {}", device.getOutputMidiDevice());
-                return Optional.empty();
-            }
-            try (var input = midiPortsManager.getInput(device.getInputMidiDevice())
+    public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<RequestStatus> requestLogger) {
+        try {
+            CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
+            CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
+                    .getFirst();
+            String payload = cmd.expand(call);
+            try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
                     .orElse(null)) {
-                if (input == null) {
-                    log.warn("Input MIDI Device not found: {}", device.getInputMidiDevice());
+                if (output == null) {
+                    String msg = "Output MIDI Device not found: %s".formatted(device.getOutputMidiDevice());
+                    log.warn(msg);
+                    requestLogger.accept(RequestStatus.of(msg));
                     return Optional.empty();
                 }
-                var wasListening = input.isListening();
-                try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
-                    MidiListener midiListener = (d, event) -> {
-                        try {
-                            responseBuffer.write(event.getMessage()
-                                    .getMessage());
-                        } catch (IOException e) {
-                            log.error("Error reading event content", e);
+                try (var input = midiPortsManager.getInput(device.getInputMidiDevice())
+                        .orElse(null)) {
+                    if (input == null) {
+                        String msg = "Input MIDI Device not found: %s".formatted(device.getInputMidiDevice());
+                        log.warn(msg);
+                        requestLogger.accept(RequestStatus.of(msg));
+                        return Optional.empty();
+                    }
+                    var wasListening = input.isListening();
+                    try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
+                        MidiListener midiListener = (d, event) -> {
+                            try {
+                                responseBuffer.write(event.getMessage()
+                                        .getMessage());
+                            } catch (IOException e) {
+                                log.error("Error reading event content", e);
+                            }
+                        };
+                        try (ByteArrayOutputStream requestBytes = new ByteArrayOutputStream()) {
+                            output.open();
+                            input.open();
+                            input.addListener(midiListener);
+                            if (!wasListening) {
+                                input.startListening();
+                            }
+                            var bytesSent = midiDeviceLibrary.sendCommandToDevice(device, output, cmd, call);
+                            requestBytes.write(bytesSent);
+                            requestLogger.accept(RequestStatus.of(requestBytes.toByteArray()));
                         }
-                    };
-                    try (ByteArrayOutputStream requestBytes = new ByteArrayOutputStream()) {
-                        output.open();
-                        input.open();
-                        input.addListener(midiListener);
+                        Instant start = Instant.now();
+                        while (responseBuffer.size() == 0) {
+                            if (Duration.between(start, Instant.now())
+                                    .getSeconds() > 3) {
+                                log.warn("No response from device {}", device.getDeviceName());
+                                requestLogger.accept(RequestStatus.of("No response from device"));
+                                break;
+                            }
+                            try {
+                                Thread.sleep(250);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        log.info("Stop listening {}", device.getDeviceName());
                         if (!wasListening) {
-                            input.startListening();
+                            input.stopListening();
                         }
-                        var bytesSent = midiDeviceLibrary.sendCommandToDevice(device, output, cmd, call);
-                        requestBytes.write(bytesSent);
-                        requestLogger.accept(requestBytes.toByteArray());
+                        input.removeListener(midiListener);
+                        input.close();
+                        output.close();
+                        return Optional.of(responseBuffer.toByteArray());
+                    } catch (IOException e) {
+                        requestLogger.accept(RequestStatus.of(e.getMessage()));
+                        log.error("Unexpected error", e);
+                    } finally {
                     }
-                    Instant start = Instant.now();
-                    while (responseBuffer.size() == 0) {
-                        if (Duration.between(start, Instant.now())
-                                .getSeconds() > 3) {
-                            log.warn("No response from device {}", device.getDeviceName());
-                            break;
-                        }
-                        try {
-                            Thread.sleep(250);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    log.info("Stop listening {}", device.getDeviceName());
-                    if (!wasListening) {
-                        input.stopListening();
-                    }
-                    input.removeListener(midiListener);
-                    input.close();
-                    output.close();
-                    return Optional.of(responseBuffer.toByteArray());
-                } catch (IOException e) {
-                    log.error("Unexpected error", e);
-                } finally {
                 }
             }
+        } catch (Exception e) {
+            requestLogger.accept(RequestStatus.of(e.getMessage()));
         }
         return Optional.empty();
     }

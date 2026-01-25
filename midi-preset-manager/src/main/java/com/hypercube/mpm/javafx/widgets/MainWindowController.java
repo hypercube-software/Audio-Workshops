@@ -7,7 +7,7 @@ import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.event.*;
-import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialog;
+import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
@@ -310,14 +310,12 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         log.info("Midi Device Library active: {}", devices.size());
         if (devices
                 .isEmpty()) {
-            var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
-            dlg.updateText("First Launch", """
+            GenericDialogController.info("First Launch", """
                     This is the first time you run this application.
                     There is no device enabled yet in your library.
                     You need to assign MIDI Ports to devices you want to use.
                     Then they will appear in the list.
                     """);
-            dlg.showAndWait();
             onMenuDevicesPorts(null);
             onMenuReloadMidiDeviceLibrary(null);
         } else if (!cfg.getSelectedPatches()

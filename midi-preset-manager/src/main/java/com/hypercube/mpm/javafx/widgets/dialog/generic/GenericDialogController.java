@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.dialog.generic;
 
+import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.DialogIcon;
@@ -26,6 +27,18 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     Label textHeader;
     @FXML
     FontIcon icon;
+
+    public static void info(String header, String message) {
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
+        dlg.updateText(header, message);
+        dlg.showAndWait();
+    }
+
+    public static void error(String header, String message) {
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
+        dlg.updateText(header, message);
+        dlg.showAndWait();
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

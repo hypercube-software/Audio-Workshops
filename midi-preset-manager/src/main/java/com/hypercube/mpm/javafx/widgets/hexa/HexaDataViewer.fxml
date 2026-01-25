@@ -2,10 +2,13 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../MainWindow.css,@HexaDataViewer.css"
+<fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../MainWindow.css,@HexaDataViewer.css"
          type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
     <!-- DEFINE PROPERTY com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload:data -->
     <!-- DEFINE PROPERTY Integer:gridHeight -->
+    <!-- DEFINE PROPERTY Integer:selectionStart -->
+    <!-- DEFINE PROPERTY Integer:selectionEnd -->
+    <!-- DEFINE PROPERTY String:selection -->
     <ScrollPane fx:id="hexScrollPane" fitToWidth="true" fitToHeight="true" minViewportHeight="40.0"
                 minViewportWidth="800.0"
                 GridPane.vgrow="ALWAYS">

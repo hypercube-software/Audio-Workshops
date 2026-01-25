@@ -7,18 +7,33 @@
 }
 
 .hex-cell {
-    -fx-font-family: "Monospaced";
-    -fx-font-size: 6px;
-    -fx-font-weight: lighter ;
-    -fx-text-fill: white;
     -fx-border-color: white;
     -fx-border-width: 0.5px;
     -fx-padding: 4px;
-
     -fx-pref-width: 50px;
     -fx-min-width: 50px;
     -fx-max-width: 50px;
+    -fx-alignment: center;
 }
+.hex-cell .label {
+    -fx-font-family: "Monospaced";
+    -fx-text-fill: white;
+    -fx-max-width: infinity;
+    -fx-font-size: 12px;
+}
+
+.hex-cell .hex-cell-ascii {
+    -fx-font-weight: bold ;
+    -fx-text-fill: #FF9000;
+}
+
+.hex-cell .hex-cell-hexa {
+    -fx-font-weight: lighter ;
+}
+
 .hex-cell-highlight {
     -fx-background-color: #FFFFFF44;
+}
+.hex-cell:hover {
+    -fx-background-color: #FFFFFF77;
 }
