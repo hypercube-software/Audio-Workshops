@@ -56,6 +56,7 @@ public class MidiResponseMapper {
         }
         switch (field.getType()) {
             case STRING -> extractString(currentResponse, payload, field);
+            case NIBBLE_STRING -> extractNibbleString(currentResponse, payload, field);
             case INTEGER -> extractInteger(currentResponse, payload, field);
             case ALESIS_STRING -> extractAlesisString(currentResponse, payload, field);
             case CATEGORY -> extractCategory(mode, currentResponse, payload, field);
@@ -102,6 +103,24 @@ public class MidiResponseMapper {
             }
         }
         value = value.replace("|nitial", "Initial"); // Weird case from Mininova
+        value = value.replace("|", " ");// we use this character to store presets, so it is reserved
+        currentResponse.setField(field.getName(), value.trim());
+    }
+
+    private void extractNibbleString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
+        String value = "";
+        for (int i = field.getOffset(); value.length() < field.getSize(); i += 2) {
+            if (i >= payload.length || i + 1 >= payload.length) {
+                value += "❌";
+            } else {
+                int asciiCode = (payload[i] << 4 | payload[i + 1]);
+                if (asciiCode >= 32 && asciiCode <= 127) {
+                    value += (char) asciiCode;
+                } else {
+                    value += "❌";
+                }
+            }
+        }
         value = value.replace("|", " ");// we use this character to store presets, so it is reserved
         currentResponse.setField(field.getName(), value.trim());
     }

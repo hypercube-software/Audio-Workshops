@@ -192,10 +192,11 @@ public class MidiPresetCrawler {
                                 if (presetNaming != MidiPresetNaming.STANDARD) {
                                     populateDrumKitMap(presetNaming, midiPreset);
                                 }
-                                log.info("Bank  name : " + midiPresetIdentity.bankName());
-                                log.info("Patch name : " + midiPresetIdentity.name());
-                                log.info("Category   : " + midiPresetIdentity.category());
-                                log.info("Preset     : " + midiPreset.getCommand());
+                                log.info("Bank  name  : " + midiPresetIdentity.bankName());
+                                log.info("Patch name  : " + midiPresetIdentity.name());
+                                log.info("Category    : " + midiPresetIdentity.category());
+                                log.info("Preset Cmd  : " + midiPreset.getCommand());
+                                log.info("Program Chg : " + program);
                                 if (!midiPreset.getDrumKitNotes()
                                         .isEmpty()) {
                                     log.info("DrumMap    : " + midiPreset.getDrumKitNotes()

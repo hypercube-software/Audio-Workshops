@@ -133,10 +133,11 @@ deviceModes:
       # Put here a name for a bank
       "Bank A":
         # the command indicate how to select the bank
-        # It is direclty related to presetFormat
+        # It is directly related to presetFormat
         command: "$01"
-        # indicate which program change is valide in this bank
-        # you can specify various ranges like this: "4-6,16-17,19,24-26"
+        # indicate which program change is valid in this bank
+        # you can specify various ranges in decimal like this: "4-6,16-17,19,24-26"
+        # the lower and upper bounds are included
         presetDomain: 0-127
         queryName:
       "Bank B":

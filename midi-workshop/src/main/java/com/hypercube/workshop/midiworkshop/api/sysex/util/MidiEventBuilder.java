@@ -113,9 +113,13 @@ public class MidiEventBuilder {
                             throw new MidiError("Malformed dump request: should contain a list of hexa bytes like 00 or FE: " + rawString);
                         }
 
-                        for (int i = 0; i < chunk.length(); i += 2) {
-                            int b = Integer.parseInt(chunk.substring(i, i + 2), 16);
-                            data.add(b);
+                        try {
+                            for (int i = 0; i < chunk.length(); i += 2) {
+                                int b = Integer.parseInt(chunk.substring(i, i + 2), 16);
+                                data.add(b);
+                            }
+                        } catch (NumberFormatException e) {
+                            throw new MidiError("Syntax error, expected hexadecimal values");
                         }
                     }
                 });

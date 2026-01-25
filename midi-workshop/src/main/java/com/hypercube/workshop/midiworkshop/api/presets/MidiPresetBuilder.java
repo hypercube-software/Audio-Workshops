@@ -17,10 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,8 +26,8 @@ import java.util.stream.Stream;
 
 @UtilityClass
 public class MidiPresetBuilder {
-    private static Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
     private static final Pattern COMMAND_REGEXP = Pattern.compile("\\s*([A-F0-9]{2})");
+    private static Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
 
     public static MidiPreset parse(File configFile, int zeroBasedChannel, MidiBankFormat midiBankFormat, String title, List<CommandMacro> macros, List<String> commands, List<Integer> controlChanges, List<DrumKitNote> drumKitNotes) {
         List<MidiMessage> messages = commands.stream()
@@ -260,36 +257,49 @@ public class MidiPresetBuilder {
     private static List<Integer> preparePresetSelectIdentifiers(MidiBankFormat midiBankFormat, String definition) {
         int expectedSize = switch (midiBankFormat) {
             case NO_BANK_PRG -> 2;
-            case BANK_MSB_PRG -> 4;
-            case BANK_LSB_PRG -> 4;
+            case BANK_MSB_PRG, BANK_LSB_PRG, BANK_PRG_PRG -> 4;
             case BANK_MSB_LSB_PRG -> 6;
-            case BANK_PRG_PRG -> 4;
         };
-        if (!definition.contains("-") && definition.length() == expectedSize) {
-            List<Integer> result = new ArrayList<>();
+        if (!definition.contains("-") && expectedSize > 2 && definition.length() == expectedSize) {
+            // Hexadecimal definition
+            List<Integer> ids = new ArrayList<>();
             for (int i = 0; i < definition.length(); i += 2) {
                 String hexPair = definition.substring(i, i + 2);
                 try {
-                    result.add(Integer.parseInt(hexPair, 16));
+                    ids.add(Integer.parseInt(hexPair, 16));
                 } catch (NumberFormatException e) {
                     throw new MidiConfigError("Unable to parse hexadecimal command definition:" + definition);
                 }
             }
-            return result;
+            chekIds(definition, midiBankFormat, ids);
+            return ids;
         } else {
+            // Decimal definition with "-" as separator
             Matcher matcher = PRESET_REGEXP.matcher(definition);
             if (matcher.find()) {
                 String id1 = matcher.group("id1");
                 String id2 = matcher.group("id2");
                 String id3 = matcher.group("id3");
                 List<Integer> ids = Stream.of(id1, id2, id3)
-                        .filter(id -> id != null)
+                        .filter(Objects::nonNull)
                         .map(Integer::parseInt)
                         .collect(Collectors.toList());
+                chekIds(definition, midiBankFormat, ids);
                 return ids;
             } else {
                 throw new MidiConfigError("Unable to parse command definition:" + definition);
             }
+        }
+    }
+
+    private static void chekIds(String definition, MidiBankFormat midiBankFormat, List<Integer> ids) {
+        if (!ids.stream()
+                .filter(id -> id > 127)
+                .toList()
+                .isEmpty()) {
+            throw new MidiError("The command definition '%s' contains out of range values: '%s' given MidiBankFormat: %s".formatted(definition, ids.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining()), midiBankFormat.name()));
         }
     }
 

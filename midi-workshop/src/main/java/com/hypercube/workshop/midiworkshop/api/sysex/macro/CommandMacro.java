@@ -95,7 +95,7 @@ public final class CommandMacro {
                 .map(String::trim)
                 .toList();
         int nbParts = macroDefParts.size();
-        boolean definitionIncludeMapper = MAPPER_NAME_REGEXP.matcher(macroDefParts.getLast())
+        boolean definitionIncludeMapper = nbParts > 2 && MAPPER_NAME_REGEXP.matcher(macroDefParts.getLast())
                 .matches();
         if (nbParts < 2 || nbParts > 4 || (nbParts == 4 && !definitionIncludeMapper)) {
             throw new MidiConfigError("""
