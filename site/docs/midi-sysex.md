@@ -1057,9 +1057,109 @@ prg = [0-3] for edit bank, [0-127] otherwise
 
 Like the QS6.1 a **decoding key** must be used. The Micron key is very standard, in fact, it is the same than the Korg TR-rack whereas the QS6.1 key is pure madness.
 
+# Evolution
+
+## EVS-1
+
+The EVS-1 is an interesting relic. MIDI specification can be found [here](// Install the all-trusting trust manager
+        SSLContext sc = null;), unfortunately it is incomplete or wrong.
+
+This synth use the following jargon:
+
+- **Sound** = a preset or patch
+  - Sounds 0 to 19 are writable: **user sounds**
+  - Sounds 20 to 99 are in ROM: **factory sounds**
+  - Sound 98 and 99 are PCM drum kits, then don't have settings you can query
+- **Group** = a multi
+
+⚠️Sadly this device does not support bank select messages, so you have to deal with a **Program Change table** like in the Yamaha TX-81z. Fortunately the default table allows you to select all sounds. Things get messy if you plan to select groups.
+
+Request are in the form:
+
+```
+F000200801 20 tt <optional param> F7
+
+tt = request type
+<optional param> = "sound id" ou "group id"
+
+"sound id" is in the range [0-97] because 98 and 99 are drum kits, they are excluded
+```
+
+| REQUEST TYPE | DESCRIPTION              | Example                  |
+| ------------ | ------------------------ | ------------------------ |
+| 00           | Single sound             | `F000200801 20 00 00 F7` |
+| 01           | All sounds               | `F000200801 20 01 F7`    |
+| 02           | Single group             | `F000200801 20 02 00 F7` |
+| 03           | All groups               | `F000200801 20 03 F7`    |
+| 04           | Program change table     | `F000200801 20 04 F7`    |
+| 05           | Utility data             | `F000200801 20 05 F7`    |
+| 06           | Undocumented but works ! | `F000200801 20 06 F7`    |
+| 07           | Current group            | `F000200801 20 07 F7`    |
+
+⚠️The undocumented part: **Strings are encoded with nibbles**
+
+```
+04 0A 07 05 06 0D 07 00 02 00 04 02 07 02 06 01 07 03 07 03
+=
+4A    75    6D    70    20    42    72    61    73    73
+=
+J     u     m     p     ' '   B     r     a     s     s
+```
+
+If you request the sound 00 with `F000200801 20 00 00 F7`:
+
+- The sound name is at offset `$0A`, not `$80` as stated in the doc.
+- You need to read 20 bytes to get 10 characters despite what is said in the doc.
+
+Writing into the device also involve **nibbles**:
+
+**Parameter Change** request is in the form:
+
+```
+F000200801 00 pp xx 04 v1 v2 F7
+
+pp = param number
+	00 : sound 00 name
+	01 : sound 01 name
+	...
+	13 : sound 19 name
+	14 : sound 00 settings
+	15 : sound 01 settings
+	...
+xx = param offset
+v1 = high nibble
+v2 = low nibble
+value = (v1<<4 | v2)
+```
+
+For instance to set the sound 03 name to 'Jump Brass'
+
+```
+F000200801 00 03 00 04 0A F7 => ASCII 4A => J
+F000200801 00 03 01 07 05 F7 => ASCII 75 => u
+F000200801 00 03 02 06 0D F7 => ASCII 6D => m
+...
+```
+
+For instance to change the envelope settings of sound 00:
+
+```
+$14 = param 20 = sound data
+offsets:
+00 = Attack Rate
+01 = Attack Level
+02 = Decay Rate
+03 = Decay Level
+04 = Release Rate
+05 = Release Level
+
+F000200801 00 14 01 07 06 F7 => set Attack Level to $76
+F000200801 00 14 00 0D 09 F7 => set Attack Rate to $D9
+```
+
 # Devices Library
 
-I spend a considerable amount of my time to build this, hoping it will be helpful for those like me, who are using (vintage) hardware devices.
+I spent a considerable amount of my time to build this, hoping it will be helpful for those like me, who are using (vintage) hardware devices.
 
 ## Main idea
 

@@ -84,6 +84,8 @@ deviceModes:
         - "5F | Unknown | Orchestral"
         - "60 | Unknown | Synth1992"
         - "61 | Synth Pad | ChorStrPad"
+        - "62 | DrumKit | DrumKit 1"
+        - "63 | DrumKit | DrumKit 2"
       User Sounds:
         presets:
         - "00 | Brass | Jump Brass"

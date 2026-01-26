@@ -24,21 +24,10 @@ macros:
   - "GetSoundSettings(sound) : F000200801 20 00 sound F7"
   - "PatchName() : GetSoundSettings(program) : PatchMapper"
 
-
-
-#
-# A hardware device always use various mode to operate. They respond differently on MIDI Channels
-# - Typically a "single voice mode" is used to play a single patch at a time. The Midi Channel 0 is only used in this case
-# - Whereas a "performance mode" is used to play multiple patch at a time, on the same MIDI channel. Typically, in a split mode or Layer mode.
-# - "Multi mode" is often used to play many patches, one on each MIDI channel
-#
-# Banks belongs to modes and Patches belongs to banks
-#
 deviceModes:
   Single:
     queryName: PatchName()
     categories:
-      - "Drum"
       - "Keyboard: Piano, Rhode,Grand,Keys"
       - "Organ: Reed"
       - "Chromatic Percussion: Clav, Marimba, Bell,Vibe,Chimes"
@@ -48,13 +37,14 @@ deviceModes:
       - "Brass: Brs,Trumpet, Horn,Trombone,Sax"
       - "Woodwinds: Flute,Ocarina,Pan,Harmon,Whistle"
       - "Synth Pad: Pad"
-      - "Synth Lead: Lead, Fantasia, Sweep"
+      - "Synth Lead: Lead, Sweep"
       - "Voice: Ahh, Ohh, Vox"
+      - "DrumKit"
     banks:
       "User Sounds":
         presetDomain: 0-19
       "Factory Sounds":
-        presetDomain: 20-97
+        presetDomain: 20-99
 
 #
 # Mappers to extract patch names
