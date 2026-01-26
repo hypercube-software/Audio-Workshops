@@ -3,11 +3,15 @@ package com.hypercube.workshop.audioworkshop.utils;
 import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -27,6 +31,8 @@ public class AudioTestFileDownloader {
             filename = cheapUrlDecode(filename);
             filename = filename.replace("/", "-");
             Path destfile = Paths.get("%s/%s".formatted(outputfolder, filename));
+            destfile.toFile()
+                    .delete();
             if (!destfile.toFile()
                     .exists()) {
                 log.info("Download test file %s ...".formatted(url));
@@ -44,13 +50,43 @@ public class AudioTestFileDownloader {
 
     }
 
-    private void download(String url, String file) throws IOException {
+    private void trustAnyCertificate() {
+        // 1. BYPASS SSL: Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
 
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+
+
+        try {// Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Bypass hostname verification (e.g., if the cert is for a different domain)
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void download(String url, String file) throws IOException {
+        trustAnyCertificate();
         URLConnection connection = new URL(url).openConnection();
 
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36");
-        connection.setRequestProperty("Referer", "https://musical-artifacts.com/artifacts/787/?__cf_chl_tk=zi7bgUEADS.0ggJmIUZdZXbjmjYwr9CTwfaQNuSB39g-1747374596-1.0.1.1-4GcPxJVcAJwDNc3VPbqqVEZZecsqLVKmBWp7NyBt8dg");
-        
+
         try (InputStream inputStream = connection.getInputStream();
              FileOutputStream outputStream = new FileOutputStream(file)) {
 
