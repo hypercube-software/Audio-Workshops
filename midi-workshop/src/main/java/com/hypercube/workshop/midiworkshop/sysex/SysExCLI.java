@@ -121,14 +121,11 @@ public class SysExCLI {
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, modelName);
         try (var out = m.openOutput(outputDevice)) {
             try (var in = m.openInput(inputDevice)) {
-                in.startListening();
                 MemoryInt24 paramSize = MemoryInt24.from(size);
                 MemoryInt24 paramAddress = MemoryInt24.from(address, true);
                 log.info("Query device at address {} with size {}", paramAddress, paramSize);
                 int value = device.requestMemory(in, out, paramAddress, paramSize);
                 log.info("Value at {} is {}", paramAddress, value);
-                in.stopListening();
-                in.waitNotListening();
             }
         }
     }

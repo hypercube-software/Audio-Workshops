@@ -33,7 +33,7 @@ public class MidiMonitor {
 
     public void close() {
         if (midiInDevice != null) {
-            midiInDevice.stopListening();
+            midiInDevice.close();
         }
     }
 

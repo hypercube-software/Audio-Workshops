@@ -49,13 +49,11 @@ public class ConfigurationFactory {
             if (!configFile.exists() || configFile.length() == 0) {
                 initEmptyConfig();
             }
-            log.info("Loading project configuration from  %s...".formatted(configFile.getAbsolutePath()));
+            log.info("Loading project configuration from  %{}...", configFile.getAbsolutePath());
             var mapper = new ObjectMapper(new YAMLFactory());
             ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
             config.setMidiDeviceLibrary(midiDeviceLibrary);
-            config.setMidiPortsManager(new MidiPortsManager());
-            config.getMidiPortsManager()
-                    .collectDevices();
+            config.setMidiPortsManager(midiPortsManager);
             projectConfiguration = config;
         } catch (IOException e) {
             throw new ConfigError(e);

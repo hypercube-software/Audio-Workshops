@@ -68,7 +68,7 @@ public class MidiPortsManager {
                 }
 
             } catch (MidiUnavailableException e) {
-                log.error("Port " + info.getDescription() + " is not available");
+                log.error("Port {} is not available", info.getDescription());
             }
         }
         inputs.sort(Comparator.comparing(AbstractMidiDevice::getName));

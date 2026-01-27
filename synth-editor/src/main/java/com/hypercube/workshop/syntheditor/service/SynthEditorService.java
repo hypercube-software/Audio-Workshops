@@ -51,7 +51,6 @@ public class SynthEditorService implements SynthEditorBusListener {
         if (inputDevice == null || outputDevice == null) {
             return;
         }
-        inputDevice.startListening();
         int progress = 0;
         var params = editableParameters.getAll();
         for (int i = 0; i < params.size(); i++) {
@@ -62,7 +61,6 @@ public class SynthEditorService implements SynthEditorBusListener {
             progress = (i + 1) * 100 / params.size();
             bus.sendProgress(progress);
         }
-        inputDevice.stopListening();
         inputDevice.waitNotListening();
     }
 

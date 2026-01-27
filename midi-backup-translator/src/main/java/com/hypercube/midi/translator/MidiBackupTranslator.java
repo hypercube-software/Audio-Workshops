@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
+import java.io.Closeable;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MidiBackupTranslator {
+public class MidiBackupTranslator implements Closeable {
     private final ProjectConfiguration conf;
     private MidiInDevice midiInDevice;
     private MidiOutDevice midiOutDevice;
@@ -29,9 +30,10 @@ public class MidiBackupTranslator {
     private boolean stop;
     private volatile CustomMidiEvent lastDropped;
 
+    @Override
     public void close() {
         if (midiInDevice != null) {
-            midiInDevice.stopListening();
+            midiInDevice.close();
         }
     }
 
@@ -51,11 +53,11 @@ public class MidiBackupTranslator {
             if (event != null) {
                 int status = event.getMessage()
                         .getStatus();
-                boolean requireThrottlings = status == ShortMessage.CONTROL_CHANGE || status == SysexMessage.SYSTEM_EXCLUSIVE;
+                boolean requireThrottling = status == ShortMessage.CONTROL_CHANGE || status == SysexMessage.SYSTEM_EXCLUSIVE;
                 int payloadSize = event.getMessage()
                         .getLength();
-                if (requireThrottlings) {
-                    if (prevSend == -1 || !requireThrottlings || currentBandwidth < maxBytesPerSec) {
+                if (requireThrottling) {
+                    if (prevSend == -1 || currentBandwidth < maxBytesPerSec) {
                         log.info("Sent!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
                         midiOutDevice.send(event);
                         prevSend = now;

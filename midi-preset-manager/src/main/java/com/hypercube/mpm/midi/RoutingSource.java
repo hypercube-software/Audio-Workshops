@@ -45,14 +45,6 @@ public final class RoutingSource implements Closeable {
         this.name = port.getName();
     }
 
-    public void startListening() {
-        port.startListening();
-    }
-
-    public void stopListening() {
-        port.stopListening();
-    }
-
     public boolean withDevice() {
         return device != null;
     }

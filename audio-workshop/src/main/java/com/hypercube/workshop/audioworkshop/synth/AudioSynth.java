@@ -25,26 +25,35 @@ import java.nio.ByteOrder;
 @Component
 public class AudioSynth {
     static final int SAMPLE_RATE = 44100;
-    private volatile int midiNode;
+    private volatile int midiNote = 0;
     private volatile boolean stop;
 
     private void onMidiEvent(CustomMidiEvent evt, VCA vca) {
         MidiMessage msg = evt.getMessage();
         if (msg.getStatus() == ShortMessage.NOTE_ON) {
-            midiNode = msg.getMessage()[1];
+            midiNote = msg.getMessage()[1];
             int midiVelocity = msg.getMessage()[2];
-            midiVelocity = Math.min(midiVelocity, 110);
-            log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), midiVelocity, msg.getStatus()));
+            if (midiVelocity == 0) {
+                onNoteOff(evt, vca, msg);
+            } else {
+                midiVelocity = Math.min(midiVelocity, 110);
+                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNote, VCO.midiNoteToFrequency(midiNote), midiVelocity, msg.getStatus()));
+            }
             vca.onNoteOn(midiVelocity / 127.f);
         } else if (msg.getStatus() == ShortMessage.NOTE_OFF) {
             int receivedMidiNodeOff = msg.getMessage()[1];
-            if (midiNode == receivedMidiNodeOff) {
-                vca.onNoteOff();
-                log.info(String.format("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x", evt.getHexValues(), midiNode, VCO.midiNoteToFrequency(midiNode), 0, msg.getStatus()));
+            if (midiNote == receivedMidiNodeOff) {
+                onNoteOff(evt, vca, msg);
             }
         } else if (msg.getStatus() == ShortMessage.PITCH_BEND) {
             stop = true;
         }
+    }
+
+    private void onNoteOff(CustomMidiEvent evt, VCA vca, MidiMessage msg) {
+        vca.onNoteOff();
+        log.info("MIDI: %s Note: %d %f Hz Velocity: %d Status: %02x".formatted(evt.getHexValues(), midiNote, VCO.midiNoteToFrequency(midiNote), 0, msg.getStatus()));
+        midiNote = 0;
     }
 
     void synth(MidiInDevice midiInDevice, AudioOutputDevice audioOutputDevice) {
@@ -60,11 +69,12 @@ public class AudioSynth {
                 try (AudioOutputLine line = new AudioOutputLine(audioOutputDevice, format)) {
                     line.start();
                     while (!stop) {
-                        byte[] data = vco.generateSignal(VCO.midiNoteToFrequency(midiNode));
-                        line.sendBuffer(data, data.length);
+                        if (midiNote != 0) {
+                            byte[] data = vco.generateSignal(VCO.midiNoteToFrequency(midiNote));
+                            line.sendBuffer(data, data.length);
+                        }
                     }
                     log.info("Terminating...");
-                    midiInDevice.stopListening();
                 } catch (LineUnavailableException e) {
                     throw new AudioError(e);
                 }

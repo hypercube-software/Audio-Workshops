@@ -116,7 +116,6 @@ public class DeviceToolBox {
                         requestLogger.accept(RequestStatus.of(msg));
                         return Optional.empty();
                     }
-                    var wasListening = input.isListening();
                     try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
                         MidiListener midiListener = (d, event) -> {
                             try {
@@ -130,9 +129,6 @@ public class DeviceToolBox {
                             output.open();
                             input.open();
                             input.addListener(midiListener);
-                            if (!wasListening) {
-                                input.startListening();
-                            }
                             var bytesSent = midiDeviceLibrary.sendCommandToDevice(device, output, cmd, call);
                             requestBytes.write(bytesSent);
                             requestLogger.accept(RequestStatus.of(requestBytes.toByteArray()));
@@ -151,13 +147,7 @@ public class DeviceToolBox {
                                 throw new RuntimeException(e);
                             }
                         }
-                        log.info("Stop listening {}", device.getDeviceName());
-                        if (!wasListening) {
-                            input.stopListening();
-                        }
                         input.removeListener(midiListener);
-                        input.close();
-                        output.close();
                         return Optional.of(responseBuffer.toByteArray());
                     } catch (IOException e) {
                         requestLogger.accept(RequestStatus.of(e.getMessage()));

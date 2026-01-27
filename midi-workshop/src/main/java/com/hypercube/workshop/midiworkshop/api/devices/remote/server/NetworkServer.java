@@ -193,7 +193,6 @@ public class NetworkServer {
             log.info("Listening Midi port {}", inputPort.getName());
             inputPort.open();
             inputPort.addListener((midiInDevice, event) -> onRealMidiEvent(session, event));
-            inputPort.startListening();
         }
     }
 

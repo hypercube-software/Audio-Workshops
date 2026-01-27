@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="audio:synth" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.audioworkshop.AudioWorkshopApplication" />
+    <module name="audio-workshop" />
+    <option name="PROGRAM_PARAMETERS" value="synth -o &quot;Périphérique audio principal&quot; -i &quot;debug&quot;" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.hypercube.workshop.audioworkshop.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

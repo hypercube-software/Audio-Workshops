@@ -1,20 +1,13 @@
 package com.hypercube.workshop.midiworkshop.api.devices;
 
-import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class MultiMidiInDevice extends MidiInDevice {
     private final List<MidiInDevice> devices;
-    private final AtomicInteger runningListeners = new AtomicInteger(0);
 
     public MultiMidiInDevice(List<MidiInDevice> devices) {
         super(null);
@@ -57,33 +50,12 @@ public class MultiMidiInDevice extends MidiInDevice {
 
     @Override
     public void listen(MidiListener listener) {
-        runningListeners.set(0);
-        try {
-            for (var device : devices) {
-                device.device.getTransmitter()
-                        .setReceiver(new Receiver() {
-                            @Override
-                            public void send(MidiMessage message, long timeStamp) {
-                                try {
-                                    listener.onEvent(device, new CustomMidiEvent(message, timeStamp));
-                                } catch (RuntimeException e) {
-                                    log.error("Unexpected error in midi listener", e);
-                                }
-                            }
-
-                            @Override
-                            public void close() {
-                                int v = runningListeners.addAndGet(-1);
-                                if (v <= 0) {
-                                    stopListening();
-                                }
-                            }
-                        });
-                runningListeners.addAndGet(1);
-            }
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(e);
+        for (var device : devices) {
+            device.addListener(listener);
         }
         waitNotListening();
+        for (var device : devices) {
+            device.removeListener(listener);
+        }
     }
 }

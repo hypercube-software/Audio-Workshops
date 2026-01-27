@@ -159,7 +159,6 @@ public class MidiRouter {
                                         .getDeviceName());
                             }
                             inputTransformers.put(key, new MidiTransformer(dawDevice, outputDevice, controllerMessageListener));
-                            dawMidiInDevice.startListening();
                         } catch (MidiError e) {
                             throw new ApplicationError(e);
                         }
@@ -323,8 +322,6 @@ public class MidiRouter {
             }
             closeMainDestinationListener();
             for (MidiInDevice dawMidiIn : secondaryInputs) {
-                log.info("Stop listening {}", dawMidiIn.getName());
-                dawMidiIn.stopListening();
                 log.info("Close {}", dawMidiIn.getName());
                 dawMidiIn.close();
             }
@@ -492,7 +489,6 @@ public class MidiRouter {
         sources.forEach((inputPortName, src) ->
         {
             log.info("Stop listening {}", src.getPortName());
-            src.stopListening();
             src.removeListener(mainSourceEventListener);
         });
     }
@@ -503,7 +499,6 @@ public class MidiRouter {
     private void closeMainDestinationListener() {
         if (mainDestinationMidiIn != null) {
             log.info("Stop listening {}", mainDestinationMidiIn.getName());
-            mainDestinationMidiIn.stopListening();
             mainDestinationMidiIn.removeListener(mainDestinationEventListener);
             mainDestinationMidiIn.close();
             mainDestinationMidiIn = null;
@@ -517,7 +512,6 @@ public class MidiRouter {
         if (mainDestinationMidiIn != null) {
             try {
                 mainDestinationMidiIn.addListener(mainDestinationEventListener);
-                mainDestinationMidiIn.startListening();
             } catch (MidiError e) {
                 throw new ApplicationError(e);
             }
@@ -529,33 +523,29 @@ public class MidiRouter {
      * <p>{@link #controllerMessageListener} will be notified when a CC or NRPN is detected</p>
      */
     private void installMainSourceListenerWithTransformer(MidiDeviceDefinition output) {
-        if (sources != null) {
-            sources.values()
-                    .stream()
-                    .forEach(src -> {
-                        try {
-                            if (src.withDevice()) {
-                                log.info("Start listening MIDI Port '" + src.getPortName() + "' for device " + src.getDeviceName());
-                            } else {
-                                log.info("Start listening MIDI Port '" + src.getPortName() + "'");
-                            }
-                            src.addListener(mainSourceEventListener);
-                            if (src.withDevice()) {
-                                inputTransformers.put(src.
-                                        getPortName(), new MidiTransformer(src.getDevice(), output, controllerMessageListener));
-                            }
-                            src.startListening();
-                        } catch (MidiError e) {
-                            throw new ApplicationError(e);
+        sources.values()
+                .forEach(src -> {
+                    try {
+                        if (src.withDevice()) {
+                            log.info("Start listening MIDI Port '{}' for device {}", src.getPortName(), src.getDeviceName());
+                        } else {
+                            log.info("Start listening MIDI Port '{}'", src.getPortName());
                         }
-                    });
-        }
+                        src.addListener(mainSourceEventListener);
+                        if (src.withDevice()) {
+                            inputTransformers.put(src.
+                                    getPortName(), new MidiTransformer(src.getDevice(), output, controllerMessageListener));
+                        }
+                    } catch (MidiError e) {
+                        throw new ApplicationError(e);
+                    }
+                });
     }
 
     private void dumpListeners(String name, MidiInDevice device) {
         log.info("#### LISTENERS for {} on {}:", name, device.getName());
         device.getListeners()
-                .forEach(l -> log.info("#### LISTENER " + l.getClass()
+                .forEach(l -> log.info("#### LISTENER {}", l.getClass()
                         .getName()));
     }
 

@@ -1,23 +1,36 @@
 package com.hypercube.workshop.midiworkshop.api.devices;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
 import java.io.Closeable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Our Midi device is artificially multi-client using {@link #openCount}
  * <p>It means close does not really close until the counter is 1</p>
  */
-@AllArgsConstructor
 @Slf4j
 public abstract class AbstractMidiDevice implements Closeable {
+    private static final Set<String> instances = new HashSet<>();
     protected final MidiDevice device;
-    protected final AtomicInteger openCount = new AtomicInteger();
+    private final AtomicInteger openCount = new AtomicInteger();
+
+    protected AbstractMidiDevice(MidiDevice device) {
+        this.device = device;
+        String uniqueName = this.getClass()
+                .getSimpleName() + ":" + getName();
+        synchronized (instances) {
+            if (instances.contains(uniqueName)) {
+                throw new IllegalStateException("Duplicate instance of midi device class '%s' detected".formatted(uniqueName));
+            }
+            instances.add(uniqueName);
+        }
+    }
 
     /**
      * Most of the time {@link MidiDevice#open()} fail when the device is already open by another application

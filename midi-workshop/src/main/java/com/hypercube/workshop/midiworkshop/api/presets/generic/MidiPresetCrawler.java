@@ -103,122 +103,119 @@ public class MidiPresetCrawler {
         MidiPortsManager midiPortsManager = new MidiPortsManager();
         midiPortsManager.collectDevices();
         String outputMidiDevice = device.getOutputMidiDevice();
-        MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
-                .orElse(null);
-        String inputMidiDevice = device.getInputMidiDevice();
-        MidiInDevice in = midiPortsManager.getInput(inputMidiDevice)
-                .orElse(null);
-        if (out == null) {
-            throw new MidiConfigError("MIDI OUT Device not found: '%s".formatted(outputMidiDevice));
-        }
-        if (in == null) {
-            throw new MidiConfigError("MIDI IN Device not found: '%s".formatted(inputMidiDevice));
-        }
+        try (MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
+                .orElse(null)) {
+            String inputMidiDevice = device.getInputMidiDevice();
+            try (MidiInDevice in = midiPortsManager.getInput(inputMidiDevice)
+                    .orElse(null)) {
+                if (out == null) {
+                    throw new MidiConfigError("MIDI OUT Device not found: '%s".formatted(outputMidiDevice));
+                }
+                if (in == null) {
+                    throw new MidiConfigError("MIDI IN Device not found: '%s".formatted(inputMidiDevice));
+                }
 
-        int nbPresetToQuery = countPresets(device);
-        int currenPresetCount = 1;
-        try {
-            MidiPresetIdentity previousPatchIdentity = null;
-            in.open();
-            in.addSysExListener(this::onResponse);
-            in.startListening();
-            out.open();
-            for (var mode : device.getDeviceModes()
-                    .values()) {
-                changeMode(mode, library, device, out);
-                MidiRequestSequence modeRequestSequence = forgeRequestSequence(library, device, mode.getQueryName());
-                MidiRequestSequence modePreRequestSequence = mode.getPreQueryName() != null ? forgeRequestSequence(library, device, mode.getPreQueryName()) : null;
-                MidiRequestSequence modePostRequestSequence = mode.getPostQueryName() != null ? forgeRequestSequence(library, device, mode.getPostQueryName()) : null;
-                for (var bank : mode.getBanks()
-                        .values()) {
-                    if (bank.getPresetDomain() == null) {
-                        continue;
-                    }
-                    MidiRequestSequence bankRequestSequence = bank.getQueryName() != null ? forgeRequestSequence(library, device, bank.getQueryName()) : modeRequestSequence;
-                    MidiRequestSequence bankPreRequestSequence = bank.getPreQueryName() != null ? forgeRequestSequence(library, device, bank.getPreQueryName()) : modePreRequestSequence;
-                    MidiRequestSequence bankPostRequestSequence = bank.getPostQueryName() != null ? forgeRequestSequence(library, device, bank.getPostQueryName()) : modePostRequestSequence;
-                    for (var range : bank.getPresetDomain()
-                            .getRanges()) {
-                        for (int program : IntStream.rangeClosed(range.getFrom(), range.getTo())
-                                .toArray()) {
-                            String currentBankName = bank.getName();
-                            MidiPreset midiPreset = MidiPresetBuilder.parse(device, mode, bank, program);
-                            log.info("Select Bank '%s' Program '%s' in mode '%s'".formatted(currentBankName, program, mode.getName()));
-                            int bankLSB = 0;
-                            int bankMSB = 0;
-                            for (var command : midiPreset.getCommands()) {
-                                CustomMidiEvent cm = new CustomMidiEvent(command);
-                                log.info("    " + cm.getHexValuesSpaced());
-                                if (cm.getHexValues()
-                                        .startsWith("0xB020")) {
-                                    bankLSB = Integer.parseInt(cm.getHexValues()
-                                            .substring(6), 16);
-                                }
-                                if (cm.getHexValues()
-                                        .startsWith("0xB000")) {
-                                    bankMSB = Integer.parseInt(cm.getHexValues()
-                                            .substring(6), 16);
-                                }
-                                out.send(cm);
+                int nbPresetToQuery = countPresets(device);
+                int currenPresetCount = 1;
+                try {
+                    MidiPresetIdentity previousPatchIdentity = null;
+                    in.open();
+                    in.addSysExListener(this::onResponse);
+                    out.open();
+                    for (var mode : device.getDeviceModes()
+                            .values()) {
+                        changeMode(mode, library, device, out);
+                        MidiRequestSequence modeRequestSequence = forgeRequestSequence(library, device, mode.getQueryName());
+                        MidiRequestSequence modePreRequestSequence = mode.getPreQueryName() != null ? forgeRequestSequence(library, device, mode.getPreQueryName()) : null;
+                        MidiRequestSequence modePostRequestSequence = mode.getPostQueryName() != null ? forgeRequestSequence(library, device, mode.getPostQueryName()) : null;
+                        for (var bank : mode.getBanks()
+                                .values()) {
+                            if (bank.getPresetDomain() == null) {
+                                continue;
                             }
-                            // let the time the edit buffer is completely set before querying it
-                            //wait("Wait patch change", device.getPresetLoadTimeMs());
-                            MidiPresetIdentity midiPresetIdentity = null;
-                            MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
-                            for (int retry = 0; retry < 2; retry++) {
-                                midiPresetIdentity = switch (presetNaming) {
-                                    case STANDARD ->
-                                            getStandardPreset(device, mode, currentBankName, bankMSB, bankLSB, program,
-                                                    bankPreRequestSequence,
-                                                    bankRequestSequence,
-                                                    bankPostRequestSequence, out);
-                                    case SOUND_CANVAS ->
-                                            getPredefinedPreset(scPresets, device, mode, program, midiPreset);
-                                    case YAMAHA_XG -> getPredefinedPreset(xgPresets, device, mode, program, midiPreset);
-                                };
-                                if (midiPresetIdentity != null) {
-                                    if (previousPatchIdentity != null && previousPatchIdentity.name()
-                                            .equals(midiPresetIdentity.name())) {
-                                        log.error("Something wrong, the patch name is the same than the previous one");
-                                    } else {
-                                        break;
+                            MidiRequestSequence bankRequestSequence = bank.getQueryName() != null ? forgeRequestSequence(library, device, bank.getQueryName()) : modeRequestSequence;
+                            MidiRequestSequence bankPreRequestSequence = bank.getPreQueryName() != null ? forgeRequestSequence(library, device, bank.getPreQueryName()) : modePreRequestSequence;
+                            MidiRequestSequence bankPostRequestSequence = bank.getPostQueryName() != null ? forgeRequestSequence(library, device, bank.getPostQueryName()) : modePostRequestSequence;
+                            for (var range : bank.getPresetDomain()
+                                    .getRanges()) {
+                                for (int program : IntStream.rangeClosed(range.getFrom(), range.getTo())
+                                        .toArray()) {
+                                    String currentBankName = bank.getName();
+                                    MidiPreset midiPreset = MidiPresetBuilder.parse(device, mode, bank, program);
+                                    log.info("Select Bank '%s' Program '%s' in mode '%s'".formatted(currentBankName, program, mode.getName()));
+                                    int bankLSB = 0;
+                                    int bankMSB = 0;
+                                    for (var command : midiPreset.getCommands()) {
+                                        CustomMidiEvent cm = new CustomMidiEvent(command);
+                                        log.info("    " + cm.getHexValuesSpaced());
+                                        if (cm.getHexValues()
+                                                .startsWith("0xB020")) {
+                                            bankLSB = Integer.parseInt(cm.getHexValues()
+                                                    .substring(6), 16);
+                                        }
+                                        if (cm.getHexValues()
+                                                .startsWith("0xB000")) {
+                                            bankMSB = Integer.parseInt(cm.getHexValues()
+                                                    .substring(6), 16);
+                                        }
+                                        out.send(cm);
                                     }
-                                } else {
-                                    log.error("Something wrong, the patch name is not found");
+                                    // let the time the edit buffer is completely set before querying it
+                                    //wait("Wait patch change", device.getPresetLoadTimeMs());
+                                    MidiPresetIdentity midiPresetIdentity = null;
+                                    MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
+                                    for (int retry = 0; retry < 2; retry++) {
+                                        midiPresetIdentity = switch (presetNaming) {
+                                            case STANDARD ->
+                                                    getStandardPreset(device, mode, currentBankName, bankMSB, bankLSB, program,
+                                                            bankPreRequestSequence,
+                                                            bankRequestSequence,
+                                                            bankPostRequestSequence, out);
+                                            case SOUND_CANVAS ->
+                                                    getPredefinedPreset(scPresets, device, mode, program, midiPreset);
+                                            case YAMAHA_XG ->
+                                                    getPredefinedPreset(xgPresets, device, mode, program, midiPreset);
+                                        };
+                                        if (midiPresetIdentity != null) {
+                                            if (previousPatchIdentity != null && previousPatchIdentity.name()
+                                                    .equals(midiPresetIdentity.name())) {
+                                                log.error("Something wrong, the patch name is the same than the previous one");
+                                            } else {
+                                                break;
+                                            }
+                                        } else {
+                                            log.error("Something wrong, the patch name is not found");
+                                        }
+                                        log.error("Retry...");
+                                    }
+                                    if (midiPresetIdentity != null) {
+                                        if (presetNaming != MidiPresetNaming.STANDARD) {
+                                            populateDrumKitMap(presetNaming, midiPreset);
+                                        }
+                                        log.info("Bank  name  : " + midiPresetIdentity.bankName());
+                                        log.info("Patch name  : " + midiPresetIdentity.name());
+                                        log.info("Category    : " + midiPresetIdentity.category());
+                                        log.info("Preset Cmd  : " + midiPreset.getCommand());
+                                        log.info("Program Chg : " + program);
+                                        if (!midiPreset.getDrumKitNotes()
+                                                .isEmpty()) {
+                                            log.info("DrumMap    : " + midiPreset.getDrumKitNotes()
+                                                    .size() + " notes");
+                                        }
+                                        log.info("");
+                                        midiPreset.setId(midiPresetIdentity);
+                                        midiPresetConsumer.onNewMidiPreset(device, midiPreset, currenPresetCount, nbPresetToQuery);
+                                        currenPresetCount++;
+                                    }
+                                    previousPatchIdentity = midiPresetIdentity;
                                 }
-                                log.error("Retry...");
                             }
-                            if (midiPresetIdentity != null) {
-                                if (presetNaming != MidiPresetNaming.STANDARD) {
-                                    populateDrumKitMap(presetNaming, midiPreset);
-                                }
-                                log.info("Bank  name  : " + midiPresetIdentity.bankName());
-                                log.info("Patch name  : " + midiPresetIdentity.name());
-                                log.info("Category    : " + midiPresetIdentity.category());
-                                log.info("Preset Cmd  : " + midiPreset.getCommand());
-                                log.info("Program Chg : " + program);
-                                if (!midiPreset.getDrumKitNotes()
-                                        .isEmpty()) {
-                                    log.info("DrumMap    : " + midiPreset.getDrumKitNotes()
-                                            .size() + " notes");
-                                }
-                                log.info("");
-                                midiPreset.setId(midiPresetIdentity);
-                                midiPresetConsumer.onNewMidiPreset(device, midiPreset, currenPresetCount, nbPresetToQuery);
-                                currenPresetCount++;
-                            }
-                            previousPatchIdentity = midiPresetIdentity;
                         }
                     }
+                } catch (InvalidMidiDataException e) {
+                    throw new MidiError(e);
                 }
             }
-            in.stopListening();
-        } catch (InvalidMidiDataException e) {
-            throw new MidiError(e);
-        } finally {
-            out.close();
-            in.close();
-
         }
     }
 

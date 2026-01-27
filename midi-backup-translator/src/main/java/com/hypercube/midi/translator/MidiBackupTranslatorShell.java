@@ -172,7 +172,6 @@ public class MidiBackupTranslatorShell {
         log.info("-------------------------------------------------------");
         try (var in = midiPortsManager.openInput(projectDevice.getInputMidiDevice())) {
             in.addSysExListener((midiInDevice, sysExEvent) -> onSysEx(deviceInstance, midiInDevice, sysExEvent));
-            in.startListening();
             try (var out = midiPortsManager.openOutput(projectDevice.getOutputMidiDevice())) {
                 wakeUpDevice(out, deviceInstance);
                 if (macro == null) {
@@ -187,9 +186,6 @@ public class MidiBackupTranslatorShell {
                     sendBulkRequests(projectDevice, deviceInstance, out, midiRequestSequence.getMidiRequests());
                 }
             }
-
-            in.stopListening();
-            in.waitNotListening();
             deviceInstance.save();
             log.info("{}{}", projectDevice.getName(), " saved 0x%X (%d) bytes".formatted(deviceInstance.getStateSize(), deviceInstance.getStateSize()));
         } catch (IOException | InvalidMidiDataException e) {
