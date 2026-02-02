@@ -4,25 +4,14 @@
 #
 deviceName: "Venom"
 brand: "M-Audio"
-#
-# Select how to send bank select messages to the device:
-# ------------------------------------------------------
-# NO_BANK_PRG      : Does not send bank select, send only Program Change
-# BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
-# BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
-# BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
-# BANK_PRG_PRG     : Send 2 Program Change. This weird mode is used in the Yamaha TG-77
-#
-presetFormat: NO_BANK_PRG
-#
-# STANDARD     : it is possible to get the patch name with SysEx
-# SOUND_CANVAS : Patch names are hardcoded in java application
-#
+presetFormat: BANK_MSB_PRG
 presetNaming: STANDARD
 
 macros:
-  - "GetSoundSettings(sound) : F000200801 20 00 sound F7"
-  - "PatchName() : GetSoundSettings(program) : PatchMapper"
+  - "ACK(): F00001052100 7F F7"
+  - "QueryDump(addr) : F00001052100 01 addr F7"
+  - "SingleEditDump() : QueryDump( $000100 )"
+  - "PatchName() : SingleEditDump() : PatchMapper"
 
 decodingKey:
   start: 10
@@ -40,6 +29,7 @@ decodingKey:
 deviceModes:
   Single:
     queryName: PatchName()
+    postQueryName: ACK()
     categories:
       - "Keyboard: Piano, Rhode,Grand,Keys"
       - "Organ: Reed"
@@ -54,10 +44,18 @@ deviceModes:
       - "Voice: Ahh, Ohh, Vox"
       - "DrumKit"
     banks:
-      "User Sounds":
-        presetDomain: 0-19
-      "Factory Sounds":
-        presetDomain: 20-99
+      "Bank A (Factory)":
+        command: "$00"
+        presetDomain: 0-127
+      "Bank B (Factory)":
+        command: "$02"
+        presetDomain: 0-127
+      "Bank C (User)":
+        command: "$03"
+        presetDomain: 0-127
+      "Bank D (User)":
+        command: "$04"
+        presetDomain: 0-127
 
 #
 # Mappers to extract patch names
@@ -66,8 +64,8 @@ mappers:
   PatchMapper:
     fields:
       name:
-        type: NIBBLE_STRING
-        offset: $0A
+        type: STRING
+        offset: $BC
         size: 10
 
 controllers:

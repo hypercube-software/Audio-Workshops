@@ -74,7 +74,7 @@ public class MidiPresetCrawler {
         scPresets = loadSoundCanvasPreset();
     }
 
-    private static void dumpResonse(CustomMidiEvent midiEvent) {
+    private static void dumpResponse(CustomMidiEvent midiEvent) {
         try {
             Files.write(Path.of("response.syx"), midiEvent.getMessage()
                     .getMessage());
@@ -394,7 +394,7 @@ public class MidiPresetCrawler {
                         int receivedSize = midiEvent.getMessage()
                                 .getLength();
                         log.info("Received " + receivedSize + " bytes ($%X)".formatted(receivedSize));
-                        dumpResonse(midiEvent);
+                        dumpResponse(midiEvent);
                         if (sequence.getTotalSize() == 0 || receivedSize == sequence.getTotalSize()) {
                             break;
                         } else {

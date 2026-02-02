@@ -1182,10 +1182,13 @@ F0 7E 7F 06 02 00 01 05 63 0E 04 41 31 31 35 34 F7
                                    " 1  1  5  4" => Firmware 1.15.4
 ```
 
-Requests format:
+**Requests format**:
 
 ```
-F0 00 01 05 21 cc aa aa aa ck F7
+F0 00 01 05 21 00 cc aa aa aa ck F7
+   00 01 05       => M-Audio manufacturer ID
+            21    => Venom ID
+               00 => Device ID
 cc:
  00 Request ASCII code firmware version
  01 Request Data Dump
