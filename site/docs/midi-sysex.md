@@ -227,6 +227,12 @@ decodingKey:
     - 0 G6 G5 G4 G3 G2 G1 G0
 ```
 
+In this example, we start from byte 6 and we end just before `F7``
+
+- `start` indicate where the decoding start in the MIDI response (from 0, where `F0` is)
+- `end` indicate where the decoding end, from the end (the final `F7` byte). This upper bound is included.
+- Most of the time `end` is 1, but sometimes we can use 2 to skip also the final checksum (see [M-Audio Venom](#venom))
+
 8 bytes of MIDI contain 7 bytes of device memory. So the decoding operate 8 bytes after 8 bytes. Reading 56 significant bits.
 
 - We name those 7 memory bytes A,B,C,D,E,F,G
@@ -1156,6 +1162,171 @@ offsets:
 F000200801 00 14 01 07 06 F7 => set Attack Level to $76
 F000200801 00 14 00 0D 09 F7 => set Attack Rate to $D9
 ```
+
+# M-Audio
+
+## Venom
+
+VENOM MIDI implementation can be found in the manual [here](https://synth.market/media/shop_items_docs/M_Audio_Venom_UG_EN.pdf).
+
+- Note the error page 91, Chapter "ACK", `0x7F` Command ID is **ACK**, not **Cancel** as stated
+- The Venom use packed data, so a decoding key is required. It is a regular one (same as Korg), not a crazy one (like Alesis). This was explained earlier in the chapter [Decoding Key](#decoding-key)
+
+**Inquiry Request** and response:
+
+```
+F0 7E 00 06 01 F7
+F0 7E 7F 06 02 00 01 05 63 0E 04 41 31 31 35 34 F7
+               00 01 05                          => M-Audio manufacturer ID
+                        63 0E 04 41              => Unknown (Venom ID ?)
+                                   " 1  1  5  4" => Firmware 1.15.4
+```
+
+Requests format:
+
+```
+F0 00 01 05 21 cc aa aa aa ck F7
+cc:
+ 00 Request ASCII code firmware version
+ 01 Request Data Dump
+ 02 Write Data Dump
+ 05 Recall Patch
+ 06 Store Patch
+ 09 Restore factory defaults
+ 7D Cancel data transfer
+ 7E Transfer received successfully (ACK), used when checksums are involved
+ 7F Transfer received unsuccessfully (NAK), used when checksums are involved
+aa: memory address
+ck: checksum (for dump only)
+```
+
+**Memory map**:
+
+```
+xx:
+	00 = All Pacthes
+	01 = Individual Patch
+yy:	
+	Patch number when xx = 01
+	00 otherwise
+zz: 
+	packed 14 bit offset
+	$0134 = 0000000100110100 packed 
+	      =  0000001 0110100
+	      =   00000010110100 unpacked
+	      = $B4
+	      = param 180 as stated in the doc
+```
+
+
+
+| Address  | Section                 | Field                        |
+| -------- | ----------------------- | ---------------------------- |
+| `00....` | Edit Buffer Dump        |                              |
+| `000000` |                         | Global Edit Dump             |
+| `000100` |                         | Single Edit Dump             |
+| `000200` |                         | Multi Edit Dump              |
+| `000300` |                         | Multi Part1 Edit Dump        |
+| `000400` |                         | Multi Part2 Edit Dump        |
+| `000500` |                         | Multi Part3 Edit Dump        |
+| `000600` |                         | Multi Part4 Edit Dump        |
+| `000700` |                         | Effect Edit Dump             |
+| `000800` |                         | Arp Header Single Edit Dump  |
+| `000900` |                         | Arp Header Part1 Edit Dump   |
+| `000A00` |                         | Arp Header Part2 Edit Dump   |
+| `000B00` |                         | Arp Header Part3 Edit Dump   |
+| `000C00` |                         | Arp Header Part4 Edit Dump   |
+| `000D00` |                         | Arp Pattern Single Edit Dump |
+| `000E00` |                         | Arp Pattern Part1 Edit Dump  |
+| `000F00` |                         | Arp Pattern Part2 Edit Dump  |
+| `001000` |                         | Arp Pattern Part3 Edit Dump  |
+| `001100` |                         | Arp Pattern Part4 Edit Dump  |
+| `01xxyy` | Single Patch Dump       |                              |
+| `02xxyy` | Multi Patch Dump        |                              |
+| `03xxyy` | Arpeg Data Dump         |                              |
+| `04xxyy` | Arpeg Pattern Dump      |                              |
+| `05xxyy` | Single Name String      |                              |
+| `06xxyy` | Multi Name String       |                              |
+| `07xxyy` | Arpeg Name String       |                              |
+| `08zzzz` | Edit Global Param       | 14 bit values                |
+| `09zzzz` | Edit Single Param       | 14 bit values                |
+| `0Azzzz` | Edit Multi Param        | 14 bit values                |
+| `0Bzzzz` | Edit Multi Part1 Param  | 14 bit values                |
+| `0Czzzz` | Edit Multi Part2 Param  | 14 bit values                |
+| `0Dzzzz` | Edit Multi Part3 Param  | 14 bit values                |
+| `0Ezzzz` | Edit Multi Part4 Param  | 14 bit values                |
+| `0Fzzzz` | Edit Effect Param       | 14 bit values                |
+| `10zzzz` | Edit Arpeg Single Param | 14 bit values                |
+| `11zzzz` | Edit Arpeg Part1 Param  | 14 bit values                |
+| `12zzzz` | Edit Arpeg Part2 Param  | 14 bit values                |
+| `13zzzz` | Edit Arpeg Part3 Param  | 14 bit values                |
+| `14zzzz` | Edit Arpeg Part4 Param  | 14 bit values                |
+
+**Firmware version** request and response:
+
+```shel
+F0 00 01 05 21 00 00 F7
+
+F0 00 01 05 21 7F 76 65 6E 6F 6D 20 31 2E 31 ... F7
+   00 01 05                                   => M-Audio manufacturer ID
+            21                                => Device Class ID
+               7F                             => ACK ?
+                   76 65 6E 6F 6D 20 31 2E 31 => ASCII
+
+venom 1.15.4-3904 by pmaresh on Thu Sep 29 09:53:21 2011 
+*** (c) [2009] Avid Technology, Inc.  All rights reserved. 
+*** Programmed by: Mark Palmer , Arp Code by Frank-Ulrich Bartscht 
+*** S0-49 Velocity 00.05 by mpalmer 
+***
+```
+
+Fun fact: `pmaresh` is **Peter Maresh**, a DSP programmer from Alesis now at [Apple](https://www.zoominfo.com/p/Peter-Maresh/1937666090)
+
+**Edit Buffer** request and response:
+
+```
+F0 00 01 05 21 00 01 00 00 00 F7
+
+response:
+F0 00 01 05 21 7F 02 00 00 00 00 40 40 40 00 78 00 01 00 7F 01 7F 02 00 7F 7F 00 00 40 0B 01 7F 00 00 7B F7
+                              <--- PACKED DATA -----------------------------------------------------> CK
+Unpacked Data:
+40 40 40 00 78 00 01 7F 01 7F 02 00 7F 7F 00 40 0B 01 7F 00 00
+```
+
+**Single PatchName** request and response:
+
+```
+F0 00 01 05 21 00 01 05 01 00 F7
+
+Response:
+F0 00 01 05 21 7F 02 05 01 00 00 56 65 6E 6F 6D 6F 75 00 73 20 20 5C F7
+                              <--- PACKED DATA -----------------> CK
+
+Unpacked Data:
+56 65 6E 6F 6D 6F 75 73 20 20 00 00 00 00
+V  e  n  o  m  o  u  s                         
+```
+
+**Single PatchName Param** request and response:
+
+```
+Request first character of Single Patch name:
+As stated in the doc, $013C is the 14 bits address of the value, but we need to pack it
+013C =    000001 00111100
+     =  .0000010 .0111100 (expand every 7 bits)
+     =  00000010 00111100 (Packed MIDI format where bit 8 has to be 0)
+     = $13C
+
+F0 00 01 05 21 00 01 09 01 3C F7
+
+Response:     
+F0 00 01 05 21 7F 02 09 01 3C 00 56 F7
+
+0056 is the packed 14 bit value which is 56, the ASCII code of the first letter of the patch 'Venomous'
+```
+
+
 
 # Devices Library
 

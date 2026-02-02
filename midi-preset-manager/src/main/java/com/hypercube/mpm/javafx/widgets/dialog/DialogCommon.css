@@ -11,6 +11,9 @@
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
+.mpmDialog .check-box {
+    -fx-text-fill: white;
+}
 .mpmDialog {
     -fx-background-radius: 10;
     -fx-border-radius: 10;
@@ -47,3 +50,4 @@
 .dialog-pane .button:hover {
     -fx-background-color: derive(-theme-color,+20%);
 }
+

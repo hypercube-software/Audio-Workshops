@@ -12,11 +12,16 @@ import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
@@ -29,6 +34,8 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class SysexToolboxDialogController extends DialogController<SysexToolboxDialog, Void> {
@@ -46,6 +53,10 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     ComboBox<MidiDeviceDefinition> deviceSelector;
     @FXML
     TextField textCommand;
+    @FXML
+    CheckBox unpackCheckBox;
+    @FXML
+    Label responseLabel;
 
     @FXML
     private HexaDataViewer hexResponse;
@@ -100,8 +111,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         hexResponse.getCtrl()
                 .clear();
         runLongTask(() -> {
-            Optional.ofNullable(deviceSelector.getSelectionModel()
-                            .getSelectedItem())
+            getSelectedDevice()
                     .flatMap(midiDeviceDefinition -> deviceToolBox.request(midiDeviceDefinition, textCommand.getText(), this::onDeviceRequest))
                     .ifPresent(response -> onDeviceResponse(response));
         });
@@ -163,6 +173,11 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         hexResponse.setData(response);
     }
 
+    private Optional<MidiDeviceDefinition> getSelectedDevice() {
+        return Optional.ofNullable(deviceSelector.getSelectionModel()
+                .getSelectedItem());
+    }
+
     private void onDeviceRequest(RequestStatus status) {
         runOnJavaFXThread(() -> {
             if (status.errorMessage() != null) {
@@ -175,8 +190,54 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     }
 
     private void onDeviceResponse(byte[] response) {
-        this.response = new DataViewerPayload(response);
-        runOnJavaFXThread(() -> hexResponse.setData(this.response));
+        ManufacturerSysExParser sysExParser = new ManufacturerSysExParser();
+        MidiDeviceDefinition device = getSelectedDevice().get();
+        byte[] unpackedResponse = unpackCheckBox.isSelected() ? sysExParser.unpackMidiBuffer(device, response) : response;
+        this.response = new DataViewerPayload(unpackedResponse);
+        runOnJavaFXThread(() -> {
+            copyResponseInClipboard(unpackedResponse);
+            updatePackedZone(device, unpackedResponse);
+            updateResponseLabel(device);
+            hexResponse.setData(this.response);
+        });
+    }
+
+    private void copyResponseInClipboard(byte[] response) {
+        String value = IntStream.range(0, response.length)
+                .mapToObj(i -> String.format("%02X", response[i]))
+                .collect(Collectors.joining(" "));
+        String chars = IntStream.range(0, response.length)
+                .mapToObj(i -> {
+                    int b = response[i] & 0xFF;
+                    return (b >= 32 && b <= 126) ? String.valueOf((char) b) : " ";
+                })
+                .collect(Collectors.joining("  "));
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(value + "\n" + chars);
+        clipboard.setContent(content);
+    }
+
+    private void updatePackedZone(MidiDeviceDefinition device, byte[] unpackedResponse) {
+        if (!unpackCheckBox.isSelected() && device.getDecodingKey() != null) {
+            hexResponse.setUnpackStart(device.getDecodingKey()
+                    .getStart());
+            hexResponse.setUnpackEnd(unpackedResponse.length - 1 - device.getDecodingKey()
+                    .getEnd());
+        } else {
+            hexResponse.setUnpackStart(-1);
+            hexResponse.setUnpackEnd(-1);
+        }
+    }
+
+    private void updateResponseLabel(MidiDeviceDefinition device) {
+        if (device.getDecodingKey() == null) {
+            responseLabel.setText("Response:");
+        } else if (unpackCheckBox.isSelected()) {
+            responseLabel.setText("Unpacked Response:");
+        } else {
+            responseLabel.setText("Packed Response:");
+        }
     }
 
     @FXML

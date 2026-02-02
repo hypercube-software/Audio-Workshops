@@ -37,3 +37,7 @@
 .hex-cell:hover {
     -fx-background-color: #FFFFFF77;
 }
+
+.unpack_cell {
+    -fx-border-style: segments(4, 4);
+}

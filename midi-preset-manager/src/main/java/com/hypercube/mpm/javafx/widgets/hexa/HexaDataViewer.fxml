@@ -8,6 +8,8 @@
     <!-- DEFINE PROPERTY Integer:gridHeight -->
     <!-- DEFINE PROPERTY Integer:selectionStart -->
     <!-- DEFINE PROPERTY Integer:selectionEnd -->
+    <!-- DEFINE PROPERTY Integer:unpackStart -->
+    <!-- DEFINE PROPERTY Integer:unpackEnd -->
     <!-- DEFINE PROPERTY String:selection -->
     <ScrollPane fx:id="hexScrollPane" fitToWidth="true" fitToHeight="true" minViewportHeight="40.0"
                 minViewportWidth="800.0"

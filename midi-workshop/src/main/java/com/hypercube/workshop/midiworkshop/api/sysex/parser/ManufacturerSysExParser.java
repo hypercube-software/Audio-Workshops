@@ -2,13 +2,13 @@ package com.hypercube.workshop.midiworkshop.api.sysex.parser;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDecodingKey;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExReader;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.hypercube.workshop.midiworkshop.api.sysex.util.SysExConstants.SYSEX_END;
@@ -44,32 +44,34 @@ public class ManufacturerSysExParser {
     }
 
     /**
-     * Alesis Quadrasynth SYSEX use a complex 7 bit stream that need to be converted to a 8 bit stream given a decoding key
+     * Many synth (especially Alesis Quadrasynth) SYSEX use a complex 7 bit stream that need to be converted to a 8 bit stream given a decoding key
      * <p>It is decoded in blocks of 56 bits, producing 7 bytes</p>
      *
      * @param device
      * @param sysexPayload
      * @return
      */
-    public byte[] unpackMidiBuffer(MidiDeviceDefinition device, byte[] sysexPayload) {
-        if (device.getDecodingKey() == null) {
-            return sysexPayload;
+    public byte[] unpackMidiBuffer(MidiDeviceDefinition device, final byte[] payload) {
+        MidiDeviceDecodingKey decodingKey = device.getDecodingKey();
+        if (decodingKey == null) {
+            return payload;
         }
-        final int inputBlockSizeInBytes = 8;
-        final int outputBlockSizeInBytes = 7;
-        final BitStreamReader bsr = new BitStreamReader(sysexPayload);
-        bsr.skipBytes(device.getDecodingKey()
-                .getStart());
-        final int nbBlocks = sysexPayload.length / inputBlockSizeInBytes;
+        final int inputBlockSizeInBytes = 8; // we read 8 "packed" bytes
+        final int outputBlockSizeInBytes = 7; //  we produce 7 "unpacked" bytes
+        final int decodingStart = decodingKey.getStart(); // lower bound included
+        final int decodingEnd = payload.length - decodingKey.getEnd(); // upperbound excluded
+        final int packedPayloadSize = decodingEnd - decodingStart; // available bytes to decode in the payload
+        final int nbBlocks = (int) Math.ceil((double) packedPayloadSize / inputBlockSizeInBytes); // how many blocks to read
+        final int inputSize = nbBlocks * inputBlockSizeInBytes;
         final int outputSize = nbBlocks * outputBlockSizeInBytes;
+        final byte[] input = new byte[inputSize];
         final byte[] output = new byte[outputSize];
-        int remain = sysexPayload.length % inputBlockSizeInBytes;
-        if (remain != 0) {
-            sysexPayload = Arrays.copyOfRange(sysexPayload, 0, sysexPayload.length + remain);
-            //throw new RuntimeException("Invalid size, should be multiple of %d bytes".formatted(inputBlockSizeInBytes));
-        }
+        // copy the "packed bytes" from the payload into our decoding input buffer
+        System.arraycopy(payload, decodingStart, input, 0, packedPayloadSize);
+        // Now we can decode
+        final BitStreamReader bsr = new BitStreamReader(input);
         for (int block = 0; block < nbBlocks; block++) {
-            List<Integer> decodingMap = device.getDecodingKey()
+            List<Integer> decodingMap = decodingKey
                     .getMapping();
             for (int bitIndex = 0; bitIndex < decodingMap
                     .size(); bitIndex++) {
@@ -86,8 +88,8 @@ public class ManufacturerSysExParser {
                 if (bit == 1) {
                     output[globalBytePos] = (byte) (output[globalBytePos] | mask);
                 }
-                /*System.out.println("blocksize %s: %3d BLOCK [%d-%d-%d] Bit Mask %s = %d Content: %s".formatted(outputBlockSize, globalBytePos, block, blockPos, bitPos, getBinaryString(mask, 8), bit,
-                        getBinaryString(output[globalBytePos], 8)));*/
+                //System.out.println("blocksize %s: %3d BLOCK [%d-%d-%d] Bit Mask %s = %d Content: %s".formatted(outputBlockSizeInBytes, globalBytePos, block, blockPos, bitPos, getBinaryString(mask, 8), bit,
+                //        getBinaryString(output[globalBytePos], 8)));
             }
         }
         return output;

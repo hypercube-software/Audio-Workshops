@@ -91,9 +91,9 @@ macros:
 # decodingKey is optional and only used when the payload needs to be "unpacked" from 7 bit content to 8 bit content
 #
 decodingKey:
-  # where to start the decoding
+  # where to start the decoding inside the payload (0 is the first byte 0xF0, 1 is the next one)
   start: 6
-  # when it ends
+  # when it ends starting from the end of the payload (0 is the last byte 0xF7, 1 is the previous one)
   end: 1
   # how to interpret MIDI bits
   # the target is the following:

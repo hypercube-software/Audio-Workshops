@@ -11,6 +11,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -20,6 +22,16 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
     private TilePane hexTilePane;
     @FXML
     private ScrollPane hexScrollPane;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        super.initialize(url, resourceBundle);
+        HexaDataViewer view = getView();
+        view.setSelectionEnd(-1);
+        view.setSelectionStart(-1);
+        view.setUnpackStart(-1);
+        view.setUnpackEnd(-1);
+    }
 
     public void clear() {
         hexTilePane.getChildren()
@@ -56,6 +68,7 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
                 hexTilePane.getChildren()
                         .add(cellLabel);
             }
+            updateUnpackCells();
         }
     }
 
@@ -90,6 +103,29 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
         scene.addEventFilter(MouseEvent.MOUSE_RELEASED, releaseHandler);
     }
 
+    private void updateUnpackCells() {
+        var children = hexTilePane.getChildren();
+        HexaDataViewer view = getView();
+        Integer selectionStart = view.getUnpackStart();
+        Integer selectionEnd = view.getUnpackEnd();
+        IntStream.range(0, children
+                        .size())
+                .forEach(i ->
+                {
+                    var styleClass = children
+                            .get(i)
+                            .getStyleClass();
+                    if (selectionStart != null && selectionEnd != null && i >= selectionStart && i <= selectionEnd) {
+                        if (!styleClass.contains("unpack_cell")) {
+                            styleClass.add("unpack_cell");
+                        }
+                    } else {
+                        styleClass
+                                .remove("unpack_cell");
+                    }
+                });
+    }
+
     private void updateSelection() {
         var children = hexTilePane.getChildren();
         HexaDataViewer view = getView();
@@ -111,11 +147,15 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
                                 .remove("hex-cell-highlight");
                     }
                 });
+        //
+        // Update also the selection text
+        //
         if (selectionStart == -1 || selectionEnd == -1) {
             view.setSelection("");
         } else {
-            view.setSelection("[$%02X,$%02X] [%02d,%02d]".formatted(selectionStart, selectionEnd,
-                    selectionStart, selectionEnd));
+            int selectionSize = selectionEnd + 1 - selectionStart;
+            view.setSelection("Selection: [$%02X,$%02X] or [%02d,%02d] Size: $%02X %02d".formatted(selectionStart, selectionEnd,
+                    selectionStart, selectionEnd, selectionSize, selectionSize));
         }
     }
 

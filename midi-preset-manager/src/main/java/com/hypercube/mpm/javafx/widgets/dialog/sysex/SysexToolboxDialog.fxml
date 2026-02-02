@@ -5,8 +5,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
-         stylesheets="@../../MainWindow.css,@../DialogCommon.css,@SysexToolboxDialog.css"
-         type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
+         stylesheets="@../../MainWindow.css,@../DialogCommon.css,@SysexToolboxDialog.css" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12">
     <!-- DEFINE PROPERTY String:errorMessage -->
     <GridPane styleClass="mpmDialog" vgap="10.0">
         <columnConstraints>
@@ -32,11 +32,12 @@
             <ComboBox fx:id="deviceSelector" minWidth="200.0"/>
             <Button minWidth="100.0" onAction="#onReloadMidiDeviceLibrary">Reload</Button>
         </HBox>
-        <HBox spacing="10.0" GridPane.rowIndex="2">
+        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.rowIndex="2">
             <Label minWidth="100.0">Command:</Label>
-            <TextField fx:id="textCommand" onKeyPressed="#onCommandKeyPress" text="F0 002029 03017F 40 000000 00 00 F7"
+            <TextField fx:id="textCommand" onKeyPressed="#onCommandKeyPress" text="F0 00 01 05 21 00 01 05 01 00 F7"
                        HBox.hgrow="ALWAYS">
             </TextField>
+            <CheckBox fx:id="unpackCheckBox" text="Unpack"/>
             <Button minWidth="100.0" onAction="#onSendCommand">Send</Button>
         </HBox>
         <HBox alignment="CENTER_LEFT" spacing="10" GridPane.rowIndex="3">
@@ -47,7 +48,7 @@
         <HexaDataViewer fx:id="hexCommand" gridHeight="2" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS"/>
 
         <HBox alignment="CENTER_LEFT" spacing="10" GridPane.rowIndex="5">
-            <Label GridPane.halignment="LEFT">Response:</Label>
+            <Label fx:id="responseLabel" GridPane.halignment="LEFT">Response:</Label>
             <Region HBox.hgrow="ALWAYS"/>
             <Label text="${hexResponse.selection}"/>
         </HBox>
