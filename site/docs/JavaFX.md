@@ -501,19 +501,18 @@ Now you can do bindings from FXML towards your model:
 
 ## Custom properties
 
-Since our UI component class is automatically generated from the FXML, we need to declare custom properties directly from the XML. Unfortunately this is not provided by the framework JavaFX. So I decided to go for `<fx:define>`
+Since our UI component class is automatically generated from the FXML, we need to declare custom properties directly from the XML. Unfortunately this is not provided by the framework JavaFX. So I decided to go for comments like `<!-- DEFINE PROPERTY String:errorMessage -->`
 
-- Our generator will automatically convert all `<fx:define>` to an observable JavaFX property in the View class.
+- Our generator will automatically convert all `<!-- DEFINE PROPERTY -->` to an observable JavaFX property in the View class.
 - This property will be properly detected by SceneBuilder
+- Default type is String so you can do `<!-- DEFINE PROPERTY errorMessage -->`
 
 ### Generation
 
 Example:
 
 ```xml
-    <fx:define>
-        <String fx:id="score"/>
-    </fx:define>
+   <!-- DEFINE PROPERTY score -->
 ```
 
 Is converted to:
@@ -529,6 +528,27 @@ Is converted to:
     }
     public StringProperty scoreProperty() {
         return score;
+    }
+```
+
+Of course you can type your properties using a complete type name:
+
+```xml
+    <!-- DEFINE PROPERTY com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload:data -->
+```
+
+Is converted to:
+
+```java
+    private final ObjectProperty<com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload> data = new SimpleObjectProperty<com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload>();
+    public com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload getData() {
+        return data.get();
+    }
+    public void setData(com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload value) {
+        this.data.set(value);
+    }
+    public ObjectProperty<com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload> dataProperty() {
+        return data;
     }
 ```
 

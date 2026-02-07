@@ -60,7 +60,7 @@ public class SimpleDFTCalculator implements DFTCalculator {
                 inDftReal[c][s] = sample;
             }
             computeDft(inDftReal[c], inDftImg[c], dftReal[c], dftImg[c]);
-            // Half of the FFT output is usefull, because there are negative frequencies on the second part
+            // Half of the FFT output is useful, because there are negative frequencies on the second part
             int nbBins = buffer.nbSamples() / 2;
             DFTResult r = new DFTResult(nbBins);
             for (int s = 0; s < nbBins; s++) {

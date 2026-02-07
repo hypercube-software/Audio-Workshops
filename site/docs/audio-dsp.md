@@ -426,6 +426,268 @@ Now guess what? This trade-off can be found everywhere in physics and it is call
 the [Heisenberg's uncertainty principle](https://en.wikipedia.org/wiki/Uncertainty_principle) ! You can take a
 look [here](https://youtu.be/MBnnXbOM5S4?list=PLlBJEuZuI83e0Yvt3OIHLT20vGh20XeHh) for more informations.
 
+## Nyquist Frequency
+
+When you sample a signal with a specific sampling frequency, the theory impose you an upper limit on what you can sample:
+
+- **It is impossible to sample a signal with a frequency higher than half of the sampling frequency**
+- This limit is called the **Nyquist Frequency**
+
+If you try to go over it:
+
+-  You will contemplate **Aliasing**. It refers to the phenomenon where high-frequency components "fold back" into the lower frequency range because the sampling rate is too low.
+- Frequencies beyond Nyquist frequency does not disappear, they are wrongly sampled and appear like a mirror. This is **Spectral Folding**.
+
+## Algorithm
+
+The DFT is very simple to code but unfortunately very slow. The FFT is complex but can do the same very fast. Here we will code the slow algorithm to see what's going on.
+
+- The DFT is nothing more than a cross-correlation between the input signal and a set of complex sinusoidal complex functions
+- We need to deal with complex functions because we need to take in consideration both **amplitude** and **phase** for a given frequency.
+
+Here the cross-correlation formula between a input signal **x** of N samples and a complex sinusoidal function of normalized frequency **k/N**
+
+![correlation](assets/correlation.png)
+
+Since **k/N** is normalized, its range is [0,1]. You need to multiply it to the sampling frequency to get the real frequency of the function.
+
+- **k** is called a **frequency bin** and its range is unfortunately  **[0,N-1]**. It is impossible to use a tiny frequency bin **k** and a very large number of samples **N**. This is the infamous trade-off of the FFT.
+- The theory of the FFT requires your signal is periodic over N samples. This is of course never true so we will have to modify the input signal with a window. But let's ignore this for now.
+  - k = N is the same as k = 0.
+  - k = N + 1 is the same as k = 1.
+
+You can compute the real frequency for each frequency bin using the sampling frequency:
+
+![bin-frequency](assets/bin-frequency.png)
+
+You can compute the frequency resolution with the following formula:
+
+![frequency-resolution](assets/frequency-resolution.png)
+
+For instance, with a sampling frequency of 44100Hz, if you want to compute a DFT with N = 10 frequency bins: 
+
+The frequency resolution will be 44100/10 = 4410 Hz
+
+| Bin (k) | Calculation (k×4410) | Frequency (Hz) | Interpretation            |
+| ------- | -------------------- | -------------- | ------------------------- |
+| 0       | 0×4410               | 0 Hz           | DC Offset (Average value) |
+| 1       | 1×4410               | 4410 Hz        | Unique Frequency          |
+| 2       | 2×4410               | 8820 Hz        | Unique Frequency          |
+| 3       | 3×4410               | 13230 Hz       | Unique Frequency          |
+| 4       | 4×4410               | 17640 Hz       | Unique Frequency          |
+| 5       | 5×4410               | 22050 Hz       | Nyquist Frequency (fs/2)  |
+| 6       | 6×4410               | 26460 Hz       | Mirror of 17640 Hz        |
+| 7       | 7×4410               | 30870 Hz       | Mirror of 13230 Hz        |
+| 8       | 8×4410               | 35280 Hz       | Mirror of 8820 Hz         |
+| 9       | 9×4410               | 39690 Hz       | Mirror of 4410 Hz         |
+
+- As you can see half of the DFT output is usable due to Nyquist Frequency.
+- The interpretation of the DFT output for **bin[3]** is the cross correlation between your input signal and a sine wave at 13230 Hz
+- The bin[0] is special, it's the cross correlation between your input signal and a flat line. **bin[0]** tells you if your signal is centered around 0 or not. This bias is called **DC offset**.
+
+## Code
+
+Implementing a DFT is very simple, and looks like this:
+
+```java
+void computeDft(double[] inreal, double[] inimag, double[] outreal, double[] outimag) {
+    int n = inreal.length;
+    for (int k = 0; k < n; k++) {  // For each output element
+        double sumreal = 0;
+        double sumimag = 0;
+        for (int t = 0; t < n; t++) {  // For each input element
+            double angle = 2 * Math.PI * t * k / n;
+            sumreal += inreal[t] * Math.cos(angle) + inimag[t] * Math.sin(angle);
+            sumimag += -inreal[t] * Math.sin(angle) + inimag[t] * Math.cos(angle);
+        }
+        outreal[k] = sumreal;
+        outimag[k] = sumimag;
+    }
+}
+```
+
+- You have to compute the **real part** and the **imaginary part** separately, using buffers.
+- All buffers have the same length
+
+## Magnitudes
+
+Since the output of a DFT is a set of **complex numbers** (containing both Real and Imaginary parts), you cannot see the "strength" of a frequency just by looking at the raw numbers. You have to calculate the **Magnitude** (also called the Amplitude Spectrum).
+
+Mathematically, this is the same as finding the length of a vector on a 2D plane using the Pythagorean theorem.
+
+![magnitude](assets/magnitude.png)
+
+And to get the magnitude in dB:
+
+![magnitude-dB](assets/magnitude-dB.png)
+
+The reference is a baseline value (often the maximum possible value, **like 1.0 in digital audio**, or the smallest detectable sound in acoustics).
+
+- We use 20 because the DFT measures **amplitude** (voltage/pressure)
+-  If we were measuring **power**, we would use 10.
+- At 1.0 (Full Scale). Max value is 0 dB, all others are negative.
+
+In Java:
+
+```java
+for (int s = 0; s < nbBins; s++) {
+    double magnitude = Math.sqrt(dftReal[s] * dftReal[s] + dftImg[s] * dftImg[s]);
+	// toDB
+	magnitude = ((double) 20) * Math.log10(magnitude + Double.MIN_VALUE);
+    ...
+}
+```
+
+You are now able to compute things like: "frequency bin 17640 Hz is , let say, -4dB"
+
+## Windows
+
+Since our input signal is not periodic, we need to avoid **spectral leakage** at the beginning and the end of the buffer, where energy "leaks" from the true frequency into neighboring bins.
+
+When you apply a window, you are essentially **multiplying** your signal x[n] by the window w[n] in the **time domain**. In the **frequency domain**, this is equivalent to a **convolution**. This is why the peaks "smear" or get wider—you are seeing the shape of the window itself!
+
+| **Window**          | **Main Lobe Width** | **Side Lobe Level (Leakage)** | **Primary Application**                                   | Equation                                                     |
+| ------------------- | ------------------- | ----------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
+| **Rectangular**     | Very Narrow         | Very High                     | Transients / Periodic signals                             | ![window-hann](assets/window-rectangular.png)                |
+| **Hann**            | Moderate            | Low                           | General-purpose / Music / Speech                          | ![window-hann](assets/window-hann.png)                       |
+| **Hamming**         | Moderate            | Moderate-Low                  | Telecommunications                                        | ![window-hann](assets/window-hamming.png)                    |
+| **Blackman**        | Wide                | Very Low                      | Wide dynamic range (loud + quiet)                         | ![window-hann](assets/window-Blackman.png)                   |
+| **Blackman Harris** | Very Wide           | Extremely Low                 | High-dynamic range (finding tiny signals near loud ones). | ![window-blackman-harris](assets/window-blackman-harris.png) |
+| **Flat-Top**        | Extremely Wide      | Low                           | Accurate amplitude measurement                            | ![window-flat-top](assets/window-flat-top.png)               |
+
+`a0`,`a1`.. are coefficient provided in the literature. For **Blackman-Harris** they are:
+
+```
+a0 = 0.35875
+a1 = 0.48829
+a2 = 0.14128
+a3 = 0.01168
+```
+
+Here the code for blackman Harris:
+
+```java
+public double[] generate(int windowsSizeInSamples) {
+    double[] window = new double[windowsSizeInSamples];
+    double a0 = 0.35875;
+    double a1 = 0.48829;
+    double a2 = 0.14128;
+    double a3 = 0.01168;
+    double a1PI = Math.PI * 2;
+    double a2PI = Math.PI * 4;
+    double a3PI = Math.PI * 6;
+    for (int s = 0; s < windowsSizeInSamples; s++) {
+        double scale = s / (double) windowsSizeInSamples;
+        window[s] = a0 - a1 * Math.cos(a1PI * scale)
+            + a2 * Math.cos(a2PI * scale)
+            - a3 * Math.cos(a3PI * scale);
+    }
+    return window;
+}
+```
+
+## Put it all together
+
+Now we can read a complete audio signal (typically from a WAV file) buffer after buffer, applying a DFT each time.
+
+The main code is the following:
+
+```java
+for (int s = 0; s < buffer.nbSamples(); s++) {
+	double sample = buffer.sample(s) * window[s];
+	inDftImg[s] = 0;
+	inDftReal[s] = sample;
+}
+computeDft(inDftReal, inDftImg, dftReal, dftImg);
+```
+
+All buffers have the same size. You read an audio buffer and convert it to complex values:
+
+-	The real part is your buffer multiplied to the window
+-	Obviously the imaginary part is set to 0.
+
+Then you run the DFT as we saw previously.
+
+## FFT In Java
+
+It is not our goal to implement a FFT in Java. A DFT is enough to understand what's going on. 
+
+For FFT we rely on [FFTW](https://www.fftw.org/) ( "**Fastest Fourier Transform in the West**") and especially the wrapper for Java:
+
+```xml
+<dependency>
+	<groupId>org.bytedeco</groupId>
+	<artifactId>fftw-platform</artifactId>
+	<version>3.3.10-1.5.10</version>
+</dependency>
+```
+
+This implementation is native, not in bytecode.
+
+## Spectrogram
+
+In order to generate a spectrogram from an audio file, you need to generate a gradient. See the class `GradientGenerator` for the implementation.
+
+![gradient](assets/gradient.png)
+
+We just need to map magnitudes from [0,1] to a position in the gradient. It acts as a lookup table.
+
+```java
+for (int y = 0; y < r.getNbBin(); y++) {
+    double percent = dbToPercent(minDbFS, maxDbFS, r.getMagnitudes()[y]);
+    var color = gradient.interpolate(percent);
+    image.setRGB(x, height - y - 1, color.toRGB24());
+}
+```
+
+The tricky thing is to compute `minDbFS` (floor) and `maxDbFS` (ceiling) aka the **dynamic range**: the first depends on the **bitdepth** whereas the second is 0.
+
+Depending on your `bitdepth`, the **Noise Floor** will change:
+
+| **Bit Depth** | **Max Level (Linear)** | **Noise Floor (dB)** |
+| ------------- | ---------------------- | -------------------- |
+| **8-bit**     | 128                    | -48 dB               |
+| **16-bit**    | 32,768                 | -96 dB               |
+| **24-bit**    | 8,388,608              | -144 dB              |
+
+```java
+// dBFS = 20 * log10( [sample level] / [max level] )
+double minDbFS = 20 * Math.log10(1.0 / (double) ((1 << bitdepth) / 2));
+double maxDbFS = 0;
+```
+
+## Multichannel
+
+Things are a little bit more complicated when you deal with multichannel audio. You need to keep track of many buffers. We provide a class `SampleBuffer` which simplify all of this. It act also as a view upon the internal buffer. This feature is really handy when you need to apply effects on part of your buffer (fade in or fade out).
+
+Here the multichannel version of previous code:
+
+```java
+public void onBuffer(SampleBuffer buffer) {
+    for (int c = 0; c < buffer.nbChannels(); c++) {
+        for (int s = 0; s < buffer.nbSamples(); s++) {
+            double sample = buffer.sample(c, s) * window[s];
+            inDftImg[c][s] = 0;
+            inDftReal[c][s] = sample;
+        }
+        computeDft(inDftReal[c], inDftImg[c], dftReal[c], dftImg[c]);
+        ...
+    }
+}
+```
+
+As you can see samples are never interleaved. You can get the buffer of a specific channel very easily.
+
+## Our Code
+
+- See `DFTCalculator` and its implementations. 
+- See `DFTWindowGenerator` and its implementations.
+- See `SpectrogramGenerator` and the unit test `InsightTests::dft` for a complete example
+- `SynthRipper` make a use of DFT to distinguish noise from audio signal. 
+  - We mesure the noise floor in dB in the frequency domain.
+  - The recording start when there is "something" to record.
+
+
 # Filters
 
 ## The zoo
@@ -645,3 +907,6 @@ With 2 instances of MAnalyzer you can see the spectrum before and after the filt
 ![image-20230318155116597](assets/image-20230318155116597.png)
 
 ![image-20230318155128289](assets/image-20230318155128289.png)
+
+
+

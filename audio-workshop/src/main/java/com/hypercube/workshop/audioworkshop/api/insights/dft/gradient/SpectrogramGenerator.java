@@ -17,8 +17,8 @@ public class SpectrogramGenerator {
 
     public void generate(int bitdepth, List<DFTResult> signal, File pngFile, int outputWidth, int outputHeight) throws IOException {
         // dBFS = 20 * log( [sample level] / [max level] )
-        double minDbSPL = 20 * Math.log10(1.0 / (double) ((1 << bitdepth) / 2));
-        double maxDbSPL = 0;
+        double minDbFS = 20 * Math.log10(1.0 / (double) ((1 << bitdepth) / 2));
+        double maxDbFS = 0;
 
         if (!signal.isEmpty()) {
             int width = signal.size();
@@ -28,7 +28,7 @@ public class SpectrogramGenerator {
             for (int x = 0; x < width; x++) {
                 DFTResult r = signal.get(x);
                 for (int y = 0; y < r.getNbBin(); y++) {
-                    double percent = dbToPercent(minDbSPL, maxDbSPL, r.getMagnitudes()[y]);
+                    double percent = dbToPercent(minDbFS, maxDbFS, r.getMagnitudes()[y]);
                     var color = gradient.interpolate(percent);
                     image.setRGB(x, height - y - 1, color.toRGB24());
                 }
@@ -51,11 +51,11 @@ public class SpectrogramGenerator {
         return buffImg;
     }
 
-    private double dbToPercent(double minDbSPL, double maxDbSPL, double magnitude) {
-        double result = magnitude;
-        result = Math.max(result, minDbSPL);
-        result = Math.min(result, maxDbSPL);
-        result = (result - minDbSPL) / (maxDbSPL - minDbSPL);
+    private double dbToPercent(double minDbFS, double maxDbFS, double magnitudeDbFS) {
+        double result = magnitudeDbFS;
+        result = Math.max(result, minDbFS);
+        result = Math.min(result, maxDbFS);
+        result = (result - minDbFS) / (maxDbFS - minDbFS);
         return result * 100.0;
     }
 }
