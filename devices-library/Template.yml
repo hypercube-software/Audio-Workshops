@@ -125,6 +125,8 @@ decodingKey:
 deviceModes:
   # Put here a name for the mode
   Single:
+    # which Midi channels are available in this mode
+    midiChannels: 0-15
     # put here the macro used to retreive patch names
     queryName: PatchName()
     # Optional command to activate the mode. It is a macro call

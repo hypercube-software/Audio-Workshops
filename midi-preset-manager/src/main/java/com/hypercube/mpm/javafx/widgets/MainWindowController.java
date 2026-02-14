@@ -417,7 +417,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
                 midiDeviceLibrary
                         .collectCustomPatches(device);
-                deviceStateManager.refreshModeProperties(device);
+                deviceStateManager.refreshModeProperties(device, state);
             }
         } catch (Exception e) {
             log.error("Unexpected error:", e);
@@ -455,14 +455,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void onChannelChanged(SelectionChangedEvent<Integer> selectionChangedEvent) {
-        var model = getModel();
         selectionChangedEvent.getSelectedItems()
                 .stream()
                 .findFirst()
-                .ifPresent(channel -> {
-                    deviceStateManager.onChannelChanged(model, channel);
-                    midiRouter.changeOutputChannel(channel);
-                });
+                .ifPresent(this::changeOuputChannel);
+    }
+
+    private void changeOuputChannel(int channel) {
+        log.info("Change output channel: {}", channel);
+        var model = getModel();
+        deviceStateManager.onChannelChanged(model, channel);
+        midiRouter.changeOutputChannel(channel);
         refreshPatches();
     }
 
@@ -563,6 +566,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .setCurrentSearchOutput(List.of());
         } else {
             deviceStateManager.onModeChanged(selectedItems);
+            midiRouter.changeOutputChannel(getModel().getCurrentDeviceState()
+                    .getId()
+                    .getChannel());
             refreshPatches();
         }
     }

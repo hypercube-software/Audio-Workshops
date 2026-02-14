@@ -15,6 +15,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,6 +121,51 @@ public class MidiRouter {
      */
     private int outputChannel = 0;
     private final MidiListener mainSourceEventListener = this::onMainSourceEvent;
+
+    /**
+     * Changes the MIDI channel of a MidiEvent.
+     * System messages (SysEx, Meta) are returned as-is since they don't have channels.
+     *
+     * @param event      The source MidiEvent
+     * @param newChannel The target channel (0-15)
+     * @return A new MidiEvent with the updated channel, or the original if not applicable.
+     */
+    public static CustomMidiEvent enforceMidiChannel(CustomMidiEvent event, int newChannel) {
+        if (event == null || event.getMessage() == null) return event;
+
+        MidiMessage message = event.getMessage();
+        byte[] data = message.getMessage();
+
+        // Status byte interpretation:
+        // 0x80 to 0xEF are channel-based messages.
+        // 0xF0 and above are System Messages (No channel).
+        int status = data[0] & 0xFF;
+
+        if (status < 0xF0) {
+            try {
+                int command = status & 0xF0; // Extract the command (e.g., 0x90 for Note On)
+                int channel = newChannel & 0x0F; // Ensure channel is within 0-15 range
+
+                ShortMessage newMessage = new ShortMessage();
+
+                // Set message based on existing data length
+                if (data.length <= 1) {
+                    newMessage.setMessage(command | channel);
+                } else if (data.length == 2) {
+                    newMessage.setMessage(command | channel, data[1], 0);
+                } else {
+                    newMessage.setMessage(command | channel, data[1], data[2]);
+                }
+
+                return new CustomMidiEvent(new MidiEvent(newMessage, event.getTick()).getMessage());
+            } catch (InvalidMidiDataException e) {
+                throw new MidiError(e);
+            }
+        }
+
+        // Return original for SysEx or MetaMessages
+        return event;
+    }
 
     /**
      * The GUI run this method on startup
@@ -290,9 +339,10 @@ public class MidiRouter {
         RoutingSource source = sources.get(deviceName);
 
         // note that transformed can be empty, especially when NPRN are received in multiple Midi events
+        CustomMidiEvent inputEventWithOutputChannel = enforceMidiChannel(event, outputChannel);
         List<CustomMidiEvent> transformed = Optional.ofNullable(inputTransformers.get(deviceName))
-                .map(t -> t.transform(outputChannel, event))
-                .orElse(List.of(event));
+                .map(t -> t.transform(outputChannel, inputEventWithOutputChannel))
+                .orElse(List.of(inputEventWithOutputChannel));
         if (mainDestinationMidiOut != null && !mainDestinationMidiOutMuted) {
             redirectTrafficToMainOutput(source, event, transformed);
         }

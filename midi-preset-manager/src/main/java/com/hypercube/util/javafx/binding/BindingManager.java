@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BindingManager implements Closeable {
     private final Object rootObject;
-    private Map<String, PathBinding> pathListeners = new HashMap<>();
+    private final Map<String, PathBinding> pathListeners = new HashMap<>();
 
     public void observePath(String path, InvalidationListener listener) {
         String[] pathElements = path.split("\\.");

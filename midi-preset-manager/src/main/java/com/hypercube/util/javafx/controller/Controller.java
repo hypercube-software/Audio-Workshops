@@ -19,6 +19,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * All controllers will own their widget for convenience
  *
@@ -65,15 +67,33 @@ public abstract class Controller<V extends Node, M> {
 
     public <E extends Event> void fireEvent(Class<E> eventClass, Object... args) {
         if (ControllerHelper.isNonSceneBuilderLaunch()) {
-            getView().fireEvent(EventHelper.forge(eventClass, getView(), getView(), args));
+            getView().fireEvent(forgeEvent(eventClass, args));
         }
+    }
+
+    public <E extends Event> Event forgeEvent(Class<E> eventClass, Object... args) {
+        return EventHelper.forge(eventClass, getView(), getView(), args);
     }
 
     public void runOnJavaFXThread(Runnable code) {
         if (Platform.isFxApplicationThread()) {
             code.run();
         } else {
-            Platform.runLater(code);
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.runLater(() -> {
+                try {
+                    code.run();
+                } finally {
+                    latch.countDown();
+                }
+            });
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread()
+                        .interrupt();
+            }
         }
     }
 

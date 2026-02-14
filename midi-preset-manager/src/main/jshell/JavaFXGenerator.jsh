@@ -2,6 +2,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -50,7 +51,7 @@ String calculateClassName(Path filePath, String baseDir) {
     return className;
 }
 List<String> extractPropertiesDefinitions(Element fxRoot) {
-    Pattern propertyDefinition = Pattern.compile("DEFINE PROPERTY ([A-Za-z0-9:.]+)");
+    Pattern propertyDefinition = Pattern.compile("DEFINE PROPERTY ([A-Za-z0-9><:.]+)");
     NodeList childNodes = fxRoot.getChildNodes();
     List<String> properties = IntStream.range(0, childNodes.getLength())
             .mapToObj(childNodes::item)
@@ -69,11 +70,28 @@ List<String> extractPropertiesDefinitions(Element fxRoot) {
             .collect(Collectors.toList());
     return properties;
 }
+List<String> extractImports(Document doc){
+    List<String> imports = new ArrayList<>();
+    NodeList children = doc.getChildNodes();
 
-String generateJavaCode(String className, String typeAttribute, List<String> widgetProperties) {
+    for (int i = 0; i < children.getLength(); i++) {
+        Node node = children.item(i);
+
+        if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {
+            ProcessingInstruction pi = (ProcessingInstruction) node;
+
+            if ("import".equals(pi.getTarget())) {
+                imports.add(pi.getData().trim());
+            }
+        }
+    }
+    return imports;
+}
+
+String generateJavaCode(String className, String typeAttribute, List<String> javaFxImports, List<String> widgetProperties) {
         String packageName = className.substring(0, className.lastIndexOf("."));
         String simpleClassName = className.substring(className.lastIndexOf(".") + 1);
-
+        String fxmlImports = javaFxImports.stream().map(i->"import %s;".formatted(i)).collect(Collectors.joining("\n"));
         String properties = widgetProperties.stream()
                 .map(property -> {
                     System.out.println("Widget property: "+property);
@@ -114,17 +132,27 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                     String[] v = property.split(":");
                     String propertyName = v.length==2?v[1]:v[0];
                     String propertyType = v.length==2?v[0]:"String";
-                    if ( propertyType.contains(".")){
+                    if (propertyType.contains("javafx.event.EventHandler"))
+                    {
+                        String paramType = propertyType.replaceAll(".*<|>", "");
+                        return """
+                               \t\tpropertiesHelper.declareEventHandlerListener("@@NAME@@",@@NAME@@Property(),@@CLASS@@);
+                               \t""".replace("@@NAME@@", propertyName)
+                               .replace("@@CLASS@@", paramType+".class");
+                    }
+                    else if ( propertyType.contains(".")){
+                       // SimpleObjectProperty
                        return """
-                                                                        propertiesHelper.declareListener("@@NAME@@",@@NAME@@Property(),@@CLASS@@);
-                                                            """.replace("@@NAME@@", propertyName)
+                              \t\tpropertiesHelper.declareListener("@@NAME@@",@@NAME@@Property(),@@CLASS@@);
+                              \t""".replace("@@NAME@@", propertyName)
                                                             .replace("@@CLASS@@", propertyType+".class");
                     }
                     else
                     {
+                        // StringProperty and other simple types
                         return """
-                                                 propertiesHelper.declareListener("@@NAME@@",@@NAME@@Property());
-                                     """.replace("@@NAME@@", propertyName);
+                               \t\tpropertiesHelper.declareListener("@@NAME@@",@@NAME@@Property());
+                               \t""".replace("@@NAME@@", propertyName);
                     }
                 })
                 .collect(Collectors.joining());
@@ -136,7 +164,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                 import com.hypercube.util.javafx.view.View;
                 import com.hypercube.util.javafx.view.properties.PropertiesHelper;
                 import javafx.scene.Scene;
-                import javafx.scene.layout.@@SUPERCLS@@;
+                @@FXML_IMPORTS@@
                 import javafx.beans.property.*;
 
                 //
@@ -149,7 +177,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                         ControllerHelper.loadFXML(this);
                         if (ControllerHelper.isNonSceneBuilderLaunch()) {
                             propertiesHelper.installSceneObserver();
-                @@LISTENERS@@
+                    @@LISTENERS@@
                         }
                     }
 
@@ -164,6 +192,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                 .replace("@@PKG@@", packageName)
                 .replace("@@CLS@@",simpleClassName)
                 .replace("@@SUPERCLS@@",typeAttribute)
+                .replace("@@FXML_IMPORTS@@",fxmlImports)
                 .replace("@@LISTENERS@@",installPropertiesListeners)
                 .replace("@@PROPS@@", properties);
     }
@@ -181,6 +210,8 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                         Document doc = dBuilder.parse(fxmlFile);
                         doc.getDocumentElement().normalize();
+
+                        List<String> javaFxImports = extractImports(doc);
 
                         Element fxRoot = (Element) doc.getElementsByTagName("fx:root").item(0);
                         if (fxRoot != null && fxRoot.hasAttribute("type")) {
@@ -203,7 +234,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> wid
                                 }
                             }
 
-                            String javaCode = generateJavaCode(className, typeAttribute,widgetProperties);
+                            String javaCode = generateJavaCode(className, typeAttribute,javaFxImports,widgetProperties);
                             String relativePath = Paths.get(baseDir).relativize(path).getParent().toString();
                             if (!relativePath.isEmpty()) {
                                 relativePath = relativePath + File.separator;

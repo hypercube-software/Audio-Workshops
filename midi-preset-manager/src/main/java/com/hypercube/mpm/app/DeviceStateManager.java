@@ -46,6 +46,7 @@ public class DeviceStateManager {
     }
 
     public void initDeviceStateWithPatch(Patch selectedPatch) {
+
         initDeviceStateFromConfig(selectedPatch.getDeviceStateId(), selectedPatch);
         refreshCurrentDeviceState(selectedPatch.getDeviceStateId());
         changeModeOnDevice(getSelectedDevice(), model.getCurrentDeviceState(), selectedPatch.getMode(), true);
@@ -59,17 +60,15 @@ public class DeviceStateManager {
         var currentState = model.getCurrentDeviceState();
         if (!selectedMode.isEmpty()) {
             String modeName = (String) selectedMode.getFirst();
-            int channel = currentState.getId()
-                    .getChannel();
-            log.info("Switch from mode '{}' to mode '{}' channel {}", currentState.getId()
-                    .getMode(), modeName, channel);
+            log.info("Switch from mode '{}' to mode '{}'", currentState.getId()
+                    .getMode(), modeName);
             changeModeOnDevice(device, currentState, modeName, false);
             var stateId = getOrCreateDeviceStateId(device, modeName);
             currentState = model.getDeviceStates()
                     .get(stateId);
             updateLastUsed(model, currentState);
             model.setCurrentDeviceState(currentState);
-            refreshModeProperties(device);
+            refreshModeProperties(device, currentState);
             currentState.setCurrentSelectedCategories(new ArrayList<>());
             currentState.setSelectedBankNames(new ArrayList<>());
             currentState.setCurrentSearchOutput(null);
@@ -108,7 +107,6 @@ public class DeviceStateManager {
     }
 
     public void onChannelChanged(MainModel model, Integer channel) {
-        saveDeviceState();
         var state = model.getCurrentDeviceState();
         if (state != null) {
             var id = new DeviceStateId(state.getId()
@@ -119,6 +117,7 @@ public class DeviceStateManager {
                 initDeviceStateFromConfig(id, null);
             }
             refreshCurrentDeviceState(id);
+            saveDeviceState();
         }
     }
 
@@ -133,7 +132,7 @@ public class DeviceStateManager {
         }
         if (current.getId()
                 .getName() != null) {
-            log.info("---------------------------------------------------------------------------------");
+            log.info("##############################################");
             log.info("Save {} state: lastUsed: '{}' mode '{}' channel: '{}' selected bank '{}' selected categories '{}' selected patch '{}'",
                     current.getId()
                             .getName(),
@@ -212,9 +211,15 @@ public class DeviceStateManager {
      *     <li>Mode channels</li>
      * </ul>
      */
-    public void refreshModeProperties(MidiDeviceDefinition device) {
+    public void refreshModeProperties(MidiDeviceDefinition device, DeviceState state) {
         log.info("---------------------------------------------------------------------------------");
-        DeviceState state = model.getCurrentDeviceState();
+        if (!state.getId()
+                .getName()
+                .equals(device.getDeviceName())) {
+            log.error("Illegal State device ! It is %s instead of %s".formatted(state.getId()
+                    .getName(), device.getDeviceName()));
+            return;
+        }
         log.info("Update mode properties: {}", state.getId()
                 .getMode());
         MidiDeviceMode mode = device.getDeviceModes()
@@ -262,6 +267,12 @@ public class DeviceStateManager {
         model.setDevices(buildDeviceList());
         model.setMidiInPorts(buildMidiInPortsList());
         model.setMidiThruPorts(buildMidiThruPortsList());
+    }
+
+    public int getCurrentOutputChannel() {
+        return model.getCurrentDeviceState()
+                .getId()
+                .getChannel();
     }
 
     private List<MidiPresetCategory> getModeCategories(MidiDeviceMode mode, int channel) {
@@ -422,11 +433,15 @@ public class DeviceStateManager {
 
             // update the view with it
             refreshCurrentDeviceState(deviceState);
-            refreshModeProperties(device);
+            refreshModeProperties(device, deviceState);
         }
     }
 
+    /**
+     * for a given device, we reset the previous "lastUsed" and set it to the new state
+     */
     private void updateLastUsed(MainModel model, DeviceState newState) {
+
         model.getDeviceStates()
                 .values()
                 .stream()
@@ -477,6 +492,7 @@ public class DeviceStateManager {
 
     /**
      * Peek the latest used state id or create a new one if needed
+     * <p>Typically if the user was working on channel 4, we try to get back to this state</p>
      *
      * @param device currently selected device
      */

@@ -49,7 +49,7 @@ public class ConfigurationFactory {
             if (!configFile.exists() || configFile.length() == 0) {
                 initEmptyConfig();
             }
-            log.info("Loading project configuration from  %{}...", configFile.getAbsolutePath());
+            log.info("Loading project configuration from  {}...", configFile.getAbsolutePath());
             var mapper = new ObjectMapper(new YAMLFactory());
             ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
             config.setMidiDeviceLibrary(midiDeviceLibrary);

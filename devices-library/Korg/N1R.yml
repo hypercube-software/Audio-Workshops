@@ -66,11 +66,11 @@ categories:
   - "Motion Synth: Pad"
   - "Sound FX: sfx"
   - "Drums / Perc: Kit"
-  
+
 deviceModes:
   Multi:
     command: MultiMode()
-    midiChannels: 0
+    midiChannels: 0-15
     banks:
       "PrgU":
         command: "$5000"

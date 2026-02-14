@@ -1,10 +1,12 @@
 package com.hypercube.mpm.javafx.widgets.patch;
 
+import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
+import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
@@ -40,6 +42,9 @@ import java.util.stream.Collectors;
 public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
     @Autowired
     PatchesManager patchesManager;
+    @Autowired
+    DeviceToolBox deviceToolBox;
+
     @FXML
     TableView patchList;
     @FXML
@@ -58,7 +63,7 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     TableColumn colScore;
     @FXML
     TableColumn colCommand;
-
+    SimpleStringProperty currentPatchNameFilterProperty;
     // boolean used to distinguish user action and programmatic action
     private boolean userAction = false;
 
@@ -89,10 +94,10 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         bindingManager.observePath("model.modeCategories", this::onModeCategoriesChanged);
         ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.modeCategories");
         currentPatchProperty.addListener(this::onModeCategoriesChanged);
-        SimpleStringProperty currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
+
+        currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
         searchBox.textProperty()
                 .bindBidirectional(currentPatchNameFilterProperty);
-        searchBox.setOnAction(this::onSearch);
 
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
 
@@ -157,13 +162,13 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         refreshSearch();
     }
 
+    @FXML
     private void onSearch(ActionEvent actionEvent) {
-        getModel().setCurrentPatchNameFilter(searchBox.getText());
         refreshSearch();
     }
 
     private void refreshSearch() {
-        fireEvent(SearchPatchesEvent.class, searchBox.getText(), getSearchScore());
+        fireEvent(SearchPatchesEvent.class, getModel().getCurrentPatchNameFilter(), getSearchScore());
     }
 
     private int getSearchScore() {
@@ -181,5 +186,27 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
                 .collect(Collectors.joining(",")));
 
         fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, List.of(), patches);
+    }
+
+    @FXML
+    void onRestoreSysEx(ActionEvent actionEvent) {
+        deviceToolBox.restoreSysEx(getView().getScene());
+    }
+
+    @FXML
+    void onSaveSysEx(ActionEvent actionEvent) {
+        String patchName = getModel().getCurrentPatchNameFilter();
+        DeviceState state = getModel().getCurrentDeviceState();
+        String deviceName = state
+                .getId()
+                .getName();
+        var selectedBanks = state
+                .getSelectedBankNames();
+        var selectedCategories = state
+                .getCurrentSelectedCategories();
+        var selectedBank = selectedBanks.size() == 1 ? selectedBanks.getFirst() : null;
+        var selectedMode = state.getId()
+                .getMode();
+        deviceToolBox.saveSysEx(deviceName, selectedMode, selectedBank, selectedCategories, patchName);
     }
 }

@@ -1,5 +1,6 @@
 package com.hypercube.mpm.midi;
 
+import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import javafx.scene.input.KeyCode;
@@ -19,6 +20,7 @@ public class VirtualKeyboard {
     private final Map<KeyCode, Integer> keyToMidiNoteMap = forgeKeyToNoteMap();
     private final Map<KeyCode, Boolean> keyState = new HashMap<>();
     private final MidiRouter midiRouter;
+    private final DeviceStateManager deviceStateManager;
 
     public void translateKeyDown(KeyEvent keyEvent) {
         KeyCode code = keyEvent.getCode();
@@ -57,9 +59,9 @@ public class VirtualKeyboard {
 
     private CustomMidiEvent forgeNoteOn(KeyCode code) {
         int midiNote = keyToMidiNoteMap.get(code);
-        int channel = 0;
-        log.info("Key on {} {} => Midi note {}", code, code
-                .getCode(), midiNote);
+        int channel = deviceStateManager.getCurrentOutputChannel();
+        log.info("Key on {} {} => Midi note {} on channel {}", code, code
+                .getCode(), midiNote, channel);
         try {
             return new CustomMidiEvent(new ShortMessage(ShortMessage.NOTE_ON, channel, midiNote, 100));// velocity 100
         } catch (InvalidMidiDataException e) {
@@ -69,8 +71,8 @@ public class VirtualKeyboard {
 
     private CustomMidiEvent forgeNoteOff(KeyCode code) {
         int midiNote = keyToMidiNoteMap.get(code);
-        int channel = 0;
-        log.info("Key off {} {} => Midi note {}", code, code.getCode(), midiNote);
+        int channel = deviceStateManager.getCurrentOutputChannel();
+        log.info("Key off {} {} => Midi note {} on channel {}", code, code.getCode(), midiNote, channel);
         setNoteOff(code);
         try {
             return new CustomMidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, channel, midiNote, 0));

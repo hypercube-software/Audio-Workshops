@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.hypercube.mpm.javafx.widgets.button.IconButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -21,13 +22,27 @@
     <!-- DEFINE PROPERTY allowMultiSelection -->
     <!-- DEFINE PROPERTY allowDrop -->
     <!-- DEFINE PROPERTY acceptedFileTypes -->
+    <!-- DEFINE PROPERTY Boolean:editButtons -->
+    <!-- DEFINE PROPERTY javafx.event.EventHandler<javafx.event.ActionEvent>:onEditButtonClick -->
     <opaqueInsets>
         <Insets bottom="2.0"/>
     </opaqueInsets>
-    <HBox alignment="CENTER" styleClass="attributeSelectorHeader"
-          GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER"
-          GridPane.vgrow="NEVER">
+    <HBox alignment="CENTER_LEFT" styleClass="attributeSelectorHeader" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"
+          GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+        <IconButton fx:id="addButton" iconClass="icon-add" styleClass="small-icon-button"
+                    tooltipText="Add..."
+                    onAction="#onEditButtonClick"
+        />
+        <IconButton fx:id="removeButton" iconClass="icon-remove" styleClass="small-icon-button"
+                    tooltipText="Remove..."
+                    onAction="#onEditButtonClick"/>
         <Label fx:id="label" text="title"/>
+        <GridPane.margin>
+            <Insets/>
+        </GridPane.margin>
+        <padding>
+            <Insets left="10.0"/>
+        </padding>
     </HBox>
     <ListView fx:id="attributes" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
 </fx:root>

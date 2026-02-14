@@ -1,9 +1,12 @@
 package com.hypercube.mpm.javafx.widgets.attribute;
 
+import com.hypercube.mpm.javafx.event.EditButtonClickedEvent;
 import com.hypercube.mpm.javafx.event.FilesDroppedEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
+import com.hypercube.mpm.javafx.widgets.button.IconButton;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.application.Platform;
@@ -12,8 +15,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -36,6 +41,11 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     @FXML
     ListView attributes;
 
+    @FXML
+    IconButton addButton;
+    @FXML
+    IconButton removeButton;
+
     private List<String> acceptedFileTypes = List.of();
 
     // boolean used to distinguish user action and programmatic action
@@ -50,6 +60,15 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     public void onDataSourceChange(String oldValue, String newValue) {
         // The dataSource is set, we bound the corresponding property to the ListView
         bindingManager.observePath(newValue, this::onDataChange);
+    }
+
+    @FXML
+    public void onEditButtonClick(ActionEvent event) {
+        var iconButton = (IconButton) event.getSource();
+        var buttonClickEvent = forgeEvent(EditButtonClickedEvent.class, getView().getId(), iconButton.getId());
+        Optional.ofNullable(getView().onEditButtonClickProperty()
+                        .getValue())
+                .ifPresent(handler -> handler.handle((ActionEvent) buttonClickEvent));
     }
 
     public void onDataChange(Observable observable) {
@@ -105,6 +124,18 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
             attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onPropertyChange(View<?> widget, String property, ObservableValue<?> observable, Object oldValue, Object newValue) {
+        super.onPropertyChange(widget, property, observable, oldValue, newValue);
+        if ("editButtons".equals(property)) {
+            Boolean enable = (Boolean) newValue;
+            addButton.setVisible(enable);
+            addButton.setManaged(enable);
+            removeButton.setVisible(enable);
+            removeButton.setManaged(enable);
         }
     }
 
@@ -175,9 +206,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         Dragboard db = event.getDragboard();
         if (db.hasFiles() && db.getFiles()
                 .stream()
-                .filter(f -> hasRightFileExtension(f))
-                .findFirst()
-                .isPresent()) {
+                .anyMatch(this::hasRightFileExtension)) {
             event.acceptTransferModes(TransferMode.COPY);
         } else {
             event.consume();

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.hypercube.mpm.javafx.widgets.button.IconButton?>
 <?import com.hypercube.mpm.javafx.widgets.patch.PatchScore?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane"
+<fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane" stylesheets="@../MainWindow.css"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
         <ColumnConstraints minWidth="10.0"/>
@@ -18,7 +19,7 @@
         <children>
             <PatchScore fx:id="scoreFilter" alignment="CENTER" score="${controller.model.currentPatchScoreFilter}"/>
             <Label styleClass="PatchFilter" text="Patch name:"/>
-            <TextField fx:id="searchBox" disable="false" editable="true" HBox.hgrow="ALWAYS">
+            <TextField fx:id="searchBox" disable="false" editable="true" HBox.hgrow="ALWAYS" onAction="#onSearch">
                 <HBox.margin>
                     <Insets/>
                 </HBox.margin>
@@ -26,6 +27,8 @@
                     <Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
                 </opaqueInsets>
             </TextField>
+            <IconButton onAction="#onSaveSysEx" iconClass="icon-backup" tooltipText="Save Patch"/>
+            <IconButton onAction="#onRestoreSysEx" iconClass="icon-restore" tooltipText="Restore SysEx"/>
         </children>
         <GridPane.margin>
             <Insets/>

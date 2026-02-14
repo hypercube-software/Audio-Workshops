@@ -50,6 +50,9 @@ public class ModelHelper {
     private static GetterInterceptor getterInterceptor = new GetterInterceptor();
     private static GetterPropertyInterceptor getterPropertyInterceptor = new GetterPropertyInterceptor();
 
+    /**
+     * Convert a class instance to an observable one with Bytebuddy. This is not recursive.
+     */
     public static <T> T forgeMMVM(T model) {
         try {
             if (model == null) {
@@ -81,21 +84,23 @@ public class ModelHelper {
                         .getLoaded();
                 observableModelClasses.put(modelClass, observableModelClass);
             }
-            T instance = observableModelClass.newInstance();
+            T observableModel = observableModelClass.newInstance();
+            // copy all the fields values from the non-observable instance "model" to the observable one "observableModel"
             for (Field field : modelClass
                     .getDeclaredFields()) {
                 if (field.getAnnotation(NotObservable.class) == null) {
                     if (!field.getType()
                             .getName()
                             .contains("Logger") && !Modifier.isStatic(field.getModifiers())) {
-                        instanciateObservableProperty(field, model, instance);
+                        instantiateObservableProperty(field, model, observableModel);
                     }
                 } else {
+                    // properties which are never observable (static fields, logger)
                     field.setAccessible(true);
-                    field.set(instance, field.get(model));
+                    field.set(observableModel, field.get(model));
                 }
             }
-            return instance;
+            return observableModel;
         } catch (Exception e) {
             throw new ModelHelperException(e);
         }
@@ -103,27 +108,36 @@ public class ModelHelper {
 
     private static boolean hasDefaultConstructor(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredConstructors())
-                .filter(c -> c.getParameters().length == 0)
-                .findFirst()
-                .isPresent();
+                .anyMatch(c -> c.getParameters().length == 0);
     }
 
     /**
      * For a given field set its JavaFX property instance
      */
-    private static <T> void instanciateObservableProperty(Field field, T model, T observableModel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
+    private static <T> void instantiateObservableProperty(Field field, T model, T observableModel) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
         String name = field.getName();
+        // create the observable property and put it in the observable model
+        Field property = getObservableProperty(observableModel, name);
+        Object propertyInstance = property.getType()
+                .getConstructor()
+                .newInstance();
+        property.set(observableModel, propertyInstance);
+        // copy the value from the non-observable model to the observable model
         field.setAccessible(true);
         Object value = field.get(model);
-        Field property = getObservableProperty(observableModel, name);
-        property.set(observableModel, property.getType()
-                .getConstructor()
-                .newInstance());
         getObservableSetter(observableModel, name, field.getType()).invoke(observableModel, value);
+        // The JavaFx property is now the place where the value is stored
+        // The non-observable field in the upper class is now completely ignored
+        // Any call to setXXX or getXXX is "redirected" to the JavaFX property
     }
 
     /**
      * Create a JavFX property for a given field
+     * <ul>
+     *     <li>We override the non-observable getter from the upper class, to return the property value</li>
+     *     <li>We override the non-observable setter from the upper class, to set the property value</li>
+     *     <li>In this way the observable property replace the non-observable field in the upper class</li>
+     * </ul>
      *
      * @param field   The field to make observable
      * @param builder The ByteBuddy builder to forge the property
@@ -301,7 +315,10 @@ public class ModelHelper {
     // https://stackoverflow.com/questions/47104098/using-bytebuddy-to-intercept-setter
     // If the caller try to set a list, we need to encapsulate it in a JavaFX ObservableList
     public static class SetterInterceptor {
-
+        /**
+         * This method is called when the application code try to set a model field without knowing it is observable
+         * <p>setName("hello") will update the observable property "nameProperty" under the hood
+         */
         @RuntimeType
         public void invoke(@This Object observableModel, @Origin Method method, @AllArguments Object[] args) throws Throwable {
             String fieldName = getFieldNameFromAccessor(method);
@@ -332,42 +349,55 @@ public class ModelHelper {
     // JavaFX will first ask for the JavaFX Property, a method nameProperty()
     // then ask for the getter of the field: getName()
     public static class GetterInterceptor {
+        /**
+         * This method is called when the application code try to get a model field without knowing it is observable
+         * <p>getName() will read the observable property "nameProperty" under the hood
+         */
         @RuntimeType
         public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] args) throws Throwable {
             String fieldName = getFieldNameFromAccessor(method);
-            Class<?> clazz = proxy.getClass();
-            // retreive the field value
-            Field field = getField(clazz, fieldName);
-            var value = field
-                    .get(proxy);
-            // wrap it if necessary
-            if (value instanceof List && !(value instanceof ObservableList<?>)) {
-                var observableValue = FXCollections.observableList((List<?>) value);
-                field.set(proxy, observableValue);
-                return observableValue;
+            var property = getObservableProperty(proxy, fieldName).get(proxy);
+            if (property instanceof SimpleStringProperty simpleStringProperty) {
+                return simpleStringProperty.get();
+            } else if (property instanceof SimpleObjectProperty simpleObjectProperty) {
+                return simpleObjectProperty.get();
+            } else if (property instanceof SimpleBooleanProperty simpleBooleanProperty) {
+                return simpleBooleanProperty.get();
+            } else if (property instanceof SimpleIntegerProperty simpleIntegerProperty) {
+                return simpleIntegerProperty.get();
+            } else if (property instanceof SimpleLongProperty simpleLongProperty) {
+                return simpleLongProperty.get();
+            } else if (property instanceof SimpleDoubleProperty simpleDoubleProperty) {
+                return simpleDoubleProperty.get();
+            } else if (property instanceof SimpleFloatProperty simpleFloatProperty) {
+                return simpleFloatProperty.get();
+            } else if (property instanceof SimpleListProperty simpleListProperty) {
+                return simpleListProperty.get();
+            } else if (property instanceof SimpleMapProperty simpleMapProperty) {
+                return simpleMapProperty.get();
+            } else if (property instanceof SimpleSetProperty simpleSetProperty) {
+                return simpleSetProperty.get();
             } else {
-                return value;
+                throw new RuntimeException("Unsupported property:" + property.getClass()
+                        .getName());
             }
         }
     }
 
     public static class GetterPropertyInterceptor {
+        /**
+         * This method is called when the application code try to get a model field knowing it is observable
+         * <p>The getter nameProperty() will return the value of the field "nameProperty"
+         * <p>Most of the time, it is to add a listener to it
+         */
         @RuntimeType
         public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] args) throws Throwable {
             String fieldName = getFieldNameFromAccessor(method) + "Property";
             Class<?> clazz = proxy.getClass();
-            // retreive the field value
+            // retrieve the JavaFX property and return it
             Field field = getField(clazz, fieldName);
-            var value = field
+            return field
                     .get(proxy);
-            // wrap it if necessary
-            if (value instanceof List && !(value instanceof ObservableList<?>)) {
-                var observableValue = FXCollections.observableList((List<?>) value);
-                field.set(proxy, observableValue);
-                return observableValue;
-            } else {
-                return value;
-            }
         }
     }
 }

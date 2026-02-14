@@ -8,6 +8,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -120,6 +122,42 @@ public class PropertiesHelper implements SceneListener {
     public <T> void declareListener(String propertyName, ObjectProperty<T> property, Class<T> clazz) {
         final Method m = getEventHandler(propertyName, clazz);
         ChangeListener<T> changeListener = (observableValue, oldValue, newValue) -> {
+            if (oldValue == null && newValue == null) {
+                return;
+            }
+            view.getCtrl()
+                    .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
+            try {
+                if (m != null) {
+                    m.invoke(view.getCtrl(), oldValue, newValue);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+            }
+        };
+        listeners.add(new PropertyListener(propertyName, property, changeListener));
+    }
+
+    /**
+     * Properties dedicated to event handlers are "special" in the sense they must start with "on"
+     * <ul>
+     *     <li>
+     *         This mean if you plan to detect changes, you have to declare {@code "onOnXXXChange"} for instance, not {@code "onXXXChange}"
+     *     </li>
+     *     <li>
+     *         If "on" prefix is missing, the error 'Unable to coerce to interface javafx.event.EventHandler.' will be raised by JavaFX
+     *     </li>
+     * </ul>
+     * <p>Note: In FXML when we use onAction="#myMethod", JavaFX wrap 'myMethod' in a {@code FXMLLoader::ControllerMethodEventHandler} before setting the property
+     */
+    public <T> void declareEventHandlerListener(String propertyName, ObjectProperty<T> property, Class<? extends ActionEvent> clazz) {
+        if (!propertyName.startsWith("on")) {
+            throw new IllegalArgumentException("EventHandler property '%s' must start with \"on\" in JavaFX, if not, an error \"Unable to coerce to interface javafx.event.EventHandler.\" will be raised".formatted(propertyName));
+        }
+        final Method m = getEventHandler(propertyName, EventHandler.class);
+        ChangeListener<T> changeListener = (observableValue, oldValue, newValue) -> {
+            if (oldValue == null && newValue == null) {
+                return;
+            }
             view.getCtrl()
                     .onPropertyChange(view, propertyName, observableValue, oldValue, newValue);
             try {
@@ -209,13 +247,18 @@ public class PropertiesHelper implements SceneListener {
 
     private Method getEventHandler(String propertyName, Class<?> propertyType) {
         Method eventHandlerMethod = null;
+
+        // Enforce the name of the handler to make code readable
+        String suffix = "Change";
+        String methodName = "on" + propertyName.substring(0, 1)
+                .toUpperCase() + propertyName.substring(1) + suffix;
         try {
-            String methodName = "on" + propertyName.substring(0, 1)
-                    .toUpperCase() + propertyName.substring(1) + "Change";
+            // look for method onXXXChange(PropertyType oldValue,PropertyType newValue) in the controller
             eventHandlerMethod = view.getCtrl()
                     .getClass()
                     .getMethod(methodName, propertyType, propertyType);
         } catch (NoSuchMethodException e) {
+            // the method is not found, it is not an error, it means the controller does not need to use it
         }
         return eventHandlerMethod;
     }
@@ -244,6 +287,8 @@ public class PropertiesHelper implements SceneListener {
                 bp.addListener(listener);
                 // force a notification in case we started late
                 listener.changed(bp, null, bp.get());
+            } else {
+                throw new IllegalArgumentException("Unsupported listener");
             }
         });
     }

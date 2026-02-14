@@ -13,12 +13,31 @@ import java.util.stream.IntStream;
 @Getter
 @Setter
 public class DeviceState {
+    /**
+     * Identity of a state include the device name , the device mode and a MIDI channel
+     */
     private DeviceStateId id = new DeviceStateId();
+    /**
+     * Which patch is selected on this mode and MIDI channel
+     */
     private Patch currentPatch;
+    /**
+     * Banks for this mode
+     */
     private List<String> selectedBankNames = new ArrayList<>();
+    /**
+     * Available patches for this mode
+     */
     private List<Patch> currentSearchOutput = new ArrayList<>();
+    /**
+     * Categories for this mode
+     */
     private List<MidiPresetCategory> currentSelectedCategories = new ArrayList<>();
+    /**
+     * Used when the user go back to a device, he wants to continue where he was (especially the channel)
+     */
     private boolean lastUsed;
+    
     @NotObservable
     private MidiOutDevice midiOutDevice;
 

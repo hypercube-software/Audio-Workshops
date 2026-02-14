@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.javafx.error.ApplicationError;
+import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetConsumer;
 import com.hypercube.workshop.midiworkshop.api.presets.generic.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
@@ -20,19 +22,20 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceDefinitionMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
+import javafx.scene.Scene;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -160,5 +163,54 @@ public class DeviceToolBox {
             requestLogger.accept(RequestStatus.of(e.getMessage()));
         }
         return Optional.empty();
+    }
+
+    public void restoreSysEx(Scene scene) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Restore SysEx");
+
+        fileChooser.getExtensionFilters()
+                .addAll(
+                        new FileChooser.ExtensionFilter("System Exclusive", "*.syx"),
+                        new FileChooser.ExtensionFilter("All", "*.*")
+                );
+
+        Window stage = scene.getWindow();
+
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) {
+            try {
+                GenericDialogController.info("SysEx restored", """
+                        The device have successfully received the SysEx file.
+                        """);
+            } catch (Exception e) {
+                GenericDialogController.error("SysEx not restored", e.getMessage());
+            }
+        }
+    }
+
+    public void saveSysEx(String deviceName, String deviceMode, String bankName, List<MidiPresetCategory> selectedCategories, String patchName) {
+        if (bankName == null) {
+            GenericDialogController.error("Bank Not Selected", "Select a single bank first before saving patch");
+            return;
+        }
+        if (selectedCategories.isEmpty()) {
+            GenericDialogController.error("Categories Not Selected", "Select at least one category before saving patch");
+        }
+        midiDeviceLibrary.getDevice(deviceName)
+                .ifPresent(midiDeviceDefinition -> {
+                    String fullPath = "%s/%s/%s/%s/[%s] %s.syx".formatted(
+                            midiDeviceDefinition.getDefinitionFile()
+                                    .getParentFile()
+                                    .getAbsolutePath(),
+                            midiDeviceDefinition.getDeviceName(),
+                            deviceMode,
+                            bankName,
+                            selectedCategories.stream()
+                                    .map(c -> c.name())
+                                    .collect(Collectors.joining(",")), patchName);
+                    log.info("Save current preset to " + fullPath);
+                });
     }
 }

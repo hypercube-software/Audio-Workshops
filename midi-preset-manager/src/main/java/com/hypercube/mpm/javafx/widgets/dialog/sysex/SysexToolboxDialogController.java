@@ -87,7 +87,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
                             The device response is successfully saved as SysEx file.
                             """);
                 } catch (Exception e) {
-                    GenericDialogController.error("Response nots saved", e.getMessage());
+                    GenericDialogController.error("Response not saved", e.getMessage());
                 }
             }
         }
