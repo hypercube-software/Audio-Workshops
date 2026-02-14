@@ -93,7 +93,7 @@ public class ConfigurationFactory {
         midiDeviceLibrary.load(ConfigHelper.getApplicationFolder(MidiPresetManagerApplication.class));
         midiDeviceLibrary.getDevices()
                 .values()
-                .forEach(midiDeviceLibrary::collectCustomPatches);
+                .forEach(midiDeviceLibrary::collectCustomBanksAndPatches);
     }
 
     private void initEmptyConfig() throws IOException {

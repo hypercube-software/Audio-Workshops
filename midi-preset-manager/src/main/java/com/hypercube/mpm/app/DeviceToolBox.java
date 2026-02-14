@@ -30,12 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -43,6 +47,34 @@ import java.util.stream.Collectors;
 public class DeviceToolBox {
     private final MidiDeviceLibrary midiDeviceLibrary;
     private final MidiPortsManager midiPortsManager;
+
+    private static File getBankFolder(String deviceMode, String bankName, MidiDeviceDefinition midiDeviceDefinition) {
+        String fullPath = "%s/%s/%s/%s".formatted(
+                midiDeviceDefinition.getDefinitionFile()
+                        .getParentFile()
+                        .getAbsolutePath(),
+                midiDeviceDefinition.getDeviceName(),
+                deviceMode,
+                bankName);
+        return new File(fullPath);
+    }
+
+    public static void deleteBankFolder(File bankFolder) {
+        if (bankFolder.exists()) {
+            try (Stream<Path> walk = Files.walk(bankFolder.toPath())) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException e) {
+                                log.error("Unable to delete {}", p.getFileName());
+                            }
+                        });
+            } catch (IOException e) {
+                log.error("Unable to inspect folder {}", bankFolder.toString());
+            }
+        }
+    }
 
     public void dumpPresets(String deviceName, MidiPresetConsumer midiPresetConsumer) {
         MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
@@ -211,6 +243,24 @@ public class DeviceToolBox {
                                     .map(c -> c.name())
                                     .collect(Collectors.joining(",")), patchName);
                     log.info("Save current preset to " + fullPath);
+                });
+    }
+
+    public void createBank(String deviceName, String deviceMode, String bankName) {
+        midiDeviceLibrary.getDevice(deviceName)
+                .ifPresent(midiDeviceDefinition -> {
+                    File bankFolder = getBankFolder(deviceMode, bankName, midiDeviceDefinition);
+                    bankFolder.mkdirs();
+                    midiDeviceLibrary.collectCustomBanksAndPatches(midiDeviceDefinition);
+                });
+    }
+
+    public void deleteBank(String deviceName, String deviceMode, String bankName) {
+        midiDeviceLibrary.getDevice(deviceName)
+                .ifPresent(midiDeviceDefinition -> {
+                    File bankFolder = getBankFolder(deviceMode, bankName, midiDeviceDefinition);
+                    deleteBankFolder(bankFolder);
+                    midiDeviceLibrary.collectCustomBanksAndPatches(midiDeviceDefinition);
                 });
     }
 }

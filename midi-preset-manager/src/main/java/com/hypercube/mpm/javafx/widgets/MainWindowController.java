@@ -416,7 +416,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 .getMode(), f));
 
                 midiDeviceLibrary
-                        .collectCustomPatches(device);
+                        .collectCustomBanksAndPatches(device);
                 deviceStateManager.refreshModeProperties(device, state);
             }
         } catch (Exception e) {

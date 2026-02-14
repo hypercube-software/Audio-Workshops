@@ -25,7 +25,9 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     @Getter
     public Runnable onCloseCallback;
     @Getter
-    public boolean editable;
+    public GenericDialogBehaviour behaviour = GenericDialogBehaviour.NORMAL;
+    @Getter
+    public boolean cancelled;
     @FXML
     Label textMessage;
     @FXML
@@ -37,37 +39,54 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     @FXML
     FontIcon icon;
 
+    public static boolean ask(String header, String message) {
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.ASK, true);
+        dlg.updateText(header, message);
+        dlg.setBehaviour(GenericDialogBehaviour.CANCELLABLE);
+        dlg.showAndWait();
+
+        return !dlg.cancelled;
+    }
+
     public static void info(String header, String message) {
         var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
         dlg.updateText(header, message);
+        dlg.setBehaviour(GenericDialogBehaviour.NORMAL);
         dlg.showAndWait();
     }
 
     public static void error(String header, String message) {
         var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.ERROR, true);
         dlg.updateText(header, message);
+        dlg.setBehaviour(GenericDialogBehaviour.NORMAL);
+        dlg.showAndWait();
+    }
+
+    public static void warn(String header, String message) {
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.WARNING, true);
+        dlg.updateText(header, message);
+        dlg.setBehaviour(GenericDialogBehaviour.NORMAL);
         dlg.showAndWait();
     }
 
     public static Optional<String> input(String header, String message) {
         var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
         dlg.updateText(header, message);
-        dlg.setEditable(true);
+        dlg.setBehaviour(GenericDialogBehaviour.EDITABLE);
         dlg.showAndWait();
 
         return Optional.ofNullable(dlg.getView()
                 .getTextValue());
     }
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-        updateVisibleWidgets(editable);
+    public void setBehaviour(GenericDialogBehaviour behaviour) {
+        this.behaviour = behaviour;
+        updateVisibleWidgets(behaviour);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-        updateVisibleWidgets(false);
     }
 
     public void updateText(String header, String msg) {
@@ -91,6 +110,7 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
 
     @FXML
     public void onCloseButton(ActionEvent event) {
+        cancelled = false;
         if (onCloseCallback != null) {
             onCloseCallback.run();
         }
@@ -99,16 +119,19 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
 
     @FXML
     public void onCancelButton(ActionEvent event) {
+        cancelled = true;
         getView().setTextValue(null);
         close();
     }
 
-    private void updateVisibleWidgets(boolean editMode) {
-        textInput.setVisible(editMode);
-        textInput.setDisable(!editMode);
-        cancelButton.setVisible(editMode);
-        cancelButton.setDisable(!editMode);
-        if (editMode) {
+    private void updateVisibleWidgets(GenericDialogBehaviour behaviour) {
+        boolean showInputText = behaviour == GenericDialogBehaviour.EDITABLE;
+        textInput.setVisible(showInputText);
+        textInput.setManaged(showInputText);
+        boolean showCancel = behaviour == GenericDialogBehaviour.EDITABLE || behaviour == GenericDialogBehaviour.CANCELLABLE;
+        cancelButton.setVisible(showCancel);
+        cancelButton.setManaged(showCancel);
+        if (showInputText) {
             textInput.textProperty()
                     .bindBidirectional(getView().textValueProperty());
         }
@@ -127,6 +150,10 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
             case ERROR:
                 icon.setIconLiteral("mdal-block");
                 icon.setIconColor(Paint.valueOf("#ff0000"));
+                break;
+            case ASK:
+                icon.setIconLiteral("mdal-help");
+                icon.setIconColor(Paint.valueOf("#437fff"));
                 break;
             case NONE:
                 icon.setIconLiteral("");

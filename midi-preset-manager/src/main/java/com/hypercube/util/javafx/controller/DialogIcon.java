@@ -4,5 +4,6 @@ public enum DialogIcon {
     WARNING,
     INFO,
     ERROR,
+    ASK,
     NONE
 }
