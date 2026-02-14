@@ -6,7 +6,6 @@ import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.SearchPatchesEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
-import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
@@ -196,19 +195,7 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
     @FXML
     void onSaveSysEx(ActionEvent actionEvent) {
-        String patchName = getModel().getCurrentPatchNameFilter();
-        DeviceState state = getModel().getCurrentDeviceState();
-        String deviceName = state
-                .getId()
-                .getName();
-        var selectedBanks = state
-                .getSelectedBankNames();
-        var selectedCategories = state
-                .getCurrentSelectedCategories();
-        var selectedBank = selectedBanks.size() == 1 ? selectedBanks.getFirst() : null;
-        var selectedMode = state.getId()
-                .getMode();
-        deviceToolBox.saveSysEx(deviceName, selectedMode, selectedBank, selectedCategories, patchName);
+        deviceToolBox.updateOrCreatePatch();
     }
 
     @FXML

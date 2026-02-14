@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Region?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="icon-button" type="Button" stylesheets="@IconButton.css"
+         xmlns="http://javafx.com/javafx/17.0.12">
+    <!-- DEFINE PROPERTY String:tooltipText -->
+    <!-- DEFINE PROPERTY String:iconClass -->
+    <graphic>
+        <Region fx:id="region" styleClass="icon-backup"/>
+    </graphic>
+    <tooltip>
+        <Tooltip fx:id="tooltip" text="Save Patch"/>
+    </tooltip>
+</fx:root>

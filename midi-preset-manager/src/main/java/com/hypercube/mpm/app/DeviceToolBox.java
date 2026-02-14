@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
+import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
@@ -87,9 +88,13 @@ public class DeviceToolBox {
                     .ifPresent(device -> {
                         File patchFile = new File(getBankFolder(patch.getMode(), patch.getBank(), device), patch.getFilename());
                         if (GenericDialogController.ask("Delete patch '" + patch.getFilename() + "'", "Are you sure you want to delete this patch ?")) {
-                            patchFile.delete();
-                            midiDeviceLibrary.collectCustomBanksAndPatches(device);
-                            patchesManager.refreshPatches();
+                            log.info("Delete files {}", patchFile);
+                            if (patchFile.delete()) {
+                                midiDeviceLibrary.collectCustomBanksAndPatches(device);
+                                patchesManager.refreshPatches();
+                            } else {
+                                GenericDialogController.error("Error", "Unable to delete patch '" + patch.getFilename() + "'");
+                            }
                         }
                     });
         }
@@ -202,7 +207,8 @@ public class DeviceToolBox {
                             }
                         }
                         input.removeListener(midiListener);
-                        return Optional.of(responseBuffer.toByteArray());
+                        byte[] response = responseBuffer.toByteArray();
+                        return response.length == 0 ? Optional.empty() : Optional.of(response);
                     } catch (IOException e) {
                         requestLogger.accept(RequestStatus.of(e.getMessage()));
                         log.error("Unexpected error", e);
@@ -242,24 +248,56 @@ public class DeviceToolBox {
         }
     }
 
-    public void saveSysEx(String deviceName, String deviceMode, String bankName, List<MidiPresetCategory> selectedCategories, String patchName) {
-        if (bankName == null) {
-            GenericDialogController.error("Bank Not Selected", "Select a single bank first before saving patch");
+    public void updateOrCreatePatch() {
+        final String selectedBank;
+        final String selectedMode;
+        final String patchName;
+        final String patchFilename;
+        final DeviceState state = MainModel.getObservableInstance()
+                .getCurrentDeviceState();
+        if (state == null) {
             return;
         }
-        if (selectedCategories.isEmpty()) {
-            GenericDialogController.error("Categories Not Selected", "Select at least one category before saving patch");
-        }
-        if (patchName.isEmpty()) {
-            GenericDialogController.error("Patch name not set", "Please type a patch name in the search box");
+        final String deviceName = state
+                .getId()
+                .getName();
+        final List<String> selectedBanks = state.getSelectedBankNames();
+        final List<MidiPresetCategory> selectedCategories = state.getCurrentSelectedCategories();
+        final Patch currentPatch = state.getCurrentPatch();
+
+        if (currentPatch != null) {
+            if (currentPatch.getFilename() == null) {
+                GenericDialogController.error("Patch selection error", "You can't update a factory preset");
+                return;
+            }
+            selectedMode = currentPatch.getMode();
+            selectedBank = currentPatch.getBank();
+            patchFilename = currentPatch.getFilename();
+        } else {
+            selectedMode = state.getId()
+                    .getMode();
+            selectedBank = selectedBanks.size() == 1 ? selectedBanks.getFirst() : null;
+            if (selectedBank == null) {
+                GenericDialogController.error("Bank Not Selected", "Select a single bank first before saving patch");
+                return;
+            }
+            if (selectedCategories.size() != 1) {
+                GenericDialogController.error("Categories Not Selected", "Select exactly one category before saving patch");
+                return;
+            }
+            patchName = GenericDialogController.input("Enter a new patch name", "Patch name:")
+                    .orElse(null);
+            if (patchName == null) {
+                return;
+            }
+            patchFilename = "[%s] %s.syx".formatted(
+                    selectedCategories.stream()
+                            .map(MidiPresetCategory::name)
+                            .collect(Collectors.joining(",")), patchName);
         }
         midiDeviceLibrary.getDevice(deviceName)
                 .ifPresent(device -> {
-                    String filename = "[%s] %s.syx".formatted(
-                            selectedCategories.stream()
-                                    .map(MidiPresetCategory::name)
-                                    .collect(Collectors.joining(",")), patchName);
-                    File patchFile = new File(getBankFolder(deviceMode, bankName, device), filename);
+                    File patchFile = new File(getBankFolder(selectedMode, selectedBank, device), patchFilename);
                     log.info("Save current preset to {}", patchFile);
                     Consumer<RequestStatus> requestLogger = requestStatus -> {
                         if (requestStatus.hasError()) {
@@ -268,8 +306,8 @@ public class DeviceToolBox {
                         }
                     };
                     request(device, MACRO_SAVE_CURRENT_PATCH, requestLogger).ifPresentOrElse(response ->
-                                    createCustomPatch(device, deviceMode, patchFile, response),
-                            () -> log.error("Received nothing !")
+                                    createCustomPatch(device, selectedMode, patchFile, response),
+                            () -> log.error("Received nothing from device '{}'!", device.getDeviceName())
                     );
                 });
     }
