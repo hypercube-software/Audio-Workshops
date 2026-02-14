@@ -19,7 +19,7 @@
         <children>
             <PatchScore fx:id="scoreFilter" alignment="CENTER" score="${controller.model.currentPatchScoreFilter}"/>
             <Label styleClass="PatchFilter" text="Patch name:"/>
-            <TextField fx:id="searchBox" disable="false" editable="true" HBox.hgrow="ALWAYS" onAction="#onSearch">
+            <TextField fx:id="searchBox" HBox.hgrow="ALWAYS" onAction="#onSearch">
                 <HBox.margin>
                     <Insets/>
                 </HBox.margin>

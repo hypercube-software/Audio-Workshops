@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
          stylesheets="@../../MainWindow.css,@../DialogCommon.css,@./GenericDialog.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
+    <!-- DEFINE PROPERTY textValue -->
     <GridPane styleClass="mpmDialog">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="500.0"/>
@@ -16,6 +16,7 @@
             <RowConstraints minHeight="20.0"/>
             <RowConstraints minHeight="50.0"/>
             <RowConstraints minHeight="20.0"/>
+            <RowConstraints minHeight="40.0"/>
         </rowConstraints>
         <Label fx:id="textHeader" pickOnBounds="false" text="Dialog Header" GridPane.halignment="LEFT"
                GridPane.rowIndex="0">
@@ -26,23 +27,32 @@
                 <Insets bottom="20.0"/>
             </padding>
         </Label>
-        <Label fx:id="textMessage" text="message" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+              GridPane.rowIndex="1">
+            <Label fx:id="textMessage" text="message:">
+                <GridPane.margin>
+                    <Insets left="40.0" right="40.0"/>
+                </GridPane.margin>
+            </Label>
+            <TextField fx:id="textInput" onAction="#onCloseButton" HBox.hgrow="ALWAYS"/>
             <GridPane.margin>
-                <Insets left="40.0" right="40.0"/>
+                <Insets left="20.0" right="20.0"/>
             </GridPane.margin>
-        </Label>
+        </HBox>
         <FontIcon fx:id="icon" iconColor="#437fff" iconLiteral="mdrmz-warning" iconSize="64" GridPane.columnIndex="1"
-                  GridPane.rowIndex="0" GridPane.rowSpan="3">
+                  GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="20.0"/>
             </GridPane.margin>
         </FontIcon>
-        <Button minWidth="100.0" onAction="#onCloseButton" text="Ok" GridPane.columnSpan="2" GridPane.rowIndex="2">
+        <HBox alignment="CENTER" spacing="10.0" GridPane.columnSpan="2" GridPane.halignment="CENTER"
+              GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
+            <Button defaultButton="true" minWidth="100.0" onAction="#onCloseButton" text="Ok"/>
+            <Button fx:id="cancelButton" minWidth="100.0" onAction="#onCancelButton" text="Cancel"/>
             <GridPane.margin>
                 <Insets bottom="20.0" top="20.0"/>
             </GridPane.margin>
-        </Button>
-
+        </HBox>
     </GridPane>
     <columnConstraints>
         <ColumnConstraints/>

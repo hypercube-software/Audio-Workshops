@@ -6,7 +6,9 @@ import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.DialogIcon;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Slf4j
@@ -21,10 +24,16 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     @Setter
     @Getter
     public Runnable onCloseCallback;
+    @Getter
+    public boolean editable;
     @FXML
     Label textMessage;
     @FXML
+    TextField textInput;
+    @FXML
     Label textHeader;
+    @FXML
+    Button cancelButton;
     @FXML
     FontIcon icon;
 
@@ -35,14 +44,30 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     }
 
     public static void error(String header, String message) {
-        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.ERROR, true);
         dlg.updateText(header, message);
         dlg.showAndWait();
+    }
+
+    public static Optional<String> input(String header, String message) {
+        var dlg = DialogController.buildDialog(GenericDialog.class, JavaFXApplication.getMainStage(), DialogIcon.INFO, true);
+        dlg.updateText(header, message);
+        dlg.setEditable(true);
+        dlg.showAndWait();
+
+        return Optional.ofNullable(dlg.getView()
+                .getTextValue());
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        updateVisibleWidgets(editable);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
+        updateVisibleWidgets(false);
     }
 
     public void updateText(String header, String msg) {
@@ -70,6 +95,23 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
             onCloseCallback.run();
         }
         close();
+    }
+
+    @FXML
+    public void onCancelButton(ActionEvent event) {
+        getView().setTextValue(null);
+        close();
+    }
+
+    private void updateVisibleWidgets(boolean editMode) {
+        textInput.setVisible(editMode);
+        textInput.setDisable(!editMode);
+        cancelButton.setVisible(editMode);
+        cancelButton.setDisable(!editMode);
+        if (editMode) {
+            textInput.textProperty()
+                    .bindBidirectional(getView().textValueProperty());
+        }
     }
 
     private void updateIcon() {
