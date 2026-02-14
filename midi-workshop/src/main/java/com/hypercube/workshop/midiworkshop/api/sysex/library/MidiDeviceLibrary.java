@@ -49,14 +49,52 @@ public class MidiDeviceLibrary {
     public static final String MACRO_CALL_SEPARATOR = ";";
     private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     @Getter
-    private Map<String, MidiDeviceDefinition> devices = new HashMap<>();
-    private Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new ConcurrentHashMap<>();
+    private final Map<String, MidiDeviceDefinition> devices = new HashMap<>();
+    private final Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new ConcurrentHashMap<>();
     @Getter
     private boolean loaded;
 
     private static MidiResponseMapper getMacroMapper(MidiDeviceDefinition device, CommandMacro macro) {
         return device.getMapper(macro.getMapperName())
-                .orElseThrow(() -> new MidiConfigError("Unknown mapper '%s' for device '%'".formatted(macro.getMapperName(), device.getDeviceName())));
+                .orElseThrow(() -> new MidiConfigError("Unknown mapper '%s' for device '%s'".formatted(macro.getMapperName(), device.getDeviceName())));
+    }
+
+    /**
+     * Custom patches are *.syx files in the custom bank folder
+     */
+    private static void collectCustomBankPatches(MidiDeviceDefinition device, Path bankPath, MidiDeviceBank bank) {
+        try (Stream<Path> sysexFiles = Files.list(bankPath)) {
+            sysexFiles
+                    .filter(p -> p.getFileName()
+                            .toString()
+                            .endsWith(".syx"))
+                    .forEach(patchPath -> {
+                        String patchName = patchPath.getFileName()
+                                .toString()
+                                .replace(".syx", "");
+                        String presetName = "@" + patchPath.getFileName()
+                                .toString();
+                        MidiDevicePreset preset = MidiDevicePreset.of(patchPath.toFile(), device.getPresetFormat(), presetName);
+                        if (!bank.getPresets()
+                                .contains(preset)) {
+                            bank.getPresets()
+                                    .add(preset);
+                        }
+                    });
+            // remove non-existent custom patches
+            List<MidiDevicePreset> toDelete = bank.getPresets()
+                    .stream()
+                    .filter(p -> {
+                        Path patchPath = bankPath.resolve(p.filename());
+                        return !patchPath.toFile()
+                                .exists();
+                    })
+                    .toList();
+            bank.getPresets()
+                    .removeAll(toDelete);
+        } catch (IOException e) {
+            log.warn("Unable to read bank folder: {}", bankPath.toString(), e);
+        }
     }
 
     public void sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, CommandCall command) {
@@ -150,41 +188,7 @@ public class MidiDeviceLibrary {
                             String modeName = modePath.getFileName()
                                     .toString();
                             MidiDeviceMode mode = getOrCreateMode(device, modeName);
-
-                            try (Stream<Path> bankPaths = Files.list(modePath)) { // List bank directories
-                                bankPaths
-                                        .filter(Files::isDirectory) // Only process directories (banks)
-                                        .forEach(bankPath -> {
-                                            String bankName = bankPath.getFileName()
-                                                    .toString();
-                                            MidiDeviceBank bank = getOrCreateBank(device, mode, bankName);
-
-                                            // Now process .syx files within this bank
-                                            try (Stream<Path> sysexFiles = Files.list(bankPath)) {
-                                                sysexFiles
-                                                        .filter(p -> p.getFileName()
-                                                                .toString()
-                                                                .endsWith(".syx"))
-                                                        .forEach(patchPath -> {
-                                                            String patchName = patchPath.getFileName()
-                                                                    .toString()
-                                                                    .replace(".syx", "");
-                                                            String presetName = "@" + patchPath.getFileName()
-                                                                    .toString();
-                                                            MidiDevicePreset preset = MidiDevicePreset.of(patchPath.toFile(), device.getPresetFormat(), presetName);
-                                                            if (!bank.getPresets()
-                                                                    .contains(preset)) {
-                                                                bank.getPresets()
-                                                                        .add(preset);
-                                                            }
-                                                        });
-                                            } catch (IOException e) {
-                                                log.warn("Unable to read bank folder: {}", bankPath.toString(), e);
-                                            }
-                                        });
-                            } catch (IOException e) {
-                                log.warn("Unable to read mode folder: {}", modePath.toString(), e);
-                            }
+                            collectModeBanks(device, modePath, mode);
                         });
             } catch (IOException e) {
                 throw new MidiConfigError("Unable to read custom banks root folder:" + root.toString(), e);
@@ -286,6 +290,26 @@ public class MidiDeviceLibrary {
                 .filter(d -> d.matchNetworkId(networkId))
                 .findFirst()
                 .orElseThrow(() -> new MidiConfigError("Device with network id %4X not found".formatted(networkId))));
+    }
+
+    /**
+     * Custom banks are subfolders of the mode folder
+     */
+    private void collectModeBanks(MidiDeviceDefinition device, Path modePath, MidiDeviceMode mode) {
+        try (Stream<Path> bankPaths = Files.list(modePath)) { // List bank directories
+            bankPaths
+                    .filter(Files::isDirectory) // Only process directories (banks)
+                    .forEach(bankPath -> {
+                        String bankName = bankPath.getFileName()
+                                .toString();
+                        MidiDeviceBank bank = getOrCreateBank(device, mode, bankName);
+
+                        // Now process .syx files within this bank
+                        collectCustomBankPatches(device, bankPath, bank);
+                    });
+        } catch (IOException e) {
+            log.warn("Unable to read mode folder: {}", modePath.toString(), e);
+        }
     }
 
     private MidiDeviceBank getOrCreateBank(MidiDeviceDefinition device, MidiDeviceMode mode, String bankName) {

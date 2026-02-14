@@ -47,7 +47,7 @@ public class MidiDeviceBank {
      */
     private MidiPresetDomain presetDomain;
     /**
-     * Which presets are available in this command
+     * Which presets are available in this bank
      */
     private List<MidiDevicePreset> presets = new ArrayList<>();
 

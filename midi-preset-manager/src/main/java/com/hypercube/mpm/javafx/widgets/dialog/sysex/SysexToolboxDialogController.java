@@ -113,7 +113,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         runLongTask(() -> {
             getSelectedDevice()
                     .flatMap(midiDeviceDefinition -> deviceToolBox.request(midiDeviceDefinition, textCommand.getText(), this::onDeviceRequest))
-                    .ifPresent(response -> onDeviceResponse(response));
+                    .ifPresent(this::onDeviceResponse);
         });
     }
 

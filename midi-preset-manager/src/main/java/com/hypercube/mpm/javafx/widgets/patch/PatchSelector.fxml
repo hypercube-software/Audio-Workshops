@@ -29,6 +29,7 @@
             </TextField>
             <IconButton onAction="#onSaveSysEx" iconClass="icon-backup" tooltipText="Save Patch"/>
             <IconButton onAction="#onRestoreSysEx" iconClass="icon-restore" tooltipText="Restore SysEx"/>
+            <IconButton onAction="#onDeletePatch" iconClass="icon-remove" tooltipText="Delete Preset"/>
         </children>
         <GridPane.margin>
             <Insets/>

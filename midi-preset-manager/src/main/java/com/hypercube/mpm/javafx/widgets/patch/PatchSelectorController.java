@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -208,5 +209,12 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         var selectedMode = state.getId()
                 .getMode();
         deviceToolBox.saveSysEx(deviceName, selectedMode, selectedBank, selectedCategories, patchName);
+    }
+
+    @FXML
+    void onDeletePatch(ActionEvent actionEvent) {
+        Optional.ofNullable(getModel().getCurrentDeviceState()
+                        .getCurrentPatch())
+                .ifPresent(patch -> deviceToolBox.deleteCustomPatch(patch));
     }
 }

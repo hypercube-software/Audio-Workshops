@@ -19,6 +19,8 @@ macros:
   - "EDIT BUFFER()                   : PATCH(0,0)"
   - "PatchName()                     : EDIT BUFFER() : PatchMapper"
   - "MultiName()                     : CURRENT MULTI() : MultiMapper"
+  - "SaveCurrentPath()               : EDIT BUFFER()"
+
   # Reminder...
   # RPN MSB        = B0 65
   # RPN LSB        = B0 64
@@ -147,4 +149,3 @@ controllers:
   - "71   | Reverb Time  | CC         | 0 | 127"
   - "70   | Reverb Level | CC         | 0 | 127"
   - "05   | Glide Time   | CC         | 0 | 127"
-  

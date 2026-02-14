@@ -8,4 +8,8 @@ public record RequestStatus(String errorMessage, byte[] payload) {
     public static RequestStatus of(byte[] payload) {
         return new RequestStatus(null, payload);
     }
+
+    public boolean hasError() {
+        return errorMessage != null;
+    }
 }

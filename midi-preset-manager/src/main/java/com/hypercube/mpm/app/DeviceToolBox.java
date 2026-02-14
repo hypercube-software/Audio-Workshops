@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
+import com.hypercube.mpm.model.MainModel;
+import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
@@ -45,8 +47,11 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class DeviceToolBox {
+    public static final String MACRO_SAVE_CURRENT_PATCH = "SaveCurrentPath()";
     private final MidiDeviceLibrary midiDeviceLibrary;
     private final MidiPortsManager midiPortsManager;
+    private final DeviceStateManager deviceStateManager;
+    private final PatchesManager patchesManager;
 
     private static File getBankFolder(String deviceMode, String bankName, MidiDeviceDefinition midiDeviceDefinition) {
         String fullPath = "%s/%s/%s/%s".formatted(
@@ -73,6 +78,20 @@ public class DeviceToolBox {
             } catch (IOException e) {
                 log.error("Unable to inspect folder {}", bankFolder.toString());
             }
+        }
+    }
+
+    public void deleteCustomPatch(Patch patch) {
+        if (patch.getFilename() != null) {
+            midiDeviceLibrary.getDevice(patch.getDevice())
+                    .ifPresent(device -> {
+                        File patchFile = new File(getBankFolder(patch.getMode(), patch.getBank(), device), patch.getFilename());
+                        if (GenericDialogController.ask("Delete patch '" + patch.getFilename() + "'", "Are you sure you want to delete this patch ?")) {
+                            patchFile.delete();
+                            midiDeviceLibrary.collectCustomBanksAndPatches(device);
+                            patchesManager.refreshPatches();
+                        }
+                    });
         }
     }
 
@@ -192,7 +211,8 @@ public class DeviceToolBox {
                 }
             }
         } catch (Exception e) {
-            requestLogger.accept(RequestStatus.of(e.getMessage()));
+            Optional.ofNullable(requestLogger)
+                    .ifPresent(r -> r.accept(RequestStatus.of(e.getMessage())));
         }
         return Optional.empty();
     }
@@ -230,37 +250,73 @@ public class DeviceToolBox {
         if (selectedCategories.isEmpty()) {
             GenericDialogController.error("Categories Not Selected", "Select at least one category before saving patch");
         }
+        if (patchName.isEmpty()) {
+            GenericDialogController.error("Patch name not set", "Please type a patch name in the search box");
+        }
         midiDeviceLibrary.getDevice(deviceName)
-                .ifPresent(midiDeviceDefinition -> {
-                    String fullPath = "%s/%s/%s/%s/[%s] %s.syx".formatted(
-                            midiDeviceDefinition.getDefinitionFile()
-                                    .getParentFile()
-                                    .getAbsolutePath(),
-                            midiDeviceDefinition.getDeviceName(),
-                            deviceMode,
-                            bankName,
+                .ifPresent(device -> {
+                    String filename = "[%s] %s.syx".formatted(
                             selectedCategories.stream()
-                                    .map(c -> c.name())
+                                    .map(MidiPresetCategory::name)
                                     .collect(Collectors.joining(",")), patchName);
-                    log.info("Save current preset to " + fullPath);
+                    File patchFile = new File(getBankFolder(deviceMode, bankName, device), filename);
+                    log.info("Save current preset to {}", patchFile);
+                    Consumer<RequestStatus> requestLogger = requestStatus -> {
+                        if (requestStatus.hasError()) {
+                            log.error(requestStatus.errorMessage());
+                            GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
+                        }
+                    };
+                    request(device, MACRO_SAVE_CURRENT_PATCH, requestLogger).ifPresentOrElse(response ->
+                                    createCustomPatch(device, deviceMode, patchFile, response),
+                            () -> log.error("Received nothing !")
+                    );
                 });
     }
 
     public void createBank(String deviceName, String deviceMode, String bankName) {
         midiDeviceLibrary.getDevice(deviceName)
-                .ifPresent(midiDeviceDefinition -> {
-                    File bankFolder = getBankFolder(deviceMode, bankName, midiDeviceDefinition);
+                .ifPresent(device -> {
+                    File bankFolder = getBankFolder(deviceMode, bankName, device);
+                    log.info("Create bank folder {}", bankFolder.toString());
                     bankFolder.mkdirs();
-                    midiDeviceLibrary.collectCustomBanksAndPatches(midiDeviceDefinition);
+                    midiDeviceLibrary.collectCustomBanksAndPatches(device);
+                    device.getMode(deviceMode)
+                            .ifPresent(MidiDeviceMode::refreshBanksMap);
+                    refreshUI(device);
                 });
     }
 
     public void deleteBank(String deviceName, String deviceMode, String bankName) {
         midiDeviceLibrary.getDevice(deviceName)
-                .ifPresent(midiDeviceDefinition -> {
-                    File bankFolder = getBankFolder(deviceMode, bankName, midiDeviceDefinition);
+                .ifPresent(device -> {
+                    File bankFolder = getBankFolder(deviceMode, bankName, device);
+                    log.info("Delete bank folder {}", bankFolder.toString());
                     deleteBankFolder(bankFolder);
-                    midiDeviceLibrary.collectCustomBanksAndPatches(midiDeviceDefinition);
+                    device.getMode(deviceMode)
+                            .ifPresent(m -> {
+                                m.getBanks()
+                                        .remove(bankName);
+                                m.refreshBanksMap();
+                            });
+                    refreshUI(device);
                 });
+    }
+
+    private void createCustomPatch(MidiDeviceDefinition device, String deviceMode, File patchFile, byte[] response) {
+        log.info("Received {} bytes", response.length);
+        try {
+            Files.write(patchFile.toPath(), response);
+        } catch (IOException e) {
+            log.error("Unable to save {}: {}", patchFile, e.getMessage());
+            GenericDialogController.error("SysEx not saved", e.getMessage());
+        }
+        midiDeviceLibrary.collectCustomBanksAndPatches(device);
+        patchesManager.refreshPatches();
+    }
+
+    private void refreshUI(MidiDeviceDefinition device) {
+        deviceStateManager.refreshModeProperties(device, MainModel.getObservableInstance()
+                .getCurrentDeviceState());
     }
 }

@@ -93,21 +93,28 @@ public class MidiDeviceMode {
 
     public List<MidiDeviceBank> getBanksForChannel(int channel) {
         if (banksMap == null) {
-            banksMap = new HashMap<>();
-            var modeBanks = banks.values()
-                    .stream()
-                    .toList();
-            getChannels().forEach(ch -> banksMap.put(ch, modeBanks));
-            if (subBanks != null) {
-                var channelBank = subBanks.getMode()
-                        .getBanks()
-                        .values()
-                        .stream()
-                        .toList();
-                subBanks.getChannels()
-                        .forEach(ch -> banksMap.put(ch, channelBank));
-            }
+            refreshBanksMap();
         }
         return banksMap.getOrDefault(channel, List.of());
+    }
+
+    /**
+     * Called when the user add or remove a custom bank
+     */
+    public void refreshBanksMap() {
+        banksMap = new HashMap<>();
+        var modeBanks = banks.values()
+                .stream()
+                .toList();
+        getChannels().forEach(ch -> banksMap.put(ch, modeBanks));
+        if (subBanks != null) {
+            var channelBank = subBanks.getMode()
+                    .getBanks()
+                    .values()
+                    .stream()
+                    .toList();
+            subBanks.getChannels()
+                    .forEach(ch -> banksMap.put(ch, channelBank));
+        }
     }
 }
