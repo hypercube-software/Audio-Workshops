@@ -548,6 +548,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 patchesManager.setCurrentPatch(patch);
                 deviceStateManager.saveDeviceState();
             }
+        } else {
+            patchesManager.setCurrentPatch(null);
+            deviceStateManager.saveDeviceState();
         }
     }
 

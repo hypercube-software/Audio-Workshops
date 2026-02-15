@@ -75,6 +75,16 @@ public abstract class Controller<V extends Node, M> {
         return EventHelper.forge(eventClass, getView(), getView(), args);
     }
 
+    /**
+     * Run some code later in the JavaFX thread. Does not wait for its termination
+     */
+    public void runLaterOnJavaFXThread(Runnable code) {
+        Platform.runLater(code);
+    }
+
+    /**
+     * Run some code in the JavaFX thread and wait for its termination
+     */
     public void runOnJavaFXThread(Runnable code) {
         if (Platform.isFxApplicationThread()) {
             code.run();

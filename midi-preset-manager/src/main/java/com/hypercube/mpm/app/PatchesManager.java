@@ -144,12 +144,17 @@ public class PatchesManager {
      */
     public void saveSelectedPatchToConfig(Patch selectedPatch) {
         var cfg = configurationFactory.getProjectConfiguration();
-        var list = cfg.getSelectedPatches()
+        var stateId = selectedPatch != null ? selectedPatch.getDeviceStateId() : model.getCurrentDeviceState()
+                .getId();
+        final List<Patch> list;
+        list = cfg.getSelectedPatches()
                 .stream()
                 .filter(sp -> !sp.getDeviceStateId()
-                        .equals(selectedPatch.getDeviceStateId()))
+                        .equals(stateId))
                 .collect(Collectors.toList());
-        list.add(selectedPatch);
+        if (selectedPatch != null) {
+            list.add(selectedPatch);
+        }
         cfg.setSelectedPatches(list);
         configurationFactory.saveConfig();
     }
@@ -167,6 +172,9 @@ public class PatchesManager {
     }
 
     public void sendPatchToDevice(Patch selectedPatch) {
+        if (selectedPatch == null) {
+            return;
+        }
         var cfg = configurationFactory.getProjectConfiguration();
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(selectedPatch.getDevice())

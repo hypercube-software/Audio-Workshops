@@ -143,18 +143,22 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         ObservableValue<? extends Patch> patchProperty = (ObservableValue<? extends Patch>) observable;
         log.info("onSelectedPatchChange {} for Patches", patchProperty);
         Patch newValue = patchProperty.getValue();
-        var sm = patchList.getSelectionModel();
-        Patch currentPatch = (Patch) sm.getSelectedItem();
-        if (currentPatch == null || !currentPatch.equals(newValue)) {
-            sm.clearSelection();
-            if (newValue != null) {
-                sm.select(newValue);
-            }
-        }
         // scrollTo have the tendency to put items on top, so we don't call it if the user just selected the item
         if (!userAction) {
             patchList.scrollTo(newValue);
         }
+        // Tricky code: it is not advised to modify the selection during a selectionChanged event
+        // so we use runLaterOnJavaFXThread
+        runLaterOnJavaFXThread(() -> {
+            var sm = patchList.getSelectionModel();
+            Patch currentPatch = (Patch) sm.getSelectedItem();
+            if (currentPatch == null || !currentPatch.equals(newValue)) {
+                sm.clearSelection();
+                if (newValue != null) {
+                    sm.select(newValue);
+                }
+            }
+        });
     }
 
     private void onScoreChangedEventChanged(ScoreChangedEvent scoreChangedEvent) {
