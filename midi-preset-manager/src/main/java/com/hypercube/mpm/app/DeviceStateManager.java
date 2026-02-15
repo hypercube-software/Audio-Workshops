@@ -187,15 +187,20 @@ public class DeviceStateManager {
         if (!currentState.getId()
                 .getMode()
                 .equals(newModeName) || force) {
-            String modeCommand = device.getDeviceModes()
-                    .get(newModeName)
-                    .getCommand();
-            MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
-            if (modeCommand != null && midiOutDevice != null) {
-                log.info("Switch to Mode on device: {}", newModeName);
-                cfg.getMidiDeviceLibrary()
-                        .sendCommandToDevice(device, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
-                midiOutDevice.sleep(device.getModeLoadTimeMs());
+            MidiDeviceMode midiDeviceMode = device.getDeviceModes()
+                    .get(newModeName);
+            if (midiDeviceMode != null) {
+                String modeCommand = midiDeviceMode
+                        .getCommand();
+                MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
+                if (modeCommand != null && midiOutDevice != null) {
+                    log.info("Switch to Mode on device: {}", newModeName);
+                    cfg.getMidiDeviceLibrary()
+                            .sendCommandToDevice(device, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
+                    midiOutDevice.sleep(device.getModeLoadTimeMs());
+                }
+            } else {
+                log.error("Unknown mode '{}' for device '{}'", newModeName, device.getDeviceName());
             }
         } else {
             log.info("Already in mode: {}", newModeName);

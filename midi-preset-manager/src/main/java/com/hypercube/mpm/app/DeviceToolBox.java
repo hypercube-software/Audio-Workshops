@@ -90,6 +90,7 @@ public class DeviceToolBox {
                         if (GenericDialogController.ask("Delete patch '" + patch.getFilename() + "'", "Are you sure you want to delete this patch ?")) {
                             log.info("Delete files {}", patchFile);
                             if (patchFile.delete()) {
+                                patchesManager.setCurrentPatch(null);
                                 midiDeviceLibrary.collectCustomBanksAndPatches(device);
                                 patchesManager.refreshPatches();
                             } else {
@@ -248,7 +249,7 @@ public class DeviceToolBox {
         }
     }
 
-    public void updateOrCreatePatch() {
+    public void updateOrCreatePatch(Patch currentPatch) {
         final String selectedBank;
         final String selectedMode;
         final String patchName;
@@ -263,11 +264,12 @@ public class DeviceToolBox {
                 .getName();
         final List<String> selectedBanks = state.getSelectedBankNames();
         final List<MidiPresetCategory> selectedCategories = state.getCurrentSelectedCategories();
-        final Patch currentPatch = state.getCurrentPatch();
 
         if (currentPatch != null) {
             if (currentPatch.getFilename() == null) {
                 GenericDialogController.error("Patch selection error", "You can't update a factory preset");
+                return;
+            } else if (!GenericDialogController.ask("Patch update confirmation", "You are about to override patch '%s'".formatted(currentPatch.getFilename()))) {
                 return;
             }
             selectedMode = currentPatch.getMode();
@@ -305,10 +307,16 @@ public class DeviceToolBox {
                             GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
                         }
                     };
-                    request(device, MACRO_SAVE_CURRENT_PATCH, requestLogger).ifPresentOrElse(response ->
-                                    createCustomPatch(device, selectedMode, patchFile, response),
-                            () -> log.error("Received nothing from device '{}'!", device.getDeviceName())
-                    );
+                    boolean useFakeResponse = true;
+                    if (useFakeResponse) {
+                        byte[] fakeResponse = new byte[255];
+                        createCustomPatch(device, selectedMode, patchFile, fakeResponse);
+                    } else {
+                        request(device, MACRO_SAVE_CURRENT_PATCH, requestLogger).ifPresentOrElse(response ->
+                                        createCustomPatch(device, selectedMode, patchFile, response),
+                                () -> log.error("Received nothing from device '{}'!", device.getDeviceName())
+                        );
+                    }
                 });
     }
 
@@ -345,6 +353,7 @@ public class DeviceToolBox {
         log.info("Received {} bytes", response.length);
         try {
             Files.write(patchFile.toPath(), response);
+            GenericDialogController.info("SysEx saved", patchFile.getAbsolutePath());
         } catch (IOException e) {
             log.error("Unable to save {}: {}", patchFile, e.getMessage());
             GenericDialogController.error("SysEx not saved", e.getMessage());

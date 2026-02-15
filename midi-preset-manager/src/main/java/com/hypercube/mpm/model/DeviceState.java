@@ -18,7 +18,13 @@ public class DeviceState {
      */
     private DeviceStateId id = new DeviceStateId();
     /**
-     * Which patch is selected on this mode and MIDI channel
+     * Which patch is selected on this {@link DeviceStateId} (mode and MIDI channel)
+     * <p>NOTE: it is important to understand this item is not necessary visible on screen</p>
+     * <ul>
+     *     <li>It is the current patch INSIDE the device</li>
+     *     <li>It is not the currently selected patch in the UI</li>
+     * </ul>
+     * For instance if the user filter the search result with a bank without this patch, the selected patch is null whereas {@code currentPath} remains.
      */
     private Patch currentPatch;
     /**
@@ -37,7 +43,7 @@ public class DeviceState {
      * Used when the user go back to a device, he wants to continue where he was (especially the channel)
      */
     private boolean lastUsed;
-    
+
     @NotObservable
     private MidiOutDevice midiOutDevice;
 

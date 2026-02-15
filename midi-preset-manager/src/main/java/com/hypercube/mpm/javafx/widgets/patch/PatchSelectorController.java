@@ -36,7 +36,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
@@ -180,16 +179,19 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     }
 
     private void onSelectedItemChange() {
-        List<Patch> patches = patchList.getSelectionModel()
+        Patch patch = getSelectedPatch();
+        String name = patch != null ? patch.getName() : "<none>";
+        log.info("Selected item:{}", name);
+        List<Patch> selection = patch == null ? List.of() : List.of(patch);
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, List.of(), selection);
+    }
+
+    private Patch getSelectedPatch() {
+        return (Patch) patchList.getSelectionModel()
                 .getSelectedItems()
                 .stream()
-                .toList();
-
-        log.info("Selected item:" + patches.stream()
-                .map(Patch::getName)
-                .collect(Collectors.joining(",")));
-
-        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, List.of(), patches);
+                .findFirst()
+                .orElse(null);
     }
 
     @FXML
@@ -199,7 +201,7 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
     @FXML
     void onSaveSysEx(ActionEvent actionEvent) {
-        deviceToolBox.updateOrCreatePatch();
+        deviceToolBox.updateOrCreatePatch(getSelectedPatch());
     }
 
     @FXML
