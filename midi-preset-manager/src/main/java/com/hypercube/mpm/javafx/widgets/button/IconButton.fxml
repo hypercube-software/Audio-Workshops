@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Region?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="icon-button" type="Button" stylesheets="@IconButton.css"
+         fx:controller="com.hypercube.mpm.javafx.widgets.button.IconButtonController"
          xmlns="http://javafx.com/javafx/17.0.12">
     <!-- DEFINE PROPERTY String:tooltipText -->
     <!-- DEFINE PROPERTY String:iconClass -->

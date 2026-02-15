@@ -301,13 +301,12 @@ We are going to respect the MVC keeping UI component away from the controller cl
      var viewClass = widget.getClass();
      var loader = new FXMLLoader(viewClass.getResource(viewClass.getSimpleName() + ".fxml"));
      ...
-     controllerInstance = // do whatever you need to, we can use spring to create a controller bean for instance
-     ...
-     loader.setController(controllerInstance);
-     controllerInstance.setView(widget);
-     widget.setUserData(controllerInstance);
+     // do whatever you need to, we can use spring to create a controller bean for instance
+     loader.setControllerFactory(type -> forgeController(widget, controller));
+     ...     
      loader.setRoot(widget);
      T view = loader.load();
+     assert (view == widget);
      return view;
 }
 ```

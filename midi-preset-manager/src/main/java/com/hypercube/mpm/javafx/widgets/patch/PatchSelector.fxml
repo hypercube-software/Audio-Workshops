@@ -6,6 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane" stylesheets="@../MainWindow.css"
+         fx:controller="com.hypercube.mpm.javafx.widgets.patch.PatchSelectorController"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
         <ColumnConstraints minWidth="10.0"/>

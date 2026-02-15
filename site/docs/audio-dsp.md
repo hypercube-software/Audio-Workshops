@@ -442,7 +442,7 @@ If you try to go over it:
 
 The DFT is very simple to code but unfortunately very slow. The FFT is complex but can do the same very fast. Here we will code the slow algorithm to see what's going on.
 
-- The DFT is nothing more than a cross-correlation between the input signal and a set of complex sinusoidal complex functions
+- The DFT is nothing more than a cross-correlation between the input signal and a set of complex sinusoidal functions
 - We need to deal with complex functions because we need to take in consideration both **amplitude** and **phase** for a given frequency.
 
 Here the cross-correlation formula between a input signal **x** of N samples and a complex sinusoidal function of normalized frequency **k/N**
@@ -907,6 +907,3 @@ With 2 instances of MAnalyzer you can see the spectrum before and after the filt
 ![image-20230318155116597](assets/image-20230318155116597.png)
 
 ![image-20230318155128289](assets/image-20230318155128289.png)
-
-
-

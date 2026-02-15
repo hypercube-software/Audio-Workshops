@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="header" type="GridPane"
+         fx:controller="com.hypercube.mpm.javafx.widgets.attribute.AttributeSelectorController"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
         <ColumnConstraints minWidth="25.0"/>

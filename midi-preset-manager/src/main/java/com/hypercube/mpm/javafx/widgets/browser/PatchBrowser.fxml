@@ -6,6 +6,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="true" type="GridPane"
+         fx:controller="com.hypercube.mpm.javafx.widgets.browser.PatchBrowserController"
          xmlns="http://javafx.com/javafx/17.0.12">
     <columnConstraints>
         <ColumnConstraints maxWidth="250"/>

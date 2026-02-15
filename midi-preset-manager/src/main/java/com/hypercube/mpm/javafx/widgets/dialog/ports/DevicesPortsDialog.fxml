@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
+         fx:controller="com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialogController"
          stylesheets="@../../MainWindow.css,@../DialogCommon.css,@DevicesPortsDialog.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
     <GridPane styleClass="mpmDialog">
         <columnConstraints>

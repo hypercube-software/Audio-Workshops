@@ -5,7 +5,10 @@ import javafx.scene.Node;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * This class does the magic to make SceneBuilder happy
@@ -17,6 +20,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * </ul>
  */
 @UtilityClass
+@Slf4j
 public class ControllerHelper {
     @Getter
     @Setter
@@ -26,16 +30,47 @@ public class ControllerHelper {
     @Setter
     private static ConfigurableApplicationContext springContext;
 
-    public static <T extends Node> T loadFXML(T widget) {
-        return loadFXML(widget, widget.getClass()
+    public static <T extends Node> void loadFXML(T widget) {
+        loadFXML(widget, widget.getClass()
                 .getName() + "Controller");
     }
 
-    public static <T extends Node, View> T loadFXML(T widget, String controller) {
+    /**
+     * This method is recursive, since FXML files use other FXML files
+     * <p>The recursion occurs when we call {@link FXMLLoader}</p>
+     *
+     * @param widget     instance of the view widget
+     * @param controller class name of the controller
+     * @param <T>        type of the view widget
+     */
+    public static <T extends Node> void loadFXML(T widget, String controller) {
         var viewClass = widget.getClass();
-        var loader = new FXMLLoader(viewClass.getResource(viewClass.getSimpleName() + ".fxml"));
+        String fxmlFile = viewClass.getSimpleName() + ".fxml";
+        var loader = new FXMLLoader(viewClass.getResource(fxmlFile));
+        loader.setControllerFactory(type -> forgeController(widget, controller));
+        if (!nonSceneBuilderLaunch) {
+            System.out.println("==============================================================");
+            System.out.println("SceneBuilder context");
+            System.out.println("View      : " + widget.getClass()
+                    .getName());
+            System.out.println("Controller: " + controller);
+            System.out.println("==============================================================");
+        }
         try {
-            Controller<T, ?> controllerInstance = null;
+            loader.setRoot(widget);
+            T view = loader.load();
+            assert (view == widget);
+        } catch (Exception e) {
+            throw new ControllerHelperException("Unable to load " + fxmlFile, e);
+        }
+    }
+
+    /**
+     * Use Spring to create the controller and wire things together
+     */
+    private static <T extends Node> Controller<T, ?> forgeController(T view, String controller) {
+        try {
+            Controller<T, ?> controllerInstance;
             if (springContext != null) {
                 controllerInstance = (Controller<T, ?>) springContext
                         .getAutowireCapableBeanFactory()
@@ -45,23 +80,12 @@ public class ControllerHelper {
                         .getConstructor()
                         .newInstance();
             }
-            if (!nonSceneBuilderLaunch) {
-                System.out.println("==============================================================");
-                System.out.println("SceneBuilder context");
-                System.out.println("View      : " + widget.getClass()
-                        .getName());
-                System.out.println("Controller: " + controller);
-                System.out.println("==============================================================");
-            }
-            loader.setController(controllerInstance);
-            controllerInstance.setView(widget);
-            widget.setUserData(controllerInstance);
-            loader.setRoot(widget);
-            T view = loader.load();
-            assert (view == widget);
-            return view;
-        } catch (Exception e) {
-            throw new ControllerHelperException("Unable to load " + viewClass.getSimpleName(), e);
+            controllerInstance.setView(view);
+            view.setUserData(controllerInstance);
+            return controllerInstance;
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
+            throw new ControllerHelperException(e);
         }
     }
 

@@ -4,6 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml" fx:id="root" hgap="5.0" type="GridPane"
+         fx:controller="com.hypercube.mpm.javafx.widgets.patch.PatchScoreController"
          xmlns="http://javafx.com/javafx">
     <!-- DEFINE PROPERTY score -->
     <ImageView fx:id="star1" GridPane.columnIndex="1" GridPane.valignment="CENTER">

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
+         fx:controller="com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController"
          stylesheets="@../../MainWindow.css, @../DialogCommon.css, @ProgressDialog.css"
          type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
     <GridPane styleClass="mpmDialog,progressDialog">
