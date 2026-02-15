@@ -307,7 +307,7 @@ public class DeviceToolBox {
                             GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
                         }
                     };
-                    boolean useFakeResponse = true;
+                    boolean useFakeResponse = false;
                     if (useFakeResponse) {
                         byte[] fakeResponse = new byte[255];
                         createCustomPatch(device, selectedMode, patchFile, fakeResponse);

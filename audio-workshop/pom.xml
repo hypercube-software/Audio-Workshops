@@ -5,18 +5,18 @@
     <parent>
         <groupId>com.hypercube.workshop</groupId>
         <artifactId>audio-workshop-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>audio-workshop</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>audio-workshop</name>
     <description>Demo project to learn AUDIO in Java</description>
     <dependencies>
         <dependency>
             <groupId>com.hypercube.workshop</groupId>
             <artifactId>midi-workshop</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
             <classifier>api</classifier>
         </dependency>
         <dependency>
