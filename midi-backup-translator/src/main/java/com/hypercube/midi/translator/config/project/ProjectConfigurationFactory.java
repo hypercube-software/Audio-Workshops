@@ -11,6 +11,7 @@ import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Optional;
 @Slf4j
 public class ProjectConfigurationFactory {
     private final MidiDeviceLibrary midiDeviceLibrary;
+    private final MidiDeviceRequester midiDeviceRequester;
 
     @Value("${mbt-config:./config.yml}")
     private File configFile;
@@ -42,7 +44,7 @@ public class ProjectConfigurationFactory {
             var mapper = new ObjectMapper(new YAMLFactory());
             try {
                 SimpleModule module = new SimpleModule();
-                module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer(midiDeviceLibrary, configFile));
+                module.addDeserializer(MidiTranslation.class, new MidiTranslationDeserializer(midiDeviceLibrary, midiDeviceRequester, configFile));
                 mapper.registerModule(module);
                 ProjectConfiguration config = mapper.readValue(configFile, ProjectConfiguration.class);
                 config.getDevices()
@@ -62,6 +64,37 @@ public class ProjectConfigurationFactory {
             log.warn("The project config does not exists: " + configFile.getAbsolutePath());
             return new ProjectConfiguration();
         }
+    }
+
+    /**
+     * Convert a macro definition to a {@link MidiRequestSequence}
+     * <p>This method is public because we use it if a macro is passed from command line</p>
+     *
+     * @param device               The device that should receive this midi request
+     * @param rawRequestDefinition Definition of the macro
+     * @return The {@link MidiRequestSequence}
+     */
+    public MidiRequestSequence forgeMidiRequestSequence(ProjectDevice device, String rawRequestDefinition) {
+        var deviceDefinition = midiDeviceLibrary.getDevice(device.getName())
+                .orElseThrow();
+        return CommandCall.parse(configFile, rawRequestDefinition)
+                .stream()
+                .map(commandCall -> midiDeviceRequester.forgeMidiRequestSequence(deviceDefinition,
+                        deviceDefinition.getMacro(commandCall), commandCall))
+                .findFirst()
+                .orElseThrow();
+
+    }
+
+    public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {
+        loadLibary();
+        return midiDeviceLibrary.getDeviceFromMidiPort(midiPort);
+    }
+
+    public Optional<ProjectDevice> getDefaultProjectDevice(String deviceName) {
+        loadLibary();
+        return midiDeviceLibrary.getDevice(deviceName)
+                .map(this::forgeDefaultProjectDevice);
     }
 
     private void loadLibary() {
@@ -108,37 +141,6 @@ public class ProjectConfigurationFactory {
                 .map(rawRequestDefinition -> forgeMidiRequestSequence(device, rawRequestDefinition)
                 )
                 .toList();
-    }
-
-    /**
-     * Convert a macro definition to a {@link MidiRequestSequence}
-     * <p>This method is public because we use it if a macro is passed from command line</p>
-     *
-     * @param device               The device that should receive this midi request
-     * @param rawRequestDefinition Definition of the macro
-     * @return The {@link MidiRequestSequence}
-     */
-    public MidiRequestSequence forgeMidiRequestSequence(ProjectDevice device, String rawRequestDefinition) {
-        return CommandCall.parse(configFile, rawRequestDefinition)
-                .stream()
-                .map(commandCall -> midiDeviceLibrary.forgeMidiRequestSequence(configFile, device.getName(),
-                        midiDeviceLibrary.getDevice(device.getName())
-                                .map(d -> d.getMacro(commandCall))
-                                .orElseThrow(), commandCall))
-                .findFirst()
-                .orElseThrow();
-
-    }
-
-    public Optional<MidiDeviceDefinition> getLibraryDeviceFromMidiPort(String midiPort) {
-        loadLibary();
-        return midiDeviceLibrary.getDeviceFromMidiPort(midiPort);
-    }
-
-    public Optional<ProjectDevice> getDefaultProjectDevice(String deviceName) {
-        loadLibary();
-        return midiDeviceLibrary.getDevice(deviceName)
-                .map(this::forgeDefaultProjectDevice);
     }
 
     private ProjectDevice forgeDefaultProjectDevice(MidiDeviceDefinition midiDeviceDefinition) {

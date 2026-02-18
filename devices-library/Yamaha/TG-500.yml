@@ -56,6 +56,7 @@ categories:
 #
 deviceModes:
   Voice:
+    backupCommand: Voice Edit Buffer()
     queryName: PatchName()
     midiChannels: 0
     banks:
@@ -102,6 +103,7 @@ deviceModes:
         queryName: DrumPatchName()
         presetDomain: 63
   Performance:
+    backupCommand: Performance Edit Buffer()
     queryName: PerformanceName()
     midiChannels: 0
     banks:

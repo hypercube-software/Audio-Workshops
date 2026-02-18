@@ -8,7 +8,8 @@ import com.hypercube.midi.translator.config.project.translation.MidiTranslation;
 import com.hypercube.midi.translator.config.project.translation.MidiTranslationPayload;
 import com.hypercube.midi.translator.error.ConfigError;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,40 +26,14 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
     private static final Pattern translationRegExp = Pattern.compile("(?<cc>[0-9]+)\\s*=>\\s*(?<payload>[^\\[\\]]+)($|(\\s+\\[(?<lowerBound>[+-0123456789]+),(?<upperBound>[+-0123456789]+)\\]))");
     private static final Pattern translationPayloadRegExp = Pattern.compile("\\s*([vA-F0-9]{2})");
     private final MidiDeviceLibrary midiDeviceLibrary;
+    private final MidiDeviceRequester midiDeviceRequester;
     private final File configFile;
 
-    public MidiTranslationDeserializer(MidiDeviceLibrary midiDeviceLibrary, File configFile) {
+    public MidiTranslationDeserializer(MidiDeviceLibrary midiDeviceLibrary, MidiDeviceRequester midiDeviceRequester, File configFile) {
         super((Class<?>) null);
         this.midiDeviceLibrary = midiDeviceLibrary;
+        this.midiDeviceRequester = midiDeviceRequester;
         this.configFile = configFile;
-    }
-
-    @Override
-    public MidiTranslation deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        String translationDefinition = jsonParser.getText();
-        var translationMatcher = translationRegExp.matcher(translationDefinition);
-        if (translationMatcher.find()) {
-            int cc = Integer.parseInt(translationMatcher.group("cc"));
-            int lowerBound = Optional.ofNullable(translationMatcher.group("lowerBound"))
-                    .map(Integer::parseInt)
-                    .orElse(0);
-            int upperBound = Optional.ofNullable(translationMatcher.group("upperBound"))
-                    .map(Integer::parseInt)
-                    .orElse(127);
-
-            String rawPayload = translationMatcher.group("payload");
-            ProjectConfiguration projectConfiguration = (ProjectConfiguration) jsonParser.getParsingContext()
-                    .getParent()
-                    .getCurrentValue();
-            // expand the macro if there is one
-            var device = midiDeviceLibrary.getDevice(projectConfiguration.getTranslate()
-                            .getToDevice())
-                    .orElseThrow();
-            List<MidiRequest> expandedTexts = midiDeviceLibrary.expand(configFile, device, null, rawPayload);
-            return forgeMidiTranslation(translationDefinition, cc, lowerBound, upperBound, expandedTexts);
-        } else {
-            throw new ConfigError("Unexpected Translation definition: " + translationDefinition);
-        }
     }
 
     /**
@@ -92,5 +67,33 @@ public class MidiTranslationDeserializer extends StdDeserializer<MidiTranslation
                 })
                 .toList();
         return new MidiTranslation(cc, lowerBound, upperBound, payloads);
+    }
+
+    @Override
+    public MidiTranslation deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        String translationDefinition = jsonParser.getText();
+        var translationMatcher = translationRegExp.matcher(translationDefinition);
+        if (translationMatcher.find()) {
+            int cc = Integer.parseInt(translationMatcher.group("cc"));
+            int lowerBound = Optional.ofNullable(translationMatcher.group("lowerBound"))
+                    .map(Integer::parseInt)
+                    .orElse(0);
+            int upperBound = Optional.ofNullable(translationMatcher.group("upperBound"))
+                    .map(Integer::parseInt)
+                    .orElse(127);
+
+            String rawPayload = translationMatcher.group("payload");
+            ProjectConfiguration projectConfiguration = (ProjectConfiguration) jsonParser.getParsingContext()
+                    .getParent()
+                    .getCurrentValue();
+            // expand the macro if there is one
+            var device = midiDeviceLibrary.getDevice(projectConfiguration.getTranslate()
+                            .getToDevice())
+                    .orElseThrow();
+            List<MidiRequest> expandedTexts = midiDeviceRequester.expand(device, configFile, null, rawPayload);
+            return forgeMidiTranslation(translationDefinition, cc, lowerBound, upperBound, expandedTexts);
+        } else {
+            throw new ConfigError("Unexpected Translation definition: " + translationDefinition);
+        }
     }
 }

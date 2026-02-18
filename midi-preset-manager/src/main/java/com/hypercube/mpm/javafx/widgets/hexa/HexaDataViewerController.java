@@ -1,5 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.hexa;
 
+import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,16 +13,28 @@ import javafx.scene.layout.TilePane;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
 @Slf4j
 public class HexaDataViewerController extends DialogController<HexaDataViewer, Void> {
 
+    public static final int MAX_PAYLOAD_SIZE = 256;
     @FXML
     private TilePane hexTilePane;
     @FXML
     private ScrollPane hexScrollPane;
+
+    private static byte[] getPayload(DataViewerPayload newValue) {
+        byte[] payload = newValue.data();
+        if (payload.length > MAX_PAYLOAD_SIZE) {
+            GenericDialogController.warn("Huge payload received", "Current payload of %d bytes will be truncated to %d bytes".formatted(payload.length, MAX_PAYLOAD_SIZE));
+            return Arrays.copyOfRange(payload, 0, MAX_PAYLOAD_SIZE);
+        } else {
+            return payload;
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,7 +59,7 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
         hexTilePane.getChildren()
                 .clear();
         if (newValue != null) {
-            byte[] response = newValue.data();
+            byte[] response = getPayload(newValue);
             for (int i = 0; i < response.length; i++) {
                 HexaDataCell cellLabel = new HexaDataCell();
                 cellLabel.setHexaValue("%02X".formatted(response[i]));

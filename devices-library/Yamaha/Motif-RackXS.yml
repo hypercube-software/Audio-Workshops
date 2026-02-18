@@ -34,10 +34,12 @@ macros:
   - "NormalVoices()               : -- : DREQ(0E 01 [0-127])"
   - "DrumVoices()                 : -- : DREQ(0E 00 [0-127])"
   - "Multi()                      : -- : DREQ(0E 0C [0-127])"
-  - "setVoiceMode()                  : PCHG(0x0A0001,0x00)"
-  - "setMultiMode()                  : PCHG(0x0A0001,0x05)"
-  - "PatchName()                  : 7DB : DREQ(0x0E0F00) : VoiceMapper" # Voice Edit Buffer
-  - "MultiName()                  : AC5 : DREQ(0x0E5F00) : MultiMapper" # Multi Edit Buffer
+  - "VoiceEditBuffer()            : 7DB : DREQ(0x0E0F00)"
+  - "MultiEditBuffer()            : AC5 : DREQ(0x0E5F00)"
+  - "setVoiceMode()               : PCHG(0x0A0001,0x00)"
+  - "setMultiMode()               : PCHG(0x0A0001,0x05)"
+  - "PatchName()                  : VoiceEditBuffer() : VoiceMapper" # Voice Edit Buffer
+  - "MultiName()                  : MultiEditBuffer() : MultiMapper" # Multi Edit Buffer
 
   # Mode Change
   # Part Set Control
@@ -81,6 +83,7 @@ deviceModes:
   #      presetDomain: 0-127
   Voice:
     command: setVoiceMode()
+    backupCommand: VoiceEditBuffer()
     queryName: PatchName()
     midiChannels: 0
     banks:
@@ -140,7 +143,7 @@ deviceModes:
       - "Ethnic"
       - "Other"
 
-controllers:        
+controllers:
   - "01   | Modulation  | CC           | 0 | 127"
   - "0B   | Expression  | CC           | 0 | 127"
   - "40   | Sustain     | CC           | 0 | 127"

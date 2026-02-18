@@ -19,19 +19,26 @@ import java.util.*;
 public class VirtualKeyboard {
     private final Map<KeyCode, Integer> keyToMidiNoteMap = forgeKeyToNoteMap();
     private final Map<KeyCode, Boolean> keyState = new HashMap<>();
+    private final Set<KeyCode> keysPressed = new HashSet<>();
     private final MidiRouter midiRouter;
     private final DeviceStateManager deviceStateManager;
 
     public void translateKeyDown(KeyEvent keyEvent) {
         KeyCode code = keyEvent.getCode();
-        translateKeyDown(code)
-                .forEach(midiRouter::sendToMainDestination);
+        if (!keysPressed.contains(code)) {
+            keysPressed.add(code); // prevent any Key Repeat from OS
+            translateKeyDown(code)
+                    .forEach(midiRouter::sendToMainDestination);
+        }
     }
 
     public void translateKeyUp(KeyEvent keyEvent) {
         KeyCode code = keyEvent.getCode();
-        translateKeyUp(code)
-                .ifPresent(midiRouter::sendToMainDestination);
+        if (keysPressed.contains(code)) {
+            keysPressed.remove(code);
+            translateKeyUp(code)
+                    .ifPresent(midiRouter::sendToMainDestination);
+        }
     }
 
     /**

@@ -6,7 +6,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetNaming;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchOverride;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import lombok.Getter;

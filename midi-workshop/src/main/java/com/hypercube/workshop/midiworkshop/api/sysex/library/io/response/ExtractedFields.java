@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.library.response;
+package com.hypercube.workshop.midiworkshop.api.sysex.library.io.response;
 
 import java.util.HashMap;
 import java.util.Map;

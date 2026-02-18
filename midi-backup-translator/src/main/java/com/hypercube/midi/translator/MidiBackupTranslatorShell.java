@@ -9,7 +9,7 @@ import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

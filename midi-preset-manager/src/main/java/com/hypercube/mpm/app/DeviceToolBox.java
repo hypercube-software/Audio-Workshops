@@ -10,7 +10,6 @@ import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetConsumer;
 import com.hypercube.workshop.midiworkshop.api.presets.generic.MidiPresetCrawler;
@@ -19,6 +18,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBa
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMixin;
@@ -32,11 +32,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -48,11 +49,12 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class DeviceToolBox {
-    public static final String MACRO_SAVE_CURRENT_PATCH = "SaveCurrentPath()";
     private final MidiDeviceLibrary midiDeviceLibrary;
     private final MidiPortsManager midiPortsManager;
     private final DeviceStateManager deviceStateManager;
     private final PatchesManager patchesManager;
+    private final MidiPresetCrawler midiPresetCrawler;
+    private final MidiDeviceRequester midiDeviceRequester;
 
     private static File getBankFolder(String deviceMode, String bankName, MidiDeviceDefinition midiDeviceDefinition) {
         String fullPath = "%s/%s/%s/%s".formatted(
@@ -77,7 +79,7 @@ public class DeviceToolBox {
                             }
                         });
             } catch (IOException e) {
-                log.error("Unable to inspect folder {}", bankFolder.toString());
+                log.error("Unable to inspect folder {}", bankFolder);
             }
         }
     }
@@ -102,7 +104,6 @@ public class DeviceToolBox {
     }
 
     public void dumpPresets(String deviceName, MidiPresetConsumer midiPresetConsumer) {
-        MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
         var mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
@@ -154,12 +155,14 @@ public class DeviceToolBox {
         }
     }
 
+    /**
+     * Request a command to a device and return the response
+     */
     public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<RequestStatus> requestLogger) {
         try {
-            CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
-            CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
+            final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
+            final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
                     .getFirst();
-            String payload = cmd.expand(call);
             try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
                     .orElse(null)) {
                 if (output == null) {
@@ -176,45 +179,16 @@ public class DeviceToolBox {
                         requestLogger.accept(RequestStatus.of(msg));
                         return Optional.empty();
                     }
-                    try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
-                        MidiListener midiListener = (d, event) -> {
-                            try {
-                                responseBuffer.write(event.getMessage()
-                                        .getMessage());
-                            } catch (IOException e) {
-                                log.error("Error reading event content", e);
-                            }
-                        };
-                        try (ByteArrayOutputStream requestBytes = new ByteArrayOutputStream()) {
-                            output.open();
-                            input.open();
-                            input.addListener(midiListener);
-                            var bytesSent = midiDeviceLibrary.sendCommandToDevice(device, output, cmd, call);
-                            requestBytes.write(bytesSent);
-                            requestLogger.accept(RequestStatus.of(requestBytes.toByteArray()));
-                        }
-                        Instant start = Instant.now();
-                        while (responseBuffer.size() == 0) {
-                            if (Duration.between(start, Instant.now())
-                                    .getSeconds() > 3) {
-                                log.warn("No response from device {}", device.getDeviceName());
-                                requestLogger.accept(RequestStatus.of("No response from device"));
-                                break;
-                            }
-                            try {
-                                Thread.sleep(250);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        input.removeListener(midiListener);
-                        byte[] response = responseBuffer.toByteArray();
-                        return response.length == 0 ? Optional.empty() : Optional.of(response);
-                    } catch (IOException e) {
-                        requestLogger.accept(RequestStatus.of(e.getMessage()));
-                        log.error("Unexpected error", e);
-                    } finally {
+                    output.open();
+                    input.open();
+                    var midiRequestResponse = midiDeviceRequester.queryDevice(device, input, output, cmd, call);
+                    if (midiRequestResponse.errorMessage() != null) {
+                        requestLogger.accept(RequestStatus.of(midiRequestResponse.errorMessage()));
+                    } else {
+                        requestLogger.accept(RequestStatus.of(midiRequestResponse.request()));
                     }
+                    byte[] response = midiRequestResponse.response();
+                    return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
                 }
             }
         } catch (Exception e) {
@@ -262,6 +236,11 @@ public class DeviceToolBox {
         final String deviceName = state
                 .getId()
                 .getName();
+        final MidiDeviceDefinition device = midiDeviceLibrary.getDevice(deviceName)
+                .orElse(null);
+        if (device == null) {
+            return;
+        }
         final List<String> selectedBanks = state.getSelectedBankNames();
         final List<MidiPresetCategory> selectedCategories = state.getCurrentSelectedCategories();
 
@@ -297,34 +276,31 @@ public class DeviceToolBox {
                             .map(MidiPresetCategory::name)
                             .collect(Collectors.joining(",")), patchName);
         }
-        midiDeviceLibrary.getDevice(deviceName)
-                .ifPresent(device -> {
-                    File patchFile = new File(getBankFolder(selectedMode, selectedBank, device), patchFilename);
-                    log.info("Save current preset to {}", patchFile);
-                    Consumer<RequestStatus> requestLogger = requestStatus -> {
-                        if (requestStatus.hasError()) {
-                            log.error(requestStatus.errorMessage());
-                            GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
-                        }
-                    };
-                    boolean useFakeResponse = false;
-                    if (useFakeResponse) {
-                        byte[] fakeResponse = new byte[255];
-                        createCustomPatch(device, selectedMode, patchFile, fakeResponse);
-                    } else {
-                        request(device, MACRO_SAVE_CURRENT_PATCH, requestLogger).ifPresentOrElse(response ->
-                                        createCustomPatch(device, selectedMode, patchFile, response),
-                                () -> log.error("Received nothing from device '{}'!", device.getDeviceName())
-                        );
-                    }
-                });
+        final String backupCommand = device.getMode(selectedMode)
+                .map(MidiDeviceMode::getBackupCommand)
+                .orElse(null);
+        if (backupCommand == null) {
+            GenericDialogController.error("Unable to query device '%s'".formatted(deviceName), "This device has no 'backupCommand' defined for mode '%s'".formatted(selectedMode));
+            return;
+        }
+        File patchFile = new File(getBankFolder(selectedMode, selectedBank, device), patchFilename);
+        log.info("Save current preset to {}", patchFile);
+        Consumer<RequestStatus> requestLogger = requestStatus -> {
+            if (requestStatus.hasError()) {
+                log.error(requestStatus.errorMessage());
+                GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
+            }
+        };
+        request(device, backupCommand, requestLogger).ifPresentOrElse(response ->
+                        createCustomPatch(device, patchFile, response),
+                () -> log.error("Received nothing from device '{}'!", device.getDeviceName()));
     }
 
     public void createBank(String deviceName, String deviceMode, String bankName) {
         midiDeviceLibrary.getDevice(deviceName)
                 .ifPresent(device -> {
                     File bankFolder = getBankFolder(deviceMode, bankName, device);
-                    log.info("Create bank folder {}", bankFolder.toString());
+                    log.info("Create bank folder {}", bankFolder);
                     bankFolder.mkdirs();
                     midiDeviceLibrary.collectCustomBanksAndPatches(device);
                     device.getMode(deviceMode)
@@ -337,7 +313,7 @@ public class DeviceToolBox {
         midiDeviceLibrary.getDevice(deviceName)
                 .ifPresent(device -> {
                     File bankFolder = getBankFolder(deviceMode, bankName, device);
-                    log.info("Delete bank folder {}", bankFolder.toString());
+                    log.info("Delete bank folder {}", bankFolder);
                     deleteBankFolder(bankFolder);
                     device.getMode(deviceMode)
                             .ifPresent(m -> {
@@ -349,7 +325,7 @@ public class DeviceToolBox {
                 });
     }
 
-    private void createCustomPatch(MidiDeviceDefinition device, String deviceMode, File patchFile, byte[] response) {
+    private void createCustomPatch(MidiDeviceDefinition device, File patchFile, byte[] response) {
         log.info("Received {} bytes", response.length);
         try {
             Files.write(patchFile.toPath(), response);

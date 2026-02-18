@@ -1,9 +1,10 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.library.request;
+package com.hypercube.workshop.midiworkshop.api.sysex.library.io.request;
 
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * A {@link MidiRequest} is just a string of hexadecimal bytes
@@ -22,11 +23,12 @@ public class MidiRequest {
      */
     private final String value;
     /**
-     * Expected response size of the request. Can be null
-     */
-    private final Integer responseSize;
-    /**
      * Which mapper is used to parse the response
      */
     private final MidiResponseMapper mapper;
+    /**
+     * Expected response size of the request. Can be null
+     */
+    @Setter
+    private Integer responseSize;
 }

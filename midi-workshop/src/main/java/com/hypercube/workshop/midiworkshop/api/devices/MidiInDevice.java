@@ -78,6 +78,9 @@ public class MidiInDevice extends AbstractMidiDevice {
      * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
      */
     public void removeListener(MidiListener listener) {
+        if (listener == null) {
+            return;
+        }
         if (listeners.contains(listener)) {
             listeners.remove(listener);
         } else {

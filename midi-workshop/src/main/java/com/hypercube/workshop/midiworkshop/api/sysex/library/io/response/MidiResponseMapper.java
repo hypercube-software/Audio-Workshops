@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.library.response;
+package com.hypercube.workshop.midiworkshop.api.sysex.library.io.response;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;

@@ -7,13 +7,15 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.ExtractedFields;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.ExtractedFields;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExChecksum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.sound.midi.*;
 import java.io.ByteArrayOutputStream;
@@ -25,10 +27,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class PatchImporter {
     private final MidiDeviceLibrary midiDeviceLibrary;
+    private final MidiDeviceRequester midiDeviceRequester;
 
     public void importSysex(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, File file) {
         try {
@@ -235,7 +239,7 @@ public class PatchImporter {
                     .stream()
                     .map(commandCall -> {
                         CommandMacro macro = device.getMacro(commandCall);
-                        return midiDeviceLibrary.forgeMidiRequestSequence(device.getDefinitionFile(), device.getDeviceName(), macro, commandCall);
+                        return midiDeviceRequester.forgeMidiRequestSequence(device, macro, commandCall);
                     })
                     .toList();
             var mapper = sequences.getFirst()
@@ -247,7 +251,7 @@ public class PatchImporter {
                 event = new CustomMidiEvent(new SysexMessage(content, content.length));
                 mapper.extract(midiDeviceMode, extractedFields, event);
             } catch (InvalidMidiDataException e) {
-                log.error("Unable to forge Sysex from patch {} in file ", presetId, sysexFile);
+                log.error("Unable to forge Sysex from patch {} in file {}", presetId, sysexFile);
             }
         }
         return extractedFields;

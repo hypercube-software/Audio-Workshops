@@ -28,6 +28,7 @@ decodingKey:
 
 deviceModes:
   Single:
+    backupCommand: SingleEditDump()
     queryName: PatchName()
     postQueryName: ACK()
     categories:

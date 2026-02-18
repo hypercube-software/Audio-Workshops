@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.util;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ class SysExTemplateTest {
     @Test
     void forgeTemplateWithChecksum() {
         // GIVEN
-        SysExTemplate template = SysExTemplate.of(new MidiRequest("Filter Cutoff", "F041104611 0008204A 000000 lsb CK8 F7", null, null));
+        SysExTemplate template = SysExTemplate.of(new MidiRequest("Filter Cutoff", "F041104611 0008204A 000000 lsb CK8 F7", null));
         // WHEN
         var actual = template.forgePayload(new MidiControllerValue(0, 13));
 

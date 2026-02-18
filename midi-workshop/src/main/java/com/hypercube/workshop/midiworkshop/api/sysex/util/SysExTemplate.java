@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.util;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;

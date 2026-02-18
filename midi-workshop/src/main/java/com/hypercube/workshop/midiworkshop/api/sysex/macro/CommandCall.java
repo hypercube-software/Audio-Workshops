@@ -15,7 +15,7 @@ public record CommandCall(String name, List<String> parameters) {
     /**
      * Parse a list of command definitions: A();B();C()
      *
-     * @param configFile  where this definition comes from
+     * @param configFile  where this definition comes from (can be {@link CommandMacro#UNSAVED_MACRO}
      * @param definitions the definitions to parse
      * @return parsed definition
      */

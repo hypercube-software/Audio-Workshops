@@ -3,7 +3,7 @@ package com.hypercube.midi.translator.model;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

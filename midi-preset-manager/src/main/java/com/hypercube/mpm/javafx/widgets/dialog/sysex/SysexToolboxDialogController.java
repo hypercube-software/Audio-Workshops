@@ -197,7 +197,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         runOnJavaFXThread(() -> {
             copyResponseInClipboard(unpackedResponse);
             updatePackedZone(device, unpackedResponse);
-            updateResponseLabel(device);
+            updateResponseLabel(device, unpackedResponse.length);
             hexResponse.setData(this.response);
         });
     }
@@ -230,13 +230,14 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         }
     }
 
-    private void updateResponseLabel(MidiDeviceDefinition device) {
+    private void updateResponseLabel(MidiDeviceDefinition device, int responseSize) {
+        String size = " $%X %d bytes".formatted(responseSize, responseSize);
         if (device.getDecodingKey() == null) {
-            responseLabel.setText("Response:");
+            responseLabel.setText("Response:" + size);
         } else if (unpackCheckBox.isSelected()) {
-            responseLabel.setText("Unpacked Response:");
+            responseLabel.setText("Unpacked Response:" + size);
         } else {
-            responseLabel.setText("Packed Response:");
+            responseLabel.setText("Packed Response:" + size);
         }
     }
 

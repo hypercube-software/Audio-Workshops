@@ -15,12 +15,14 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.ExtractedFields;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.ExtractedFields;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -34,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -61,17 +64,22 @@ import java.util.stream.IntStream;
  * </ul>
  */
 @Slf4j
+@Service
 public class MidiPresetCrawler {
+    private final MidiDeviceLibrary library;
+    private final MidiDeviceRequester midiDeviceRequester;
     private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
     private final AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
     private final List<String> xgPresets;
     private final List<String> scPresets;
+    private final ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
     private int expectedResponseSize = 0;
-    private ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
 
-    public MidiPresetCrawler() {
+    public MidiPresetCrawler(MidiDeviceLibrary library, MidiDeviceRequester midiDeviceRequester) {
         xgPresets = loadXGPresets();
         scPresets = loadSoundCanvasPreset();
+        this.library = library;
+        this.midiDeviceRequester = midiDeviceRequester;
     }
 
     private static void dumpResponse(CustomMidiEvent midiEvent) {
@@ -95,7 +103,6 @@ public class MidiPresetCrawler {
     }
 
     public void crawlAllPatches(String deviceName, MidiPresetConsumer midiPresetConsumer) {
-        MidiDeviceLibrary library = new MidiDeviceLibrary();
         library.load(ConfigHelper.getApplicationFolder(MidiWorkshopApplication.class));
         MidiDeviceDefinition device = library.getDevice(deviceName)
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + deviceName));
@@ -330,12 +337,12 @@ public class MidiPresetCrawler {
                 .stream()
                 .map(commandCall -> {
                     CommandMacro macro = device.getMacro(commandCall);
-                    return library.forgeMidiRequestSequence(device.getDefinitionFile(), device.getDeviceName(), macro, commandCall);
+                    return midiDeviceRequester.forgeMidiRequestSequence(device, macro, commandCall);
                 })
                 .toList();
         Integer sum = sequences.stream()
-                .map(s -> s.getTotalSize())
-                .filter(i -> i != null)
+                .map(MidiRequestSequence::getTotalSize)
+                .filter(Objects::nonNull)
                 .mapToInt(Integer::intValue)
                 .sum();
         return new MidiRequestSequence(sum, sequences.stream()
@@ -507,4 +514,3 @@ public class MidiPresetCrawler {
         return currentResponse.get();
     }
 }
-

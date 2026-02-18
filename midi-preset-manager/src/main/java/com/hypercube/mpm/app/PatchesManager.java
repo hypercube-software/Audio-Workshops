@@ -92,6 +92,7 @@ public class PatchesManager {
             int channel = model.getCurrentDeviceState()
                     .getId()
                     .getChannel();
+            log.info("Search patches for device '{}' and channel {}", device.getDeviceName(), channel);
             List<Patch> patches = List.of();
 
             String currentModeName = model.getCurrentDeviceState()
@@ -132,6 +133,8 @@ public class PatchesManager {
             // store the search output in the current observable state
             model.getCurrentDeviceState()
                     .setCurrentSearchOutput(patches);
+        } else {
+            log.warn("Nothing to search, currentDeviceState is null");
         }
     }
 

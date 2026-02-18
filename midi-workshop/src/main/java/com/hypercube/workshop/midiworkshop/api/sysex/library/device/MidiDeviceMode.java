@@ -21,6 +21,10 @@ public class MidiDeviceMode {
      */
     private String command;
     /**
+     * How to request the current patch in order to save it to disk, typically a macro name
+     */
+    private String backupCommand;
+    /**
      * How to get the patch name for this mode, typically a macro name
      */
     private String queryName;

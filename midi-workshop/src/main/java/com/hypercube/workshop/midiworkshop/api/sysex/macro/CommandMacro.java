@@ -50,7 +50,12 @@ public final class CommandMacro {
      */
     private final List<String> parameters;
     /**
-     * Optional response size which can be used to speedup backup process
+     * Optional response size
+     * <ul>
+     *     <li>>0 mean "we expect a response, we know exactly how many bytes to receive", this speed up backups</li>
+     *     <li>0 mean "we expect a response, but we don't know the size</li>
+     *     <li>null mean "we don't expect a response", this is a write command</li>
+     * </ul>>
      */
     private final Integer responseSize;
     /**
@@ -112,7 +117,8 @@ public final class CommandMacro {
         String signature = macroDefParts.get(idx++);
         Integer responseSize = null;
         if ((definitionIncludeMapper && nbParts == 4) || (!definitionIncludeMapper && nbParts == 3)) {
-            responseSize = parseSize(macroDefParts.get(idx++));
+            String macroResponseSizeStr = macroDefParts.get(idx++);
+            responseSize = parseSize(macroResponseSizeStr);
         }
         String body = macroDefParts.get(idx++);
         String mapper = definitionIncludeMapper ? macroDefParts.get(idx++) : null;
@@ -129,13 +135,17 @@ public final class CommandMacro {
     }
 
     /**
-     * Size is always in HEXA
+     * Size is always in HEXA, empty size mean "we expect a response but we don't know the size"
      */
     private static Integer parseSize(String s) {
         try {
-            return Integer.parseInt(s, 16);
+            if (s.isBlank() || s.equals("--")) {
+                return 0;
+            } else {
+                return Integer.parseInt(s, 16);
+            }
         } catch (NumberFormatException e) {
-            return null;
+            return 0;
         }
     }
 

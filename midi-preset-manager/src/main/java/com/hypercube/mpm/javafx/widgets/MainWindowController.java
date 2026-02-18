@@ -53,6 +53,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Autowired
     MidiRouter midiRouter;
     @Autowired
+    PatchImporter patchImporter;
+    @Autowired
     VirtualKeyboard virtualKeyboard;
     @Autowired
     DeviceStateManager deviceStateManager;
@@ -62,6 +64,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     DeviceToolBox deviceToolBox;
     @Autowired
     ConfigurationFactory configurationFactory;
+    
     @FXML
     CheckMenuItem menuAlwaysOnTop;
 
@@ -402,7 +405,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
             MainModel model = getModel();
             MidiDeviceLibrary midiDeviceLibrary = cfg.getMidiDeviceLibrary();
-            PatchImporter patchImporter = new PatchImporter(midiDeviceLibrary);
             var state = model.getCurrentDeviceState();
             if (state != null) {
                 var device = midiDeviceLibrary
@@ -612,7 +614,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void refreshPatches() {
-        patchesManager.refreshPatches();
-        deviceStateManager.saveDeviceState();
+        runLaterOnJavaFXThread(() -> {
+            patchesManager.refreshPatches();
+            deviceStateManager.saveDeviceState();
+        });
     }
 }

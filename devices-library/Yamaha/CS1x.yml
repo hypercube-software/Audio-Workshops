@@ -10,22 +10,23 @@ macros:
   - "XG Mode()              : -- : F0 43 11 4C 00 00 7E 00 F7"
   - "GM Mode()              : -- : F0 7E 7F 09 01 F7"
   # Native Dump Request
-  - "SYSTEM()               : 23 : F043204B 500000 F7"
-  - "Cur Perf Common()      : 39 : F043204B 60 00 00 F7"
-  - "Cur Perf Layer(layer)  : 34 : F043204B 60 layer 00 F7"
-  - "User Perf Common(perf) : 39 : F043204B 70 perf 00 F7"
-  - "User Perf Layer1(perf) : 34 : F043204B 71 perf 00 F7"
-  - "User Perf Layer2(perf) : 34 : F043204B 72 perf 00 F7"
-  - "User Perf Layer3(perf) : 34 : F043204B 73 perf 00 F7"
-  - "User Perf Layer4(perf) : 34 : F043204B 74 perf 00 F7"
+  - "NativeRequest(addr)    : -- : F043204B addr F7"
+  - "SYSTEM()               : 23 : NativeRequest( 50 00 00 )"
+  - "Cur Perf Common()      : 39 : NativeRequest( 60 00 00 )"
+  - "Cur Perf Common FX()   : 22 : NativeRequest( 60 00 30 )"
+  - "Cur Perf Common CC()   : 14 : NativeRequest( 60 00 50 )"
+  - "Cur Perf Layer(layer)  : 34 : NativeRequest( 60 layer 00 )"
+  - "User Perf Common(perf) : 39 : NativeRequest( 70 perf 00 )"
+  - "User Perf Layer1(perf) : 34 : NativeRequest( 71 perf 00 )"
+  - "User Perf Layer2(perf) : 34 : NativeRequest( 72 perf 00 )"
+  - "User Perf Layer3(perf) : 34 : NativeRequest( 73 perf 00 )"
+  - "User Perf Layer4(perf) : 34 : NativeRequest( 74 perf 00 )"
   - "Cur Perf Layers()   : Cur Perf Layer([01-04])"
-  - "User Perfs Common() : User Perf Common([00-127])"
-  - "User Perfs Layer1() : User Perf Layer1([00-127])"
-  - "User Perfs Layer2() : User Perf Layer2([00-127])"
-  - "User Perfs Layer3() : User Perf Layer3([00-127])"
-  - "User Perfs Layer4() : User Perf Layer4([00-127])"
-  - "NativeEverything(): SYSTEM();Cur Perf Common();Cur Perf Layers();User Perfs Common();User Perfs Layer1();User Perfs Layer2();User Perfs Layer3();User Perfs Layer4()"
+  - "User Perfs(perf) : User Perf Common(perf);User Perf Layer1(perf);User Perf Layer2(perf);User Perf Layer3(perf);User Perf Layer4(perf)"
+  - "All User Perfs() : User Perfs([00-127])"
+  - "NativeEverything(): SYSTEM();CurrentPerformance();All User Perfs()"
   - "PerformanceName() : Cur Perf Common() : PerformanceMapper"
+  - "CurrentPerformance(): Cur Perf Common();Cur Perf Common FX();Cur Perf Common CC();Cur Perf Layers()"
   # "MIDI Data Table <2-2>" in the manual,Parameter Change CS1x SYSTEM
   # mode = $03 PFM, mode = $01 XG
   - "setMode(mode) : F043104B 50 00 06 mode F7"
@@ -50,6 +51,7 @@ macros:
 deviceModes:
   Performance:
     command: setPerformanceMode()
+    backupCommand: CurrentPerformance()
     queryName: PerformanceName()
     midiChannels: 0
     banks:
@@ -85,6 +87,7 @@ deviceModes:
       - "Sequence"
   XG:
     command: setMode($01)
+    backupCommand: XG MULTI PARTS()
     midiChannels: 0-15
     #queryName: XG Multi Part Data($00)
     presetNaming: YAMAHA_XG
@@ -280,7 +283,7 @@ mappers:
         offset: 12
         size: 1
 
-controllers:        
+controllers:
   - "01   | Modulation  | CC           | 0 | 127"
   - "0B   | Expression  | CC           | 0 | 127"
   - "40   | Sustain     | CC           | 0 | 127"

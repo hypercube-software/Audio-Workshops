@@ -23,7 +23,6 @@ macros:
   - "DrumkitDump() : Dump($23)"
   - "EffectDump() : Dump($24)"
   - "PerfDump() : Dump($25)"
-  - "PerfDump() : Dump($25)"
   - "AllProgramsDump() : Dump($26)"
   - "AllCombisDump() : Dump($27)"
   - "AllUserDrumKitDump() : Dump($28)"

@@ -125,9 +125,10 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     }
 
     private void onSearchOutputChanged(Observable observable) {
-        log.info("SearchOutput updated");
-        ObservableList list = (ObservableList) ((SelectBinding.AsObject<?>) observable).get();
-        patchList.setItems(list != null ? list : new SimpleListProperty());
+        ObservableList list = Optional.ofNullable((ObservableList) ((SelectBinding.AsObject<?>) observable).get())
+                .orElse(new SimpleListProperty());
+        log.info("SearchOutput updated with {} patches", list.size());
+        patchList.setItems(list);
         // since the list is updated, try to update the selection
         ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.currentDeviceState.currentPatch");
         if (currentPatchProperty != null) {

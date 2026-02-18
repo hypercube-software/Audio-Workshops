@@ -11,6 +11,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,9 +40,11 @@ import java.util.List;
 public class DeviceStateManager {
     private final MainModel model;
     private final ConfigurationFactory configurationFactory;
+    private final MidiDeviceRequester midiDeviceRequester;
 
-    public DeviceStateManager(ConfigurationFactory configurationFactory) {
+    public DeviceStateManager(ConfigurationFactory configurationFactory, MidiDeviceRequester midiDeviceRequester) {
         this.configurationFactory = configurationFactory;
+        this.midiDeviceRequester = midiDeviceRequester;
         this.model = MainModel.getObservableInstance();
     }
 
@@ -195,8 +198,7 @@ public class DeviceStateManager {
                 MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
                 if (modeCommand != null && midiOutDevice != null) {
                     log.info("Switch to Mode on device: {}", newModeName);
-                    cfg.getMidiDeviceLibrary()
-                            .sendCommandToDevice(device, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
+                    midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
                     midiOutDevice.sleep(device.getModeLoadTimeMs());
                 }
             } else {

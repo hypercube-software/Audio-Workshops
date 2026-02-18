@@ -6,7 +6,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseField;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseField;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -43,22 +43,6 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
             0 G7 G6 G5 G4 G3 G2 G1
             """;
 
-    int getCharCode(Character c) {
-        return characterTable.indexOf(c) & 0x7F; // 6 bit code
-    }
-
-    String getChar(int code) {
-        if (characterTable.length() > code) {
-            char c = characterTable.charAt(code);
-            if (c == '|') {
-                c = ' '; // '|' is reserved for our own usage during preset storage
-            }
-            return "" + c;
-        } else {
-            return "\uD83D\uDC80";
-        }
-    }
-
     public String getString(MidiResponseField field, byte[] payload) {
         BitStreamReader bsr = new BitStreamReader(payload);
         String name = "";
@@ -90,9 +74,24 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
         }
     }
 
-
     @Override
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         throw new MidiError("Not Implemented yet");
+    }
+
+    int getCharCode(Character c) {
+        return characterTable.indexOf(c) & 0x7F; // 6 bit code
+    }
+
+    String getChar(int code) {
+        if (characterTable.length() > code) {
+            char c = characterTable.charAt(code);
+            if (c == '|') {
+                c = ' '; // '|' is reserved for our own usage during preset storage
+            }
+            return "" + c;
+        } else {
+            return "\uD83D\uDC80";
+        }
     }
 }

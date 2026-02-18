@@ -61,11 +61,13 @@ import static com.hypercube.workshop.midiworkshop.api.sysex.util.SysExConstants.
 @Slf4j
 @RequiredArgsConstructor
 public class SysExCLI {
-
     private final SysExParser sysExParser;
     private final MidiMonitor midiMonitor;
-    private CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
-    private CyclicBarrier sysExReceived = new CyclicBarrier(2);
+    private final MidiPresetCrawler midiPresetCrawler;
+    private final CS1XPresetGenerator cs1XPresetGenerator;
+
+    private final CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
+    private final CyclicBarrier sysExReceived = new CyclicBarrier(2);
 
     @ShellMethod(value = "parse SysEx file and dump the device memory to disk")
     public void parse(@ShellOption(value = "-i", help = "*.syx file") File input, @ShellOption(value = "-o", help = "Memory Dump in TXT format") File output) {
@@ -160,7 +162,6 @@ public class SysExCLI {
 
     @ShellMethod(value = "Use the device library to dump all presets names of a synth")
     public void dumpPresets(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
-        MidiPresetCrawler midiPresetCrawler = new MidiPresetCrawler();
         var mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
@@ -211,7 +212,6 @@ public class SysExCLI {
 
     @ShellMethod("Generate CS1X voices SysEx")
     public void dumpCS1XVoices(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
-        CS1XPresetGenerator cs1XPresetGenerator = new CS1XPresetGenerator();
         cs1XPresetGenerator.dumpCS1XVoices(deviceName);
     }
 

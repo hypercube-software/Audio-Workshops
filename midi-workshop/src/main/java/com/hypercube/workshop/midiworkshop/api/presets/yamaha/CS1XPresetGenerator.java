@@ -10,6 +10,8 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
@@ -20,9 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+@Service
+@RequiredArgsConstructor
 public class CS1XPresetGenerator {
+    private final MidiDeviceLibrary library;
     private final Pattern VOICE_DEFINITION = Pattern.compile("(\\d+)\\s(.+)");
-    private List<String> categoriesXG = List.of("Piano",
+    private final List<String> categoriesXG = List.of("Piano",
             "Chromatic",
             "Percussion",
             "Organ",
@@ -39,7 +44,7 @@ public class CS1XPresetGenerator {
             "Ethnic",
             "Percussive",
             "Sound Effects");
-    private List<String> categoryCodes = List.of(
+    private final List<String> categoryCodes = List.of(
             "Pf", "Piano",
             "Cp", "Chromatic Percussion",
             "Or", "Organ",
@@ -97,7 +102,6 @@ public class CS1XPresetGenerator {
     }
 
     public void dumpCS1XVoices(String deviceName) {
-        MidiDeviceLibrary library = new MidiDeviceLibrary();
         library.load(ConfigHelper.getApplicationFolder(MidiWorkshopApplication.class));
         MidiDeviceDefinition device = library.getDevice(deviceName)
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + deviceName));

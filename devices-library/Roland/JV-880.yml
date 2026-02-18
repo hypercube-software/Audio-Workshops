@@ -8,13 +8,13 @@ presetNaming: STANDARD
 macros:
   # Queries
   - "System Common()       : 009B : F041104611 00000000 00000110 CK8 F7"
-  - "Temp Performance()    : 03C3 : F041104611 00001000 00010000 CK8 F7"
+  - "CurrentPerformance()    : 03C3 : F041104611 00001000 00010000 CK8 F7"
   - "Temp Rhythm Setup()   : 0C8D : F041104611 00074000 00003300 CK8 F7"
-  - "Temp Patch()          : 0229 : F041104611 00082000 00010000 CK8 F7"
+  - "CurrentPatch()          : 0229 : F041104611 00082000 00010000 CK8 F7"
   - "Performances()        : 19A0 : F041104611 01001000 00150000 CK8 F7"
   - "Internal Patches()    : 9943 : F041104611 01402000 00400000 CK8 F7"
   - "Internal Rhythm()     : 0C8D : F041104611 017F4000 00003300 CK8 F7"
-  - "Everything()          : System Common();Performances();Internal Patches();Internal Rhythm();Temp Performance();Temp Rhythm Setup();Temp Patch()"
+  - "Everything()          : System Common();Performances();Internal Patches();Internal Rhythm();CurrentPerformance();Temp Rhythm Setup();CurrentPatch()"
   - "PatchName()           : F041104611 00082000 00000022 CK8 F7 : RolandPatchMapper"
   - "PerformanceName()     : F041104611 00001000 0000001F CK8 F7 : RolandPerformanceMapper"
   # Updates
@@ -24,11 +24,12 @@ macros:
   # For SYSEX Controllers in Patch Mode
   - "setPatchToneParam(id,v,tone)   : F041104612 00 tone 28 id v CK5 F7"
   - "setPatchParam(id,v)   : setPatchToneParam(id,v,08)"
- 
+
 
 deviceModes:
   Patch:
     command: setPatchMode()
+    backupCommand: CurrentPatch()
     queryName: PatchName()
     midiChannels: 0
     categories:
@@ -59,6 +60,7 @@ deviceModes:
         #presetDomain: 64-127
   Performance:
     command: setPerformanceMode()
+    backupCommand: CurrentPerformance()
     queryName: PerformanceName()
     midiChannels: 0
     # In performance mode, channel 16 must be used to select performances
@@ -109,4 +111,3 @@ controllers:
   - "setPatchParam($6F,lsb) | VCA Release  | SYSEX | 0 | 127"
   - "setPatchParam($25,lsb) | LFO 1 Rate   | SYSEX | 0 | 127"
   - "setPatchParam($30,lsb) | LFO 2 Rate   | SYSEX | 0 | 127"
-  

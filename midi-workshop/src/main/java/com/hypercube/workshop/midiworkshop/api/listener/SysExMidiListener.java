@@ -22,7 +22,7 @@ public class SysExMidiListener implements MidiListener {
     @Override
     public void onEvent(MidiInDevice device, CustomMidiEvent event) {
         if (event.getMessage() instanceof SysexMessage sysexMsg) {
-            // This fix an insane bug in Java MIDI API where sysex can be received "splited"
+            // This fix an insane bug in Java MIDI API where sysex can be received "split"
             // msg.getMessage() will give you a final F7 whereas it is absolutely not completely received !
             byte[] data = sysexMsg.getStatus() == 0xF0 ? sysexMsg.getMessage() : sysexMsg.getData();
             try {

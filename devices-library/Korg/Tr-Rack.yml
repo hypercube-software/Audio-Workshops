@@ -41,6 +41,7 @@ decodingKey:
 deviceModes:
   Program:
     command: ModeChange( $2 )
+    backupCommand: CURRENT PROGRAM PARAMETER()
     queryName: PatchName()
     midiChannels: 0
     banks:
@@ -76,6 +77,7 @@ deviceModes:
 
   Combi:
     command: ModeChange( $0 )
+    backupCommand: CURRENT COMBINATION PARAMETER()
     queryName: CombiName()
     midiChannels: 0
     banks:

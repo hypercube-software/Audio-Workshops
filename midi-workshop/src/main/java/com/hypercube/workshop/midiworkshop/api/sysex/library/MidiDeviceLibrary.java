@@ -3,18 +3,15 @@ package com.hypercube.workshop.midiworkshop.api.sysex.library;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.*;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.response.MidiResponseMapper;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExTemplate;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.deserializer.*;
 import lombok.Getter;
@@ -22,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,18 +42,13 @@ import java.util.stream.Stream;
 public class MidiDeviceLibrary {
     public static final String DEVICES_LIBRARY_FOLDER = "/devices-library/";
     public static final String ENV_MDL_FOLDER = "MDL_FOLDER";
-    public static final String MACRO_CALL_SEPARATOR = ";";
     private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
+    private final MidiDeviceRequester midiDeviceRequester;
     @Getter
     private final Map<String, MidiDeviceDefinition> devices = new HashMap<>();
     private final Map<Long, MidiDeviceDefinition> devicesPerNetworkId = new ConcurrentHashMap<>();
     @Getter
     private boolean loaded;
-
-    private static MidiResponseMapper getMacroMapper(MidiDeviceDefinition device, CommandMacro macro) {
-        return device.getMapper(macro.getMapperName())
-                .orElseThrow(() -> new MidiConfigError("Unknown mapper '%s' for device '%s'".formatted(macro.getMapperName(), device.getDeviceName())));
-    }
 
     /**
      * Custom patches are *.syx files in the custom bank folder
@@ -97,37 +88,6 @@ public class MidiDeviceLibrary {
         }
     }
 
-    public void sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, CommandCall command) {
-        sendCommandToDevice(device, midiOutDevice, List.of(command));
-    }
-
-    public byte[] sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, List<CommandCall> commands) {
-        try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
-            for (CommandCall commandCall : commands) {
-                CommandMacro commandMacro = device.getMacro(commandCall);
-                responseBuffer.write(sendCommandToDevice(device, midiOutDevice, commandMacro, commandCall));
-            }
-            return responseBuffer.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public byte[] sendCommandToDevice(MidiDeviceDefinition device, MidiOutDevice midiOutDevice, CommandMacro macro, CommandCall commandCall) {
-        try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
-            for (MidiRequest r : forgeMidiRequestSequence(device.getDefinitionFile(), device.getDeviceName(), macro, commandCall).getMidiRequests()) {
-                for (CustomMidiEvent evt : MidiEventBuilder.parse(r.getValue())) {
-                    log.info("Send 0x %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
-                    midiOutDevice.send(evt);
-                    responseBuffer.write(evt.getMessage()
-                            .getMessage());
-                }
-            }
-            return responseBuffer.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void load(File applicationFolder) {
         devices.clear();
@@ -196,51 +156,6 @@ public class MidiDeviceLibrary {
         }
     }
 
-    /**
-     * Resolve recursively all macro calls in the command call. This mean we can do macros calling macros
-     *
-     * @param device      device owning the macro
-     * @param commandCall command to expand
-     * @return expanded command with its path
-     */
-    public List<MidiRequest> expand(File configFile, MidiDeviceDefinition device, MidiResponseMapper mapper, String commandCall) {
-        return expandWithPath(device, configFile, mapper, null, commandCall, "");
-    }
-
-    /**
-     * Expand a payloadBody using macro for a specific device
-     *
-     * @param device             device owning the macro
-     * @param configFile         from where device macro are loaded
-     * @param parentResponseSize optional response size if known (null otherwise)
-     * @param mapper             mapper used to read the response
-     * @param payloadBody        current payload to expand. Typically, contains a list of macro calls
-     * @param path               keep the context of all resolved macros for debug
-     * @return list of requests produced by payloadBody
-     */
-    public List<MidiRequest> expandWithPath(MidiDeviceDefinition device, File configFile, MidiResponseMapper mapper, Integer parentResponseSize, String payloadBody, String path) {
-        checkLoaded();
-        log.trace("Expand " + payloadBody);
-        boolean hasMacroCall = payloadBody.contains("(");
-        if (hasMacroCall) {
-            return CommandCall.parse(configFile, payloadBody)
-                    .stream()
-                    .flatMap(commandCall -> {
-                        String newPath = path + "/" + commandCall.name();
-                        CommandMacro macro = device.getMacro(commandCall);
-                        String expanded = macro.expand(commandCall);
-                        Integer newResponseSize = macro.getResponseSize() != null ? macro.getResponseSize() : parentResponseSize;
-                        MidiResponseMapper newMapper = macro.getMapperName() != null ? getMacroMapper(device, macro) : mapper;
-                        // the expanded macro can contain again a list of macro commandCall, so we recurse after splitting with ";"
-                        return Arrays.stream(expanded.split(MACRO_CALL_SEPARATOR))
-                                .flatMap(expandedCommand -> expandWithPath(device, configFile, newMapper, newResponseSize, expandedCommand, newPath).stream());
-                    })
-                    .toList();
-        } else {
-            // There is no more macro commandCall to resolve we return the string "as is" with its path
-            return List.of(new MidiRequest(path, payloadBody, parentResponseSize, mapper));
-        }
-    }
 
     public Optional<MidiDeviceDefinition> getDevice(String deviceName) {
         checkLoaded();
@@ -257,32 +172,6 @@ public class MidiDeviceLibrary {
                 .findFirst();
     }
 
-    /**
-     * Given a CommandMacro without parameters, expand it to get the list of MIDI messages
-     *
-     * @param configFile   Where this macro is defined (used to display user-friendly error messages)
-     * @param deviceName   If the macro contains macro calls, in which device we have to look for in the library
-     * @param commandMacro typically something like "getAll() : --- : A();B();C()"
-     * @return The list of MIDI messages payloads
-     */
-    public MidiRequestSequence forgeMidiRequestSequence(File configFile, String deviceName, CommandMacro commandMacro, CommandCall commandCall) {
-        MidiDeviceDefinition device = Optional.ofNullable(devices.get(deviceName))
-                .orElseThrow(() -> new MidiConfigError("Device not found in library: %s, did you made a typo ? Known devices are: %s".formatted(deviceName, getDevicesNames())));
-        // if the mapper name is not set, mapper is null
-        // if the mapper name is specified, we are looking for the corresponding MidiResponseMapper or raise an error if not found
-        MidiResponseMapper mapper = Optional.ofNullable(commandMacro.getMapperName())
-                .map(mapperName -> device.getMapper(mapperName)
-                        .orElseThrow(() -> new MidiConfigError("Undefined request Mapper: '" + commandMacro.getMapperName() + "' in " + configFile.toString())))
-                .orElse(null);
-        List<MidiRequest> result = Arrays.stream(commandMacro.expand(commandCall)
-                        .split(MACRO_CALL_SEPARATOR))
-                .flatMap(
-                        rawText -> expand(configFile, device, mapper, rawText).stream()
-                )
-                .toList();
-        Integer totalSize = computeTotalSize(commandMacro, result);
-        return new MidiRequestSequence(totalSize, result);
-    }
 
     public MidiDeviceDefinition getDeviceByNetworkId(long networkId) {
         return devicesPerNetworkId.computeIfAbsent(networkId, key -> devices.values()
@@ -291,6 +180,7 @@ public class MidiDeviceLibrary {
                 .findFirst()
                 .orElseThrow(() -> new MidiConfigError("Device with network id %4X not found".formatted(networkId))));
     }
+
 
     /**
      * Custom banks are subfolders of the mode folder
@@ -552,7 +442,7 @@ public class MidiDeviceLibrary {
                             throw new IllegalArgumentException("Expected 1 CommandCall, got " + commandCalls.size());
                         }
                         CommandCall commandCall = commandCalls.getFirst();
-                        List<MidiRequest> expandedTexts = expand(midiDeviceDefinition.getDefinitionFile(), midiDeviceDefinition, null, c.getIdentity());
+                        List<MidiRequest> expandedTexts = midiDeviceRequester.expand(midiDeviceDefinition, midiDeviceDefinition.getDefinitionFile(), null, c.getIdentity());
                         if (expandedTexts.size() != 1) {
                             throw new IllegalArgumentException("Expected 1 MidiRequest, got " + expandedTexts.size() + " expanding controller " + c.getIdentity());
                         }
@@ -560,28 +450,4 @@ public class MidiDeviceLibrary {
                     });
         }
     }
-
-    /**
-     * If the macro define a response size, and we can also compute it, check they match
-     */
-    private Integer computeTotalSize(CommandMacro commandMacro, List<MidiRequest> result) {
-        int sum = 0;
-        for (var request : result) {
-            if (request.getResponseSize() == null) {
-                sum = 0;
-                break;
-            }
-            sum += request.getResponseSize();
-        }
-        if (sum != 0 && commandMacro.getResponseSize() != null && sum != commandMacro.getResponseSize()) {
-            throw new MidiConfigError("The sum of all requests $%X does not match the macro response size: $%X".formatted(sum, commandMacro.getResponseSize()));
-        } else if (sum != 0) {
-            return sum;
-        } else if (commandMacro.getResponseSize() != null) {
-            return commandMacro.getResponseSize();
-        }
-        return null;
-    }
-
-
 }

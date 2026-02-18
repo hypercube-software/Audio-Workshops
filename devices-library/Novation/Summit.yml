@@ -19,7 +19,6 @@ macros:
   - "EDIT BUFFER()                   : PATCH(0,0)"
   - "PatchName()                     : EDIT BUFFER() : PatchMapper"
   - "MultiName()                     : CURRENT MULTI() : MultiMapper"
-  - "SaveCurrentPath()               : EDIT BUFFER()"
 
   # Reminder...
   # RPN MSB        = B0 65
@@ -39,6 +38,7 @@ deviceModes:
 
   Single:
     command: singeMode()
+    backupCommand: EDIT BUFFER()
     queryName: PatchName()
     midiChannels: 0
     banks:
@@ -72,6 +72,7 @@ deviceModes:
       - Vocoder/Tune
   Multi:
     command: multiMode()
+    backupCommand: CURRENT MULTI()
     queryName: MultiName()
     midiChannels: 0
     subBanks:

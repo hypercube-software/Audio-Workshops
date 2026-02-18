@@ -4,7 +4,7 @@ import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.ControllerValueType;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiControllerValue;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceController;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -266,7 +266,7 @@ class MidiTransformerTest {
                     0x00, 0x00, 32, 33, (byte) 0xF7
             };
             when(sysExTemplate.forgePayload(any())).thenReturn(payload);
-            when(sysExTemplate.midiRequest()).thenReturn(new MidiRequest("name", "", null, null));
+            when(sysExTemplate.midiRequest()).thenReturn(new MidiRequest("name", "", null));
             dst.setSysExTemplate(sysExTemplate);
         }
         int inBetweenValue = (src.getMaxValue() - (src.getMaxValue() - src.getMinValue()) / 2) + src.getMinValue();

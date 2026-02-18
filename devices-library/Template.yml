@@ -46,11 +46,11 @@ modeLoadTimeMs: 500
 # - You can use a macro inside a macro
 # - You can use ranges to do a kind of "loop" and retrieve hundreds of parameters in one call
 macros:
-  # This is the mode simple example
+  # This is the simplest example
   - "EditBuffer()               : F0 002029 03017F 40 000000 00 00 F7"
-  # Here we add the response size. This can speedup backups drastically
+  # Here we add the response size which is OPTIONAL. This can speed up backups drastically
   - "EditBuffer()       : 0001B : F0 002029 03017F 40 000000 00 00 F7"
-  # Other characters in size, are ignored. It's a way to indicate: "this is a resquest with unknown response size"
+  # Other characters in size, are ignored. It's a way to indicate: "this is a request with unknown response size"
   - "EditBuffer()       : -     : F0 002029 03017F 40 000000 00 00 F7"
   # Here we use a string 'LM  012SY' which will be converted in ASCII. It's typically used with Yamaha devices
   - "System Data()       : 0001B : F0 43 20 7E 'LM  0012SY' F7"
@@ -60,7 +60,7 @@ macros:
   - "PatchName() : EditBuffer() : PatchMapper"
   # Here an example using a checksum. CK5 instruct a calculation on the 5 previous bytes
   - "setMode(mode)        : F041104612 00000000 mode CK5 F7"
-  # Here a typicall example to create a total backup, calling multiple macros in one shot
+  # Here a typical example to create a total backup, calling multiple macros in one shot
   - "Everything()         : System Common();Performances();Internal Patches();Internal Rhythm();Temp Performance();Temp Rhythm Setup();Temp Patch()"
   #
   # Example using nibbles.
@@ -127,7 +127,7 @@ deviceModes:
   Single:
     # which Midi channels are available in this mode
     midiChannels: 0-15
-    # put here the macro used to retreive patch names
+    # put here the macro used to retrieve patch names
     queryName: PatchName()
     # Optional command to activate the mode. It is a macro call
     command: ModeChange( $2 )

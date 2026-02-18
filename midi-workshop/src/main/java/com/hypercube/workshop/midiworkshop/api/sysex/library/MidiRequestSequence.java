@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library;
 
-import com.hypercube.workshop.midiworkshop.api.sysex.library.request.MidiRequest;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

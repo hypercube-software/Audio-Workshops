@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.library.response;
+package com.hypercube.workshop.midiworkshop.api.sysex.library.io.response;
 
 import lombok.Getter;
 import lombok.Setter;
