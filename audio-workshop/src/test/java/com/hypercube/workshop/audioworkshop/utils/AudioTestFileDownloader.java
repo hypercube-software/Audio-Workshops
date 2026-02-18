@@ -1,11 +1,10 @@
 package com.hypercube.workshop.audioworkshop.utils;
 
-import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +44,7 @@ public class AudioTestFileDownloader {
 
 
         } catch (IOException e) {
-            throw new AudioError("Unable to download " + url, e);
+            log.error("Unable to download {}", url, e);
         }
 
     }
@@ -83,9 +82,12 @@ public class AudioTestFileDownloader {
 
     private void download(String url, String file) throws IOException {
         trustAnyCertificate();
-        URLConnection connection = new URL(url).openConnection();
+        URLConnection connection = URI.create(url)
+                .toURL()
+                .openConnection();
 
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36");
+        connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
 
         try (InputStream inputStream = connection.getInputStream();
              FileOutputStream outputStream = new FileOutputStream(file)) {

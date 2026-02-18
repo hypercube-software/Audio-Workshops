@@ -900,6 +900,13 @@ F043204C 08 part 00 F7
 part: [0-15], the midi channel
 ```
 
+Unclear documentation:
+
+The documentation indicate "**Current Performance Common**" in memory address  `60 00 00`, but don't put a title on :
+
+- `60 00 30`: **Current Performance Effect settings**, see page 24
+- `60 00 50`: **Current Performance Controllers settings**, see page 25
+
 Having fun: 
 
 Since this device don't have a "Voice Mode", I made a `CS1XPresetGenerator` to generate SysEx for all possible voices of the device. Using MPM (Midi Preset Manager) it is now possible to audit all voices of the CS1x. I invite you to take a look on this class.

@@ -18,49 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class RiffReaderTest {
-    private static File SRC_FOLDER = new File("./sounds");
-    private static File SRC_FOLDER_SURROUND = new File("%s/surround".formatted(SRC_FOLDER));
-    private static File SRC_FOLDER_STEREO = new File("%s/stereo".formatted(SRC_FOLDER));
-
-    private record FormatAssert(
-            String file,
-            String format,
-            UUID subformat,
-            String chunks,
-            int nbChannels,
-            int bitdepth,
-            int samplerate,
-            String duration,
-            List<MetadataAssert> metadata) {
-    }
-
-    @BeforeAll
-    static void downloadAudioFiles() {
-        var d = new AudioTestFileDownloader();
-        // https://www.jensign.com/bdp95/7dot1voiced/index.html
-        d.downloadSound("https://www.jensign.com/bdp95/7dot1voiced/7dot1voiced.zip", SRC_FOLDER_SURROUND);
-        // fraunhofer test sounds
-        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/ChID-BLITS-EBU-Narration441-16b.wav", SRC_FOLDER_SURROUND);
-        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/SBR_LFETest5_1-441-16b.wav", SRC_FOLDER_SURROUND);
-        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/7.1auditionOutLeader%20v2.wav", SRC_FOLDER_SURROUND);
-        // https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/Microsoft/6_Channel_ID.wav", SRC_FOLDER_SURROUND);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/Microsoft/8_Channel_ID.wav", SRC_FOLDER_SURROUND);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/AFsp/M1F1-Alaw-AFsp.wav", SRC_FOLDER_STEREO);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/CCRMA/voxware.wav", SRC_FOLDER_STEREO);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-int8-AFsp.aif", SRC_FOLDER_STEREO);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-int16C-AFsp.aif", SRC_FOLDER_STEREO);
-        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-mulawC-AFsp.aif", SRC_FOLDER_STEREO);
-        // https://rhythm-lab.com/
-        d.downloadSound("https://rhythm-lab.com/sstorage/53/2023/01/Al%20Jarreau%20-%20Kissing%20My%20Love%20(CD).wav", SRC_FOLDER_STEREO);
-        // music radar
-        // https://www.musicradar.com/news/sampleradar-starting-point-samples-1
-        // https://www.musicradar.com/news/tech/free-music-samples-royalty-free-loops-hits-and-multis-to-download
-        //d.downloadSound("https://cdn.mos.musicradar.com/audio/samples/musicradar-starting-point-samples.zip", SRC_FOLDER_STEREO);
-        // https://www.audiocheck.net/
-        //
-    }
-
+    private static final File SRC_FOLDER = new File("./sounds");
+    private static final File SRC_FOLDER_SURROUND = new File("%s/surround".formatted(SRC_FOLDER));
+    private static final File SRC_FOLDER_STEREO = new File("%s/stereo".formatted(SRC_FOLDER));
     List<FormatAssert> surroundAsserts = List.of(
             new FormatAssert("SBR_LFETest5_1-441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:45.179", List.of()),
             new FormatAssert("ChID-BLITS-EBU-Narration441-16b.wav", null, WaveGUIDCodecs.WMMEDIASUBTYPE_PCM, "fmt,data,LIST,bext,_PMX", 6, 16, 44100, "00:00:46.526", List.of()),
@@ -91,57 +51,58 @@ class RiffReaderTest {
             new FormatAssert("voxware.wav", "UNKNOWN", null, "fmt,fact,data", 1, 0, 8000, "00:00:00.12", List.of()),
             new FormatAssert("Al Jarreau - Kissing My Love (CD).wav", "PCM", null, "fmt,data", 2, 16, 44100, "00:00:10.690", List.of())
     );
-
     List<FormatAssert> appleLoopsAsserts = List.of(
             new FormatAssert("AlchemyLoopsBeatBoxBreaks-Vox Breaks 01a.wav", "PCM", null, "fmt,smpl,inst,FLLR,data", 1, 16, 44100, "00:00:04", List.of())
     );
 
-    @Test
-    void computeAudioMD5() throws IOException {
-        File f = new File("sounds/stereo/" + stereoAsserts.get(0)
-                .file());
-        RiffReader r = new RiffReader(f, false);
-        RiffFileInfo info = r.parse();
-        assertEquals("3BFEE932", r.computeAudioChecksum(info.getAudioInfo()));
-    }
-
-    @Test
-    void parseStereoFiles() {
-        stereoAsserts.forEach(a -> {
-            File f = new File("%s/%s".formatted(SRC_FOLDER_STEREO, a.file));
-            assertFormat(a, f);
-        });
-    }
-
-    @Test
-    void parseMultichannelFiles() {
-        surroundAsserts.forEach(a -> {
-            File f = new File("%s/%s".formatted(SRC_FOLDER_SURROUND, a.file));
-            assertFormat(a, f);
-        });
+    @BeforeAll
+    static void downloadAudioFiles() {
+        var d = new AudioTestFileDownloader();
+        // https://www.jensign.com/bdp95/7dot1voiced/index.html
+        d.downloadSound("https://www.jensign.com/bdp95/7dot1voiced/7dot1voiced.zip", SRC_FOLDER_SURROUND);
+        // fraunhofer test sounds
+        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/ChID-BLITS-EBU-Narration441-16b.wav", SRC_FOLDER_SURROUND);
+        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/SBR_LFETest5_1-441-16b.wav", SRC_FOLDER_SURROUND);
+        d.downloadSound("https://www2.iis.fraunhofer.de/AAC/7.1auditionOutLeader%20v2.wav", SRC_FOLDER_SURROUND);
+        // https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/Microsoft/6_Channel_ID.wav", SRC_FOLDER_SURROUND);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/Microsoft/8_Channel_ID.wav", SRC_FOLDER_SURROUND);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/AFsp/M1F1-Alaw-AFsp.wav", SRC_FOLDER_STEREO);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples/CCRMA/voxware.wav", SRC_FOLDER_STEREO);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-int8-AFsp.aif", SRC_FOLDER_STEREO);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-int16C-AFsp.aif", SRC_FOLDER_STEREO);
+        d.downloadSound("https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/Samples/AFsp/M1F1-mulawC-AFsp.aif", SRC_FOLDER_STEREO);
+        // https://rhythm-lab.com/
+        d.downloadSound("https://rhythm-lab.com/sstorage/53/2023/01/Al%20Jarreau%20-%20Kissing%20My%20Love%20(CD).wav", SRC_FOLDER_STEREO);
+        // music radar
+        // https://www.musicradar.com/news/sampleradar-starting-point-samples-1
+        // https://www.musicradar.com/news/tech/free-music-samples-royalty-free-loops-hits-and-multis-to-download
+        //d.downloadSound("https://cdn.mos.musicradar.com/audio/samples/musicradar-starting-point-samples.zip", SRC_FOLDER_STEREO);
+        // https://www.audiocheck.net/
+        //
     }
 
     private void assertFormat(FormatAssert a, File f) {
         if (f.exists()) {
-            log.info("Parse " + f.getAbsolutePath());
+            log.info("Parse {}", f.getAbsolutePath());
             try (RiffReader r = new RiffReader(f, false)) {
                 RiffFileInfo info = r.parse();
                 assertNotNull(info);
                 String chunks = listToString(info.collectChunks(), RiffChunk::getId);
 
-                log.info("codec      : " + info.getAudioInfo()
+                log.info("codec      : {}", info.getAudioInfo()
                         .getCodecString());
-                log.info("chunks     : " + chunks);
-                log.info("nbChannels : " + info.getAudioInfo()
+                log.info("chunks     : {}", chunks);
+                log.info("nbChannels : {}", info.getAudioInfo()
                         .getNbChannels());
-                log.info("bitdepth   : " + info.getAudioInfo()
+                log.info("bitdepth   : {}", info.getAudioInfo()
                         .getBitPerSample());
-                log.info("samplerate : " + info.getAudioInfo()
+                log.info("samplerate : {}", info.getAudioInfo()
                         .getSampleRate());
-                log.info("tempo      : " + info.getAudioInfo()
+                log.info("tempo      : {}", info.getAudioInfo()
                         .getTempo());
 
-                log.info("duration   : " + info.getAudioInfo()
+                log.info("duration   : {}", info.getAudioInfo()
                         .getDurationString());
                 log.info("Metadata   : %d entries".formatted(info.getMetadata()
                         .getAll()
@@ -171,14 +132,14 @@ class RiffReaderTest {
                     if (!info.getMetadata()
                             .contains(m.name())) {
                         log.error("{} not found in metadata", m.name());
-                        assertTrue(false);
+                        fail();
                     }
                     var value = info.getMetadata()
                             .get(m.name());
                     if (!m.value()
                             .equals(value)) {
                         log.error("Value for {} differ: \"{}\", expected \"{}\"", m.name(), value, m.value());
-                        assertTrue(false);
+                        fail();
                     }
                 });
             } catch (IOException e) {
@@ -190,7 +151,7 @@ class RiffReaderTest {
     private <T> String listToString(List<T> list, Function<T, String> map) {
         return list.stream()
                 .reduce(new StringBuilder(""), (a, b) -> {
-                    if (a.length() > 0) {
+                    if (!a.isEmpty()) {
                         a.append(",");
                     }
                     a.append(map.apply(b)
@@ -198,6 +159,45 @@ class RiffReaderTest {
                     return a;
                 }, (a, b) -> a)
                 .toString();
+    }
+
+    private record FormatAssert(
+            String file,
+            String format,
+            UUID subformat,
+            String chunks,
+            int nbChannels,
+            int bitdepth,
+            int samplerate,
+            String duration,
+            List<MetadataAssert> metadata) {
+    }
+
+    @Test
+    void computeAudioMD5() throws IOException {
+        File f = new File("sounds/stereo/" + stereoAsserts.get(0)
+                .file());
+        if (f.exists()) {
+            RiffReader r = new RiffReader(f, false);
+            RiffFileInfo info = r.parse();
+            assertEquals("3BFEE932", r.computeAudioChecksum(info.getAudioInfo()));
+        }
+    }
+
+    @Test
+    void parseStereoFiles() {
+        stereoAsserts.forEach(a -> {
+            File f = new File("%s/%s".formatted(SRC_FOLDER_STEREO, a.file));
+            assertFormat(a, f);
+        });
+    }
+
+    @Test
+    void parseMultichannelFiles() {
+        surroundAsserts.forEach(a -> {
+            File f = new File("%s/%s".formatted(SRC_FOLDER_SURROUND, a.file));
+            assertFormat(a, f);
+        });
     }
 
 }
