@@ -2,16 +2,14 @@ package com.hypercube.mpm.javafx.widgets.dialog.sysex;
 
 import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.DeviceToolBox;
-import com.hypercube.mpm.app.RequestStatus;
 import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload;
 import com.hypercube.mpm.javafx.widgets.hexa.HexaDataViewer;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -59,9 +57,9 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     Label responseLabel;
 
     @FXML
-    private HexaDataViewer hexResponse;
-    @FXML
     private HexaDataViewer hexCommand;
+    @FXML
+    private HexaDataViewer hexResponse;
 
     @FXML
     public void onSaveButton(ActionEvent event) {
@@ -120,17 +118,29 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
+
+        refreshView();
+
+        deviceSelector.setConverter(new StringConverter<MidiDeviceDefinition>() {
+            @Override
+            public String toString(MidiDeviceDefinition midiDeviceDefinition) {
+                return Optional.ofNullable(midiDeviceDefinition)
+                        .map(midiDeviceDefinition1 -> "%s %s".formatted(midiDeviceDefinition.getBrand(), midiDeviceDefinition.getDeviceName()))
+                        .orElse("");
+            }
+
+            @Override
+            public MidiDeviceDefinition fromString(String s) {
+                return null;
+            }
+        });
+
+        response = new DataViewerPayload(fakePayload());
+        hexResponse.setData(response);
+    }
+
+    private void refreshView() {
         var cfg = configurationFactory.getProjectConfiguration();
-        List<String> midiInPorts = cfg.getMidiPortsManager()
-                .getInputs()
-                .stream()
-                .map(MidiInDevice::getName)
-                .toList();
-        List<String> midiOutPorts = cfg.getMidiPortsManager()
-                .getOutputs()
-                .stream()
-                .map(MidiOutDevice::getName)
-                .toList();
 
         devices = cfg.getMidiDeviceLibrary()
                 .getDevices()
@@ -154,23 +164,6 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
                     .ifPresent(d -> deviceSelector.getSelectionModel()
                             .select(d));
         }
-
-        deviceSelector.setConverter(new StringConverter<MidiDeviceDefinition>() {
-            @Override
-            public String toString(MidiDeviceDefinition midiDeviceDefinition) {
-                return Optional.ofNullable(midiDeviceDefinition)
-                        .map(midiDeviceDefinition1 -> "%s %s".formatted(midiDeviceDefinition.getBrand(), midiDeviceDefinition.getDeviceName()))
-                        .orElse("");
-            }
-
-            @Override
-            public MidiDeviceDefinition fromString(String s) {
-                return null;
-            }
-        });
-
-        response = new DataViewerPayload(fakePayload());
-        hexResponse.setData(response);
     }
 
     private Optional<MidiDeviceDefinition> getSelectedDevice() {
@@ -178,13 +171,14 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
                 .getSelectedItem());
     }
 
-    private void onDeviceRequest(RequestStatus status) {
+    private void onDeviceRequest(MidiRequestResponse midiRequestResponse) {
         runOnJavaFXThread(() -> {
-            if (status.errorMessage() != null) {
-                getView().setErrorMessage(status.errorMessage());
+            hexCommand.setData(new DataViewerPayload(midiRequestResponse.request()));
+            if (midiRequestResponse.errorMessage() != null) {
+                getView().setErrorMessage(midiRequestResponse.errorMessage());
             } else {
                 getView().setErrorMessage("");
-                hexCommand.setData(new DataViewerPayload(status.payload()));
+                hexResponse.setData(new DataViewerPayload(midiRequestResponse.response()));
             }
         });
     }
@@ -244,6 +238,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     @FXML
     void onReloadMidiDeviceLibrary() {
         deviceStateManager.reloadMidiDeviceLibrary();
+        refreshView();
     }
 
     byte[] fakePayload() {

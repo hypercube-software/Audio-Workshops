@@ -9,7 +9,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>synth-ripper</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>synth-ripper</name>
     <description>Synth Ripper convert your hardware to SFZ</description>
     <properties>

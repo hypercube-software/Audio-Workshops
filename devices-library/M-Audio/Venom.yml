@@ -8,10 +8,26 @@ presetFormat: BANK_MSB_PRG
 presetNaming: STANDARD
 
 macros:
-  - "ACK(): F00001052100 7F F7"
-  - "QueryDump(addr) : F00001052100 01 addr F7"
-  - "SingleEditDump() : QueryDump( $000100 )"
-  - "PatchName() : SingleEditDump() : PatchMapper"
+  - "ACK()                  : F00001052100 7F F7"
+  - "QueryDump(addr)        : F00001052100 01 addr F7"
+  - "WriteDump(addr,value)  : F00001052100 02 addr value F7"
+  - "SingleEditDump()       : QueryDump( $000100 )"
+  - "PatchName()            : SingleEditDump() : PatchMapper"
+  - "SetMode(mode)          : WriteDump( $150001 , 00 mode)"
+  - "SetMultiControl(ctrl)  : WriteDump( $150002 , 00 ctrl)"
+  - "SingleMode()           : SetMode(00)"
+  - "SinglePatternMode()    : SetMode(02)"
+  - "MultiMode()            : SetMode(01)"
+  - "MultiPatternMode()     : SetMode(03)"
+
+  - "MultiControlMute()     : SetMultiControl(00)"
+  - "MuteParts(mask)        : WriteDump( $150003 , 00 mask)"  # bit mask to select one of the 4 parts ($F = all of them)
+
+  - "MultiControlEnable()   : SetMultiControl(01)"
+  - "EnableParts(mask)      : WriteDump( $150003 , 01 mask)"  # bit mask to select one of the 4 parts ($F = all of them)
+
+  - "MultiControlSelect()   : SetMultiControl(02)"
+  - "SelectParts(mask)      : WriteDump( $150003 , 02 mask)"  # bit mask to select one of the 4 parts ($F = all of them)
 
 decodingKey:
   start: 10
@@ -28,9 +44,10 @@ decodingKey:
 
 deviceModes:
   Single:
-    backupCommand: SingleEditDump()
+    command: SingleMode()
     queryName: PatchName()
     postQueryName: ACK()
+    midiChannels: 0
     categories:
       - "Keyboard: Piano, Rhode,Grand,Keys"
       - "Organ: Reed"
@@ -57,7 +74,10 @@ deviceModes:
       "Bank D (User)":
         command: "$04"
         presetDomain: 0-127
-
+  Multi:
+    command: MultiMode()
+    postQueryName: ACK()
+    midiChannels: 0-3
 #
 # Mappers to extract patch names
 #

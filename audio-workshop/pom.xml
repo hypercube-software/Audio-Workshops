@@ -9,7 +9,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>audio-workshop</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>audio-workshop</name>
     <description>Demo project to learn AUDIO in Java</description>
     <dependencies>

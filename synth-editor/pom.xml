@@ -9,7 +9,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>synth-editor</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>synth-editor</name>
     <description>Synth Editor with Frontend in Quasar/VueJS</description>
     <properties>

@@ -19,6 +19,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMixin;
@@ -158,7 +159,7 @@ public class DeviceToolBox {
     /**
      * Request a command to a device and return the response
      */
-    public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<RequestStatus> requestLogger) {
+    public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<MidiRequestResponse> requestLogger) {
         try {
             final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
             final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
@@ -168,7 +169,7 @@ public class DeviceToolBox {
                 if (output == null) {
                     String msg = "Output MIDI Device not found: %s".formatted(device.getOutputMidiDevice());
                     log.warn(msg);
-                    requestLogger.accept(RequestStatus.of(msg));
+                    requestLogger.accept(MidiRequestResponse.of(msg));
                     return Optional.empty();
                 }
                 try (var input = midiPortsManager.getInput(device.getInputMidiDevice())
@@ -176,24 +177,20 @@ public class DeviceToolBox {
                     if (input == null) {
                         String msg = "Input MIDI Device not found: %s".formatted(device.getInputMidiDevice());
                         log.warn(msg);
-                        requestLogger.accept(RequestStatus.of(msg));
+                        requestLogger.accept(MidiRequestResponse.of(msg));
                         return Optional.empty();
                     }
                     output.open();
                     input.open();
                     var midiRequestResponse = midiDeviceRequester.queryDevice(device, input, output, cmd, call);
-                    if (midiRequestResponse.errorMessage() != null) {
-                        requestLogger.accept(RequestStatus.of(midiRequestResponse.errorMessage()));
-                    } else {
-                        requestLogger.accept(RequestStatus.of(midiRequestResponse.request()));
-                    }
+                    requestLogger.accept(midiRequestResponse);
                     byte[] response = midiRequestResponse.response();
                     return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
                 }
             }
         } catch (Exception e) {
             Optional.ofNullable(requestLogger)
-                    .ifPresent(r -> r.accept(RequestStatus.of(e.getMessage())));
+                    .ifPresent(r -> r.accept(MidiRequestResponse.of(e.getMessage())));
         }
         return Optional.empty();
     }
@@ -285,10 +282,10 @@ public class DeviceToolBox {
         }
         File patchFile = new File(getBankFolder(selectedMode, selectedBank, device), patchFilename);
         log.info("Save current preset to {}", patchFile);
-        Consumer<RequestStatus> requestLogger = requestStatus -> {
-            if (requestStatus.hasError()) {
-                log.error(requestStatus.errorMessage());
-                GenericDialogController.error("SysEx not saved", requestStatus.errorMessage());
+        Consumer<MidiRequestResponse> requestLogger = requestResponse -> {
+            if (requestResponse.hasError()) {
+                log.error(requestResponse.errorMessage());
+                GenericDialogController.error("SysEx not saved", requestResponse.errorMessage());
             }
         };
         request(device, backupCommand, requestLogger).ifPresentOrElse(response ->
