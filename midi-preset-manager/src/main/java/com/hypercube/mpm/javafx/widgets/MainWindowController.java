@@ -64,7 +64,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     DeviceToolBox deviceToolBox;
     @Autowired
     ConfigurationFactory configurationFactory;
-    
+
     @FXML
     CheckMenuItem menuAlwaysOnTop;
 
@@ -72,7 +72,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     public void onMenuScanMidiPorts(ActionEvent event) {
         configurationFactory.getProjectConfiguration()
                 .getMidiPortsManager()
-                .collectDevices();
+                .collectHardwareDevices();
         deviceStateManager.initModel();
     }
 
@@ -570,7 +570,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             model.getCurrentDeviceState()
                     .setCurrentSearchOutput(List.of());
         } else {
-            deviceStateManager.onModeChanged(selectedItems);
+            deviceStateManager.onModeChanged(selectedItems.getFirst());
             midiRouter.changeOutputChannel(getModel().getCurrentDeviceState()
                     .getId()
                     .getChannel());

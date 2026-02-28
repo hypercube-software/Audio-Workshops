@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class takes care of the device states displayed in the GUI
@@ -55,28 +56,24 @@ public class DeviceStateManager {
         changeModeOnDevice(getSelectedDevice(), model.getCurrentDeviceState(), selectedPatch.getMode(), true);
     }
 
-    public void onModeChanged(List<String> selectedMode) {
+    public void onModeChanged(String selectedMode) {
         if (model.getCurrentDeviceState() == null || selectedMode == null || selectedMode.isEmpty()) {
             return;
         }
         var device = getSelectedDevice();
         var currentState = model.getCurrentDeviceState();
-        if (!selectedMode.isEmpty()) {
-            String modeName = (String) selectedMode.getFirst();
-            log.info("Switch from mode '{}' to mode '{}'", currentState.getId()
-                    .getMode(), modeName);
-            changeModeOnDevice(device, currentState, modeName, false);
-            var stateId = getOrCreateDeviceStateId(device, modeName);
-            currentState = model.getDeviceStates()
-                    .get(stateId);
-            updateLastUsed(model, currentState);
-            model.setCurrentDeviceState(currentState);
-            refreshModeProperties(device, currentState);
-            currentState.setCurrentSelectedCategories(new ArrayList<>());
-            currentState.setSelectedBankNames(new ArrayList<>());
-            currentState.setCurrentSearchOutput(null);
-
-        }
+        log.info("Switch from mode '{}' to mode '{}'", currentState.getId()
+                .getMode(), selectedMode);
+        changeModeOnDevice(device, currentState, selectedMode, false);
+        var stateId = getOrCreateDeviceStateId(device, selectedMode);
+        currentState = model.getDeviceStates()
+                .get(stateId);
+        updateLastUsed(model, currentState);
+        model.setCurrentDeviceState(currentState);
+        refreshModeProperties(device, currentState);
+        currentState.setCurrentSelectedCategories(new ArrayList<>());
+        currentState.setSelectedBankNames(new ArrayList<>());
+        currentState.setCurrentSearchOutput(null);
     }
 
     /**
@@ -197,9 +194,13 @@ public class DeviceStateManager {
                         .getCommand();
                 MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
                 if (modeCommand != null && midiOutDevice != null) {
-                    log.info("Switch to Mode on device: {}", newModeName);
-                    midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
-                    midiOutDevice.sleep(device.getModeLoadTimeMs());
+                    if (!newModeName.equals(getCurrentDeviceMode(device))) {
+                        log.info("Switch to Mode on device: {}", newModeName);
+                        model.getCurrentDeviceMode()
+                                .put(device, midiDeviceMode);
+                        midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
+                        midiOutDevice.sleep(device.getModeLoadTimeMs());
+                    }
                 }
             } else {
                 log.error("Unknown mode '{}' for device '{}'", newModeName, device.getDeviceName());
@@ -439,7 +440,7 @@ public class DeviceStateManager {
                     .get(id);
 
             // update the view with it
-            refreshCurrentDeviceState(deviceState);
+            refreshCurrentDeviceState(device, deviceState);
             refreshModeProperties(device, deviceState);
         }
     }
@@ -486,15 +487,26 @@ public class DeviceStateManager {
     /**
      * Restore the UI with a given device state
      *
+     * @param device
      * @param newState a state from the map {@link MainModel#deviceStates}
      */
-    private void refreshCurrentDeviceState(DeviceState newState) {
+    private void refreshCurrentDeviceState(MidiDeviceDefinition device, DeviceState newState) {
         log.info("---------------------------------------------------------------------------------");
         log.info("Switch to {} lastUsed '{}' command '{}' categories '{}' patch '{}'", newState.getId(),
                 newState.isLastUsed(),
                 newState.getSelectedBankNames(), newState.getCurrentSelectedCategories(), newState.getCurrentPatch());
         updateLastUsed(model, newState);
+        boolean requireSetMode = model.getCurrentDeviceState() == null;
         model.setCurrentDeviceState(newState);
+        changeModeOnDevice(device, newState, newState.getId()
+                .getMode(), true);
+    }
+
+    private String getCurrentDeviceMode(MidiDeviceDefinition device) {
+        return Optional.ofNullable(model.getCurrentDeviceMode()
+                        .get(device))
+                .map(MidiDeviceMode::getName)
+                .orElse(null);
     }
 
     /**

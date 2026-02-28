@@ -41,7 +41,7 @@ public class MidiBackupTranslatorShell {
     @ShellMethod(value = "Read MIDI input and send to another MIDI output limiting the throughput")
     public void translate() throws IOException {
         final MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
         final MidiBackupTranslator midiBackupTranslator = new MidiBackupTranslator(configuration);
 
@@ -94,7 +94,7 @@ public class MidiBackupTranslatorShell {
     @ShellMethod(value = "Restore devices with Sysex")
     public void restore(@ShellOption(value = "-d", defaultValue = "") String deviceName) throws IOException {
         final MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
 
         for (var projectDevice : configuration.getDevices()) {
@@ -121,7 +121,7 @@ public class MidiBackupTranslatorShell {
     @ShellMethod(value = "Backup devices with Sysex")
     public void backup(@ShellOption(value = "-d", defaultValue = "") String deviceName, @ShellOption(value = "-m", defaultValue = "") String macro) throws IOException, InvalidMidiDataException, MidiUnavailableException, InterruptedException {
         MidiPortsManager midiPortsManager = new MidiPortsManager();
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
         final ProjectConfiguration configuration = projectConfigurationFactory.loadConfig();
         if (deviceName.isBlank() && macro.isBlank()) {
             int nbEnabled = 0;
@@ -155,7 +155,7 @@ public class MidiBackupTranslatorShell {
     @ShellMethod(value = "List MIDI devices")
     public void list() {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         m.getInputs()
                 .forEach(d -> log.info(String.format("MIDI INPUT Port \"%s\"%s", d.getName(), getDeviceAlias(d))));
         m.getOutputs()

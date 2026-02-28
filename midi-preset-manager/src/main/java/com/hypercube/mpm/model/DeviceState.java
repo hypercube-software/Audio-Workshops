@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * Be sure to understand multiple {@link DeviceState} exists for a single device when it is multichannel
+ */
 @Getter
 @Setter
 public class DeviceState {

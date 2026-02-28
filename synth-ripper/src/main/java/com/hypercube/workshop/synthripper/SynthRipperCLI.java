@@ -26,7 +26,7 @@ public class SynthRipperCLI {
     public void info(@ShellOption(value = "-v", defaultValue = "false") boolean verbose) {
         log.info("Available devices:");
         MidiPortsManager midiPortsManager = new MidiPortsManager();
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
         midiPortsManager.getOutputs()
                 .forEach(d -> log.info("MIDI OUT : " + d.getName()));
 
@@ -56,7 +56,7 @@ public class SynthRipperCLI {
         SynthRipperConfiguration cfg = SynthRipperConfiguration.loadConfig(configFile);
         cfg.getSelectedPresets();
         MidiPortsManager midiPortsManager = new MidiPortsManager();
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
 
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
         audioDeviceManager.collectDevices();

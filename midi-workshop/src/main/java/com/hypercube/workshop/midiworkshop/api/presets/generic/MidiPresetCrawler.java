@@ -108,7 +108,7 @@ public class MidiPresetCrawler {
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + deviceName));
 
         MidiPortsManager midiPortsManager = new MidiPortsManager();
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
         String outputMidiDevice = device.getOutputMidiDevice();
         try (MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
                 .orElse(null)) {

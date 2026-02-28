@@ -58,7 +58,9 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
     public void close() {
         super.close();
         try {
-            sendViaTCP(new CloseSessionNetworkMessage(NetWorkMessageOrigin.TCP, networkId));
+            if (hasMidiOutConnection()) {
+                sendViaTCP(new CloseSessionNetworkMessage(NetWorkMessageOrigin.TCP, networkId));
+            }
         } catch (MidiError | IOException e) {
             log.error("Unexpected error closing {}", definition, e);
         } finally {
@@ -67,17 +69,19 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
                     getMidiInNetworkDevice().close();
                     listener.interrupt();
                 }
-                try {
-                    getTcpOutputStream().close();
-                } catch (IOException e) {
-                    log.error("Unable to close output TCP stream for {}", definition);
+                if (hasMidiOutConnection()) {
+                    try {
+                        getTcpOutputStream().close();
+                    } catch (IOException e) {
+                        log.error("Unable to close output TCP stream for {}", definition);
+                    }
+                    try {
+                        getTcpInputStream().close();
+                    } catch (IOException e) {
+                        log.error("Unable to close input TCP stream for {}", definition);
+                    }
+                    connections.remove(definition);
                 }
-                try {
-                    getTcpInputStream().close();
-                } catch (IOException e) {
-                    log.error("Unable to close input TCP stream for {}", definition);
-                }
-                connections.remove(definition);
             }
         }
     }
@@ -175,6 +179,10 @@ public class MidiOutNetworkDevice extends MidiOutDevice {
 
     private InputStream getTcpInputStream() {
         return getMidiOutConnection().tcpInputStream();
+    }
+
+    private boolean hasMidiOutConnection() {
+        return connections.containsKey(definition);
     }
 
     private MidiOutConnection getMidiOutConnection() {

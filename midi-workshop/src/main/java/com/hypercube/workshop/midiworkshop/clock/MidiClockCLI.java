@@ -20,7 +20,7 @@ public class MidiClockCLI {
     @ShellMethod(value = "Send a MIDI Clock at a given tempo")
     public void clock(@ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-c") MidiClockType clockType, @ShellOption(value = "-t") int tempo) throws IOException {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         try (var out = m.openOutput(outputDevice)) {
             clock.startClock(clockType, out, tempo);
         }

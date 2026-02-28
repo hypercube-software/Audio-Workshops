@@ -22,7 +22,7 @@ public class AudioSynthCLI {
         audioMgr.collectDevices();
 
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         try (var in = m.openInput(inputDevice)) {
             audioMgr.getOutput(outputDevice)
                     .ifPresentOrElse(audio -> audioSynth.synth(in, audio),
@@ -40,7 +40,7 @@ public class AudioSynthCLI {
                 .forEach(d -> log.info(String.format("AUDIO OUTPUT Device \"%s\"", d.getName())));
 
         MidiPortsManager midi = new MidiPortsManager();
-        midi.collectDevices();
+        midi.collectHardwareDevices();
         midi.getInputs()
                 .forEach(d -> log.info(String.format("MIDI INPUT  Device \"%s\"", d.getName())));
         midi.getOutputs()

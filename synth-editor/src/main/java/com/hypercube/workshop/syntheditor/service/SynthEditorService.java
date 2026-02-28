@@ -42,7 +42,7 @@ public class SynthEditorService implements SynthEditorBusListener {
     @PostConstruct
     public void init() {
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, "DS-330"); // Because Roland don't use unique ids for Sound Canvas
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
         device = Manufacturer.ROLAND.getDevice("DS-330");
         collectDS330Parameters();
     }

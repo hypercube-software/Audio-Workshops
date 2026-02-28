@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MultiMidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.devices.remote.client.MidiInNetworkDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.remote.client.MidiOutNetworkDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.Getter;
@@ -11,16 +12,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sound.midi.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+/**
+ * Since this framework introduce Network Midi devices, Java API knows nothing about them
+ * <p>Refreshing the list of devices is a little bit tricky because of that</p>
+ */
 @Slf4j
 @Getter
 @Service
 public class MidiPortsManager {
+    /**
+     * This list include real hardware input devices and network ones
+     */
     private final List<MidiInDevice> inputs = new ArrayList<>();
+    /**
+     * This list include real hardware output devices and network ones
+     */
     private final List<MidiOutDevice> outputs = new ArrayList<>();
 
     public static boolean isJdkVersionAtLeast(int requiredMajorVersion) {
@@ -46,24 +54,46 @@ public class MidiPortsManager {
         }
     }
 
-    public void collectDevices() {
+    /**
+     * Refresh the list of devices given the list of hardware devices provided by Java API
+     * <ul>
+     *     <li>Network devices are untouched</li>
+     *     <li>Hardware devices are removed or added</li>
+     * </ul>
+     * This method refresh {@link #inputs} and {@link #outputs}
+     */
+    public void collectHardwareDevices() {
         if (!isJdkVersionAtLeast(23)) {
             log.error("===================================================================================================");
             log.error("Your JDK is too old and contains serious MIDI bugs, please upgrade to 23+. Current version is: " + System.getProperty("java.version"));
             log.error("===================================================================================================");
         }
-        inputs.clear();
-        outputs.clear();
         MidiDevice.Info[] devices = MidiSystem.getMidiDeviceInfo();
+        Set<String> actualInputs = new HashSet<>();
+        Set<String> actualOutputs = new HashSet<>();
+        boolean firstScan = inputs.isEmpty() && outputs.isEmpty();
         for (MidiDevice.Info info : devices) {
             try {
                 MidiDevice device = MidiSystem.getMidiDevice(info);
                 if (!(device instanceof Sequencer) && !(device instanceof Synthesizer)) {
+                    String deviceName = info.getName();
                     if (device.getMaxReceivers() > 0 || device.getMaxReceivers() == -1) {
-                        outputs.add(new MidiOutDevice(device));
+                        actualOutputs.add(deviceName);
+                        if (getOutput(deviceName).isEmpty()) {
+                            if (!firstScan) {
+                                log.info("New output MIDI device detected: {}", deviceName);
+                            }
+                            outputs.add(new MidiOutDevice(device));
+                        }
                     }
                     if (device.getMaxTransmitters() > 0 || device.getMaxTransmitters() == -1) {
-                        inputs.add(new MidiInDevice(device));
+                        actualInputs.add(deviceName);
+                        if (getInput(deviceName).isEmpty()) {
+                            if (!firstScan) {
+                                log.info("New input MIDI device detected: {}", deviceName);
+                            }
+                            inputs.add(new MidiInDevice(device));
+                        }
                     }
                 }
 
@@ -71,8 +101,8 @@ public class MidiPortsManager {
                 log.error("Port {} is not available", info.getDescription());
             }
         }
-        inputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
-        outputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
+        cleanupHardwareDevices(actualInputs, actualOutputs);
+        sortDevices();
     }
 
     public Optional<MidiInDevice> getInput(String name) {
@@ -147,5 +177,40 @@ public class MidiPortsManager {
         inputs
                 .forEach(o -> log.info("IN :" + o.getName()));
 
+    }
+
+    private void sortDevices() {
+        inputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
+        outputs.sort(Comparator.comparing(AbstractMidiDevice::getName));
+    }
+
+    private void listDevices() {
+        inputs.forEach(d -> log.info("INPUT  device {}", d.getName()));
+        outputs.forEach(d -> log.info("OUTPUT device {}", d.getName()));
+    }
+
+    /**
+     * If a hardware device is no longer listed by Java API, we close and remove it
+     * <p>network devices are untouched since they are not listed by Java API, they are only part of this framework</p>
+     */
+    private void cleanupHardwareDevices(Set<String> actualHardwareInputs, Set<String> actualHardwareOutputs) {
+        var inputsToDelete = inputs.stream()
+                .filter(d -> !actualHardwareInputs.contains(d.getName()))
+                .filter(d -> !(d instanceof MidiInNetworkDevice))
+                .toList();
+        var outputsToDelete = outputs.stream()
+                .filter(d -> !actualHardwareOutputs.contains(d.getName()))
+                .filter(d -> !(d instanceof MidiOutNetworkDevice))
+                .toList();
+        inputsToDelete.forEach(midiInDevice -> {
+            log.info("Input MIDI device removed: {}", midiInDevice.getName());
+            midiInDevice.close();
+        });
+        outputsToDelete.forEach(midiOutDevice -> {
+            log.info("Output MIDI device removed: {}", midiOutDevice.getName());
+            midiOutDevice.close();
+        });
+        inputs.removeAll(inputsToDelete);
+        outputs.removeAll(outputsToDelete);
     }
 }

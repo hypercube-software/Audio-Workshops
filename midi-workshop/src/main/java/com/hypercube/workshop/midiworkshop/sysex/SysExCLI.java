@@ -86,7 +86,7 @@ public class SysExCLI {
             @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
             @ShellOption(value = "-f") File output) throws IOException, MidiUnavailableException, InterruptedException {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         m.listPorts();
         try (var out = m.openOutput(outputDevice)) {
             try (var in = m.openInput(inputDevice)) {
@@ -115,7 +115,7 @@ public class SysExCLI {
                            @ShellOption(value = "-a", help = "Roland Packed Address of a parameter") String address,
                            @ShellOption(value = "-s", help = "Parameter size in bytes") int size) throws IOException, MidiUnavailableException {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         m.listPorts();
 
         var device = Manufacturer.ROLAND.getDevice(modelName);
@@ -138,7 +138,7 @@ public class SysExCLI {
             Files.delete(output.toPath());
         }
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         m.listPorts();
 
         try (var out = m.openOutput(outputDevice)) {

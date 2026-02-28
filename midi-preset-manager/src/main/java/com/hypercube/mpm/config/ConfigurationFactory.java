@@ -42,7 +42,7 @@ public class ConfigurationFactory {
     }
 
     public void loadConfig() {
-        midiPortsManager.collectDevices();
+        midiPortsManager.collectHardwareDevices();
         loadMidiDeviceLibrary();
         favorites = loadFavoritePatches();
         try {

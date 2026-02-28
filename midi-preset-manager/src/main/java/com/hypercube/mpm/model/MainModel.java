@@ -3,6 +3,8 @@ package com.hypercube.mpm.model;
 import com.hypercube.util.javafx.model.ModelHelper;
 import com.hypercube.util.javafx.model.NotObservable;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,12 +17,15 @@ import java.util.Map;
 @Setter
 public class MainModel {
     private static MainModel observableInstance = null;
+    @NotObservable
+    private final Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
+    @NotObservable
+    private final Map<MidiDeviceDefinition, MidiDeviceMode> currentDeviceMode = new HashMap<>();
     private List<String> devices = new ArrayList<>();
     private List<String> midiInPorts = new ArrayList<>();
     private List<String> selectedInputPorts = new ArrayList<>();
     private List<String> midiThruPorts = new ArrayList<>();
     private List<String> selectedOutputPorts = new ArrayList<>();
-
     private List<String> deviceModes = new ArrayList<>();
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<Integer> modeChannels = new ArrayList<>();
@@ -29,9 +34,6 @@ public class MainModel {
     private String currentPatchNameFilter;
     private int currentPatchScoreFilter;
     private String selectedDevice;
-
-    @NotObservable
-    private Map<DeviceStateId, DeviceState> deviceStates = new HashMap<>();
     /**
      * Gives some info about the current search output
      */

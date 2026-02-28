@@ -20,7 +20,7 @@ public class MidiMonitorCLI {
     @ShellMethod(value = "Monitor MIDI input")
     public void monitor(@ShellOption(value = "-i", defaultValue = "") String inputDevice) throws IOException {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         if (!inputDevice.isEmpty()) {
             try (var in = m.openInput(inputDevice)) {
                 midiMonitor.monitor(in);
@@ -36,7 +36,7 @@ public class MidiMonitorCLI {
     @ShellMethod(value = "Read MIDI input and send to another MIDI output")
     public void filter(@ShellOption(value = "-i", defaultValue = "") String inputDevice, @ShellOption(value = "-o") String outputDevice) throws IOException {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         if (!inputDevice.isEmpty()) {
             try (var in = m.openInput(inputDevice)) {
                 try (var out = m.openOutput(outputDevice)) {
@@ -61,7 +61,7 @@ public class MidiMonitorCLI {
     @ShellMethod(value = "List MIDI devices")
     public void list() {
         MidiPortsManager m = new MidiPortsManager();
-        m.collectDevices();
+        m.collectHardwareDevices();
         m.getInputs()
                 .forEach(d -> log.info(String.format("INPUT  Device \"%s\"", d.getName())));
         m.getOutputs()

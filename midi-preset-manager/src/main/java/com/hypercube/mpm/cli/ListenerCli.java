@@ -18,7 +18,7 @@ public class ListenerCli {
     public void listen() {
         networkServer.getConfig()
                 .midiPortsManager()
-                .collectDevices();
+                .collectHardwareDevices();
         networkServer.getConfig()
                 .midiDeviceLibrary()
                 .load(ConfigHelper.getApplicationFolder(MidiPresetManagerCliApplication.class));
