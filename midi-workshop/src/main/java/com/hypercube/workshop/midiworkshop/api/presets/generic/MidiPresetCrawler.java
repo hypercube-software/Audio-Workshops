@@ -1,9 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.presets.generic;
 
-import com.hypercube.workshop.midiworkshop.MidiWorkshopApplication;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
@@ -19,7 +17,6 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceReques
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.ExtractedFields;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
-import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,18 +65,20 @@ import java.util.stream.IntStream;
 public class MidiPresetCrawler {
     private final MidiDeviceLibrary library;
     private final MidiDeviceRequester midiDeviceRequester;
+    private final MidiPortsManager midiPortsManager;
     private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
     private final AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
     private final List<String> xgPresets;
     private final List<String> scPresets;
-    private final ByteArrayOutputStream currentSysex = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream currentSysEx = new ByteArrayOutputStream();
     private int expectedResponseSize = 0;
 
-    public MidiPresetCrawler(MidiDeviceLibrary library, MidiDeviceRequester midiDeviceRequester) {
+    public MidiPresetCrawler(MidiDeviceLibrary library, MidiDeviceRequester midiDeviceRequester, MidiPortsManager midiPortsManager) {
         xgPresets = loadXGPresets();
         scPresets = loadSoundCanvasPreset();
         this.library = library;
         this.midiDeviceRequester = midiDeviceRequester;
+        this.midiPortsManager = midiPortsManager;
     }
 
     private static void dumpResponse(CustomMidiEvent midiEvent) {
@@ -102,13 +101,10 @@ public class MidiPresetCrawler {
         }
     }
 
-    public void crawlAllPatches(String deviceName, MidiPresetConsumer midiPresetConsumer) {
-        library.load(ConfigHelper.getApplicationFolder(MidiWorkshopApplication.class));
-        MidiDeviceDefinition device = library.getDevice(deviceName)
-                .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + deviceName));
+    public void crawlAllPatches(CrawlingDomain crawlingDomain, MidiPresetConsumer midiPresetConsumer) {
+        MidiDeviceDefinition device = library.getDevice(crawlingDomain.device())
+                .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + crawlingDomain.device()));
 
-        MidiPortsManager midiPortsManager = new MidiPortsManager();
-        midiPortsManager.collectHardwareDevices();
         String outputMidiDevice = device.getOutputMidiDevice();
         try (MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
                 .orElse(null)) {
@@ -122,59 +118,53 @@ public class MidiPresetCrawler {
                     throw new MidiConfigError("MIDI IN Device not found: '%s".formatted(inputMidiDevice));
                 }
 
-                int nbPresetToQuery = countPresets(device);
-                int currenPresetCount = 1;
+                int nbPresetToQuery = countPresets(device, crawlingDomain);
+                int currentPresetCount = 1;
                 try {
                     MidiPresetIdentity previousPatchIdentity = null;
                     in.open();
                     in.addSysExListener(this::onResponse);
                     out.open();
-                    for (var mode : device.getDeviceModes()
-                            .values()) {
-                        changeMode(mode, library, device, out);
-                        MidiRequestSequence modeRequestSequence = forgeRequestSequence(library, device, mode.getQueryName());
-                        MidiRequestSequence modePreRequestSequence = mode.getPreQueryName() != null ? forgeRequestSequence(library, device, mode.getPreQueryName()) : null;
-                        MidiRequestSequence modePostRequestSequence = mode.getPostQueryName() != null ? forgeRequestSequence(library, device, mode.getPostQueryName()) : null;
-                        for (var bank : mode.getBanks()
-                                .values()) {
+                    var inputModes = device.getDeviceModes()
+                            .values()
+                            .stream()
+                            .filter(crawlingDomain::matches)
+                            .toList();
+                    for (var mode : inputModes) {
+                        changeMode(mode, device, out);
+                        MidiRequestSequence modeRequestSequence = forgeRequestSequence(device, mode.getQueryName());
+                        MidiRequestSequence modePreRequestSequence = mode.getPreQueryName() != null ? forgeRequestSequence(device, mode.getPreQueryName()) : null;
+                        MidiRequestSequence modePostRequestSequence = mode.getPostQueryName() != null ? forgeRequestSequence(device, mode.getPostQueryName()) : null;
+                        var inputBanks = mode.getModeBanks()
+                                .stream()
+                                .filter(crawlingDomain::matches)
+                                .toList();
+                        for (var bank : inputBanks) {
                             if (bank.getPresetDomain() == null) {
                                 continue;
                             }
-                            MidiRequestSequence bankRequestSequence = bank.getQueryName() != null ? forgeRequestSequence(library, device, bank.getQueryName()) : modeRequestSequence;
-                            MidiRequestSequence bankPreRequestSequence = bank.getPreQueryName() != null ? forgeRequestSequence(library, device, bank.getPreQueryName()) : modePreRequestSequence;
-                            MidiRequestSequence bankPostRequestSequence = bank.getPostQueryName() != null ? forgeRequestSequence(library, device, bank.getPostQueryName()) : modePostRequestSequence;
+                            MidiRequestSequence bankRequestSequence = bank.getQueryName() != null ? forgeRequestSequence(device, bank.getQueryName()) : modeRequestSequence;
+                            MidiRequestSequence bankPreRequestSequence = bank.getPreQueryName() != null ? forgeRequestSequence(device, bank.getPreQueryName()) : modePreRequestSequence;
+                            MidiRequestSequence bankPostRequestSequence = bank.getPostQueryName() != null ? forgeRequestSequence(device, bank.getPostQueryName()) : modePostRequestSequence;
+                            if (bankRequestSequence == null) {
+                                log.error("Bank '{}' for device '{}' has no queryName defined", bank.getName(), device.getDeviceName());
+                                continue;
+                            }
                             for (var range : bank.getPresetDomain()
                                     .getRanges()) {
                                 for (int program : IntStream.rangeClosed(range.getFrom(), range.getTo())
                                         .toArray()) {
                                     String currentBankName = bank.getName();
                                     MidiPreset midiPreset = MidiPresetBuilder.parse(device, mode, bank, program);
-                                    log.info("Select Bank '%s' Program '%s' in mode '%s'".formatted(currentBankName, program, mode.getName()));
-                                    int bankLSB = 0;
-                                    int bankMSB = 0;
-                                    for (var command : midiPreset.getCommands()) {
-                                        CustomMidiEvent cm = new CustomMidiEvent(command);
-                                        log.info("    " + cm.getHexValuesSpaced());
-                                        if (cm.getHexValues()
-                                                .startsWith("0xB020")) {
-                                            bankLSB = Integer.parseInt(cm.getHexValues()
-                                                    .substring(6), 16);
-                                        }
-                                        if (cm.getHexValues()
-                                                .startsWith("0xB000")) {
-                                            bankMSB = Integer.parseInt(cm.getHexValues()
-                                                    .substring(6), 16);
-                                        }
-                                        out.send(cm);
-                                    }
+                                    selectPatch(midiPreset, out);
                                     // let the time the edit buffer is completely set before querying it
-                                    //wait("Wait patch change", device.getPresetLoadTimeMs());
+                                    wait("Wait patch change", device.getPresetLoadTimeMs());
                                     MidiPresetIdentity midiPresetIdentity = null;
                                     MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
                                     for (int retry = 0; retry < 2; retry++) {
                                         midiPresetIdentity = switch (presetNaming) {
                                             case STANDARD ->
-                                                    getStandardPreset(device, mode, currentBankName, bankMSB, bankLSB, program,
+                                                    getStandardPreset(device, mode, currentBankName, midiPreset,
                                                             bankPreRequestSequence,
                                                             bankRequestSequence,
                                                             bankPostRequestSequence, out);
@@ -186,10 +176,9 @@ public class MidiPresetCrawler {
                                         if (midiPresetIdentity != null) {
                                             if (previousPatchIdentity != null && previousPatchIdentity.name()
                                                     .equals(midiPresetIdentity.name())) {
-                                                log.error("Something wrong, the patch name is the same than the previous one");
-                                            } else {
-                                                break;
+                                                log.warn("Something may be wrong, the patch name is the same than the previous one, try increase 'presetLoadTime'");
                                             }
+                                            break;
                                         } else {
                                             log.error("Something wrong, the patch name is not found");
                                         }
@@ -211,8 +200,8 @@ public class MidiPresetCrawler {
                                         }
                                         log.info("");
                                         midiPreset.setId(midiPresetIdentity);
-                                        midiPresetConsumer.onNewMidiPreset(device, midiPreset, currenPresetCount, nbPresetToQuery);
-                                        currenPresetCount++;
+                                        midiPresetConsumer.onNewMidiPreset(device, midiPreset, currentPresetCount, nbPresetToQuery);
+                                        currentPresetCount++;
                                     }
                                     previousPatchIdentity = midiPresetIdentity;
                                 }
@@ -226,12 +215,32 @@ public class MidiPresetCrawler {
         }
     }
 
-    private int countPresets(MidiDeviceDefinition device) {
-        int presetcount = 0;
-        for (var mode : device.getDeviceModes()
-                .values()) {
-            for (var bank : mode.getBanks()
-                    .values()) {
+    private void selectPatch(MidiPreset midiPreset, MidiOutDevice out) {
+        log.info("Select Bank {}' Program '{}' in mode '{}'", midiPreset.getId()
+                .bankName(), midiPreset.getId()
+                .name(), midiPreset.getId()
+                .deviceMode());
+        for (var command : midiPreset.getCommands()) {
+            CustomMidiEvent cm = new CustomMidiEvent(command);
+            log.info("    {}", cm.getHexValuesSpaced());
+            out.send(cm);
+        }
+    }
+
+    private int countPresets(MidiDeviceDefinition device, CrawlingDomain crawlingDomain) {
+        int presetCount = 0;
+        List<MidiDeviceMode> inputModes = device.getDeviceModes()
+                .values()
+                .stream()
+                .filter(crawlingDomain::matches)
+                .toList();
+        for (var mode : inputModes) {
+            List<MidiDeviceBank> inputBanks = mode.getBanks()
+                    .values()
+                    .stream()
+                    .filter(crawlingDomain::matches)
+                    .toList();
+            for (var bank : inputBanks) {
                 if (bank.getPresetDomain() == null) {
                     continue;
                 }
@@ -239,19 +248,19 @@ public class MidiPresetCrawler {
                         .getRanges()) {
                     for (int program : IntStream.rangeClosed(range.getFrom(), range.getTo())
                             .toArray()) {
-                        presetcount++;
+                        presetCount++;
                     }
                 }
             }
         }
-        return presetcount;
+        return presetCount;
     }
 
-    private void changeMode(MidiDeviceMode mode, MidiDeviceLibrary library, MidiDeviceDefinition device, MidiOutDevice out) {
+    private void changeMode(MidiDeviceMode mode, MidiDeviceDefinition device, MidiOutDevice out) {
         log.info("Set mode " + mode.getName());
         // no command mean the device switch automatically to the right mode (Like Yamaha TG-500)
         if (mode.getCommand() != null) {
-            MidiRequestSequence setModeRequestSequence = forgeRequestSequence(library, device, mode.getCommand());
+            MidiRequestSequence setModeRequestSequence = forgeRequestSequence(device, mode.getCommand());
             send(setModeRequestSequence, out);
             wait("Wait mode change", device.getModeLoadTimeMs());
         }
@@ -273,7 +282,7 @@ public class MidiPresetCrawler {
             return reader.lines()
                     .toList();
         } catch (Exception e) {
-            throw new MidiConfigError("Unable to open " + resource, e); // Gestion des exceptions améliorée
+            throw new MidiConfigError("Unable to open " + resource, e);
         }
     }
 
@@ -281,10 +290,9 @@ public class MidiPresetCrawler {
         String prefix = "%d-%d-%d".formatted(midiPreset.getBankMSB(), midiPreset.getBankLSB(), midiPreset.getLastProgram());
         if (presetNaming == MidiPresetNaming.YAMAHA_XG) {
             boolean inPreset = false;
-            for (int i = 0; i < xgPresets.size(); i++) {
-                String preset = xgPresets.get(i);
+            for (String preset : xgPresets) {
                 if (preset.startsWith(" ") && inPreset) {
-                    Pattern drumMapEntry = Pattern.compile("\s+([0-9]+)\s(.+)");
+                    Pattern drumMapEntry = Pattern.compile("\\s+([0-9]+)\\s(.+)");
                     Matcher m = drumMapEntry.matcher(preset);
                     if (m.matches()) {
                         int note = Integer.parseInt(m.group(1));
@@ -315,12 +323,12 @@ public class MidiPresetCrawler {
 
     private void onResponse(MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
         try {
-            currentSysex.write(customMidiEvent.getMessage()
+            currentSysEx.write(customMidiEvent.getMessage()
                     .getMessage());
             /*log.info("Receive %d bytes, current total: 0x%X".formatted(customMidiEvent.getMessage()
                     .getMessage().length, currentSysex.size()));*/
-            if (expectedResponseSize > 0 && currentSysex.size() == expectedResponseSize) {
-                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysex.toByteArray(), currentSysex.size())));
+            if (expectedResponseSize > 0 && currentSysEx.size() == expectedResponseSize) {
+                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysEx.toByteArray(), currentSysEx.size())));
             } else if (expectedResponseSize == 0) {
                 currentResponse.set(customMidiEvent);
             }
@@ -329,16 +337,13 @@ public class MidiPresetCrawler {
         }
     }
 
-    private MidiRequestSequence forgeRequestSequence(MidiDeviceLibrary library, MidiDeviceDefinition device, String command) {
+    private MidiRequestSequence forgeRequestSequence(MidiDeviceDefinition device, String command) {
         if (command == null) {
             return null;
         }
-        var sequences = CommandCall.parse(device.getDefinitionFile(), command)
+        var sequences = CommandCall.parse(device.getDefinitionFile(), device, command)
                 .stream()
-                .map(commandCall -> {
-                    CommandMacro macro = device.getMacro(commandCall);
-                    return midiDeviceRequester.forgeMidiRequestSequence(device, macro, commandCall);
-                })
+                .map(commandCall -> midiDeviceRequester.forgeMidiRequestSequence(device, commandCall))
                 .toList();
         Integer sum = sequences.stream()
                 .map(MidiRequestSequence::getTotalSize)
@@ -351,13 +356,12 @@ public class MidiPresetCrawler {
                 .toList());
     }
 
-    private MidiPresetIdentity getStandardPreset(MidiDeviceDefinition device, MidiDeviceMode mode, String currentBankName, int bankMSB, int bankLSB,
-                                                 int program,
-                                                 MidiRequestSequence preCommand,
-                                                 MidiRequestSequence queryNameRequestSequence,
-                                                 MidiRequestSequence postCommand,
+    private MidiPresetIdentity getStandardPreset(MidiDeviceDefinition device, MidiDeviceMode mode, String currentBankName, MidiPreset midiPreset,
+                                                 MidiRequestSequence preSequence,
+                                                 MidiRequestSequence sequence,
+                                                 MidiRequestSequence postSequence,
                                                  MidiOutDevice out) throws InvalidMidiDataException {
-        var response = requestFields(device, mode, bankMSB, bankLSB, program, preCommand, queryNameRequestSequence, postCommand, out);
+        final var response = requestFields(device, mode, midiPreset, preSequence, sequence, postSequence, out);
         if (response.getPatchName() != null) {
             return new MidiPresetIdentity(mode.getName(), currentBankName, response.getPatchName(), response.getCategory());
         } else {
@@ -374,7 +378,7 @@ public class MidiPresetCrawler {
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
-    private ExtractedFields requestFields(MidiDeviceDefinition device, MidiDeviceMode mode, int bankMSB, int bankLSB, int program,
+    private ExtractedFields requestFields(MidiDeviceDefinition device, MidiDeviceMode mode, MidiPreset midiPreset,
                                           MidiRequestSequence preSequence,
                                           MidiRequestSequence sequence,
                                           MidiRequestSequence postSequence,
@@ -382,26 +386,29 @@ public class MidiPresetCrawler {
         sendPreSequence(device, preSequence, out);
         ExtractedFields response = null;
         expectedResponseSize = sequence.getTotalSize();
+        if (expectedResponseSize == 0) {
+            log.warn("Response size is unknown, this will considerably slow down the extraction... Try to put response sizes in your macros");
+        }
         for (var request : sequence.getMidiRequests()) {
             List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue()
-                    .replace("program", "%02X".formatted(program))
-                    .replace("bankMSB", "%02X".formatted(bankMSB))
-                    .replace("bankLSB", "%02X".formatted(bankLSB))
+                    .replace("program", "%02X".formatted(midiPreset.getBankPrg()))
+                    .replace("bankMSB", "%02X".formatted(midiPreset.getBankMSB()))
+                    .replace("bankLSB", "%02X".formatted(midiPreset.getBankLSB()))
             );
             for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
-                var customMidiEvent = requestInstances.get(requestInstanceIndex);
-                CustomMidiEvent midiEvent = null;
+                final var customMidiEvent = requestInstances.get(requestInstanceIndex);
+                CustomMidiEvent midiResponse = null;
                 for (int retry = 0; retry < 4; retry++) {
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
                     response = new ExtractedFields();
                     resetCurrentResponse();
                     out.send(customMidiEvent);
                     try {
-                        midiEvent = waitResponse();
-                        int receivedSize = midiEvent.getMessage()
+                        midiResponse = waitResponse();
+                        int receivedSize = midiResponse.getMessage()
                                 .getLength();
                         log.info("Received " + receivedSize + " bytes ($%X)".formatted(receivedSize));
-                        dumpResponse(midiEvent);
+                        dumpResponse(midiResponse);
                         if (sequence.getTotalSize() == 0 || receivedSize == sequence.getTotalSize()) {
                             break;
                         } else {
@@ -413,9 +420,9 @@ public class MidiPresetCrawler {
                     }
                 }
                 // extract fields from the response
-                if (request.getMapper() != null && midiEvent != null && midiEvent.getMessage() != null && response != null) {
+                if (request.getMapper() != null && midiResponse != null && midiResponse.getMessage() != null) {
                     request.getMapper()
-                            .extract(mode, response, midiEvent);
+                            .extract(mode, response, midiResponse);
                     request.getMapper()
                             .dumpFields(response);
                 }
@@ -426,7 +433,7 @@ public class MidiPresetCrawler {
         return response;
     }
 
-    private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutDevice out) throws InvalidMidiDataException {
+    private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutDevice out) {
         if (preSequence != null) {
             for (var request : preSequence.getMidiRequests()) {
                 MidiEventBuilder.parse(request.getValue())
@@ -446,7 +453,7 @@ public class MidiPresetCrawler {
         }
     }
 
-    private void sendPostSequence(MidiDeviceDefinition device, MidiRequestSequence postSequence, MidiOutDevice out) throws InvalidMidiDataException {
+    private void sendPostSequence(MidiDeviceDefinition device, MidiRequestSequence postSequence, MidiOutDevice out) {
         if (postSequence != null) {
             for (var request : postSequence.getMidiRequests()) {
                 MidiEventBuilder.parse(request.getValue())
@@ -489,16 +496,16 @@ public class MidiPresetCrawler {
     }
 
     private void wait(Supplier<Boolean> predicate) {
-        int size = currentSysex.size();
+        int size = currentSysEx.size();
         long start = System.currentTimeMillis();
         do {
             wait(null, 50);
             long now = System.currentTimeMillis();
-            if (currentSysex.size() == size && now - start > 1000 * 4) {
+            if (currentSysEx.size() == size && now - start > 1000 * 4) {
                 int timeoutInSec = (int) (now - start) / 1000;
                 throw new MidiDeviceTimeout("No response from the device. SysEx request seems inappropriate", timeoutInSec);
-            } else if (currentSysex.size() != size) {
-                size = currentSysex.size();
+            } else if (currentSysEx.size() != size) {
+                size = currentSysEx.size();
             }
         }
         while (!predicate.get());
@@ -506,7 +513,7 @@ public class MidiPresetCrawler {
 
     void resetCurrentResponse() {
         currentResponse.set(null);
-        currentSysex.reset();
+        currentSysEx.reset();
     }
 
     CustomMidiEvent waitResponse() {

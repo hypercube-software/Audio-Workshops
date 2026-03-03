@@ -1,7 +1,6 @@
 package com.hypercube.workshop.synthripper;
 
 import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
-import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMConverter;
@@ -13,6 +12,7 @@ import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
 import com.hypercube.workshop.synthripper.config.ChannelMap;
 import com.hypercube.workshop.synthripper.config.ChannelMapping;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
+import com.hypercube.workshop.synthripper.model.SynthRipperError;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Closeable;
@@ -24,15 +24,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WavRecorder implements Closeable {
     public static final int INFINITE_DURATION = -1;
+    protected final PCMFormat format;
     private final RiffWriter out;
     private final RiffChunk dataChunk;
     private final long maxDurationInSamples;
     private final SampleToPCMFunction converter;
-    protected long currentDurationInSamples = 0;
-    protected final PCMFormat format;
     private final double[][] reorderedSampleBuffer;
     private final byte[] pcmBuffer;
     private final ByteBuffer pcmByteBuffer;
+    protected long currentDurationInSamples = 0;
     private boolean dataChunkClosed;
     private ThreadLogger threadLogger;
 
@@ -58,19 +58,11 @@ public class WavRecorder implements Closeable {
         out.writeMarkers(pcmMarkers);
     }
 
-
-    private PCMFormat checkFormat(PCMFormat format) {
-        if (format.isBigEndian()) {
-            throw new AudioError("BigEndian is not supported by WAV format");
-        }
-        return format;
-    }
-
     public void write(byte[] pcmBuffer, int pcmSize) {
         try {
             out.write(pcmBuffer, 0, pcmSize);
         } catch (IOException e) {
-            throw new AudioError(e);
+            throw new SynthRipperError(e);
         }
     }
 
@@ -101,8 +93,28 @@ public class WavRecorder implements Closeable {
                 return true;
             }
         } catch (IOException e) {
-            throw new AudioError(e);
+            throw new SynthRipperError(e);
         }
+    }
+
+    public void endWrite() throws IOException {
+        out.endChunk(); // Close DATA Chunk
+        dataChunkClosed = true;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (!dataChunkClosed) {
+            endWrite();
+        }
+        out.close();
+    }
+
+    private PCMFormat checkFormat(PCMFormat format) {
+        if (format.isBigEndian()) {
+            throw new SynthRipperError("BigEndian is not supported by WAV format");
+        }
+        return format;
     }
 
     /**
@@ -119,18 +131,4 @@ public class WavRecorder implements Closeable {
             }
         }
     }
-
-    public void endWrite() throws IOException {
-        out.endChunk(); // Close DATA Chunk
-        dataChunkClosed = true;
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (!dataChunkClosed) {
-            endWrite();
-        }
-        out.close();
-    }
 }
-

@@ -12,16 +12,17 @@ import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetConsumer;
+import com.hypercube.workshop.midiworkshop.api.presets.generic.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.presets.generic.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
-import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceDefinitionMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMixin;
@@ -46,6 +47,15 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class is used to talk to the hardware device
+ * <ul>
+ *     <li>Collects presets names</li>
+ *     <li>Query the device with SysEx and get the response</li>
+ *     <li>Send SysEx files to the device</li>
+ *     <li>Save the current preset to disk</li>
+ * </ul>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -56,6 +66,7 @@ public class DeviceToolBox {
     private final PatchesManager patchesManager;
     private final MidiPresetCrawler midiPresetCrawler;
     private final MidiDeviceRequester midiDeviceRequester;
+    private final PatchImporter patchImporter;
 
     private static File getBankFolder(String deviceMode, String bankName, MidiDeviceDefinition midiDeviceDefinition) {
         String fullPath = "%s/%s/%s/%s".formatted(
@@ -104,7 +115,7 @@ public class DeviceToolBox {
         }
     }
 
-    public void dumpPresets(String deviceName, MidiPresetConsumer midiPresetConsumer) {
+    public void dumpPresets(CrawlingDomain crawlingDomain, MidiPresetConsumer midiPresetConsumer) {
         var mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
@@ -113,9 +124,9 @@ public class DeviceToolBox {
         SimpleModule module = new SimpleModule();
         module.addSerializer(MidiDevicePreset.class, new MidiDevicePresetSerializer());
         mapper.registerModule(module);
-        try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(deviceName)))) {
+        try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(crawlingDomain.device())))) {
             MidiDeviceDefinition devicePresets = new MidiDeviceDefinition();
-            midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset, currentCount, totalCount) -> {
+            midiPresetCrawler.crawlAllPatches(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
                 devicePresets.setDeviceName(device.getDeviceName());
                 devicePresets.setBrand(device.getBrand());
                 String modeName = midiPreset.getId()
@@ -135,6 +146,7 @@ public class DeviceToolBox {
                 if (bank == null) {
                     bank = new MidiDeviceBank();
                     bank.setName(bankName);
+                    bank.setPresetFormat(device.getPresetFormat());
                     mode.getBanks()
                             .put(bankName, bank);
                 }
@@ -152,18 +164,19 @@ public class DeviceToolBox {
             });
             mapper.writeValue(out, devicePresets);
         } catch (IOException e) {
-            throw new ApplicationError("Unexpected error dumping presets from device '%s'".formatted(deviceName), e);
+            throw new ApplicationError("Unexpected error dumping presets from device '%s'".formatted(crawlingDomain.device()), e);
         }
     }
 
     /**
      * Request a command to a device and return the response
+     * <ul>
+     *     <li>{@code command} can be a macro call like A(p1,p2)</li>
+     *     <li>{@code command} can be a raw SysEx like F0 20 32 44 F7</li>
+     * </ul>
      */
-    public Optional<byte[]> request(MidiDeviceDefinition device, String text, Consumer<MidiRequestResponse> requestLogger) {
+    public Optional<byte[]> request(MidiDeviceDefinition device, CommandCall commandCall, Consumer<MidiRequestResponse> requestLogger) {
         try {
-            final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():" + text);
-            final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand()")
-                    .getFirst();
             try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
                     .orElse(null)) {
                 if (output == null) {
@@ -182,7 +195,7 @@ public class DeviceToolBox {
                     }
                     output.open();
                     input.open();
-                    var midiRequestResponse = midiDeviceRequester.queryDevice(device, input, output, cmd, call);
+                    var midiRequestResponse = midiDeviceRequester.queryDevice(device, input, output, commandCall);
                     requestLogger.accept(midiRequestResponse);
                     byte[] response = midiRequestResponse.response();
                     return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
@@ -225,6 +238,7 @@ public class DeviceToolBox {
         final String selectedMode;
         final String patchName;
         final String patchFilename;
+        final int categoryCode;
         final DeviceState state = MainModel.getObservableInstance()
                 .getCurrentDeviceState();
         if (state == null) {
@@ -251,6 +265,9 @@ public class DeviceToolBox {
             selectedMode = currentPatch.getMode();
             selectedBank = currentPatch.getBank();
             patchFilename = currentPatch.getFilename();
+            patchName = currentPatch.getName();
+            categoryCode = device.getCategoryCode(device.getMode(selectedMode)
+                    .orElseThrow(), currentPatch.getCategory());
         } else {
             selectedMode = state.getId()
                     .getMode();
@@ -260,7 +277,7 @@ public class DeviceToolBox {
                 return;
             }
             if (selectedCategories.size() != 1) {
-                GenericDialogController.error("Categories Not Selected", "Select exactly one category before saving patch");
+                GenericDialogController.error("Categories Not Selected", "Select exactly one categoryCode before saving patch");
                 return;
             }
             patchName = GenericDialogController.input("Enter a new patch name", "Patch name:")
@@ -272,6 +289,9 @@ public class DeviceToolBox {
                     selectedCategories.stream()
                             .map(MidiPresetCategory::name)
                             .collect(Collectors.joining(",")), patchName);
+            categoryCode = device.getCategoryCode(device.getMode(selectedMode)
+                    .orElseThrow(), selectedCategories.getFirst()
+                    .name());
         }
         final String backupCommand = device.getMode(selectedMode)
                 .map(MidiDeviceMode::getBackupCommand)
@@ -280,6 +300,12 @@ public class DeviceToolBox {
             GenericDialogController.error("Unable to query device '%s'".formatted(deviceName), "This device has no 'backupCommand' defined for mode '%s'".formatted(selectedMode));
             return;
         }
+        var parsedCommand = CommandCall.parse(device, backupCommand);
+        if (parsedCommand.size() != 1) {
+            GenericDialogController.error("Unable to query device '%s'".formatted(deviceName), "This device has an invalid 'backupCommand' defined for mode '%s', it does not contains exactly 1 macro".formatted(selectedMode));
+            return;
+        }
+        CommandCall commandCall = parsedCommand.getFirst();
         File patchFile = new File(getBankFolder(selectedMode, selectedBank, device), patchFilename);
         log.info("Save current preset to {}", patchFile);
         Consumer<MidiRequestResponse> requestLogger = requestResponse -> {
@@ -288,8 +314,8 @@ public class DeviceToolBox {
                 GenericDialogController.error("SysEx not saved", requestResponse.errorMessage());
             }
         };
-        request(device, backupCommand, requestLogger).ifPresentOrElse(response ->
-                        createCustomPatch(device, patchFile, response),
+        request(device, commandCall, requestLogger).ifPresentOrElse(response ->
+                        createCustomPatch(device, selectedMode, categoryCode, patchName, patchFile, response),
                 () -> log.error("Received nothing from device '{}'!", device.getDeviceName()));
     }
 
@@ -322,12 +348,12 @@ public class DeviceToolBox {
                 });
     }
 
-    private void createCustomPatch(MidiDeviceDefinition device, File patchFile, byte[] response) {
+    private void createCustomPatch(MidiDeviceDefinition device, String selectedMode, int categoryCode, String patchName, File patchFile, byte[] response) {
         log.info("Received {} bytes", response.length);
         try {
-            Files.write(patchFile.toPath(), response);
+            patchImporter.importSysExPayload(device, selectedMode, patchName, categoryCode, response, patchFile);
             GenericDialogController.info("SysEx saved", patchFile.getAbsolutePath());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Unable to save {}: {}", patchFile, e.getMessage());
             GenericDialogController.error("SysEx not saved", e.getMessage());
         }

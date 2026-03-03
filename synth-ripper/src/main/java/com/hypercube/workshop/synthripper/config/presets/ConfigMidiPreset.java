@@ -6,13 +6,13 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
+import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -67,13 +67,18 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
     }
 
     @Override
-    public MidiPreset forgeMidiPreset(File configFile, MidiSettings midiSettings) {
+    public MidiPreset forgeMidiPreset(SynthRipperConfiguration config) {
+        final MidiSettings midiSettings = config.getMidi();
         final int midiChannel = (channel == USE_DEFAULT_MIDI_CHANNEL) ? midiSettings.getZeroBasedChannel() : getZeroBasedChannel();
         final List<DrumKitNote> drumKitNotes = drumkitNotes.stream()
                 .map(this::forgeDrumKitNote)
                 .toList();
         final List<CommandMacro> macros = midiSettings.getCommands();
-        return MidiPresetBuilder.parse(configFile, midiChannel, midiSettings.getPresetFormat(), title, macros, commands, controlChanges, drumKitNotes);
+        return MidiPresetBuilder.parse(config.getDevice(), midiChannel, title, macros, commands, controlChanges, drumKitNotes);
+    }
+
+    public int getZeroBasedChannel() {
+        return channel - 1;
     }
 
     private DrumKitNote forgeDrumKitNote(String spec) {
@@ -87,9 +92,5 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
         } else {
             throw new MidiError("Unexpected drumkit note definition:" + spec);
         }
-    }
-
-    public int getZeroBasedChannel() {
-        return channel - 1;
     }
 }

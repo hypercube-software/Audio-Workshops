@@ -10,6 +10,8 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
+import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
+import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -106,13 +108,18 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
 
     @FXML
     public void onSendCommand(ActionEvent event) {
+
         hexResponse.getCtrl()
                 .clear();
-        runLongTask(() -> {
-            getSelectedDevice()
-                    .flatMap(midiDeviceDefinition -> deviceToolBox.request(midiDeviceDefinition, textCommand.getText(), this::onDeviceRequest))
-                    .ifPresent(this::onDeviceResponse);
-        });
+        runLongTask(() -> getSelectedDevice()
+                .flatMap(device -> {
+                    final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():-:" + textCommand.getText());
+                    final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, null, "DeviceToolBoxCommand()")
+                            .getFirst();
+                    call.macro(cmd);
+                    return deviceToolBox.request(device, call, this::onDeviceRequest);
+                })
+                .ifPresent(this::onDeviceResponse));
     }
 
     @Override

@@ -157,7 +157,7 @@ mappers:
 #
 patchOverrides:
   - name: Performances
-    mode: PerformanceMode
+    mode: Performance
     command: $004000
     condition:
       offset: $06
@@ -167,10 +167,14 @@ patchOverrides:
         value: $7F # memory type: Edit Buffer
       - offset: $1F
         value: $00 # memory number
+      - offset: $69
+        size: 8
+        type: STRING
+        value: $PatchName
       - offset: $120
         value: CK282 # Checksum
   - name: Voices
-    mode: VoiceMode
+    mode: Voice
     command: $000000
     condition:
       offset: $06
@@ -180,10 +184,14 @@ patchOverrides:
         value: $7F # memory type: Edit Buffer
       - offset: $1F
         value: $00 # memory number
-      - offset: $ED
-        value: CK231 # Checksum
+      - offset: $69
+        size: 8
+        type: STRING
+        value: $PatchName
+      - offset: $EE
+        value: CK232 # Checksum
   - name: Drum Voices
-    mode: VoiceMode
+    mode: Voice
     command: $00003F
     condition:
       offset: $06

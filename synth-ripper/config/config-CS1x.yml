@@ -1,5 +1,6 @@
 projectName: "Yamaha-CS1x"
-devices:
+device: CS1x
+ports:
   inputAudioDevice: VBMatrix Out 1 (VB-Audio Matrix VAIO)
   outputAudioDevice: OUT 01-02 (BEHRINGER UMC 1820)
   outputMidiDevice: M8U eX 5

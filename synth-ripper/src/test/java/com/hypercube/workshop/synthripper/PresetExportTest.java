@@ -11,8 +11,50 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PresetExports {
+public class PresetExportTest {
     private final int CS1X_DRUMKIT_START_NOTE = 13;
+
+    private static String cleanupDrumKitNoteName(String name) {
+        name = name.replaceAll(" Sho$", " Shot");
+        name = name.replaceAll(" Be$", " Bell");
+        name = name.replaceAll(" Cli$", " Click");
+        name = name.replaceAll(" H$", " High");
+        name = name.replaceAll(" H ", " High ");
+        name = name.replaceAll(" M$", " Middle");
+        name = name.replaceAll(" M ", " Middle ");
+        name = name.replaceAll(" L$", " Low");
+        name = name.replaceAll(" CL$", " Closed");
+        name = name.replaceAll(" Op$", " Open");
+        name = name.replaceAll(" SN$", " Snare");
+        name = name.replaceAll(" L ", " Low ");
+        name = name.replaceAll(" HH ", " HiHat ");
+        name = name.replaceAll(" Cymb$", " Cymbal");
+        name = name.replaceAll(" HI1$", " High 1");
+        name = name.replaceAll(" HI2$", " High 2");
+        name = name.replaceAll(" SN1$", " Snare 1");
+        name = name.replaceAll(" SN2$", " Snare 2");
+        name = name.replaceAll(" SN3$", " Snare 3");
+        name = name.replaceAll(" SN4$", " Snare 4");
+        name = name.replaceAll(" SN5$", " Snare 5");
+        name = name.replaceAll(" Kik1$", " Kick 1");
+        name = name.replaceAll(" Kik2$", " Kick 2");
+        name = name.replaceAll(" Kik3$", " Kick 3");
+        name = name.replaceAll(" Kik3n$", " Kick 3n");
+        name = name.replaceAll(" CL1$", " Close 1");
+        name = name.replaceAll(" CL2$", " Close 2");
+        name = name.replaceAll(" OP1$", " Open 1");
+        name = name.replaceAll(" OP2$", " Open 2");
+        return name;
+    }
+
+    private void setDrumKit(String line, int lineNumber, ConfigMidiPreset capital, ConfigMidiPreset techno) {
+        String name = cleanupDrumKitNoteName(line);
+        int note = lineNumber + CS1X_DRUMKIT_START_NOTE;
+        String capitalDrumKitNote = capital.getDrumkitNotes()
+                .get(lineNumber);
+        techno.getDrumkitNotes()
+                .add(name.length() == 0 ? capitalDrumKitNote : "%3d %s".formatted(note, name));
+    }
 
     @Test
     @Disabled
@@ -60,49 +102,6 @@ public class PresetExports {
                     .forEach(dkn -> System.out.println("          - " + dkn));
         });
     }
-
-    private void setDrumKit(String line, int lineNumber, ConfigMidiPreset capital, ConfigMidiPreset techno) {
-        String name = cleanupDrumKitNoteName(line);
-        int note = lineNumber + CS1X_DRUMKIT_START_NOTE;
-        String capitalDrumKitNote = capital.getDrumkitNotes()
-                .get(lineNumber);
-        techno.getDrumkitNotes()
-                .add(name.length() == 0 ? capitalDrumKitNote : "%3d %s".formatted(note, name));
-    }
-
-    private static String cleanupDrumKitNoteName(String name) {
-        name = name.replaceAll(" Sho$", " Shot");
-        name = name.replaceAll(" Be$", " Bell");
-        name = name.replaceAll(" Cli$", " Click");
-        name = name.replaceAll(" H$", " High");
-        name = name.replaceAll(" H ", " High ");
-        name = name.replaceAll(" M$", " Middle");
-        name = name.replaceAll(" M ", " Middle ");
-        name = name.replaceAll(" L$", " Low");
-        name = name.replaceAll(" CL$", " Closed");
-        name = name.replaceAll(" Op$", " Open");
-        name = name.replaceAll(" SN$", " Snare");
-        name = name.replaceAll(" L ", " Low ");
-        name = name.replaceAll(" HH ", " HiHat ");
-        name = name.replaceAll(" Cymb$", " Cymbal");
-        name = name.replaceAll(" HI1$", " High 1");
-        name = name.replaceAll(" HI2$", " High 2");
-        name = name.replaceAll(" SN1$", " Snare 1");
-        name = name.replaceAll(" SN2$", " Snare 2");
-        name = name.replaceAll(" SN3$", " Snare 3");
-        name = name.replaceAll(" SN4$", " Snare 4");
-        name = name.replaceAll(" SN5$", " Snare 5");
-        name = name.replaceAll(" Kik1$", " Kick 1");
-        name = name.replaceAll(" Kik2$", " Kick 2");
-        name = name.replaceAll(" Kik3$", " Kick 3");
-        name = name.replaceAll(" Kik3n$", " Kick 3n");
-        name = name.replaceAll(" CL1$", " Close 1");
-        name = name.replaceAll(" CL2$", " Close 2");
-        name = name.replaceAll(" OP1$", " Open 1");
-        name = name.replaceAll(" OP2$", " Open 2");
-        return name;
-    }
-
 
     @Test
     @Disabled

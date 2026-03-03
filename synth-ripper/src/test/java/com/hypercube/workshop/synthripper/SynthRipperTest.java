@@ -1,6 +1,8 @@
 package com.hypercube.workshop.synthripper;
 
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.synthripper.config.MidiSettings;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPreset;
@@ -11,16 +13,28 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @Slf4j
+@ExtendWith(MockitoExtension.class)
 class SynthRipperTest {
+    @Mock
+    private MidiDeviceLibrary midiDeviceLibrary;
+    @Mock
+    private MidiDeviceDefinition device;
+
     private String toXML(Object object) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
@@ -40,8 +54,13 @@ class SynthRipperTest {
         // GIVEN
         SynthRipper synthRipper = new SynthRipper(List.of(new DecentSamplerPresetGenerator()));
         SynthRipperConfiguration conf = new SynthRipperConfiguration();
-        synthRipper.conf = conf;
+        conf.setMidiDeviceLibrary(midiDeviceLibrary);
+        conf.setDevice("BOSS-DS330");
         conf.setProjectName("BOSS-DS330");
+        synthRipper.conf = conf;
+
+        when(midiDeviceLibrary.getDevice(any())).thenReturn(Optional.of(device));
+
         var midiSettings = new MidiSettings();
         midiSettings.setCcPerNote(2);
         midiSettings.setLowestPreset("Pad 5 (bowed)");
@@ -58,6 +77,7 @@ class SynthRipperTest {
                 ))
         ));
         conf.setMidi(midiSettings);
+        conf.setMidiDeviceLibrary(midiDeviceLibrary);
         DecentSamplerPresetGenerator decentSamplerPresetGenerator = new DecentSamplerPresetGenerator();
 
         // WHEN

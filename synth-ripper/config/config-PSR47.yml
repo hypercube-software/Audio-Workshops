@@ -1,5 +1,6 @@
 projectName: "Yamaha-PSR47"
-devices:
+device: PSR-47
+ports:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Périphérique audio principal"
   outputMidiDevice: "2- MIDISPORT Uno Out"

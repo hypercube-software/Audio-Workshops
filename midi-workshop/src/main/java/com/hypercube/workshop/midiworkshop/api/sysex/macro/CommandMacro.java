@@ -139,7 +139,7 @@ public final class CommandMacro {
      */
     private static Integer parseSize(String s) {
         try {
-            if (s.isBlank() || s.equals("--")) {
+            if (s.isBlank() || s.matches("-+")) {
                 return 0;
             } else {
                 return Integer.parseInt(s, 16);

@@ -113,6 +113,7 @@ class PredefinedPatchNamesGenerationTest {
             if (currentBank == null) {
                 currentBank = new MidiDeviceBank();
                 currentBank.setName(cardName);
+                currentBank.setPresetFormat(device.getPresetFormat());
                 currentBank.setCommand("$00%02X".formatted(card));
                 currentBank.setPresets(new ArrayList<>());
                 mode.getBanks()

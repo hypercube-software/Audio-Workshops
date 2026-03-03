@@ -141,7 +141,7 @@ public class MidiEventBuilder {
      * @param rawString string containing nibbles
      * @return string without nibbles
      */
-    private static String aggregateNibbles(String rawString) {
+    public static String aggregateNibbles(String rawString) {
         for (; ; ) {
             var m = nibbles.matcher(rawString);
             if (m.find()) {

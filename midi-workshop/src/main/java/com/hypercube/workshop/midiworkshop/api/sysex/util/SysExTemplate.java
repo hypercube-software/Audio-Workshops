@@ -11,7 +11,7 @@ import java.util.List;
 public record SysExTemplate(MidiRequest midiRequest, Integer msbIndex, Integer lsbIndex, CheckSumDef checkSumDef,
                             byte[] payload, SysExChecksum sysExChecksum) {
     public static SysExTemplate of(MidiRequest midiRequest) {
-        String payloadTemplate = midiRequest.getValue();
+        String payloadTemplate = MidiEventBuilder.aggregateNibbles(midiRequest.getValue());
         List<String> bytes = Arrays.stream(payloadTemplate.split(" "))
                 .toList();
         ByteArrayOutputStream payload = new ByteArrayOutputStream();

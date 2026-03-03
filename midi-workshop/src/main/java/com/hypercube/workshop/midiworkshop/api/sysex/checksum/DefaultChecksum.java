@@ -3,10 +3,10 @@ package com.hypercube.workshop.midiworkshop.api.sysex.checksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExChecksum;
 
 /**
- * This is a simple checksum where the sum must be zero (used by Roland)
+ * This is a simple checksum where the sum must be zero (used by Roland and Yamaha)
  */
 public class DefaultChecksum implements SysExChecksum {
-    private int checksum = 0;
+    protected int checksum = 0;
 
     @Override
     public void reset() {

@@ -5,10 +5,12 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetNaming;
+import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchOverride;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExChecksum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,10 @@ public class MidiDeviceDefinition {
      * How the device select patches
      */
     private MidiBankFormat presetFormat;
+    /**
+     * Name of the checksum to use
+     */
+    private String checksum = DefaultChecksum.class.getSimpleName();
     /**
      * How patch names can be retreived on this device
      */
@@ -128,7 +134,7 @@ public class MidiDeviceDefinition {
      */
     public CommandMacro getMacro(CommandCall commandCall) {
         var matches = matchMacros(commandCall);
-        log.trace("Found " + matches.size() + " macros");
+        log.trace("Found {} macros", matches.size());
         if (matches.isEmpty()) {
             throw new MidiConfigError("Undefined macro for device %s: %s".formatted(deviceName, commandCall.toString()));
         } else if (matches.size() > 1) {
@@ -206,6 +212,17 @@ public class MidiDeviceDefinition {
 
     public long getDeviceNetworkId() {
         return NetworkIdBuilder.getDeviceNetworkId(this.deviceName);
+    }
+
+    public SysExChecksum newCheckSum() {
+        String className = DefaultChecksum.class.getPackageName() + "." + getChecksum();
+        try {
+            Class<?> checksumClass = Class.forName(className);
+            return (SysExChecksum) checksumClass.getDeclaredConstructor()
+                    .newInstance();
+        } catch (Exception e) {
+            throw new MidiConfigError("Unable to create CheckSum class: " + className, e);
+        }
     }
 
     private int parseBankNumber(String bankNameOrId) {

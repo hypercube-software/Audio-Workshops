@@ -41,7 +41,7 @@ public class MidiDeviceMode {
      */
     private MidiPresetNaming presetNaming;
     /**
-     * Banks belonging to this mode
+     * Banks belonging to this mode, the map key is the bank name
      */
     private Map<String, MidiDeviceBank> banks = new HashMap<>();
     /**
@@ -59,6 +59,9 @@ public class MidiDeviceMode {
      */
     private MidiDeviceSubBanks subBanks;
 
+    /**
+     * Tells which banks are available for a MIDI channel
+     */
     @Getter(AccessLevel.NONE)
     private Map<Integer, List<MidiDeviceBank>> banksMap;
 
@@ -106,11 +109,11 @@ public class MidiDeviceMode {
      * Called when the user add or remove a custom bank
      */
     public void refreshBanksMap() {
-        banksMap = new HashMap<>();
+        final Map<Integer, List<MidiDeviceBank>> newBanksMap = new HashMap<>();
         var modeBanks = banks.values()
                 .stream()
                 .toList();
-        getChannels().forEach(ch -> banksMap.put(ch, modeBanks));
+        getChannels().forEach(ch -> newBanksMap.put(ch, modeBanks));
         if (subBanks != null) {
             var channelBank = subBanks.getMode()
                     .getBanks()
@@ -118,7 +121,15 @@ public class MidiDeviceMode {
                     .stream()
                     .toList();
             subBanks.getChannels()
-                    .forEach(ch -> banksMap.put(ch, channelBank));
+                    .forEach(ch -> newBanksMap.put(ch, channelBank));
         }
+        this.banksMap = newBanksMap;
+    }
+
+    public List<MidiDeviceBank> getModeBanks() {
+        return getChannels().stream()
+                .flatMap(ch -> getBanksForChannel(ch).stream())
+                .distinct()
+                .toList();
     }
 }

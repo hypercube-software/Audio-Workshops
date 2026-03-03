@@ -1,10 +1,10 @@
 package com.hypercube.workshop.synthripper;
 
 import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
-import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
+import com.hypercube.workshop.synthripper.model.SynthRipperError;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -61,24 +61,24 @@ public class SynthRipperCLI {
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
         audioDeviceManager.collectDevices();
 
-        var audioInputDevice = audioDeviceManager.getInput(cfg.getDevices()
+        var audioInputDevice = audioDeviceManager.getInput(cfg.getPorts()
                         .getInputAudioDevice())
-                .orElseThrow(() -> new AudioError(DEVICE_NOT_FOUND + cfg.getDevices()
+                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + cfg.getPorts()
                         .getInputAudioDevice()));
-        var audioOutputDevice = audioDeviceManager.getOutput(cfg.getDevices()
+        var audioOutputDevice = audioDeviceManager.getOutput(cfg.getPorts()
                         .getOutputAudioDevice())
-                .orElseThrow(() -> new AudioError(DEVICE_NOT_FOUND + cfg.getDevices()
+                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + cfg.getPorts()
                         .getOutputAudioDevice()));
-        var midiOutDevice = midiPortsManager.getOutput(cfg.getDevices()
+        var midiOutDevice = midiPortsManager.getOutput(cfg.getPorts()
                         .getOutputMidiDevice())
-                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getDevices()
+                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getPorts()
                         .getOutputMidiDevice()));
         try {
             synthRipper.init(cfg);
             synthRipper.recordSynth(audioInputDevice, audioOutputDevice, midiOutDevice);
         } catch (IOException e) {
             midiOutDevice.sendAllOff();
-            throw new AudioError(e);
+            throw new SynthRipperError(e);
         }
 
     }

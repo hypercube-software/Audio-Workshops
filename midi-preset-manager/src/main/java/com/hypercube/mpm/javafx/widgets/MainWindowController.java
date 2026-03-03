@@ -23,6 +23,7 @@ import com.hypercube.util.javafx.view.properties.SceneListener;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.presets.generic.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
@@ -41,9 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.sound.midi.MidiUnavailableException;
 import java.io.File;
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -84,11 +83,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         var deviceName = getModel().getCurrentDeviceState()
                 .getId()
                 .getName();
+        CrawlingDomain crawlingDomain = new CrawlingDomain(deviceName, Set.of(getModel().getCurrentDeviceState()
+                .getId()
+                .getMode()),
+                new HashSet<>(getModel().getCurrentDeviceState()
+                        .getSelectedBankNames())
+        );
         ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
         dlg.updateTextHeader("Extract patch names from device  '%s'...".formatted(deviceName));
         dlg.updateProgress(0, "");
         runLongTaskWithDialog(dlg, () -> {
-            deviceToolBox.dumpPresets(deviceName, (device, midiPreset, currentCount, totalCount) -> {
+            deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
                 double progress = (double) currentCount / totalCount;
                 dlg.updateProgress(progress, "Preset %d/%d: '%s' category '%s'".formatted(currentCount, totalCount, midiPreset.getId()
                         .name(), midiPreset.getId()
@@ -414,7 +419,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                                 .getName())
                         .orElseThrow();
                 filesDroppedEvent.getFiles()
-                        .forEach(f -> patchImporter.importSysex(device, state.getId()
+                        .forEach(f -> patchImporter.importSysExFile(device, state.getId()
                                 .getMode(), f));
 
                 midiDeviceLibrary

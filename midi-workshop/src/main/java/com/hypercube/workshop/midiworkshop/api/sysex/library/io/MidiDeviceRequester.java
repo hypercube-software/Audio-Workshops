@@ -37,19 +37,18 @@ public class MidiDeviceRequester {
      */
     public void updateDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, List<CommandCall> commands) {
         for (CommandCall commandCall : commands) {
-            CommandMacro commandMacro = device.getMacro(commandCall);
-            queryDevice(device, midiInDevice, midiOutDevice, commandMacro, commandCall);
+            queryDevice(device, midiInDevice, midiOutDevice, commandCall);
         }
     }
 
     /**
      * Request a device and expect a response
      */
-    public MidiRequestResponse queryDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandMacro macro, CommandCall commandCall) {
+    public MidiRequestResponse queryDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
         String errorMessage = null;
         try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
             try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
-                for (MidiRequest r : forgeMidiRequestSequence(device, macro, commandCall).getMidiRequests()) {
+                for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                     List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
                     final SysExListener listener;
                     Integer singleResponseSize = r.getResponseSize();
@@ -64,7 +63,7 @@ public class MidiDeviceRequester {
                         listener = new SysExListener();
                         midiInDevice.addSysExListener(listener);
                     } else {
-                        log.info("Send '{}' to {}", r.getName(), device.getDeviceName());
+                        log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
                         listener = null;
                     }
                     for (CustomMidiEvent evt : events) {
@@ -98,25 +97,32 @@ public class MidiDeviceRequester {
     /**
      * Given a CommandMacro without parameters, expand it to get the list of MIDI messages
      *
-     * @param device       device to query
-     * @param commandMacro typically something like "getAll() : --- : A();B();C()"
+     * @param device      device to query
+     * @param commandCall the call to this macro providing parameters values
      * @return The list of MIDI messages payloads
      */
-    public MidiRequestSequence forgeMidiRequestSequence(MidiDeviceDefinition device, CommandMacro commandMacro, CommandCall commandCall) {
-        File configFile = device.getDefinitionFile();
-        String deviceName = device.getDeviceName();
+    public MidiRequestSequence forgeMidiRequestSequence(MidiDeviceDefinition device, CommandCall commandCall) {
+        final File configFile = device.getDefinitionFile();
+        final CommandMacro commandMacro = commandCall.macro();
+        final String deviceName = device.getDeviceName();
         // if the mapper name is not set, mapper is null
         // if the mapper name is specified, we are looking for the corresponding MidiResponseMapper or raise an error if not found
-        MidiResponseMapper mapper = Optional.ofNullable(commandMacro.getMapperName())
+        final MidiResponseMapper mapper = Optional.ofNullable(commandMacro.getMapperName())
                 .map(mapperName -> device.getMapper(mapperName)
                         .orElseThrow(() -> new MidiConfigError("Undefined request Mapper: '" + commandMacro.getMapperName() + "' in " + configFile.toString())))
                 .orElse(null);
-        List<MidiRequest> result = Arrays.stream(commandMacro.expand(commandCall)
+        final List<MidiRequest> result = Arrays.stream(commandMacro.expand(commandCall)
                         .split(MACRO_CALL_SEPARATOR))
                 .flatMap(
                         commandCallText -> expandWithPath(device, configFile, mapper, commandCallText, "/" + commandCall.name()).stream()
                 )
                 .toList();
+        if (result.size() == 1 && result.getFirst()
+                .getResponseSize() != null && result.getFirst()
+                .getResponseSize() == 0) {
+            result.getFirst()
+                    .setResponseSize(commandMacro.getResponseSize());
+        }
         Integer totalSize = result.stream()
                 .filter(r -> r.getResponseSize() != null)
                 .mapToInt(MidiRequest::getResponseSize)
@@ -139,7 +145,7 @@ public class MidiDeviceRequester {
     }
 
     /**
-     * Recursively, expand a payloadBody using macro for a specific device
+     * Recursively, expand a {@code payloadBody} using macro for a specific device
      *
      * @param device      device owning the macro
      * @param configFile  from where device macro are loaded
@@ -152,7 +158,7 @@ public class MidiDeviceRequester {
         log.trace("Expand " + payloadBody);
         boolean hasMacroCall = payloadBody.contains("(");
         if (hasMacroCall) {
-            return CommandCall.parse(configFile, payloadBody)
+            return CommandCall.parse(configFile, device, payloadBody)
                     .stream()
                     .flatMap(commandCall -> {
                         String newPath = path + "/" + commandCall.name();
@@ -192,7 +198,7 @@ public class MidiDeviceRequester {
         Instant start = Instant.now();
         for (; ; ) {
             if (Duration.between(start, Instant.now())
-                    .getSeconds() > 3) {
+                    .getSeconds() > 2) {
                 int received = listener.getCurrentSize() - previousSize;
                 if (received == 0) {
                     errorMessage = "No response from device %s".formatted(device.getDeviceName());

@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.presets;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -33,6 +34,13 @@ class MidiPresetTest {
         );
     }
 
+    private MidiDeviceDefinition forgeDevice(TestParam testParam) {
+        MidiDeviceDefinition device = new MidiDeviceDefinition();
+        device.setDefinitionFile(new File("config.yml"));
+        device.setPresetFormat(testParam.midiBankFormat);
+        return device;
+    }
+
     record TestParam(MidiBankFormat midiBankFormat, String input, int expectedBank,
                      int expectedProgram) {
     }
@@ -40,7 +48,7 @@ class MidiPresetTest {
     @ParameterizedTest
     @MethodSource
     void parseMSBLSBBank(TestParam testParam) {
-        MidiPreset preset = MidiPresetBuilder.parse(new File("config.yml"), 1, testParam.midiBankFormat(), "title", List.of(), List.of(testParam.input()), List.of(), List.of());
+        MidiPreset preset = MidiPresetBuilder.parse(forgeDevice(testParam), 1, "title", List.of(), List.of(testParam.input()), List.of(), List.of());
         assertEquals("title", preset.getId()
                 .name());
         assertEquals(1, preset.getZeroBasedChannel());
@@ -52,6 +60,6 @@ class MidiPresetTest {
     @MethodSource
     void parseBrokenMSBLSBBank(TestParam testParam) {
         assertThrows(MidiConfigError.class, () ->
-                MidiPresetBuilder.parse(new File("config.yml"), 1, testParam.midiBankFormat(), "title", List.of(), List.of(testParam.input()), List.of(), List.of()));
+                MidiPresetBuilder.parse(forgeDevice(testParam), 1, "title", List.of(), List.of(testParam.input()), List.of(), List.of()));
     }
 }

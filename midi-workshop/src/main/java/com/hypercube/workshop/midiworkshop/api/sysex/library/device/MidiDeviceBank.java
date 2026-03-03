@@ -1,6 +1,8 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetDomain;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +22,10 @@ public class MidiDeviceBank {
      * Command to activate the bank in the device
      */
     private String command;
+    /**
+     * Format of the command
+     */
+    private MidiBankFormat presetFormat;
     /**
      * Command to retrieve the edit buffer and retrieve the patch name
      * <p>Override the one defined in the mode in {@link MidiDeviceMode#queryName}</p>
@@ -56,22 +62,18 @@ public class MidiDeviceBank {
     }
 
     public int getMSB() {
-        if (command != null && command.contains("-")) {
-            String[] v = command.split("-");
-            return v.length > 0 ? Integer.parseInt(v[0]) : -1;
-        } else if (command != null && command.startsWith("$")) {
-            return Integer.parseInt(command.substring(1, 3), 16);
+        List<Integer> ids = MidiPresetBuilder.parsePresetSelector(presetFormat, command);
+        if (!ids.isEmpty()) {
+            return ids.getFirst();
         } else {
             throw new MidiConfigError("Unsupported command format:" + command);
         }
     }
 
     public int getLSB() {
-        if (command != null && command.contains("-")) {
-            String[] v = command.split("-");
-            return v.length > 1 ? Integer.parseInt(v[1]) : -1;
-        } else if (command != null && command.startsWith("$")) {
-            return Integer.parseInt(command.substring(3, 5), 16);
+        List<Integer> ids = MidiPresetBuilder.parsePresetSelector(presetFormat, command);
+        if (ids.size() > 1) {
+            return ids.get(1);
         } else {
             throw new MidiConfigError("Unsupported command format:" + command);
         }

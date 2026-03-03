@@ -83,6 +83,18 @@ mappers:
         offset: $1C
         size: 8
 
+patchOverrides:
+  - name: PatchName
+    mode: Voice
+    overrides:
+      - offset: $1C
+        size: 8
+        type: STRING
+        value: $PatchName
+      - offset: $25B
+        value: CK597 # Checksum
+
+
 controllers:
   - "01   | Modulation  | CC           | 0 | 127"
   - "0B   | Expression  | CC           | 0 | 127"

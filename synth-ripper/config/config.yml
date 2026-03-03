@@ -1,5 +1,6 @@
 projectName: "BOSS-DS330"
-devices:
+device: DS-330
+ports:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Haut-parleurs (Realtek High Definition Audio)"
   outputMidiDevice: "4- MIDISPORT Uno Out"

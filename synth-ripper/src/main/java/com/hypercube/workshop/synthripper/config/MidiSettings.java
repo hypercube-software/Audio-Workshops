@@ -19,7 +19,7 @@ public class MidiSettings {
     public static final int DEFAULT_MIDI_CHANNEL = 1;
     public static final int USE_DEFAULT_MIDI_CHANNEL = -1;
     /**
-     * Output format for presets, shound match {@link PresetGenerator#getAlias()}
+     * Output format for presets, should match {@link PresetGenerator#getAlias()}
      */
     private String outputFormat;
     /**
@@ -31,12 +31,12 @@ public class MidiSettings {
      */
     private float maxNoteReleaseDurationSec;
     /**
-     * Which kinf of bankName select must be used
+     * Which kind of bankName select must be used
      */
     private MidiBankFormat presetFormat;
 
     /**
-     * Defautl MIDI channel to use in the range [1-16] not [0-15]
+     * Default MIDI channel to use in the range [1-16] not [0-15]
      */
     private int channel = DEFAULT_MIDI_CHANNEL;
     /**
@@ -105,18 +105,18 @@ public class MidiSettings {
             selectedPresets = IntStream.rangeClosed(startIdx, endIdx)
                     .boxed()
                     .map(idx -> presets.get(idx)
-                            .forgeMidiPreset(synthRipperConfiguration.getConfigFile(), this))
+                            .forgeMidiPreset(synthRipperConfiguration))
                     .toList();
         }
         return selectedPresets;
     }
 
+    public int getZeroBasedChannel() {
+        return channel - 1;
+    }
+
     private int getNoteNumber(String note) {
         return MidiNote.fromName(note)
                 .value();
-    }
-
-    public int getZeroBasedChannel() {
-        return channel - 1;
     }
 }

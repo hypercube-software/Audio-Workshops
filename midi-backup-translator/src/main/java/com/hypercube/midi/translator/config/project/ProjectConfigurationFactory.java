@@ -77,10 +77,9 @@ public class ProjectConfigurationFactory {
     public MidiRequestSequence forgeMidiRequestSequence(ProjectDevice device, String rawRequestDefinition) {
         var deviceDefinition = midiDeviceLibrary.getDevice(device.getName())
                 .orElseThrow();
-        return CommandCall.parse(configFile, rawRequestDefinition)
+        return CommandCall.parse(deviceDefinition, rawRequestDefinition)
                 .stream()
-                .map(commandCall -> midiDeviceRequester.forgeMidiRequestSequence(deviceDefinition,
-                        deviceDefinition.getMacro(commandCall), commandCall))
+                .map(commandCall -> midiDeviceRequester.forgeMidiRequestSequence(deviceDefinition, commandCall))
                 .findFirst()
                 .orElseThrow();
 

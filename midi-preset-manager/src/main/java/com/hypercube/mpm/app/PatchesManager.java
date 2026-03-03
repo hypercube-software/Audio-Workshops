@@ -203,8 +203,7 @@ public class PatchesManager {
                 log.error("Patch file no longer exists: {}", filename.getAbsolutePath());
             }
         } else {
-            MidiPreset midiPreset = MidiPresetBuilder.parse(device.getDefinitionFile(), selectedPatch.getChannel(),
-                    device.getPresetFormat(),
+            MidiPreset midiPreset = MidiPresetBuilder.parse(device, selectedPatch.getChannel(),
                     selectedPatch.getName(),
                     device.getMacros(),
                     List.of(selectedPatch.getCommand()), List.of(MidiPreset.NO_CC), null);

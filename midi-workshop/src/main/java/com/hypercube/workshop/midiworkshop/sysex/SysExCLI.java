@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
+import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.presets.generic.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.presets.generic.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.api.presets.yamaha.CS1XPresetGenerator;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
@@ -18,6 +20,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryFie
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
@@ -65,6 +68,8 @@ public class SysExCLI {
     private final MidiMonitor midiMonitor;
     private final MidiPresetCrawler midiPresetCrawler;
     private final CS1XPresetGenerator cs1XPresetGenerator;
+    private final MidiDeviceLibrary library;
+    private final MidiPortsManager midiPortsManager;
 
     private final CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
     private final CyclicBarrier sysExReceived = new CyclicBarrier(2);
@@ -162,6 +167,8 @@ public class SysExCLI {
 
     @ShellMethod(value = "Use the device library to dump all presets names of a synth")
     public void dumpPresets(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
+        library.load(ConfigHelper.getApplicationFolder(this.getClass()));
+        midiPortsManager.collectHardwareDevices();
         var mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
@@ -172,7 +179,7 @@ public class SysExCLI {
         mapper.registerModule(module);
         try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(deviceName)))) {
             MidiDeviceDefinition devicePresets = new MidiDeviceDefinition();
-            midiPresetCrawler.crawlAllPatches(deviceName, (device, midiPreset, currentCount, totalCount) -> {
+            midiPresetCrawler.crawlAllPatches(CrawlingDomain.everything(deviceName), (device, midiPreset, currentCount, totalCount) -> {
                 devicePresets.setDeviceName(device.getDeviceName());
                 devicePresets.setBrand(device.getBrand());
                 String modeName = midiPreset.getId()
@@ -192,6 +199,7 @@ public class SysExCLI {
                 if (bank == null) {
                     bank = new MidiDeviceBank();
                     bank.setName(bankName);
+                    bank.setPresetFormat(device.getPresetFormat());
                     mode.getBanks()
                             .put(bankName, bank);
                 }

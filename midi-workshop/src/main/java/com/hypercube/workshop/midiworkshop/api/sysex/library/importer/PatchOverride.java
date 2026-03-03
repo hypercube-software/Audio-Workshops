@@ -12,7 +12,7 @@ import java.util.List;
  * @param mode      Device mode
  * @param command   Midi command to select the right edit buffer (required on some devices). Expected format is 000000 for {@link MidiBankFormat#BANK_MSB_LSB_PRG}
  * @param condition Apply the override only if some bytes match in the payload
- * @param overrides Which bytes will be overrided
+ * @param overrides Which bytes will be overridden
  */
 public record PatchOverride(String name, String mode, String command, OverrideCondition condition,
                             List<OverrideLocation> overrides) {

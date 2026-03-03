@@ -27,7 +27,12 @@ public class MidiRequest {
      */
     private final MidiResponseMapper mapper;
     /**
-     * Expected response size of the request. Can be null
+     * Expected response size of the request.
+     * <ul>
+     *     <li>null: indicate the request don't expect a response</li>
+     *     <li>0: indicate the request expect a response of unknown size</li>
+     *     <li>>0: indicate the request expect a response of known size</li>
+     * </ul>
      */
     @Setter
     private Integer responseSize;

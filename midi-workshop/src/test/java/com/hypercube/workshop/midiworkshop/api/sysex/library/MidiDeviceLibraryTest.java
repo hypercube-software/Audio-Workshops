@@ -79,7 +79,7 @@ class MidiDeviceLibraryTest {
         MidiDeviceDefinition device = midiDeviceLibrary.getDevice("Mininova")
                 .orElseThrow();
         // WHEN
-        patchImporter.importSysex(device, "SingleMode", new File("src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
+        patchImporter.importSysExFile(device, "SingleMode", new File("src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
         // THEN
         File dest = new File("src/test/resources/devices-library/Mininova/SingleMode/SN Patches II");
         assertTrue(dest.exists());
@@ -141,7 +141,7 @@ class MidiDeviceLibraryTest {
         MidiDeviceDefinition device = midiDeviceLibrary.getDevice("TG-500")
                 .orElseThrow();
         // WHEN
-        patchImporter.importSysex(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/super.mid"));
+        patchImporter.importSysExFile(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/super.mid"));
         // THEN
         File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Super");
         assertTrue(dest.exists());
@@ -157,7 +157,7 @@ class MidiDeviceLibraryTest {
         MidiDeviceDefinition device = midiDeviceLibrary.getDevice("TG-500")
                 .orElseThrow();
         // WHEN
-        patchImporter.importSysex(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/top40.mid"));
+        patchImporter.importSysExFile(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/top40.mid"));
         // THEN
         File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Top40");
         assertTrue(dest.exists());

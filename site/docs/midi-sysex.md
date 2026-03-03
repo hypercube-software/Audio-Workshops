@@ -677,9 +677,24 @@ F0 43 2c 20 7A <IDENTIFIER> 0000000000000000000000000000 <MEMORY TYPE> <MEMORY N
  c: receive channel typically 0x0
 ```
 
+## Checksum
+
+If you plan to compute a Yamaha checksum, it starts:
+
+- For old devices like **TX-81z**, **TG-33** or **TG-500**: where the `<IDENTIFIER>` start.
+- For newer devices like **CS1x**: where the memory address start.
+
+![image-20260301194847269](assets/image-20260301194847269.png)
+
+Here:
+
+- The 8 bits sum is `0x74` (use [HxD](https://mh-nexus.de/en/hxd/) to get it easily)
+- The checksum is `0x0C`
+- We can verify `0x74 + 0x0C mod 0x80 = 0` 
+
 ## TG-500
 
-The TG-500 (rack version of the SY-85) is weird because it uses **2 edit buffers**: one for voices and one for drums.
+The TG-500 (rack version of the SY-85) is weird because it uses **2 edit buffers**: one for **voices** and one for **drums**.
 
 - If you select a normal voice and ask for the drum edit buffer you won't get any response
 - You have to select the right edit buffer given the current patch

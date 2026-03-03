@@ -208,6 +208,7 @@ public class MidiDeviceLibrary {
         if (bank == null) {
             bank = new MidiDeviceBank();
             bank.setName(bankName);
+            bank.setPresetFormat(device.getPresetFormat());
             mode.getBanks()
                     .put(bankName, bank);
         }
@@ -268,6 +269,7 @@ public class MidiDeviceLibrary {
                     mode.getBanks()
                             .forEach((bankName, bank) -> {
                                 bank.setName(bankName);
+                                bank.setPresetFormat(midiDeviceDefinition.getPresetFormat());
                             });
                 });
         deviceModes
@@ -331,7 +333,7 @@ public class MidiDeviceLibrary {
                         .get(mode.getName()), mode);
             }
         }
-        var notOverridedMacros = org.getMacros()
+        var notOverriddenMacros = org.getMacros()
                 .stream()
                 .filter(m -> user.getMacros()
                         .stream()
@@ -339,7 +341,7 @@ public class MidiDeviceLibrary {
                                 .equals(m.name()))
                         .findFirst()
                         .isEmpty());
-        org.setMacros(Stream.concat(notOverridedMacros, user.getMacros()
+        org.setMacros(Stream.concat(notOverriddenMacros, user.getMacros()
                         .stream())
                 .toList());
         return org;
@@ -432,17 +434,17 @@ public class MidiDeviceLibrary {
      * Resolve all controllers macros
      */
     private void setControllerSysExTemplate() {
-        for (MidiDeviceDefinition midiDeviceDefinition : devices.values()) {
-            midiDeviceDefinition.getControllers()
+        for (MidiDeviceDefinition device : devices.values()) {
+            device.getControllers()
                     .stream()
                     .filter(c -> c.getType() == ControllerValueType.SYSEX)
                     .forEach(c -> {
-                        List<CommandCall> commandCalls = CommandCall.parse(midiDeviceDefinition.getDefinitionFile(), c.getIdentity());
+                        List<CommandCall> commandCalls = CommandCall.parse(device.getDefinitionFile(), device, c.getIdentity());
                         if (commandCalls.size() != 1) {
                             throw new IllegalArgumentException("Expected 1 CommandCall, got " + commandCalls.size());
                         }
                         CommandCall commandCall = commandCalls.getFirst();
-                        List<MidiRequest> expandedTexts = midiDeviceRequester.expand(midiDeviceDefinition, midiDeviceDefinition.getDefinitionFile(), null, c.getIdentity());
+                        List<MidiRequest> expandedTexts = midiDeviceRequester.expand(device, device.getDefinitionFile(), null, c.getIdentity());
                         if (expandedTexts.size() != 1) {
                             throw new IllegalArgumentException("Expected 1 MidiRequest, got " + expandedTexts.size() + " expanding controller " + c.getIdentity());
                         }

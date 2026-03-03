@@ -3,14 +3,13 @@ package com.hypercube.workshop.midiworkshop.api.sysex.library.importer;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.ExtractedFields;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseFieldType;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
-import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExChecksum;
 import lombok.RequiredArgsConstructor;
@@ -21,34 +20,55 @@ import javax.sound.midi.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * This class is used to import external sysEx files into the library ('*.sys' and '*.mid' files are supported)
+ * <p>It is able to modify them using various {@link PatchOverride}</p>
+ * <ul>
+ *     <li>To make sure the SysEx modify only the Edit Buffer of the device</li>
+ *     <li>To override the name of the patch if needed (typically when we want to save the current patch from the device)
+ * </ul>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PatchImporter {
+    public static final String $OVERRIDE_PATCH_NAME = "$PatchName";
     private final MidiDeviceLibrary midiDeviceLibrary;
     private final MidiDeviceRequester midiDeviceRequester;
 
-    public void importSysex(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, File file) {
+    /**
+     * Import an external SysEx file and "fix it" using {@link PatchOverride}
+     * <ul>
+     *     <li>All SysEx payloads are extracted from the file and treated independently</li>
+     *     <li>Patch names are extracted from them</li>
+     * </ul>
+     */
+    public void importSysExFile(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, File file) {
         try {
             if (!file.exists()) {
-                log.info("SYSEX not found: " + file.getAbsolutePath());
+                log.info("SysEx not found: {}", file.getAbsolutePath());
                 return;
             }
-            log.info("Parsing SYSEX: " + file.getAbsolutePath());
+            log.info("Parsing SysEx: {}", file.getAbsolutePath());
             List<byte[]> messages = collectSysExFromFile(file);
             log.info("{} messages found", messages.size());
             for (int presetId = 0; presetId < messages.size(); presetId++) {
                 byte[] patchData = messages.get(presetId);
 
-                OverrideContext ctx = applyOverrides(midiDeviceDefinition, defaultMode, patchData);
+                OverrideContext ctx = OverrideContext.builder()
+                        .device(midiDeviceDefinition)
+                        .defaultMode(defaultMode)
+                        .payload(patchData)
+                        .build();
+                applyOverrides(ctx);
 
-                ExtractedFields extractedFields = getFields(file, midiDeviceDefinition, ctx.mode(), presetId, messages.get(presetId));
+                ExtractedFields extractedFields = getFields(file, ctx, presetId, messages.get(presetId));
                 String patchName = Optional.ofNullable(extractedFields.getPatchName())
                         .orElse("");
                 String spec = forgePatchSpec(ctx, extractedFields);
@@ -64,9 +84,9 @@ public class PatchImporter {
                         .replace("  ", " ")
                         .replace("\"", "'");
                 File destFile = new File(midiDeviceDefinition.getDefinitionFile()
-                        .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), ctx.mode()
+                        .getParentFile(), "%s/%s/%s/%s.syx".formatted(midiDeviceDefinition.getDeviceName(), ctx.getMode()
                         .getName(), bankName, completeName));
-                log.info("Generate " + destFile.getAbsolutePath());
+                log.info("Generate {}", destFile.getAbsolutePath());
                 destFile.getParentFile()
                         .mkdirs();
 
@@ -77,54 +97,130 @@ public class PatchImporter {
         }
     }
 
+    /**
+     * Store a SysEx response from the device, overriding the patch name
+     */
+    public void importSysExPayload(MidiDeviceDefinition device, String defaultMode, String patchName, int categoryCode, byte[] response, File patchFile) throws IOException {
+        OverrideContext ctx = OverrideContext.builder()
+                .device(device)
+                .payload(response)
+                .patchName(patchName.replace(".syx", ""))
+                .categoryCode(categoryCode)
+                .defaultMode(defaultMode)
+                .build();
+        applyOverrides(ctx);
+        Files.write(patchFile.toPath(), ctx.getPayload());
+    }
+
+    /**
+     * Given what the overrides can provide and the {@link OverrideContext#defaultMode}, determine the mode the patch will belong to
+     */
+    private void resolveModeAndCommand(OverrideContext ctx) {
+        final MidiDeviceDefinition midiDeviceDefinition = ctx.getDevice();
+        final byte[] payload = ctx.getPayload();
+        var overridesProvidingMode = midiDeviceDefinition.getPatchOverrides()
+                .stream()
+                .filter(p -> p.matches(payload) && p.mode() != null)
+                .toList();
+        var overrides = overridesProvidingMode.stream()
+                .map(PatchOverride::mode)
+                .distinct()
+                .toList();
+        if (overrides.size() > 1) {
+            String modes = String.join(",", overrides);
+            throw new MidiConfigError("Conflicting mode found in patch overrides: " + modes + ". You need to use a condition per mode.");
+        } else if (overrides.size() == 1) {
+            PatchOverride electedOverride = overridesProvidingMode.getFirst();
+            String mode = electedOverride.mode();
+            ctx.setMode(midiDeviceDefinition.getMode(mode)
+                    .orElseThrow(() -> new MidiConfigError("For device %s, there is an override with unknown mode '%s'".formatted(ctx.getDevice()
+                            .getDeviceName(), mode))));
+            ctx.setCommand(electedOverride.command());
+        } else {
+            // none of the overrides indicate a mode so we use the default one
+            ctx.setMode(midiDeviceDefinition.getMode(ctx.getDefaultMode())
+                    .orElseThrow());
+        }
+    }
+
+    private void logIntegerOverride(byte[] overridden, int offset, String hexValues) {
+        StringBuilder h = new StringBuilder();
+        for (byte b : overridden) {
+            h.append("%02X".formatted((int) (b & 0xFF)));
+        }
+        log.info("Override %d bytes at pos 0x%04X with value 0x%s instead of 0x%s".formatted(
+                overridden.length,
+                offset,
+                hexValues,
+                h.toString()
+                        .trim()
+        ));
+    }
+
+    private void applyChecksum(OverrideContext ctx, byte[] patchData, OverrideLocation location) {
+
+        SysExChecksum sysExChecksum = ctx.getDevice()
+                .newCheckSum();
+        
+        int offset = MidiEventBuilder.parseNumber(location.offset());
+        int size = Integer.parseInt(location.value()
+                .substring(2));
+        int start = offset - size;
+        for (int i = 0; i < size; i++) {
+            sysExChecksum.update(patchData[i + start]);
+        }
+        int ck = sysExChecksum.getValue();
+        log.info("Override checksum at pos 0x%04X with value 0x%02X instead of 0x%02X".formatted(
+                offset,
+                ck,
+                patchData[offset]
+        ));
+        patchData[offset] = (byte) ck;
+    }
+
+    private void applyInteger(OverrideContext ctx, byte[] patchData, OverrideLocation location) {
+        int offset = MidiEventBuilder.parseNumber(location.offset());
+        final String hexValues;
+        if (location.type() == MidiResponseFieldType.CATEGORY) {
+            hexValues = "%02X".formatted(ctx.getCategoryCode());
+        } else {
+            hexValues = location.value()
+                    .startsWith("'") ? MidiEventBuilder.resolveASCIIStrings(location.value()) : "%02X".formatted(MidiEventBuilder.parseNumber(location.value()));
+        }
+        byte[] bytes = MidiEventBuilder.forgeBytesFromString(hexValues);
+        byte[] overridden = new byte[bytes.length];
+        System.arraycopy(patchData, offset, overridden, 0, overridden.length);
+        logIntegerOverride(overridden, offset, hexValues);
+        System.arraycopy(bytes, 0, patchData, offset, overridden.length);
+    }
+
     private String forgePatchSpec(OverrideContext ctx, ExtractedFields extractedFields) {
         List<String> spec = new ArrayList<>();
-        if (ctx.command() != null) {
-            spec.add(ctx.command()
-                    .replace("$", ""));
-        }
+        Optional.ofNullable(ctx.getCommand())
+                .ifPresent(cmd -> spec.add(cmd
+                        .replace("$", "")));
         if (extractedFields.getCategory() != null) {
             spec.add(extractedFields.getCategory());
         }
-        String result = spec.stream()
-                .collect(Collectors.joining(","));
-        if (result.length() > 0) {
+        String result = String.join(",", spec);
+        if (!result.isEmpty()) {
             result = "[%s]".formatted(result);
         }
         return result;
     }
 
-    private OverrideContext applyOverrides(MidiDeviceDefinition midiDeviceDefinition, String defaultMode, byte[] patchData) {
-        MidiDeviceMode midiDeviceMode = midiDeviceDefinition.getMode(defaultMode)
-                .orElseThrow();
-        String command = null;
-        if (midiDeviceDefinition.getPatchOverrides() != null) {
-            // detect the mode of the patch if possible
-            var electedOverrides = midiDeviceDefinition.getPatchOverrides()
-                    .stream()
-                    .filter(p -> p.matches(patchData) && p.mode() != null)
-                    .distinct()
-                    .toList();
-            if (electedOverrides.size() > 1) {
-                String modes = electedOverrides.stream()
-                        .map(PatchOverride::mode)
-                        .collect(Collectors.joining(","));
-                throw new MidiConfigError("Conflicting mode found in patch overrides: " + modes);
-            } else if (electedOverrides.size() == 1) {
-                PatchOverride electedOverride = electedOverrides.getFirst();
-                midiDeviceMode = midiDeviceDefinition.getMode(electedOverride.mode())
-                        .orElseThrow();
-                command = electedOverride.command();
-            }
-            // apply overrides
-            midiDeviceDefinition.getPatchOverrides()
-                    .forEach(patchOverride -> patchOverride(patchOverride, patchData));
-        }
-        return new OverrideContext(midiDeviceMode, command);
+    private void applyOverrides(OverrideContext ctx) {
+        Optional.ofNullable(ctx.getDevice()
+                        .getPatchOverrides())
+                .ifPresent(patchOverrides -> {
+                    resolveModeAndCommand(ctx);
+                    patchOverrides.forEach(patchOverride -> patchOverride(ctx, patchOverride));
+                });
     }
 
-    private void patchOverride(PatchOverride patchOverride, byte[] patchData) {
-        if (!patchOverride.matches(patchData)) {
+    private void patchOverride(OverrideContext ctx, PatchOverride patchOverride) {
+        final byte[] payload = ctx.getPayload();
+        if (!patchOverride.matches(payload)) {
             log.info("Override '{}' not applied, condition is false: {}", patchOverride.name(), patchOverride.condition());
             return;
         }
@@ -133,45 +229,31 @@ public class PatchImporter {
                 .forEach(location -> {
                     if (location.value()
                             .startsWith("CK")) {
-                        SysExChecksum sysExChecksum = new DefaultChecksum();
-                        int offset = MidiEventBuilder.parseNumber(location.offset());
-                        int size = Integer.parseInt(location.value()
-                                .substring(2));
-                        int start = offset - size;
-                        for (int i = 0; i < size; i++) {
-                            sysExChecksum.update(patchData[i + start]);
-                        }
-                        int ck = sysExChecksum.getValue();
-                        log.info("Override checksum at pos 0x%04X with value 0x%02X instead of 0x%02X".formatted(
-                                offset,
-                                ck,
-                                patchData[offset]
-                        ));
-                        patchData[offset] = (byte) ck;
-                    } else {
-                        int offset = MidiEventBuilder.parseNumber(location.offset());
-                        String hexValues = location.value()
-                                .startsWith("'") ? MidiEventBuilder.resolveASCIIStrings(location.value()) : "%02X".formatted(MidiEventBuilder.parseNumber(location.value()));
-                        byte[] bytes = MidiEventBuilder.forgeBytesFromString(hexValues);
-                        byte[] overrided = new byte[bytes.length];
-                        String h = "";
-                        for (int i = 0; i < overrided.length; i++) {
-                            overrided[i] = patchData[offset + i];
-                            h += "%02X".formatted((int) (overrided[i] & 0xFF));
-                        }
-                        log.info("Override %d bytes at pos 0x%04X with value 0x%s instead of 0x%s".formatted(
-                                overrided.length,
-                                offset,
-                                hexValues,
-                                h.trim()
-                        ));
-                        for (int i = 0; i < overrided.length; i++) {
-                            patchData[offset + i] = bytes[i];
-                        }
+                        applyChecksum(ctx, payload, location);
+                    } else if (location.type() == null || MidiResponseFieldType.INTEGER == location.type() || MidiResponseFieldType.CATEGORY == location.type()) {
+                        applyInteger(ctx, payload, location);
+                    } else if (MidiResponseFieldType.STRING == location.type()) {
+                        applyString(ctx, payload, location);
                     }
                 });
     }
 
+    private void applyString(OverrideContext ctx, byte[] patchData, OverrideLocation location) {
+        String strValue = $OVERRIDE_PATCH_NAME.equals(location.value()) ? ctx.getPatchName() : location.value();
+        if (strValue != null) {
+            int size = MidiEventBuilder.parseNumber(location.size());
+            int offset = MidiEventBuilder.parseNumber(location.offset());
+            byte[] valueBytes = strValue.getBytes(StandardCharsets.US_ASCII);
+            for (int i = 0; i < size; i++) {
+                byte value = (i >= valueBytes.length) ? (byte) ' ' : valueBytes[i];
+                patchData[offset + i] = value;
+            }
+        }
+    }
+
+    /**
+     * Extract SysEx payloads from *.syx or *.mid file
+     */
     private List<byte[]> collectSysExFromFile(File file) throws IOException, InvalidMidiDataException {
         if (file.getName()
                 .toLowerCase()
@@ -183,18 +265,18 @@ public class PatchImporter {
             byte[] content = Files.readAllBytes(file.toPath());
             List<byte[]> messages = new ArrayList<>();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            boolean inSysex = false;
+            boolean inSysEx = false;
             for (int i = 0; i < content.length; i++) {
                 int value = content[i] & 0xFF;
                 if (value == 0xF0) {
-                    inSysex = true;
+                    inSysEx = true;
                     out.reset();
                 }
-                if (inSysex) {
+                if (inSysEx) {
                     out.write(value);
                 }
                 if (value == 0xF7) {
-                    inSysex = false;
+                    inSysEx = false;
                     if (out.size() > 0) {
                         messages.add(out.toByteArray());
                     }
@@ -207,21 +289,20 @@ public class PatchImporter {
     }
 
     private List<byte[]> collectSysExFromMidFile(File midiFile) throws InvalidMidiDataException, IOException {
-        List<byte[]> sysexMessages = new ArrayList<>();
+        List<byte[]> sysExMessages = new ArrayList<>();
 
         Sequence sequence = MidiSystem.getSequence(midiFile);
         for (Track track : sequence.getTracks()) {
             for (int i = 0; i < track.size(); i++) {
                 MidiEvent event = track.get(i);
                 MidiMessage message = event.getMessage();
-                if (message instanceof SysexMessage) {
-                    SysexMessage sysex = (SysexMessage) message;
-                    byte[] fullSysexMessage = sysex.getMessage();
-                    sysexMessages.add(fullSysexMessage);
+                if (message instanceof SysexMessage sysEx) {
+                    byte[] fullSysExMessage = sysEx.getMessage();
+                    sysExMessages.add(fullSysExMessage);
                 }
             }
         }
-        return sysexMessages;
+        return sysExMessages;
     }
 
     private String getBankName(File file) {
@@ -232,26 +313,24 @@ public class PatchImporter {
                 .toUpperCase() + name.substring(1);
     }
 
-    private ExtractedFields getFields(File sysexFile, MidiDeviceDefinition device, MidiDeviceMode midiDeviceMode, int presetId, byte[] content) {
+    private ExtractedFields getFields(File sysexFile, OverrideContext ctx, int presetId, byte[] content) {
+        final MidiDeviceDefinition device = ctx.getDevice();
+        final MidiDeviceMode midiDeviceMode = ctx.getMode();
         ExtractedFields extractedFields = new ExtractedFields();
         if (midiDeviceMode.getQueryName() != null) {
-            var sequences = CommandCall.parse(device.getDefinitionFile(), midiDeviceMode.getQueryName())
+            var sequences = CommandCall.parse(device.getDefinitionFile(), device, midiDeviceMode.getQueryName())
                     .stream()
-                    .map(commandCall -> {
-                        CommandMacro macro = device.getMacro(commandCall);
-                        return midiDeviceRequester.forgeMidiRequestSequence(device, macro, commandCall);
-                    })
+                    .map(commandCall -> midiDeviceRequester.forgeMidiRequestSequence(device, commandCall))
                     .toList();
             var mapper = sequences.getFirst()
                     .getMidiRequests()
                     .getFirst()
                     .getMapper();
-            CustomMidiEvent event = null;
             try {
-                event = new CustomMidiEvent(new SysexMessage(content, content.length));
+                final CustomMidiEvent event = new CustomMidiEvent(new SysexMessage(content, content.length));
                 mapper.extract(midiDeviceMode, extractedFields, event);
             } catch (InvalidMidiDataException e) {
-                log.error("Unable to forge Sysex from patch {} in file {}", presetId, sysexFile);
+                log.error("Unable to forge SysEx from patch {} in file {}", presetId, sysexFile);
             }
         }
         return extractedFields;

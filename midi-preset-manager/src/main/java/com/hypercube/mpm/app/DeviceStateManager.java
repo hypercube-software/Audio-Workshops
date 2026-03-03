@@ -198,7 +198,7 @@ public class DeviceStateManager {
                         log.info("Switch to Mode on device: {}", newModeName);
                         model.getCurrentDeviceMode()
                                 .put(device, midiDeviceMode);
-                        midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), modeCommand));
+                        midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), device, modeCommand));
                         midiOutDevice.sleep(device.getModeLoadTimeMs());
                     }
                 }

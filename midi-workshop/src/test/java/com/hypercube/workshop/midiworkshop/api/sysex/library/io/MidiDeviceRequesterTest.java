@@ -13,8 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 import java.io.File;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MidiDeviceRequesterTest {
     public static final String DEVICE_NAME = "TG-500";
@@ -22,6 +21,14 @@ class MidiDeviceRequesterTest {
 
     MidiDeviceRequester midiDeviceRequester;
     MidiDeviceDefinition device;
+
+    private CommandCall forgeCommandCall(String macro, String call) {
+        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, macro);
+        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, null, call)
+                .getFirst();
+        commandCall.macro(commandMacro);
+        return commandCall;
+    }
 
     @BeforeEach
     void init() {
@@ -40,12 +47,11 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithoutMacro() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : 142 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7", "noname()");
+
         // WHEN
 
-        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertEquals(1, actual.getMidiRequests()
                 .size());
@@ -57,11 +63,9 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithSequenceOfMacroAndMapper() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances() : YamahaMapper");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : --- : AllMulti();AllPerformances() : YamahaMapper", "noname()");
         // WHEN
-        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertEquals(2, actual.getMidiRequests()
                 .size());
@@ -87,11 +91,9 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithSequenceOfMacro() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti();AllPerformances()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : --- : AllMulti();AllPerformances()", "noname()");
         // WHEN
-        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertEquals(2, actual.getMidiRequests()
                 .size());
@@ -117,16 +119,14 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithSequenceOfMacroAndRawPayload() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 242 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : 242 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()", "noname()");
         // WHEN
-        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertEquals(0x242, actual.getTotalSize());
         assertEquals(3, actual.getMidiRequests()
                 .size());
-        assertEquals(null, actual.getMidiRequests()
+        assertNull(actual.getMidiRequests()
                 .get(0)
                 .getResponseSize());
         assertEquals(0x120, actual.getMidiRequests()
@@ -138,13 +138,11 @@ class MidiDeviceRequesterTest {
     }
 
     @Test
-    void wronResponseSize() {
+    void wrongResponseSize() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : 100 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : 100 : F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 00 F7;AllMulti();AllPerformances()", "noname()");
         // WHEN
-        Executable actual = () -> midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        Executable actual = () -> midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         MidiConfigError exception = assertThrows(MidiConfigError.class, actual);
         assertEquals("Response size of the macro 'noname' is not the same as the calculated one: 0x100 (defined) != 0x242 (computed)", exception.getMessage());
@@ -153,11 +151,10 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithoutSequence() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "noname() : --- : AllMulti()");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "noname()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("noname() : 120 : AllMulti()", "noname()");
+
         // WHEN
-        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        var actual = midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertEquals(0x120, actual.getTotalSize());
         assertEquals(1, actual.getMidiRequests()
@@ -172,11 +169,10 @@ class MidiDeviceRequesterTest {
     @Test
     void forgeRequestsWithParametersFail() {
         // GIVEN
-        CommandMacro commandMacro = CommandMacro.parse(APP_CONFIGFILE, "Multi(channel) : 120 : F0 43 20 7A 'LM  0065MU' 0000000000000000000000000000 00 channel F7");
-        CommandCall commandCall = CommandCall.parse(APP_CONFIGFILE, "Multi()")
-                .getFirst();
+        CommandCall commandCall = forgeCommandCall("Multi(channel) : 120 : F0 43 20 7A 'LM  0065MU' 0000000000000000000000000000 00 channel F7", "Multi()");
+
         // WHEN
-        Executable actual = () -> midiDeviceRequester.forgeMidiRequestSequence(device, commandMacro, commandCall);
+        Executable actual = () -> midiDeviceRequester.forgeMidiRequestSequence(device, commandCall);
         // THEN
         assertThrows(MidiConfigError.class, actual);
     }

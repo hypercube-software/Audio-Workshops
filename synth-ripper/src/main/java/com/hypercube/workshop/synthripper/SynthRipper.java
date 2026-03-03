@@ -3,7 +3,6 @@ package com.hypercube.workshop.synthripper;
 import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.api.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.api.device.AudioOutputDevice;
-import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
 import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.api.insights.dft.fast.FFTCalculator;
 import com.hypercube.workshop.audioworkshop.api.insights.dft.windows.BlackmanHarris;
@@ -85,7 +84,7 @@ public class SynthRipper {
                 }
             }
         } catch (LineUnavailableException | IOException e) {
-            throw new AudioError(e);
+            throw new SynthRipperError(e);
         } finally {
             midiDevice.sendAllOff();
             midiDevice.close();
@@ -217,7 +216,7 @@ public class SynthRipper {
                             .orElse(0);
                     threadLogger.log("Noise floor via FFT: avg %f dB, max %f dB".formatted(noiseFloor, max));
                     if (max == 0) {
-                        throw new AudioError("No sound recorded, check your sound card settings");
+                        throw new SynthRipperError("No sound recorded, check your sound card settings");
                     }
                 }
             } else {
@@ -259,7 +258,7 @@ public class SynthRipper {
                 }
             }
         } catch (InvalidMidiDataException | IOException e) {
-            throw new AudioError(e);
+            throw new SynthRipperError(e);
         }
         //
         // record WAV to disk

@@ -27,12 +27,20 @@ import java.util.stream.IntStream;
 @Slf4j
 @RequiredArgsConstructor
 public class XGSpecParser {
+    private static final Pattern SINGLE_LETTER_PATTERN = Pattern.compile("^[0-9+-]$");
+    private static final Pattern NOTE_PATTERN = Pattern.compile("^[CDEFGAB#]{1,2}(\\s[0-9-]+)?$");
     private final MidiDeviceDefinition device;
     private final MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
     private Map<String, String> bankNames = buildBankNames();
     private Map<String, String> drumKitsNames = buildKitNames();
-    private static final Pattern SINGLE_LETTER_PATTERN = Pattern.compile("^[0-9+-]$");
-    private static final Pattern NOTE_PATTERN = Pattern.compile("^[CDEFGAB#]{1,2}(\\s[0-9-]+)?$");
+
+    private static List<String> getAllCells(Element row) {
+        return row
+                .select("td")
+                .stream()
+                .map(Element::text)
+                .collect(Collectors.toList());
+    }
 
     public List<MidiDeviceBank> parseBanks() {
         return bankNames.keySet()
@@ -41,6 +49,7 @@ public class XGSpecParser {
                     String name = bankNames.get(k);
                     MidiDeviceBank b = new MidiDeviceBank();
                     b.setName(name);
+                    b.setPresetFormat(device.getPresetFormat());
                     b.setCommand(k);
                     return b;
                 })
@@ -78,6 +87,11 @@ public class XGSpecParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getXGBankName(int bankSelectMSB, int bankSelectLSB) {
+        String key = "%d-%d".formatted(bankSelectMSB, bankSelectLSB);
+        return bankNames.get(key);
     }
 
     private List<MidiPreset> parseDrumTable(Element table) {
@@ -246,11 +260,6 @@ public class XGSpecParser {
         return result;
     }
 
-    public String getXGBankName(int bankSelectMSB, int bankSelectLSB) {
-        String key = "%d-%d".formatted(bankSelectMSB, bankSelectLSB);
-        return bankNames.get(key);
-    }
-
     private Map<String, String> buildKitNames() {
         Map<String, String> map = new HashMap<>();
         map.put("126-0-16", "Techno Kit K/S");
@@ -385,13 +394,5 @@ public class XGSpecParser {
         map.put("126-0", "XG SFX KITS");
         map.put("127-0", "XG DRUM KITS");
         return map;
-    }
-
-    private static List<String> getAllCells(Element row) {
-        return row
-                .select("td")
-                .stream()
-                .map(Element::text)
-                .collect(Collectors.toList());
     }
 }
