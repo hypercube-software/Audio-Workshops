@@ -51,3 +51,5 @@ midi-workshop-api/src/test/resources/devices-library/*/
 /devices-library/Yamaha/*/
 /devices-library/Access/*/
 /devices-library/Novation/*/
+
+/apps/midi-preset-manager/config/*
