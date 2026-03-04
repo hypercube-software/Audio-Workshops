@@ -29,7 +29,7 @@ class MidiDeviceLibraryTest {
     void init() {
         MidiDeviceRequester midiDeviceRequester = new MidiDeviceRequester();
         midiDeviceLibrary = new MidiDeviceLibrary(midiDeviceRequester);
-        midiDeviceLibrary.load(new File("./src/test/resources/devices-library"));
+        midiDeviceLibrary.load(new File("./src/test/resources"));
         patchImporter = new PatchImporter(midiDeviceLibrary, midiDeviceRequester);
     }
 
