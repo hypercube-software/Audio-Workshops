@@ -1,1 +1,2 @@
-site
+site/** linguist-documentation
+*.html linguist-generated
