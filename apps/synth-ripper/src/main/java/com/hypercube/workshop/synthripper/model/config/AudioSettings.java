@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper.config;
+package com.hypercube.workshop.synthripper.model.config;
 
 import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
@@ -34,4 +34,3 @@ public class AudioSettings {
         return new PCMBufferFormat(bufferDurationMs, sampleRate, BitDepth.valueOf(bitDepth), channelMap.size(), PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
     }
 }
-

@@ -51,7 +51,7 @@ macros:
   - "setRemote(code)     : F0 43 10 26 07 code F7"
   - "setVoiceMode()      : setRemote($06)"
   - "setMultiMode()      : setRemote($07)"
-```  
+```
 
 Available presets are organized by **"device mode"** and **"banks"** allowing easy selection via Bank Select, Program Change or Sysex messages.
 It is possible to retrieve automatically all the device preset names (if possible)
@@ -106,7 +106,7 @@ Presets can have categories with aliases:
       - "Sound FX: SE"
       - "Sequence: SQ"
 ```
-        
+
 ## AUDIO workshop
 
 #### Topics
@@ -170,6 +170,8 @@ A CLI application that will help you to backup and restore the state of your har
 A  JavaFX application that will help you to browse and score your favorite synth patches.
 
 We provide a brand new way to use FXML and SceneBuilder together inside Intelliji  without pain.
+
+![image-20260304190538938](assets/image-20260304190538938.png)
 
 ## Synth Editor
 

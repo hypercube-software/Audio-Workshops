@@ -1,9 +1,9 @@
 package com.hypercube.workshop.synthripper.preset.decent;
 
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
-import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.model.MidiZone;
 import com.hypercube.workshop.synthripper.model.RecordedSynthNote;
+import com.hypercube.workshop.synthripper.model.config.SynthRipperConfiguration;
 import com.hypercube.workshop.synthripper.preset.decent.model.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

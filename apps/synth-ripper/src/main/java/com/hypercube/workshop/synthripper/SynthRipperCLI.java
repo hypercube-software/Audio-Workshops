@@ -3,9 +3,10 @@ package com.hypercube.workshop.synthripper;
 import com.hypercube.workshop.audioworkshop.api.device.AudioDeviceManager;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
+import com.hypercube.workshop.synthripper.config.ConfigFactory;
 import com.hypercube.workshop.synthripper.model.SynthRipperError;
-import lombok.AllArgsConstructor;
+import com.hypercube.workshop.synthripper.model.config.SynthRipperConfiguration;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -16,11 +17,13 @@ import java.io.IOException;
 
 @Slf4j
 @ShellComponent
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SynthRipperCLI {
 
     public static final String DEVICE_NOT_FOUND = "Device not found:";
     private final SynthRipper synthRipper;
+    private final ConfigFactory configFactory;
+    private SynthRipperConfiguration config;
 
     @ShellMethod(value = "Get device infos")
     public void info(@ShellOption(value = "-v", defaultValue = "false") boolean verbose) {
@@ -52,29 +55,28 @@ public class SynthRipperCLI {
 
     @ShellMethod(value = "Record audio input")
     public void rip(@ShellOption(value = "-c") File configFile) {
-
-        SynthRipperConfiguration cfg = SynthRipperConfiguration.loadConfig(configFile);
-        cfg.getSelectedPresets();
+        config = configFactory.loadConfig(configFile);
+        config.getSelectedPresets();
         MidiPortsManager midiPortsManager = new MidiPortsManager();
         midiPortsManager.collectHardwareDevices();
 
         AudioDeviceManager audioDeviceManager = new AudioDeviceManager();
         audioDeviceManager.collectDevices();
 
-        var audioInputDevice = audioDeviceManager.getInput(cfg.getPorts()
+        var audioInputDevice = audioDeviceManager.getInput(config.getPorts()
                         .getInputAudioDevice())
-                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + cfg.getPorts()
+                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + config.getPorts()
                         .getInputAudioDevice()));
-        var audioOutputDevice = audioDeviceManager.getOutput(cfg.getPorts()
+        var audioOutputDevice = audioDeviceManager.getOutput(config.getPorts()
                         .getOutputAudioDevice())
-                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + cfg.getPorts()
+                .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + config.getPorts()
                         .getOutputAudioDevice()));
-        var midiOutDevice = midiPortsManager.getOutput(cfg.getPorts()
+        var midiOutDevice = midiPortsManager.getOutput(config.getPorts()
                         .getOutputMidiDevice())
-                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + cfg.getPorts()
+                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + config.getPorts()
                         .getOutputMidiDevice()));
         try {
-            synthRipper.init(cfg);
+            synthRipper.init(config);
             synthRipper.recordSynth(audioInputDevice, audioOutputDevice, midiOutDevice);
         } catch (IOException e) {
             midiOutDevice.sendAllOff();

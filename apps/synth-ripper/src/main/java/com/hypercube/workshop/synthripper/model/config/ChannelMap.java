@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper.config;
+package com.hypercube.workshop.synthripper.model.config;
 
 import java.util.HashMap;
 

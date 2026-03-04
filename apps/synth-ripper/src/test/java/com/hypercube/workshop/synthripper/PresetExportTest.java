@@ -1,6 +1,6 @@
 package com.hypercube.workshop.synthripper;
 
-import com.hypercube.workshop.synthripper.config.presets.ConfigMidiPreset;
+import com.hypercube.workshop.synthripper.model.config.presets.ConfigMidiPreset;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

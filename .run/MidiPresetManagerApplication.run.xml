@@ -2,16 +2,13 @@
   <configuration default="false" name="MidiPresetManagerApplication" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="ALTERNATIVE_JRE_PATH" value="graalvm-24" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="MDL_FOLDER" value="../../devices-library" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="com.hypercube.mpm.MidiPresetManagerApplication" />
     <module name="midi-preset-manager" />
     <option name="VM_PARAMETERS" value="-Dmpm-config=config/mpm-config.yml" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-    <extension name="coverage">
-      <pattern>
-        <option name="PATTERN" value="com.hypercube.mpm.cli.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/apps/midi-preset-manager" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

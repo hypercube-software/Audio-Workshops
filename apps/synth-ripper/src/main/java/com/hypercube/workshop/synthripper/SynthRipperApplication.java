@@ -3,7 +3,7 @@ package com.hypercube.workshop.synthripper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.hypercube.workshop")
 public class SynthRipperApplication {
 
     public static void main(String[] args) {

@@ -95,11 +95,6 @@ public class MidiDeviceLibrary {
         File libraryFolder = Optional.ofNullable(System.getenv(ENV_MDL_FOLDER))
                 .map(File::new)
                 .orElse(new File(applicationFolder.getAbsolutePath(), DEVICES_LIBRARY_FOLDER));
-        File libraryFolder2 = new File(applicationFolder.getParentFile()
-                .getAbsolutePath(), DEVICES_LIBRARY_FOLDER);
-        if (!libraryFolder.exists() && libraryFolder2.exists()) {
-            libraryFolder = libraryFolder2;
-        }
         if (libraryFolder.exists()) {
             log.info("Loading midi devices library from %s...".formatted(libraryFolder.toString()));
             try (Stream<File> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
@@ -133,7 +128,7 @@ public class MidiDeviceLibrary {
             loaded = true;
             setControllerSysExTemplate();
         } else {
-            throw new MidiConfigError("The library path does not exists: " + libraryFolder.toString());
+            throw new MidiConfigError("The library path does not exists: " + libraryFolder.getAbsolutePath());
         }
     }
 

@@ -1,13 +1,13 @@
-package com.hypercube.workshop.synthripper.config.presets;
+package com.hypercube.workshop.synthripper.model.config.presets;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.synthripper.config.MidiSettings;
-import com.hypercube.workshop.synthripper.config.SynthRipperConfiguration;
-import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
+import com.hypercube.workshop.synthripper.model.config.MidiSettings;
+import com.hypercube.workshop.synthripper.model.config.SynthRipperConfiguration;
+import com.hypercube.workshop.synthripper.model.config.yaml.IConfigMidiPreset;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.hypercube.workshop.synthripper.config.MidiSettings.USE_DEFAULT_MIDI_CHANNEL;
+import static com.hypercube.workshop.synthripper.model.config.MidiSettings.USE_DEFAULT_MIDI_CHANNEL;
 
 @Getter
 @Setter

@@ -1,9 +1,9 @@
 projectName: "Yamaha-CS1x"
 device: CS1x
 ports:
-  inputAudioDevice: VBMatrix Out 1 (VB-Audio Matrix VAIO)
-  outputAudioDevice: OUT 01-02 (BEHRINGER UMC 1820)
-  outputMidiDevice: M8U eX 5
+  inputAudioDevice: Microphone (Realtek High Definition Audio)
+  outputAudioDevice: Haut-parleurs (Realtek High Definition Audio)
+  outputMidiDevice: rtp-midi
 audio:
   bufferDurationMs: 250
   nbChannels: 2

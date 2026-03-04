@@ -1,8 +1,12 @@
 package com.hypercube.workshop.synthripper.config;
 
-import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
+import com.hypercube.workshop.synthripper.model.config.yaml.IConfigMidiPreset;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.Objects;
@@ -10,18 +14,23 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(MockitoExtension.class)
 class SynthRipperConfigurationTest {
+    @Mock
+    MidiDeviceLibrary midiDeviceLibrary;
+
     /**
      * The test configuration use a macro to set the tempo of various presets via MIDI SysEx
      */
     @Test
     @Disabled
     void canLoadConfig() {
+        ConfigFactory configFactory = new ConfigFactory(midiDeviceLibrary);
         var rsc = Objects.requireNonNull(this.getClass()
                         .getClassLoader()
                         .getResource("config/config-test.yml"))
                 .getFile();
-        var cfg = SynthRipperConfiguration.loadConfig(new File(rsc));
+        var cfg = configFactory.loadConfig(new File(rsc));
         cfg.getMidi()
                 .getPresets()
                 .forEach(p -> {

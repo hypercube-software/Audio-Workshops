@@ -1,4 +1,4 @@
-package com.hypercube.workshop.synthripper.config.yaml;
+package com.hypercube.workshop.synthripper.model.config.yaml;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

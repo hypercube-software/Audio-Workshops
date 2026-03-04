@@ -1,11 +1,11 @@
-package com.hypercube.workshop.synthripper.config;
+package com.hypercube.workshop.synthripper.model.config;
 
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
-import com.hypercube.workshop.synthripper.config.yaml.IConfigMidiPreset;
+import com.hypercube.workshop.synthripper.model.config.yaml.IConfigMidiPreset;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.Getter;
 import lombok.Setter;

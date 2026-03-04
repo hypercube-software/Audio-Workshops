@@ -9,10 +9,10 @@ import com.hypercube.workshop.audioworkshop.api.pcm.SampleToPCMFunction;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffWriter;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.Chunks;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.RiffChunk;
-import com.hypercube.workshop.synthripper.config.ChannelMap;
-import com.hypercube.workshop.synthripper.config.ChannelMapping;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
 import com.hypercube.workshop.synthripper.model.SynthRipperError;
+import com.hypercube.workshop.synthripper.model.config.ChannelMap;
+import com.hypercube.workshop.synthripper.model.config.ChannelMapping;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Closeable;
@@ -132,4 +132,3 @@ public class WavRecorder implements Closeable {
         }
     }
 }
-
