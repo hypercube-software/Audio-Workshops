@@ -26,12 +26,12 @@
     <modules>
         <module>midi-workshop-api</module>
         <module>midi-workshop</module>
-        <module>midi-backup-translator</module>
-        <module>midi-preset-manager</module>
+        <module>apps/midi-backup-translator</module>
+        <module>apps/midi-preset-manager</module>
         <module>audio-workshop-api</module>
         <module>audio-workshop</module>
-        <module>synth-ripper</module>
-        <module>synth-editor</module>
+        <module>apps/synth-ripper</module>
+        <module>apps/synth-editor</module>
     </modules>
     <dependencyManagement>
         <dependencies>

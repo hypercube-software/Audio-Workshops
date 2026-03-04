@@ -6,7 +6,7 @@
         <groupId>com.hypercube.workshop</groupId>
         <artifactId>audio-workshop-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>synth-editor</artifactId>
     <name>synth-editor</name>

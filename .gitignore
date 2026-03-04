@@ -32,6 +32,7 @@ node_modules
 *.zip
 *.tar.gz
 *.rar
+*.bkp
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -43,9 +44,10 @@ hs_err_pid*
 /audio-workshop-api/sounds/
 /devices-library/**/*-user.yml
 /Manuals/
-/synth-ripper/output/**/*.*
-
-/midi-preset-manager/config/favorite-patches.yaml
-/midi-preset-manager/fonts/
-/midi-workshop-api/src/test/resources/devices-library/Mininova/
-/midi-workshop-api/src/test/resources/devices-library/TG-500/
+apps/synth-ripper/output/**/*.*
+apps/midi-preset-manager/config/favorite-patches.yaml
+apps/midi-preset-manager/fonts/
+midi-workshop-api/src/test/resources/devices-library/*/
+/devices-library/Yamaha/*/
+/devices-library/Access/*/
+/devices-library/Novation/*/

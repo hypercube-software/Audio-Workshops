@@ -1,0 +1,6 @@
+en mode multi, il y a une embrouille avec les .syx qui sont dans le mode single (subBank),
+il ne trouve pas le syx à envoyer car le dossier est celui du multi
+
+pb de design dans MidiPresetBuilder:
+il faut qu'un MidiPreset puisse delivrer le msb lsb bank, avec ça le code sera bien plus simple
+la façon dont il est forgé fait que c'est actuellement impossible, on crée les events midi à mesure qu'on a msb lsb bank, mais ils sont perdu ensuite

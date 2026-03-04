@@ -1,2 +1,3 @@
 site/** linguist-documentation
 *.html linguist-generated
+apps/midi-preset-manager/**/*.css linguist-language=Java

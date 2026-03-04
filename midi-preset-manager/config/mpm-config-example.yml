@@ -1,5 +1,0 @@
-devices:
-  - name: "TX-81z"
-    outputMidiDevice: "M8U eX 15"
-    inputMidiDevice: "M8U eX 16"
-

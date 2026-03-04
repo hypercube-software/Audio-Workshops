@@ -6,10 +6,9 @@
         <groupId>com.hypercube.workshop</groupId>
         <artifactId>audio-workshop-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>midi-preset-manager</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>midi-preset-manager</name>
     <description>JavaFX application to manage presets on hardware synths</description>
 
