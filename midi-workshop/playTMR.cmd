@@ -1,1 +1,0 @@
-java -XX:+UseZGC -jar target\midi-workshop-0.0.1-SNAPSHOT.jar play2 -o "FromDAW" -c "MidiClock" -t "%1"

@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.clock;
 
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -71,8 +72,7 @@ public class TimerBasedMidiClock implements MidiClock {
                 signal.wait();
             } catch (InterruptedException e) {
                 log.warn("Interrupted", e);
-                Thread.currentThread()
-                        .interrupt();
+                throw new MidiError(e);
             }
         }
     }

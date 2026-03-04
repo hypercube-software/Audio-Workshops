@@ -78,6 +78,7 @@ public class SequencerBasedMidiClock implements MidiClock {
                 midiTickSignal.wait();
             } catch (InterruptedException e) {
                 log.warn("Interrupted", e);
+                throw new MidiError(e);
             }
         }
     }

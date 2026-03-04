@@ -23,7 +23,9 @@ public class MidiSequencerCLI {
         m.getOutputs()
                 .forEach(o -> {
                     log.info("Reset device " + o.getName());
+                    o.open();
                     o.sendAllOff();
+                    o.close();
                 });
     }
 

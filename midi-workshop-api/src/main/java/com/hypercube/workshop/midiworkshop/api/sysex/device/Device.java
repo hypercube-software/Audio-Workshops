@@ -139,7 +139,7 @@ public abstract class Device {
     }
 
     private File getSysExFolder() {
-        String[] folders = new String[]{System.getProperty("SYSEX_FOLDER"), "./sysex", "../sysex"};
+        String[] folders = new String[]{System.getProperty("SYSEX_FOLDER"), "./sysex", "../sysex", "../../sysex"};
         return Arrays.stream(folders)
                 .map(Optional::ofNullable)
                 .flatMap(Optional::stream)
