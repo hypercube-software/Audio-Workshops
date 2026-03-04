@@ -39,16 +39,13 @@ hs_err_pid*
 /docs/*.md
 /docs/.nojekyll
 /docs/index.html
-/audio-workshop/output/
-/audio-workshop/sounds/
+/audio-workshop-api/output/
+/audio-workshop-api/sounds/
 /devices-library/**/*-user.yml
-# memory map dumps
-*.map
-# memory dump
-*.dump
-*.syx
 /Manuals/
 /synth-ripper/output/**/*.*
 
 /midi-preset-manager/config/favorite-patches.yaml
 /midi-preset-manager/fonts/
+/midi-workshop-api/src/test/resources/devices-library/Mininova/
+/midi-workshop-api/src/test/resources/devices-library/TG-500/

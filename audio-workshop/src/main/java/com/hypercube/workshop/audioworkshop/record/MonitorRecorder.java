@@ -4,11 +4,11 @@ import com.hypercube.workshop.audioworkshop.api.consumer.SampleBuffer;
 import com.hypercube.workshop.audioworkshop.api.device.AudioInputDevice;
 import com.hypercube.workshop.audioworkshop.api.device.AudioOutputDevice;
 import com.hypercube.workshop.audioworkshop.api.errors.AudioError;
+import com.hypercube.workshop.audioworkshop.files.record.WavRecordListener;
 import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.api.line.AudioInputLine;
 import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
-import com.hypercube.workshop.audioworkshop.api.record.WavRecordListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -71,3 +71,4 @@ public class MonitorRecorder extends WavRecordListener {
         }
     }
 }
+

@@ -3,7 +3,7 @@ package com.hypercube.workshop.synthripper.config;
 import com.hypercube.workshop.audioworkshop.api.format.PCMBufferFormat;
 import com.hypercube.workshop.audioworkshop.api.pcm.BitDepth;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMEncoding;
-import com.hypercube.workshop.audioworkshop.api.utils.CachedRegExp;
+import com.hypercube.workshop.audioworkshop.files.utils.CachedRegExp;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,3 +34,4 @@ public class AudioSettings {
         return new PCMBufferFormat(bufferDurationMs, sampleRate, BitDepth.valueOf(bitDepth), channelMap.size(), PCMEncoding.SIGNED, ByteOrder.LITTLE_ENDIAN);
     }
 }
+

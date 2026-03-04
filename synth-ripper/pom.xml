@@ -17,15 +17,13 @@
     <dependencies>
         <dependency>
             <groupId>com.hypercube.workshop</groupId>
-            <artifactId>midi-workshop</artifactId>
+            <artifactId>midi-workshop-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <classifier>api</classifier>
         </dependency>
         <dependency>
             <groupId>com.hypercube.workshop</groupId>
-            <artifactId>audio-workshop</artifactId>
+            <artifactId>audio-workshop-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <classifier>api</classifier>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

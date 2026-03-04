@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+// TODO: move this class in the maven module midi-workshop and rewrite it using MidiPreset instead of ConfigMidiPreset
 public class PresetExportTest {
     private final int CS1X_DRUMKIT_START_NOTE = 13;
 
