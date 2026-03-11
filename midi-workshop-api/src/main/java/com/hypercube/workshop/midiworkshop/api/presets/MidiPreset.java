@@ -208,6 +208,13 @@ public final class MidiPreset {
                 "drumKitNotes=" + drumKitNotes + ']';
     }
 
+    public Object getKurzweilObjectId() {
+        int objectID = (getBankLSB() * 100) + getBankPrg();
+        int high = (objectID >> 7) & 0x7F;
+        int low = objectID & 0x7F;
+        return (high << 8) | low;
+    }
+
     /**
      * Retrieve a Midi message by its command number
      *

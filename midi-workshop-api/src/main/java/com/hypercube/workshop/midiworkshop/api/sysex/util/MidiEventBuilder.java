@@ -119,7 +119,7 @@ public class MidiEventBuilder {
                                 data.add(b);
                             }
                         } catch (NumberFormatException e) {
-                            throw new MidiError("Syntax error, expected hexadecimal values");
+                            throw new MidiError("Syntax error, expected hexadecimal values: " + inputRawString);
                         }
                     }
                 });

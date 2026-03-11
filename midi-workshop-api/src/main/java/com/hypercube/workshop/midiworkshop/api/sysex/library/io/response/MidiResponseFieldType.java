@@ -5,5 +5,6 @@ public enum MidiResponseFieldType {
     NIBBLE_STRING,
     INTEGER,
     ALESIS_STRING,
+    KURZWEIL_STRING,
     CATEGORY
 }

@@ -41,6 +41,71 @@ class AlesisSysExParserTest {
         );
     }
 
+    private static String getActualBitsErrors(String actual, String expected) {
+        String errors = "";
+        for (int i = 0; i < actual.length(); i++) {
+            if (actual.charAt(i) != expected.charAt(i)) {
+                errors += "^";
+            } else {
+                errors += " ";
+            }
+        }
+        return errors;
+    }
+
+    private static void dumpMIDIPayload(byte[] payload) {
+        BitStreamReader pack = new BitStreamReader(payload);
+        List<Integer> bits = new ArrayList<>();
+        for (int i = 0; i < 8 * 8; i++) {
+            int bit = pack.readBit();
+            bits.addLast(bit);
+        }
+        var o = System.out;
+        for (int i = 0; i < bits.size(); i++) {
+            int bit = bits.get(i);
+            if (i % 8 == 0) {
+                o.print("\n[%d]".formatted(bit));
+            } else {
+                o.print(" %d".formatted(bit));
+            }
+        }
+        o.println();
+    }
+
+    private String getActualTitle(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
+        bsr.reset();
+        String actualTitle = "";
+        bsr.readBits(8);
+        for (int i = 0; i < 10; i++) {
+            int c = bsr.readInvertedBits(7);
+            actualTitle += alesisSysExParser.getChar(c);
+        }
+        return actualTitle;
+    }
+
+    private String getActualTitle2(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
+        bsr.reset();
+        String actualTitle = "";
+        bsr.readBits(5);
+        for (int i = 0; i < 10; i++) {
+            int c = bsr.readInvertedBits(7);
+            actualTitle += alesisSysExParser.getChar(c);
+        }
+        return actualTitle;
+    }
+
+    private String getActualDecodedBits(BitStreamReader bsr) {
+        bsr.reset();
+        String actual = "";
+        for (int i = 0; i < 8 + 7 * 10; i++) {
+            if (i == 8 || (i > 8 && (i - 8) % 7 == 0)) {
+                actual += " ";
+            }
+            actual += bsr.readBit();
+        }
+        return actual;
+    }
+
     @ParameterizedTest
     @MethodSource
     void unpack(String file, String title) throws Exception {
@@ -56,7 +121,7 @@ class AlesisSysExParserTest {
                     0 E5 E6 E7 D0 D1 D2 D3
                     0 F6 F7 E0 E1 E2 E3 E4
                     0 G7 F0 F1 F2 F3 F4 F5
-                    0 G0 G1 G2 G3 G4 G5 G6                
+                    0 G0 G1 G2 G3 G4 G5 G6
                 """);
         device.setDecodingKey(key);
         AlesisSysExParser alesisSysExParser = new AlesisSysExParser();
@@ -117,71 +182,5 @@ class AlesisSysExParserTest {
         System.out.println("Sound FX Level : " + bsr.readInvertedBits(7));
         System.out.println("Sound FX bus   : " + bsr.readInvertedBits(2));
         assertEquals(expected, actual);
-    }
-
-
-    private static String getActualBitsErrors(String actual, String expected) {
-        String errors = "";
-        for (int i = 0; i < actual.length(); i++) {
-            if (actual.charAt(i) != expected.charAt(i)) {
-                errors += "^";
-            } else {
-                errors += " ";
-            }
-        }
-        return errors;
-    }
-
-    private String getActualTitle(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
-        bsr.reset();
-        String actualTitle = "";
-        bsr.readBits(8);
-        for (int i = 0; i < 10; i++) {
-            int c = bsr.readInvertedBits(7);
-            actualTitle += alesisSysExParser.getChar(c);
-        }
-        return actualTitle;
-    }
-
-    private String getActualTitle2(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
-        bsr.reset();
-        String actualTitle = "";
-        bsr.readBits(5);
-        for (int i = 0; i < 10; i++) {
-            int c = bsr.readInvertedBits(7);
-            actualTitle += alesisSysExParser.getChar(c);
-        }
-        return actualTitle;
-    }
-
-    private String getActualDecodedBits(BitStreamReader bsr) {
-        bsr.reset();
-        String actual = "";
-        for (int i = 0; i < 8 + 7 * 10; i++) {
-            if (i == 8 || (i > 8 && (i - 8) % 7 == 0)) {
-                actual += " ";
-            }
-            actual += bsr.readBit();
-        }
-        return actual;
-    }
-
-    private static void dumpMIDIPayload(byte[] payload) {
-        BitStreamReader pack = new BitStreamReader(payload);
-        List<Integer> bits = new ArrayList<>();
-        for (int i = 0; i < 8 * 8; i++) {
-            int bit = pack.readBit();
-            bits.addLast(bit);
-        }
-        var o = System.out;
-        for (int i = 0; i < bits.size(); i++) {
-            int bit = bits.get(i);
-            if (i % 8 == 0) {
-                o.print("\n[%d]".formatted(bit));
-            } else {
-                o.print(" %d".formatted(bit));
-            }
-        }
-        o.println();
     }
 }

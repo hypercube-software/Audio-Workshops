@@ -39,6 +39,10 @@ public class SysExReader {
         return data;
     }
 
+    public int getInt16() {
+        return buffer.getShort();
+    }
+
     public int getInt24() {
         int b2 = buffer.get();
         int b1 = buffer.get();

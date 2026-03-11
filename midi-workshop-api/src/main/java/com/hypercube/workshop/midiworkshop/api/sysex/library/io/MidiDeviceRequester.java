@@ -42,7 +42,13 @@ public class MidiDeviceRequester {
     }
 
     /**
-     * Request a device and expect a response
+     * Request a device. Optionally wait for a response.
+     *
+     * @param device        device to query
+     * @param midiInDevice  can be null if you don't expect any response
+     * @param midiOutDevice cannot be null
+     * @param commandCall   command to send to the device
+     * @return an empty response if no response was expected
      */
     public MidiRequestResponse queryDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
         String errorMessage = null;
@@ -52,7 +58,7 @@ public class MidiDeviceRequester {
                     List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
                     final SysExListener listener;
                     Integer singleResponseSize = r.getResponseSize();
-                    if (singleResponseSize != null) {
+                    if (singleResponseSize != null && midiInDevice != null) {
                         if (singleResponseSize > 0) {
                             int nbRequests = events.size();
                             int totalSize = singleResponseSize * nbRequests;
@@ -117,9 +123,9 @@ public class MidiDeviceRequester {
                         commandCallText -> expandWithPath(device, configFile, mapper, commandCallText, "/" + commandCall.name()).stream()
                 )
                 .toList();
-        if (result.size() == 1 && result.getFirst()
-                .getResponseSize() != null && result.getFirst()
-                .getResponseSize() == 0) {
+        if (result.size() == 1 && (result.getFirst()
+                .getResponseSize() == null || result.getFirst()
+                .getResponseSize() == 0)) {
             result.getFirst()
                     .setResponseSize(commandMacro.getResponseSize());
         }

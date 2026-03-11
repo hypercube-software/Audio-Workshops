@@ -14,6 +14,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBa
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.ExtractedFields;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
@@ -216,9 +217,9 @@ public class MidiPresetCrawler {
     }
 
     private void selectPatch(MidiPreset midiPreset, MidiOutDevice out) {
-        log.info("Select Bank {}' Program '{}' in mode '{}'", midiPreset.getId()
-                .bankName(), midiPreset.getId()
-                .name(), midiPreset.getId()
+        log.info("Select Bank '{}' Program '{}' in mode '{}'", midiPreset.getId()
+                .bankName(), midiPreset.getIdentifiers()
+                .getPrg(), midiPreset.getId()
                 .deviceMode());
         for (var command : midiPreset.getCommands()) {
             CustomMidiEvent cm = new CustomMidiEvent(command);
@@ -390,11 +391,7 @@ public class MidiPresetCrawler {
             log.warn("Response size is unknown, this will considerably slow down the extraction... Try to put response sizes in your macros");
         }
         for (var request : sequence.getMidiRequests()) {
-            List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue()
-                    .replace("program", "%02X".formatted(midiPreset.getBankPrg()))
-                    .replace("bankMSB", "%02X".formatted(midiPreset.getBankMSB()))
-                    .replace("bankLSB", "%02X".formatted(midiPreset.getBankLSB()))
-            );
+            List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(injectConstants(midiPreset, request));
             for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
                 final var customMidiEvent = requestInstances.get(requestInstanceIndex);
                 CustomMidiEvent midiResponse = null;
@@ -431,6 +428,23 @@ public class MidiPresetCrawler {
         sendPostSequence(device, postSequence, out);
 
         return response;
+    }
+
+    private String injectConstants(MidiPreset midiPreset, MidiRequest request) {
+        String input = request.getValue();
+        if (input.contains("program")) {
+            input = input.replace("program", "%02X".formatted(midiPreset.getBankPrg()));
+        }
+        if (input.contains("bankMSB")) {
+            input = input.replace("bankMSB", "%02X".formatted(midiPreset.getBankMSB()));
+        }
+        if (input.contains("bankLSB")) {
+            input = input.replace("bankLSB", "%02X".formatted(midiPreset.getBankLSB()));
+        }
+        if (input.contains("kobjId")) {
+            input = input.replace("kobjId", "%04X".formatted(midiPreset.getKurzweilObjectId()));
+        }
+        return input;
     }
 
     private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutDevice out) {

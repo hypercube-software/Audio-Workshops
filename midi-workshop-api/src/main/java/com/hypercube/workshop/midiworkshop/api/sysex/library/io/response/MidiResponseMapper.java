@@ -59,6 +59,7 @@ public class MidiResponseMapper {
             case NIBBLE_STRING -> extractNibbleString(currentResponse, payload, field);
             case INTEGER -> extractInteger(currentResponse, payload, field);
             case ALESIS_STRING -> extractAlesisString(currentResponse, payload, field);
+            case KURZWEIL_STRING -> extractKurzweilString(currentResponse, payload, field);
             case CATEGORY -> extractCategory(mode, currentResponse, payload, field);
         }
     }
@@ -103,6 +104,34 @@ public class MidiResponseMapper {
             }
         }
         value = value.replace("|nitial", "Initial"); // Weird case from Mininova
+        value = value.replace("|", " ");// we use this character to store presets, so it is reserved
+        currentResponse.setField(field.getName(), value.trim());
+    }
+
+    private void extractKurzweilString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
+        if (payload[4] == 0x05) {
+            // this is an INFO response
+            int type = payload[5] << 8 | payload[6];
+            int id = payload[7] << 8 | payload[8];
+            int size = payload[9] << 24 | payload[10] << 8 | payload[11];
+            int ramf = payload[12];
+            if (size == 0) {
+                log.warn("Preset unknown in Kurzweil memory (object type %04X, object id: %04X)".formatted(type, id));
+                return;
+            }
+        }
+        String value = "";
+        for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
+            if (i >= payload.length) {
+                break;
+            } else if (payload[i] >= 32 && payload[i] <= 127) {
+                value += (char) payload[i];
+            } else if (payload[i] == 0) {
+                break;
+            } else {
+                value += "❌";
+            }
+        }
         value = value.replace("|", " ");// we use this character to store presets, so it is reserved
         currentResponse.setField(field.getName(), value.trim());
     }
