@@ -6,10 +6,18 @@ deviceName: "K2600R"
 presetFormat: BANK_MSB_LSB_PRG
 presetNaming: STANDARD
 macros:
-  - "Request(command,body)   : ---   : F0 07 00 78 command body F7"
-  - "DIR(type,id)            : ---   : Request($04,type id)"
-  - "DIR_PROGRAM(id)         : ---   : DIR($0104,id)"
-  - "PatchName()             : ---   : DIR_PROGRAM(kobjId) : PatchMapper"
+  - "Request(command,body)               : ---   : F0 07 00 78 command body F7"
+  - "DIR(type,id)                        : ---   : Request($04,type id)"
+  - "DIR_BANK(type,bank,ramonly)         : ---   : Request($0C,type bank ramonly)"
+  - "DIR_PROGRAM(id)                     : ---   : DIR($0104,id)"
+  - "DIR_PROGRAM_BANKS()                 : ---   : DIR_BANK($0104,7F,00)"
+  # format = 0 for Nibble, 1 for packed stream
+  - "READ(type,id,form)                  : ---   : Request($0A,type id form)"
+  - "READ_SAMPLE_BLOCK_NIBBLE(id)        : ---   : READ($0106, id, 00)"
+  - "READ_BANK(type,bank,format,ramonly) : ---   : Request($0B,type bank format ramonly)"
+  - "READ_PROGRAM_BANKS_NIBBLE()         : ---   : READ_BANK($0104,7F,00,00)"
+  - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK($0104,bank,00,00)"
+  - "PatchName()                 : ---   : DIR_PROGRAM(kobjId) : PatchMapper"
 
 #
 # Kurzweil did a giant mess mixing MIDI bank concept and object ids
