@@ -14,10 +14,10 @@ class MidiEventBuilderTest {
 
     @ParameterizedTest
     @CsvSource({
-            "F0 43 20 7A 'LM  0065DR' 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7F 00 F7,0xF043207A4C4D202030303635445200000000000000000000000000007F00F7",
-            "F0 41 00 42 11 480000 001D10 CK6 F7,0xF041004211480000001D100BF7",
-            "F0 41 00 42 11 480000 001D10 CK3 F7,0xF041004211480000001D1053F7",
-            "F041004211480000001D10F7,0xF041004211480000001D10F7"
+            "F0 43 20 7A 'LM  0065DR' 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7F 00 F7,F043207A4C4D202030303635445200000000000000000000000000007F00F7",
+            "F0 41 00 42 11 480000 001D10 CK6 F7,F041004211480000001D100BF7",
+            "F0 41 00 42 11 480000 001D10 CK3 F7,F041004211480000001D1053F7",
+            "F041004211480000001D10F7,F041004211480000001D10F7"
     })
     void parse(String input, String expected) throws InvalidMidiDataException {
         var actual = MidiEventBuilder.parse(input);
@@ -29,9 +29,9 @@ class MidiEventBuilderTest {
     void parseRange() throws InvalidMidiDataException {
         var actual = MidiEventBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-9] F7");
         assertEquals(10, actual.size());
-        assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
+        assertEquals("F043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
                 .getHexValues());
-        assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000009F7", actual.getLast()
+        assertEquals("F043207A4C4D202030303636535900000000000000000000000000000009F7", actual.getLast()
                 .getHexValues());
     }
 
@@ -39,9 +39,9 @@ class MidiEventBuilderTest {
     void parseMultipleDefinitions() throws InvalidMidiDataException {
         var actual = MidiEventBuilder.parse("F0 43 20 7A 'LM  0066SY' 0000000000000000000000000000 00 [0-1] F7;F0 41 00 42 11 480000 001D10 CK3 F7");
         assertEquals(3, actual.size());
-        assertEquals("0xF043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
+        assertEquals("F043207A4C4D202030303636535900000000000000000000000000000000F7", actual.getFirst()
                 .getHexValues());
-        assertEquals("0xF041004211480000001D1053F7", actual.getLast()
+        assertEquals("F041004211480000001D1053F7", actual.getLast()
                 .getHexValues());
     }
 
