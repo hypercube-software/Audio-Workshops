@@ -32,6 +32,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
+import com.hypercube.workshop.midiworkshop.presets.kurzweil.KurzweilExplorer;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,9 +69,10 @@ public class SysExCLI {
     private final MidiMonitor midiMonitor;
     private final MidiPresetCrawler midiPresetCrawler;
     private final CS1XPresetGenerator cs1XPresetGenerator;
+    private final KurzweilExplorer kurzweilExplorer;
     private final MidiDeviceLibrary library;
     private final MidiPortsManager midiPortsManager;
-
+    private final SampleDumpStandardExample sampleDumpStandardExample;
     private final CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
     private final CyclicBarrier sysExReceived = new CyclicBarrier(2);
 
@@ -223,6 +225,21 @@ public class SysExCLI {
         cs1XPresetGenerator.dumpCS1XVoices(deviceName);
     }
 
+    @ShellMethod("Extract Kurzweil Programs")
+    public void extractKurzweil(@ShellOption(value = "-d", help = "Device Name") String deviceName) {
+        kurzweilExplorer.listBanks(deviceName);
+    }
+
+    @ShellMethod("Extract Kurzweil sample")
+    public void getKurzweilSample(@ShellOption(value = "-d", help = "Device Name") String deviceName, @ShellOption(value = "-s", help = "Sample Id") int sampleId) {
+        kurzweilExplorer.getSample(deviceName, sampleId);
+    }
+
+    @ShellMethod("Request a sample via Sample Dump Standard")
+    public void sdsRequest(@ShellOption(value = "-d", help = "Device Name") String deviceName, @ShellOption(value = "-s", help = "Sample ID") int sampleId) {
+        sampleDumpStandardExample.request(deviceName, sampleId);
+    }
+
     private void receiveBulkMemory(Device model, MidiOutDevice out) {
         model.getMemory()
                 .getMemoryMaps()
@@ -230,8 +247,8 @@ public class SysExCLI {
                 .filter(MemoryMap::isTopLevel)
                 .filter(mm -> mm.getFormat() == MemoryMapFormat.NIBBLES)
                 .forEach(memoryMap -> {
-                    log.info(memoryMap.getName() + ":" + memoryMap.getBaseAddress()
-                            .toString() + " " + memoryMap.getEffectiveSize()
+                    log.info("{}:{} {}", memoryMap.getName(), memoryMap.getBaseAddress()
+                            .toString(), memoryMap.getEffectiveSize()
                             .toString());
                     model.requestData(out, memoryMap.getBaseAddress(), memoryMap.getEffectiveSize());
                     int nbSysExReceived = 0;
