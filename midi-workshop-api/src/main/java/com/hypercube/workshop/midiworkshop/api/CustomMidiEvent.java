@@ -6,6 +6,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
+import java.util.HexFormat;
 
 public class CustomMidiEvent extends MidiEvent {
 
@@ -34,21 +35,15 @@ public class CustomMidiEvent extends MidiEvent {
     }
 
     public String getHexValues() {
-        var a = getMessage().getMessage();
-        StringBuilder sb = new StringBuilder((a.length + 1) * 2);
-        sb.append("0x");
-        for (byte b : a)
-            sb.append(String.format("%02X", b));
-        return sb.toString();
+        return HexFormat.of()
+                .withUpperCase()
+                .formatHex(getMessage().getMessage());
     }
 
     public String getHexValuesSpaced() {
-        var a = getMessage().getMessage();
-        StringBuilder sb = new StringBuilder((a.length + 1) * 2);
-        sb.append("0x");
-        for (byte b : a)
-            sb.append(String.format(" %02X", b));
-        return sb.toString();
+        return HexFormat.ofDelimiter(" ")
+                .withUpperCase()
+                .formatHex(getMessage().getMessage());
     }
 
     @Override

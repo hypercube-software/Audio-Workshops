@@ -4,6 +4,7 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     public static final int SCREEN_TEXT_SIZE = 320 + 1; // 320 chars + final 0
     public static final int PIXELS_PER_BYTE = 6;
 
-    private static void parseLCDPixels(SysExReader reader) {
+    private static ObjectScreenBitmap parseLCDPixels(SysExReader reader) {
         int lcd_width = 240;
         int lcd_height = 64;
         boolean[] pixelData = new boolean[lcd_width * lcd_height];
@@ -49,6 +48,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         } catch (IOException e) {
             throw new MidiError(e);
         }
+        return new ObjectScreenBitmap(0, 0, pixelData.length, image);
     }
 
     @Override
@@ -56,31 +56,40 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         throw new MidiError("Not Implemented yet");
     }
 
-    public void parse(Manufacturer manufacturer, byte[] response) {
-        SysExReader reader = new SysExReader(ByteBuffer.wrap(response));
-        int f0 = reader.getByte();
-        int manufacturerId = reader.getByte();
-        if (manufacturerId != manufacturer.getCode()) {
-            throw new MidiError("Expected manufacturer code %d, got %d".formatted(manufacturer.getCode(), manufacturerId));
-        }
-        int deviceId = reader.getByte();
-        int productId = reader.getByte();
-        Product product = Product.fromCode(productId)
-                .orElse(null);
-        if (product == null) {
-            throw new MidiError("Unknown product code %02X".formatted(productId));
-        }
-        int commandId = reader.getByte();
-        Command command = Command.fromCode(commandId)
-                .orElse(null);
-        if (command == null) {
-            throw new MidiError("Unknown command code %02X".formatted(commandId));
-        }
-        log.info("Parsing Command %s(%02X) for product %s(%02X)".formatted(command.name(), commandId, product.name(), productId));
-        switch (command) {
-            case LOAD -> parseLOAD(command, reader);
-            case SCREEN_REPLY -> parseScreenReply(command, reader);
-        }
+    public List<BaseObject> parse(Manufacturer manufacturer, byte[] responses) {
+        return SysExReader.splitSysEx(responses)
+                .stream()
+                .map(response ->
+                {
+                    SysExReader reader = new SysExReader(ByteBuffer.wrap(response));
+                    int f0 = reader.getByte();
+                    int manufacturerId = reader.getByte();
+                    if (manufacturerId != manufacturer.getCode()) {
+                        throw new MidiError("Expected manufacturer code %d, got %d".formatted(manufacturer.getCode(), manufacturerId));
+                    }
+                    int deviceId = reader.getByte();
+                    int productId = reader.getByte();
+                    Product product = Product.fromCode(productId)
+                            .orElse(null);
+                    if (product == null) {
+                        throw new MidiError("Unknown product code %02X".formatted(productId));
+                    }
+                    int commandId = reader.getByte();
+                    Command command = Command.fromCode(commandId)
+                            .orElse(null);
+                    if (command == null) {
+                        throw new MidiError("Unknown command code %02X".formatted(commandId));
+                    }
+                    log.info("Parsing Command %s(%02X) for product %s(%02X)".formatted(command.name(), commandId, product.name(), productId));
+                    return switch (command) {
+                        case LOAD -> parseLOAD(command, reader);
+                        case SCREEN_REPLY -> parseScreenReply(command, reader);
+                        case INFO -> parseINFO(command, reader);
+                        case WRITE -> parseWRITE(command, reader);
+                        default -> null;
+                    };
+                })
+                .toList();
     }
 
     public List<String> splitBySize(String text, int size) {
@@ -88,17 +97,54 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 .toList();
     }
 
-    private void parseScreenReply(Command command, SysExReader reader) {
-        int remaining = reader.remaining();
-        if (remaining == SCREEN_TEXT_SIZE + 1) {
-            parseLCDText(reader);
-            int f7 = reader.getByte();
-        } else if (remaining == 2561 + 1) {
-            parseLCDPixels(reader);
-        }
+    private BaseObject parseWRITE(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int objectId = reader.getInt16();
+        int size = reader.getInt24();
+        int mode = reader.getByte();
+        String name = reader.getString();
+        StreamFormat format = StreamFormat.fromCode(reader.getByte());
+        String objectName = KObject.fromType(objectType)
+                .map(KObject::name)
+                .orElse("Unknown !");
+        log.info("Object: {}", objectName);
+        log.info("Mode: {}", mode);
+        log.info("Name: {}", name);
+        log.info("Size  : %06X".formatted(size));
+        log.info("Format: {}", format);
+        byte[] payload = getBitStream(reader);
+        byte[] unpacked = switch (format) {
+            case STREAM -> readStream(payload);
+            case NIBBLE -> readNibbleStream(payload);
+        };
+        int cheksum = reader.getByte();
+        int f7 = reader.getByte();
+        log.info("Unpacked size  : 0x%06X bytes".formatted(unpacked.length));
+
+        return new ObjectWrite(objectType, objectId, size, mode, name, format, unpacked);
     }
 
-    private void parseLCDText(SysExReader reader) {
+    private ObjectInfo parseINFO(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int objectId = reader.getInt16();
+        int size = reader.getInt24();
+        boolean inRam = reader.getByte() == 1;
+        String name = reader.getString();
+        log.info("Object Type %04X Object ID %04X Size: %X InRAM: %s : %s".formatted(objectType, objectId, size, inRam, name));
+        return new ObjectInfo(objectType, objectId, size, inRam, name);
+    }
+
+    private BaseObject parseScreenReply(Command command, SysExReader reader) {
+        int remaining = reader.remaining();
+        if (remaining == SCREEN_TEXT_SIZE + 1) {
+            return parseLCDText(reader);
+        } else if (remaining == 2561 + 1) {
+            return parseLCDPixels(reader);
+        }
+        return null;
+    }
+
+    private ObjectScreenText parseLCDText(SysExReader reader) {
         byte[] ascii = reader.getBytes(SCREEN_TEXT_SIZE - 1);
         String text = new String(ascii, StandardCharsets.US_ASCII);
         StringBuffer sb = new StringBuffer();
@@ -106,9 +152,11 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 sb.append(l + "\n"));
         String allText = sb.toString();
         log.info("\n" + allText);
+        int f7 = reader.getByte();
+        return new ObjectScreenText(0, 0, allText.length(), allText);
     }
 
-    private void parseLOAD(Command command, SysExReader reader) {
+    private ObjectLoad parseLOAD(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
         int objectId = reader.getInt16();
         int offset = reader.getInt24();
@@ -119,7 +167,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         log.info("Object: {}", objectName);
         log.info("Offset: %06X".formatted(offset));
         log.info("Size  : %06X".formatted(size));
-        Format format = Format.fromCode(reader.getByte());
+        StreamFormat format = StreamFormat.fromCode(reader.getByte());
         log.info("Format: {}", format);
         byte[] payload = getBitStream(reader);
         byte[] unpacked = switch (format) {
@@ -127,11 +175,8 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
             case NIBBLE -> readNibbleStream(payload);
         };
         log.info("Unpacked size  : 0x%06X bytes".formatted(unpacked.length));
-        try {
-            Files.write(Path.of("target/output %s %s.dat".formatted(command, format)), unpacked);
-        } catch (IOException e) {
-            throw new MidiError(e);
-        }
+
+        return new ObjectLoad(objectType, objectId, size, offset, format, unpacked);
     }
 
     private byte[] readNibbleStream(byte[] payload) {
@@ -161,16 +206,12 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     private byte[] getBitStream(SysExReader reader) {
         SysExChecksum sysExChecksum = new SimpleSumChecksum();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            while (reader.remaining() > 2) {
+            while (reader.remaining() != 2) {
                 int v = reader.getByte();
                 sysExChecksum.update(v);
                 out.write(v);
             }
             byte[] payload = out.toByteArray();
-            int chk = reader.getByte();
-            int f0 = reader.getByte();
-            int checksum = sysExChecksum.getValue();
-            log.info("Checksum %02X is ".formatted(chk) + ((checksum == chk) ? "right" : "wrong"));
             log.info("BitStream size : 0x%06X bytes".formatted(payload.length));
             return payload;
         } catch (IOException e) {

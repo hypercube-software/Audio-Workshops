@@ -4,12 +4,14 @@ import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
-import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.SysExListener;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.SysExAggregatorListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
@@ -37,12 +39,47 @@ public class MidiDeviceRequester {
      */
     public void updateDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, List<CommandCall> commands) {
         for (CommandCall commandCall : commands) {
-            queryDevice(device, midiInDevice, midiOutDevice, commandCall);
+            queryAndAggregate(device, midiInDevice, midiOutDevice, commandCall);
         }
     }
 
     /**
-     * Request a device. Optionally wait for a response.
+     * Request a device and  wait for a single response
+     *
+     * @param device        device to query
+     * @param midiInDevice  can be null if you don't expect any response
+     * @param midiOutDevice cannot be null
+     * @param commandCall   command to send to the device
+     * @return empty if a timeout occur
+     */
+    public Optional<MidiRequestResponse> query(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
+        String errorMessage = null;
+        final SysExMidiListener listener = new SysExMidiListener();
+        midiInDevice.addSysExListener(listener);
+        try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
+            for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
+                List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
+                for (CustomMidiEvent evt : events) {
+                    log.info("Send %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
+                    midiOutDevice.send(evt);
+                    requestBuffer.write(evt.getMessage()
+                            .getMessage());
+                }
+            }
+            return listener.waitResponse(3)
+                    .map(payload -> {
+                        log.info("Receive %d (0x%X) bytes".formatted(payload.length, payload.length));
+                        return new MidiRequestResponse(requestBuffer.toByteArray(), payload, null);
+                    });
+        } catch (IOException e) {
+            throw new MidiError(e);
+        } finally {
+            midiInDevice.removeListener(listener);
+        }
+    }
+
+    /**
+     * Request a device. Optionally wait for multiple response.
      *
      * @param device        device to query
      * @param midiInDevice  can be null if you don't expect any response
@@ -50,13 +87,13 @@ public class MidiDeviceRequester {
      * @param commandCall   command to send to the device
      * @return an empty response if no response was expected
      */
-    public MidiRequestResponse queryDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
+    public MidiRequestResponse queryAndAggregate(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
         String errorMessage = null;
         try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
             try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
                 for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                     List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
-                    final SysExListener listener;
+                    final SysExAggregatorListener listener;
                     Integer singleResponseSize = r.getResponseSize();
                     if (singleResponseSize != null && midiInDevice != null) {
                         if (singleResponseSize > 0) {
@@ -66,7 +103,7 @@ public class MidiDeviceRequester {
                         } else {
                             log.info("Send '{}' to {} and expected a response of unknown size", r.getName(), device.getDeviceName());
                         }
-                        listener = new SysExListener();
+                        listener = new SysExAggregatorListener();
                         midiInDevice.addSysExListener(listener);
                     } else {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
@@ -198,21 +235,24 @@ public class MidiDeviceRequester {
     /**
      * Wait a device response without knowing the size
      */
-    private String waitDeviceResponse(MidiDeviceDefinition device, SysExListener listener) {
+    private String waitDeviceResponse(MidiDeviceDefinition device, SysExAggregatorListener listener) {
         String errorMessage = null;
         int previousSize = listener.getCurrentSize();
-        Instant start = Instant.now();
+        Instant previousSizeInstant = Instant.now();
         for (; ; ) {
-            if (Duration.between(start, Instant.now())
-                    .getSeconds() > 2) {
-                int received = listener.getCurrentSize() - previousSize;
-                if (received == 0) {
+            if (Duration.between(previousSizeInstant, Instant.now())
+                    .getSeconds() > 5) {
+                int currentSize = listener.getCurrentSize();
+                if (previousSize == currentSize && currentSize > 0) {
+                    return null; // we received something, and then no change for 2 sec
+                } else if (previousSize != currentSize && currentSize > 0) {
+                    previousSize = currentSize;
+                    previousSizeInstant = Instant.now();
+                    continue; // we received something, but we need to wait silent for 2 sec
+                } else if (previousSize == currentSize && currentSize == 0) {
                     errorMessage = "No response from device %s".formatted(device.getDeviceName());
-                } else {
-                    return null; // we received something
+                    break;
                 }
-                log.error(errorMessage);
-                break;
             }
             try {
                 Thread.sleep(250);
@@ -220,13 +260,14 @@ public class MidiDeviceRequester {
                 throw new RuntimeException(e);
             }
         }
+        log.error(errorMessage);
         return errorMessage;
     }
 
     /**
      * Wait a response from the device with an exact size
      */
-    private String waitDeviceResponse(MidiDeviceDefinition device, SysExListener listener, int expectedSize) {
+    private String waitDeviceResponse(MidiDeviceDefinition device, SysExAggregatorListener listener, int expectedSize) {
         String errorMessage = null;
         int previousSize = listener.getCurrentSize();
         Instant start = Instant.now();

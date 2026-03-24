@@ -46,10 +46,11 @@ public class ManufacturerSysExParser {
     /**
      * Many synth (especially Alesis Quadrasynth) SYSEX use a complex 7 bit stream that need to be converted to a 8 bit stream given a decoding key
      * <p>It is decoded in blocks of 56 bits, producing 7 bytes</p>
+     * <p>NOTE: it is possible that the input payload is not made exactly of blocks of 64 bits. We handle that.</p>
      *
-     * @param device
-     * @param sysexPayload
-     * @return
+     * @param device  Midi device
+     * @param payload packed input from MIDI response
+     * @return unpacked response
      */
     public byte[] unpackMidiBuffer(MidiDeviceDefinition device, final byte[] payload) {
         MidiDeviceDecodingKey decodingKey = device.getDecodingKey();
@@ -69,21 +70,20 @@ public class ManufacturerSysExParser {
         // copy the "packed bytes" from the payload into our decoding input buffer
         System.arraycopy(payload, decodingStart, input, 0, packedPayloadSize);
         // Now we can decode
+        List<Integer> decodingMap = decodingKey
+                .getMapping();
         final BitStreamReader bsr = new BitStreamReader(input);
         for (int block = 0; block < nbBlocks; block++) {
-            List<Integer> decodingMap = decodingKey
-                    .getMapping();
-            for (int bitIndex = 0; bitIndex < decodingMap
-                    .size(); bitIndex++) {
+            // the decodingMap contains 64 indexes which is the size of an input block (64 bits)
+            for (int targetBitIndex : decodingMap) {
                 int bit = bsr.readBit();
-                int blockbitpos = decodingMap.get(bitIndex);
-                if (blockbitpos == -1) {
-                    //System.out.println("skip\n");
-                    continue;
+                if (targetBitIndex == -1) {
+                    continue; // since MIDI use only 7 bits
                 }
-                int blockPos = blockbitpos / 8;
-                int bitPos = blockbitpos % 8;
-                int mask = 1 << bitPos;
+                int blockPos = targetBitIndex / 8;
+                int bitPos = targetBitIndex % 8;
+                // BEWARE: bitPos is not a bit number, so we don't do "int mask = 1 << bitPos" !!
+                int mask = 0b10000000 >> bitPos;
                 int globalBytePos = blockPos + (block * outputBlockSizeInBytes);
                 if (bit == 1) {
                     output[globalBytePos] = (byte) (output[globalBytePos] | mask);

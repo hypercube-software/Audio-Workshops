@@ -7,68 +7,9 @@ public class BitStreamReader {
     private int bitIndex;
     private int currentByte;
 
-    public int getBitPos() {
-        return byteIndex * 8 + bitIndex;
-    }
-
     public BitStreamReader(byte[] data) {
         this.data = data;
         reset();
-    }
-
-    public void reset() {
-        this.byteIndex = 0;
-        this.bitIndex = 0;
-        this.currentByte = data[byteIndex];
-    }
-
-    /**
-     * Read bits from MSB to LSB
-     *
-     * @param numBits number of bits to read
-     * @return the reconstructed value
-     */
-    public int readBits(int numBits) {
-        if (numBits <= 0) {
-            throw new RuntimeException("Number of bits to read must be positive.");
-        }
-        int value = 0;
-        for (int b = 0; b < numBits; b++) {
-            value = (value << 1) | readBit();
-        }
-        return value;
-    }
-
-    public void skipBytes(int size) {
-        readBits(size * 8);
-    }
-
-    /**
-     * Read bits from LSB to MSB
-     *
-     * @param numBits number of bits to read
-     * @return the reconstructed value
-     */
-    public int readInvertedBits(int numBits) {
-        if (numBits <= 0) {
-            throw new RuntimeException("Number of bits to read must be positive.");
-        }
-        int value = 0;
-        for (int b = 0; b < numBits; b++) {
-            value = (readBit() << b) | value;
-        }
-        return value;
-    }
-
-    public int readBit() {
-        if (bitIndex == 8) {
-            bitIndex = 0;
-            byteIndex++;
-            currentByte = byteIndex < data.length ? data[byteIndex] : 0;
-        }
-        int bitValue = (currentByte >> (7 - bitIndex)) & 0x1;
-        bitIndex++;
-        return bitValue;
     }
 
     /**
@@ -98,5 +39,66 @@ public class BitStreamReader {
      */
     public static String getBinary7(int value) {
         return getBinaryString(value, 7);
+    }
+
+    public int getBitPos() {
+        return byteIndex * 8 + bitIndex;
+    }
+
+    public void reset() {
+        this.byteIndex = 0;
+        this.bitIndex = 0;
+        this.currentByte = data[byteIndex];
+    }
+
+    /**
+     * Read bits from MSB to LSB
+     *
+     * @param numBits number of bits to read
+     * @return the reconstructed value
+     */
+    public int readBits(int numBits) {
+        if (numBits <= 0) {
+            throw new RuntimeException("Number of bits to read must be positive.");
+        }
+        int value = 0;
+        for (int b = 0; b < numBits; b++) {
+            value = (value << 1) | readBit();
+        }
+        return value;
+    }
+
+    public void skipBytes(int size) {
+        if (size != 0) {
+            readBits(size * 8);
+        }
+    }
+
+    /**
+     * Read bits from LSB to MSB
+     *
+     * @param numBits number of bits to read
+     * @return the reconstructed value
+     */
+    public int readInvertedBits(int numBits) {
+        if (numBits <= 0) {
+            throw new RuntimeException("Number of bits to read must be positive.");
+        }
+        int value = 0;
+        for (int b = 0; b < numBits; b++) {
+            value = (readBit() << b) | value;
+        }
+        return value;
+    }
+
+    public int readBit() {
+        if (bitIndex == 8) {
+            bitIndex = 0;
+            byteIndex++;
+            currentByte = byteIndex < data.length ? data[byteIndex] : 0;
+        }
+        int bitValue = (currentByte >> (7 - bitIndex)) & 0x1;
+        bitIndex++;
+        return bitValue;
     }
 }

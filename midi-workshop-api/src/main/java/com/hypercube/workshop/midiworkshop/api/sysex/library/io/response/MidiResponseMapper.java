@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -50,7 +51,12 @@ public class MidiResponseMapper {
         ManufacturerSysExParser sysExParser = new ManufacturerSysExParser();
         payload = sysExParser.unpackMidiBuffer(device, payload);
         try {
-            Files.write(Path.of("./target/unpack.dat"), payload);
+            File target = new File("./target");
+            if (target.exists()) { // dev env
+                Files.write(Path.of("./target/unpack.dat"), payload);
+            } else {
+                Files.write(Path.of("./unpack.dat"), payload);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

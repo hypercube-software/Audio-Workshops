@@ -75,7 +75,7 @@ class AlesisSysExParserTest {
     private String getActualTitle(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
         bsr.reset();
         String actualTitle = "";
-        bsr.readBits(8);
+        bsr.readBits(8); // jump over "ProgramSpare"
         for (int i = 0; i < 10; i++) {
             int c = bsr.readInvertedBits(7);
             actualTitle += alesisSysExParser.getChar(c);
@@ -83,20 +83,13 @@ class AlesisSysExParserTest {
         return actualTitle;
     }
 
-    private String getActualTitle2(BitStreamReader bsr, AlesisSysExParser alesisSysExParser) {
-        bsr.reset();
-        String actualTitle = "";
-        bsr.readBits(5);
-        for (int i = 0; i < 10; i++) {
-            int c = bsr.readInvertedBits(7);
-            actualTitle += alesisSysExParser.getChar(c);
-        }
-        return actualTitle;
-    }
-
+    /**
+     * read the unpacked memory and format it to be readable
+     */
     private String getActualDecodedBits(BitStreamReader bsr) {
         bsr.reset();
         String actual = "";
+        // we read the first 8 bits, then read 7 bits per 7 bits
         for (int i = 0; i < 8 + 7 * 10; i++) {
             if (i == 8 || (i > 8 && (i - 8) % 7 == 0)) {
                 actual += " ";
@@ -113,6 +106,8 @@ class AlesisSysExParserTest {
         // GIVEN
         //
         MidiDeviceDefinition device = new MidiDeviceDefinition();
+
+        // This key is the right one to use. I found it after hours of reverse engineering
         MidiDeviceDecodingKey key = new MidiDeviceDecodingKey(7, 1, """
                     0 A1 A2 A3 A4 A5 A6 A7
                     0 B2 B3 B4 B5 B6 B7 A0
@@ -122,6 +117,16 @@ class AlesisSysExParserTest {
                     0 F6 F7 E0 E1 E2 E3 E4
                     0 G7 F0 F1 F2 F3 F4 F5
                     0 G0 G1 G2 G3 G4 G5 G6
+                """);
+        MidiDeviceDecodingKey officialKeyDontWork = new MidiDeviceDecodingKey(7, 1, """
+                     0 A6 A5 A4 A3 A2 A1 A0
+                     0 B5 B4 B3 B2 B1 B0 A7
+                     0 C4 C3 C2 C1 C0 B7 B6
+                     0 D3 D2 D1 D0 C7 C6 C5
+                     0 E2 E1 E0 D7 D6 D5 D4
+                     0 F1 F0 E7 E6 E5 E4 E3
+                     0 G0 F7 F6 F5 F4 F3 F2
+                     0 G7 G6 G5 G4 G3 G2 G1
                 """);
         device.setDecodingKey(key);
         AlesisSysExParser alesisSysExParser = new AlesisSysExParser();
@@ -135,6 +140,13 @@ class AlesisSysExParserTest {
         int payloadType = payload[5];
         if (payloadType != 0x02 && payloadType != 00) {
             throw new IllegalStateException("Unexpected payload payloadType for this test: " + payloadType);
+        }
+        //
+        // See service manual: "program name" start at bit 8 after "Program Spare", has 10 chars of 7 bits each
+        //
+        String header0 = "PrgSpare ";
+        for (int i = 0; i < 10; i++) {
+            header0 += " Char %d ".formatted(i);
         }
         String header1 = "AAAAAAAA";
         String header2 = "76543210";
@@ -162,17 +174,20 @@ class AlesisSysExParserTest {
         //assertEquals(350, unpacked.length);
         BitStreamReader bsr = new BitStreamReader(unpacked);
         String actual = getActualDecodedBits(bsr);
-        String actualTitle = payloadType == 0x0E ? getActualTitle2(bsr, alesisSysExParser) : getActualTitle(bsr, alesisSysExParser);
+        String actualTitle = getActualTitle(bsr, alesisSysExParser);
 
         String errors = getActualBitsErrors(actual, expected);
+        //alesisSysExParser.dumpASCIITable();
         System.out.println("Title          : '" + title + "'");
         System.out.println("Actual Title   : '" + actualTitle + "'");
+        System.out.println("          " + header0);
         System.out.println("          " + header1);
         System.out.println("          " + header2);
         System.out.println("ACTUAL  : " + actual);
         System.out.println("EXPECTED: " + expected);
         System.out.println("ERRORS  : " + errors);
-        System.out.println("Rom identifier : " + bsr.readBits(2)); // not LSB first apparently
+        bsr.readBits(1); // reserved
+        System.out.println("Rom identifier : " + bsr.readBit()); // not 2 bits apparently
         System.out.println("Mode           : " + bsr.readInvertedBits(1));
         System.out.println("Sample Group   : " + bsr.readInvertedBits(6));
         System.out.println("Sample Number  : " + bsr.readInvertedBits(7));

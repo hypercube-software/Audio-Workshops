@@ -2,11 +2,11 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 
-public enum Format {
+public enum StreamFormat {
     NIBBLE,
     STREAM;
 
-    public static Format fromCode(int code) {
+    public static StreamFormat fromCode(int code) {
         return switch (code) {
             case 0 -> NIBBLE;
             case 1 -> STREAM;

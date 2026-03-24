@@ -33,6 +33,27 @@ public class MidiEventBuilder {
     private final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     private final State state = new State();
 
+    public static String to21Bits(int value, boolean lsbFirst) {
+        int a = (value >> 0) & 0x7F;
+        int b = (value >> 7) & 0x7F;
+        int c = (value >> 14) & 0x7F;
+        if (lsbFirst) {
+            return "%02X %02X %02X".formatted(a, b, c);
+        } else {
+            return "%02X %02X %02X".formatted(c, b, a);
+        }
+    }
+
+    public static String to14Bits(int value, boolean lsbFirst) {
+        int lsb = (value >> 0) & 0x7F;
+        int msb = (value >> 7) & 0x7F;
+        if (lsbFirst) {
+            return "%02X %02X".formatted(lsb, msb);
+        } else {
+            return "%02X %02X".formatted(msb, lsb);
+        }
+    }
+
     public static List<CustomMidiEvent> parse(String definitions) {
         return Arrays.stream(definitions.split(";"))
                 .flatMap(definition -> {
@@ -237,6 +258,56 @@ public class MidiEventBuilder {
         }
         return payload;
     }
+
+    public static String to7Bits(byte[] data) {
+        StringBuilder sb = new StringBuilder();
+        BitStreamReader bsr = new BitStreamReader(data);
+        int nbBits = data.length * 8;
+        int nbMidiBits = nbBits / 7;
+        int remainMidiBits = nbBits % 7;
+        for (int i = 0; i < nbMidiBits; i++) {
+            int midiByte = bsr.readBits(7);
+            sb.append("%02X".formatted(midiByte));
+        }
+        if (remainMidiBits > 0) {
+            int finalMidiByte = bsr.readBits(remainMidiBits) << remainMidiBits;
+            sb.append("%02X".formatted(finalMidiByte));
+        }
+        return sb.toString();
+    }
+
+    public static int from14Bits(byte[] payload, int pos, boolean lsbFirst) {
+        int a = payload[pos++] & 0xFF;
+        int b = payload[pos++] & 0xFF;
+        if (lsbFirst) {
+            return b << 7 | a;
+        } else {
+            return a << 7 | b;
+        }
+    }
+
+    public static int from21Bits(byte[] payload, int pos, boolean lsbFirst) {
+        int a = payload[pos++] & 0xFF;
+        int b = payload[pos++] & 0xFF;
+        int c = payload[pos++] & 0xFF;
+        if (lsbFirst) {
+            return c << 14 | b << 7 | a;
+        } else {
+            return a << 14 | b << 7 | c;
+        }
+    }
+
+    public static byte[] from7Bits(byte[] payload, int pos, int size) {
+        BitStreamReader bsr = new BitStreamReader(payload);
+        BitStreamWriter bsw = new BitStreamWriter();
+        bsr.skipBytes(pos);
+        for (int i = 0; i < size; i++) {
+            bsr.readBit();
+            bsw.writeBits(bsr.readBits(7), 7);
+        }
+        return bsw.toByteArray();
+    }
+
 
     public MidiEventBuilder write(int... values) {
         Arrays.stream(values)
