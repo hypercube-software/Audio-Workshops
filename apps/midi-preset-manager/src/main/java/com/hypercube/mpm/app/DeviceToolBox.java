@@ -195,7 +195,7 @@ public class DeviceToolBox {
                     }
                     output.open();
                     input.open();
-                    var midiRequestResponse = midiDeviceRequester.queryDevice(device, input, output, commandCall);
+                    var midiRequestResponse = midiDeviceRequester.queryAndAggregate(device, input, output, commandCall);
                     requestLogger.accept(midiRequestResponse);
                     byte[] response = midiRequestResponse.response();
                     return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
