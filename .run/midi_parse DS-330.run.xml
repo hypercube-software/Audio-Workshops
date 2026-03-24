@@ -4,6 +4,7 @@
     <module name="midi-workshop" />
     <option name="PROGRAM_PARAMETERS" value="parse -i &quot;sysex/Roland/DS-330/Boss-DS-330-All.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
     <option name="VM_PARAMETERS" value="-DFORCE_DEVICE=DS-330" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/midi-workshop" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

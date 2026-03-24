@@ -3,6 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
     <option name="PROGRAM_PARAMETERS" value="bach -o &quot;Microsoft GS Wavetable Synth&quot; -t &quot;100&quot;" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/midi-workshop" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

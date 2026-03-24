@@ -3,6 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
     <option name="PROGRAM_PARAMETERS" value="parse -i &quot;sysex/Roland/D-70/D-70 reset.syx&quot; -o &quot;target/Memory.dump.txt&quot;" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/midi-workshop" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />

@@ -3,6 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
     <option name="PROGRAM_PARAMETERS" value="query-identity -i &quot;MIDISPORT Uno In&quot; -o &quot;MIDISPORT Uno Out&quot; -f &quot;target/idenitity.dat&quot;" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/midi-workshop" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.hypercube.workshop.midiworkshop.*" />
