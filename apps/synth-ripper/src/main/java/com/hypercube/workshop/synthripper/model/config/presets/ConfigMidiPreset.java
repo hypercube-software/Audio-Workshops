@@ -26,8 +26,8 @@ import static com.hypercube.workshop.synthripper.model.config.MidiSettings.USE_D
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConfigMidiPreset implements IConfigMidiPreset {
-    private static Pattern presetRegExp = Pattern.compile("(?<command>(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?)(\\s+CC\\((?<CCLIST>[^)]+)\\))?\\s+(?<title>.*)");
-    private static Pattern drumkitNoteExp = Pattern.compile("(?<note>[0-9]+)\\s+(?<title>.+)");
+    private static final Pattern PRESET_REGEXP = Pattern.compile("(?<command>(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?)(\\s+CC\\((?<CCLIST>[^)]+)\\))?\\s+(?<title>.*)");
+    private static final Pattern DRUMKIT_NOTE_REGEXP = Pattern.compile("(?<note>[0-9]+)\\s+(?<title>.+)");
     /**
      * Name of the preset
      */
@@ -50,7 +50,7 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
     private List<String> drumkitNotes = List.of();
 
     public static ConfigMidiPreset fromShortSpec(String shortSpec) {
-        var matcher = presetRegExp.matcher(shortSpec);
+        var matcher = PRESET_REGEXP.matcher(shortSpec);
         if (matcher.find()) {
             var ccListGroup = matcher.group("CCLIST");
             var ccList = Optional.ofNullable(ccListGroup)
@@ -60,9 +60,23 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
                             .toList())
                     .orElse(List.of(MidiPreset.NO_CC));
             List<String> noDrumkit = List.of();
-            return new ConfigMidiPreset(matcher.group("title"), -1, List.of(matcher.group("command")), ccList, noDrumkit);
+            String command = prepareCommand(matcher.group("command"));
+            return new ConfigMidiPreset(matcher.group("title"), -1, List.of(command), ccList, noDrumkit);
         } else {
             throw new IllegalArgumentException("Unexpected format: " + shortSpec);
+        }
+    }
+
+    /**
+     * MidiPresetBuilder no longer support decimal numbers unless the format is "a-b" or "a-b-c"
+     * <p>This method convert decimal to hexadecimal patch numbers
+     */
+    private static String prepareCommand(String command) {
+        if (command.contains("-")) {
+            return command;
+        } else {
+            int value = Integer.parseInt(command, 10);
+            return Integer.toHexString(value);
         }
     }
 
@@ -82,7 +96,7 @@ public class ConfigMidiPreset implements IConfigMidiPreset {
     }
 
     private DrumKitNote forgeDrumKitNote(String spec) {
-        Matcher m = drumkitNoteExp.matcher(spec);
+        Matcher m = DRUMKIT_NOTE_REGEXP.matcher(spec);
         if (m.find()) {
             try {
                 return new DrumKitNote(m.group("title"), Integer.parseInt(m.group("note")));

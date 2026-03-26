@@ -5,7 +5,7 @@
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.synthripper.SynthRipperApplication" />
     <module name="synth-ripper" />
-    <option name="PROGRAM_PARAMETERS" value="rip -c &quot;./config/config-CS1x.yml&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="rip -c &quot;./config/config-PSR47.yml&quot;" />
     <option name="VM_PARAMETERS" value="-XX:+UseZGC" />
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/apps/synth-ripper" />
     <method v="2">

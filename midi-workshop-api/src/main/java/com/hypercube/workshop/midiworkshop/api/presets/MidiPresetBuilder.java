@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 @UtilityClass
 public class MidiPresetBuilder {
     private static final Pattern COMMAND_REGEXP = Pattern.compile("\\s*([A-F0-9]{2})");
-    private static final Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)(-(?<id2>[0-9]+))?(-(?<id3>[0-9]+))?");
+    private static final Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)-(?<id2>[0-9]+)(-(?<id3>[0-9]+))?");
 
     /**
      * Used by SynthRipper and MPM. TODO: since SynthRipper don't use MidiDeviceLibrary macros, we need this method
@@ -289,13 +289,12 @@ public class MidiPresetBuilder {
     }
 
     private static List<Integer> parsePresetSelector(BuildContext ctx, String definition) {
-        int expectedStringSize = switch (ctx.getMidiBankFormat()) {
-            case NO_BANK_PRG -> 2;
-            case BANK_MSB_PRG, BANK_LSB_PRG, BANK_PRG_PRG -> 4;
-            case BANK_MSB_LSB_PRG -> 6;
-        };
-        if (!definition.contains("-") && expectedStringSize > 2 && definition.length() == expectedStringSize) {
+        if (!definition.contains("-")) {
             // Hexadecimal definition
+            if (definition.trim()
+                    .length() % 2 != 0) {
+                throw new MidiConfigError("The provided number does not seems to be Hexadecimal, its size must be a multiple of 2:" + definition);
+            }
             List<Integer> ids = new ArrayList<>();
             for (int i = 0; i < definition.length(); i += 2) {
                 String hexPair = definition.substring(i, i + 2);

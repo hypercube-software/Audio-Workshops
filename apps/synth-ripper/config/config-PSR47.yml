@@ -3,7 +3,7 @@ device: PSR-47
 ports:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Périphérique audio principal"
-  outputMidiDevice: "2- MIDISPORT Uno Out"
+  outputMidiDevice: "debug"
 audio:
   bufferDurationMs: 250
   nbChannels: 2
