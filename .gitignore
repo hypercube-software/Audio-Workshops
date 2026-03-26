@@ -53,3 +53,4 @@ midi-workshop-api/src/test/resources/devices-library/*/
 /devices-library/Novation/*/
 
 /apps/midi-preset-manager/config/*
+/apps/midi-preset-manager/TODO.txt
