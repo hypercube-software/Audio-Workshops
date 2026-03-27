@@ -27,6 +27,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class MidiDeviceDecodingKey {
+    public static final int UNMAPPED_BIT = -1;
     private int start;
     private int end;
     private List<String> key;
@@ -45,7 +46,7 @@ public class MidiDeviceDecodingKey {
      * <ul>
      *     <li>The returned list contains always 64 entries (input bit index)</li>
      *     <li>Each value are in the range [0-56] since we target a block of 56 unpacked bits</li>
-     *     <li>Value -1 indicate the input bit is not used, this is because MIDI use only 7 bits
+     *     <li>Value -1 ({@link #UNMAPPED_BIT}) indicate the input bit is not used, this is because MIDI use only 7 bits
      * </ul>
      */
     public List<Integer> getMapping() {
@@ -55,7 +56,7 @@ public class MidiDeviceDecodingKey {
                     .map(String::trim)
                     .map(v -> {
                         if (v.equals("0")) {
-                            return -1;
+                            return UNMAPPED_BIT;
                         } else {
                             int byteOffset = v.charAt(0) - 'A';
                             int bit = v.charAt(1) - '0';   // bit 0 is on the right
@@ -64,8 +65,11 @@ public class MidiDeviceDecodingKey {
                         }
                     })
                     .toList();
-            if (_key.size() != 64) {
-                throw new MidiError("Invalid decoding key, should have 64 bits");
+            long usedBits = _key.stream()
+                    .filter(b -> b != UNMAPPED_BIT)
+                    .count();
+            if (usedBits != 56) {
+                throw new MidiError("Invalid decoding key, should have 56 bits used");
             }
             decodingKey = _key;
         }

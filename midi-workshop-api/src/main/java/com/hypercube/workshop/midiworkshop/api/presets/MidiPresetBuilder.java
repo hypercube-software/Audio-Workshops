@@ -112,10 +112,10 @@ public class MidiPresetBuilder {
         var ids = ctx.getIdentifiers();
         String definition = switch (ctx.getDevice()
                 .getPresetFormat()) {
-            case NO_BANK_PRG -> "%d".formatted(ids.getPrg());
-            case BANK_MSB_PRG, BANK_PRG_PRG -> "%d-%d".formatted(ids.getMsb(), ids.getPrg());
-            case BANK_LSB_PRG -> "%d-%d".formatted(ids.getLsb(), ids.getPrg());
-            case BANK_MSB_LSB_PRG -> "%d-%d-%d".formatted(ids.getMsb(), ids.getLsb(), ids.getPrg());
+            case NO_BANK_PRG -> "%02X".formatted(ids.getPrg());
+            case BANK_MSB_PRG, BANK_PRG_PRG -> "%02X%02X".formatted(ids.getMsb(), ids.getPrg());
+            case BANK_LSB_PRG -> "%02X%02X".formatted(ids.getLsb(), ids.getPrg());
+            case BANK_MSB_LSB_PRG -> "%02X%02X%02X".formatted(ids.getMsb(), ids.getLsb(), ids.getPrg());
         };
 
         try {
@@ -293,7 +293,7 @@ public class MidiPresetBuilder {
             // Hexadecimal definition
             if (definition.trim()
                     .length() % 2 != 0) {
-                throw new MidiConfigError("The provided number does not seems to be Hexadecimal, its size must be a multiple of 2:" + definition);
+                throw new MidiConfigError("The provided number does not seems to be Hexadecimal, its size must be a multiple of 2: " + definition);
             }
             List<Integer> ids = new ArrayList<>();
             for (int i = 0; i < definition.length(); i += 2) {
