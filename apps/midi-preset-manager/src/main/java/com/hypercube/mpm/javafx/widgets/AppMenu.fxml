@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<MenuBar xmlns:fx="http://javafx.com/fxml/1"
+         layoutY="2.0" prefHeight="25.0" prefWidth="600.0"
+         fx:controller="com.hypercube.mpm.javafx.widgets.MainWindowController">
+    <Menu text="File">
+        <MenuItem text="Open existing project..." onAction="#onMenuOpenProject"/>
+        <MenuItem text="Save current project as..." onAction="#onMenuSaveProject"/>
+        <SeparatorMenuItem/>
+        <MenuItem text="Exit" onAction="#onMenuExit"/>
+    </Menu>
+    <Menu text="Devices">
+        <MenuItem text="Reload Midi Device Library..."
+                  onAction="#onMenuReloadMidiDeviceLibrary"/>
+        <MenuItem text="Restore devices state..."
+                  onAction="#onMenuRestoreDeviceState"/>
+        <SeparatorMenuItem/>
+        <MenuItem text="Update Categories..."
+                  onAction="#onMenuUpdateCategories"/>
+        <MenuItem text="Extract Patch names..."
+                  onAction="#onMenuExtractPatchNames"/>
+        <MenuItem text="Open Device Toolbox..."
+                  onAction="#onMenuOpenDeviceToolBox"/>
+    </Menu>
+    <Menu text="Midi">
+        <MenuItem text="All notes off"
+                  onAction="#onAllNotesOff"/>
+        <SeparatorMenuItem/>
+        <MenuItem text="Rescan MIDI ports..."
+                  onAction="#onMenuScanMidiPorts"/>
+        <MenuItem text="Devices ports..."
+                  onAction="#onMenuDevicesPorts"/>
+    </Menu>
+    <Menu text="Help">
+        <CheckMenuItem fx:id="menuAlwaysOnTop" text="Always on top"
+                       onAction="#onMenuAlwaysOnTop"/>
+        <MenuItem text="About"/>
+    </Menu>
+</MenuBar>

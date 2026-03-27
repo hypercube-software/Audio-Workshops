@@ -1,8 +1,9 @@
-#hexTilePane,
-#hexScrollPane,
-#hexScrollPane .viewport,
-#hexScrollPane .content,
- .hex-cell {
+#hexListView,
+#hexListView .list-cell,
+#hexListView .list-cell:filled:selected,
+#hexListView .list-cell:filled:hover,
+#hexListView .list-cell:empty,
+.hex-cell {
     -fx-background-color: transparent;
 }
 

@@ -4,16 +4,21 @@ import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.view.properties.SceneListener;
+import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 public class ProgressDialogController extends DialogController<ProgressDialog, MainModel> implements SceneListener {
@@ -27,11 +32,20 @@ public class ProgressDialogController extends DialogController<ProgressDialog, M
 
     @Getter
     private boolean attachedToScene;
+    @Getter
+    @Setter
+    private CancelNotifier cancelNotifier;
 
     public void updateTextHeader(String msg) {
         runOnJavaFXThread(() -> {
             textHeader.setText(msg);
         });
+    }
+
+    @FXML
+    public void onCancel(ActionEvent event) {
+        Optional.ofNullable(cancelNotifier)
+                .ifPresent(CancelNotifier::cancel);
     }
 
     /**

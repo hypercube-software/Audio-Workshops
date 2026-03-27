@@ -2,29 +2,37 @@ package com.hypercube.mpm.javafx.widgets.hexa;
 
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
+import javafx.animation.AnimationTimer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.HBox;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
 
 @Slf4j
 public class HexaDataViewerController extends DialogController<HexaDataViewer, Void> {
 
-    public static final int MAX_PAYLOAD_SIZE = 256;
+    public static final int MAX_PAYLOAD_SIZE = 1024 * 1024;
+    public static final int ROW_SIZE = 16;
     @FXML
-    private TilePane hexTilePane;
-    @FXML
-    private ScrollPane hexScrollPane;
+    private ListView<byte[]> hexListView;
+
+    private byte[] fullPayload;
+
+    // Auto-scroll management
+    private AnimationTimer scrollTimer;
+    private double scrollVelocity = 0;
 
     private static byte[] getPayload(DataViewerPayload newValue) {
         byte[] payload = newValue.data();
@@ -44,51 +52,133 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
         view.setSelectionStart(-1);
         view.setUnpackStart(-1);
         view.setUnpackEnd(-1);
+
+        hexListView.setCellFactory(lv -> new HexRowCell());
+
+        setupAutoScroll();
     }
 
     public void clear() {
-        hexTilePane.getChildren()
+        hexListView.getItems()
                 .clear();
+        fullPayload = null;
     }
 
     public void onGridHeightChange(Integer oldValue, Integer newValue) {
-        hexScrollPane.setMinViewportHeight(newValue * 20);
+        if (newValue != null) {
+            hexListView.setPrefHeight(newValue * 40);
+        }
     }
 
     public void onDataChange(DataViewerPayload oldValue, DataViewerPayload newValue) {
-        hexTilePane.getChildren()
+        hexListView.getItems()
                 .clear();
         if (newValue != null) {
-            byte[] response = getPayload(newValue);
-            for (int i = 0; i < response.length; i++) {
-                HexaDataCell cellLabel = new HexaDataCell();
-                cellLabel.setHexaValue("%02X".formatted(response[i]));
-                cellLabel.setAsciiValue("%s".formatted(toASCII(response[i] & 0xFF)));
-                int finalI = i;
-                cellLabel.addEventHandler(MouseEvent.DRAG_DETECTED, event -> {
-                    cellLabel.startFullDrag();
-                    getView().setSelectionStart(finalI);
-                    abortDragDetect(cellLabel);
-                });
-                cellLabel.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
-                    getView().setSelectionEnd(finalI);
-                    updateSelection();
-                });
-                cellLabel.addEventHandler(MouseDragEvent.MOUSE_CLICKED, event -> {
-                    resetSelection();
-                });
-
-                hexTilePane.getChildren()
-                        .add(cellLabel);
+            fullPayload = getPayload(newValue);
+            ObservableList<byte[]> rows = FXCollections.observableArrayList();
+            for (int i = 0; i < fullPayload.length; i += ROW_SIZE) {
+                int end = Math.min(i + ROW_SIZE, fullPayload.length);
+                rows.add(Arrays.copyOfRange(fullPayload, i, end));
             }
-            updateUnpackCells();
+            hexListView.setItems(rows);
+        } else {
+            fullPayload = null;
+        }
+    }
+
+    public void onSelectionStartChange(Integer oldValue, Integer newValue) {
+        hexListView.refresh();
+        updateSelectionText();
+    }
+
+    public void onSelectionEndChange(Integer oldValue, Integer newValue) {
+        hexListView.refresh();
+        updateSelectionText();
+    }
+
+    public void onUnpackStartChange(Integer oldValue, Integer newValue) {
+        hexListView.refresh();
+    }
+
+    public void onUnpackEndChange(Integer oldValue, Integer newValue) {
+        hexListView.refresh();
+    }
+
+    private void setupAutoScroll() {
+        scrollTimer = new AnimationTimer() {
+            private long lastUpdate = 0;
+
+            @Override
+            public void handle(long now) {
+                if (lastUpdate > 0) {
+                    long elapsed = now - lastUpdate;
+                    if (elapsed > 50_000_000) { // Update every 50ms approx
+                        if (scrollVelocity != 0) {
+                            scrollListView();
+                        }
+                        lastUpdate = now;
+                    }
+                } else {
+                    lastUpdate = now;
+                }
+            }
+        };
+
+        hexListView.addEventHandler(MouseDragEvent.MOUSE_DRAG_OVER, event -> {
+            double y = event.getY();
+            double height = hexListView.getHeight();
+            double threshold = 40.0;
+
+            if (y < threshold) {
+                scrollVelocity = -1;
+                scrollTimer.start();
+            } else if (y > height - threshold) {
+                scrollVelocity = 1;
+                scrollTimer.start();
+            } else {
+                scrollVelocity = 0;
+                // Don't stop timer yet, it might be needed if mouse moves back to edge
+            }
+        });
+
+        hexListView.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            scrollVelocity = 0;
+            scrollTimer.stop();
+        });
+    }
+
+    private void scrollListView() {
+        HexaDataViewer view = getView();
+        Integer selectionEnd = view.getSelectionEnd();
+        if (selectionEnd == null || selectionEnd == -1) return;
+
+        int currentRow = selectionEnd / ROW_SIZE;
+        int targetRow = currentRow + (int) scrollVelocity;
+
+        if (targetRow >= 0 && targetRow < hexListView.getItems()
+                .size()) {
+            // Update selectionEnd to the next row same column
+            int newSelectionEnd = targetRow * ROW_SIZE + (selectionEnd % ROW_SIZE);
+            // Ensure we don't go out of bounds of the actual data
+            if (fullPayload != null && newSelectionEnd < fullPayload.length) {
+                view.setSelectionEnd(newSelectionEnd);
+            } else if (fullPayload != null) {
+                view.setSelectionEnd(fullPayload.length - 1);
+            }
+
+            hexListView.scrollTo(targetRow);
+            updateSelectionText();
+            hexListView.refresh();
         }
     }
 
     private void resetSelection() {
         getView().setSelectionStart(-1);
         getView().setSelectionEnd(-1);
-        updateSelection();
+        updateSelectionText();
+        hexListView.refresh();
+        scrollVelocity = 0;
+        scrollTimer.stop();
     }
 
     private boolean hasParent(Node node, Class<?> clazz) {
@@ -110,65 +200,26 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
                         .getIntersectedNode(), HexaDataCell.class)) {
                     resetSelection();
                 }
+                scrollVelocity = 0;
+                scrollTimer.stop();
                 scene.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
             }
         };
         scene.addEventFilter(MouseEvent.MOUSE_RELEASED, releaseHandler);
     }
 
-    private void updateUnpackCells() {
-        var children = hexTilePane.getChildren();
-        HexaDataViewer view = getView();
-        Integer selectionStart = view.getUnpackStart();
-        Integer selectionEnd = view.getUnpackEnd();
-        IntStream.range(0, children
-                        .size())
-                .forEach(i ->
-                {
-                    var styleClass = children
-                            .get(i)
-                            .getStyleClass();
-                    if (selectionStart != null && selectionEnd != null && i >= selectionStart && i <= selectionEnd) {
-                        if (!styleClass.contains("unpack_cell")) {
-                            styleClass.add("unpack_cell");
-                        }
-                    } else {
-                        styleClass
-                                .remove("unpack_cell");
-                    }
-                });
-    }
-
-    private void updateSelection() {
-        var children = hexTilePane.getChildren();
+    private void updateSelectionText() {
         HexaDataViewer view = getView();
         Integer selectionStart = view.getSelectionStart();
         Integer selectionEnd = view.getSelectionEnd();
-        IntStream.range(0, children
-                        .size())
-                .forEach(i ->
-                {
-                    var styleClass = children
-                            .get(i)
-                            .getStyleClass();
-                    if (i >= selectionStart && i <= selectionEnd) {
-                        if (!styleClass.contains("hex-cell-highlight")) {
-                            styleClass.add("hex-cell-highlight");
-                        }
-                    } else {
-                        styleClass
-                                .remove("hex-cell-highlight");
-                    }
-                });
-        //
-        // Update also the selection text
-        //
-        if (selectionStart == -1 || selectionEnd == -1) {
+        if (selectionStart == null || selectionEnd == null || selectionStart == -1 || selectionEnd == -1) {
             view.setSelection("");
         } else {
-            int selectionSize = selectionEnd + 1 - selectionStart;
-            view.setSelection("Selection: [$%02X,$%02X] or [%02d,%02d] Size: $%02X %02d".formatted(selectionStart, selectionEnd,
-                    selectionStart, selectionEnd, selectionSize, selectionSize));
+            int start = Math.min(selectionStart, selectionEnd);
+            int end = Math.max(selectionStart, selectionEnd);
+            int selectionSize = end + 1 - start;
+            view.setSelection("Selection: [$%02X,$%02X] or [%02d,%02d] Size: $%02X %02d".formatted(start, end,
+                    start, end, selectionSize, selectionSize));
         }
     }
 
@@ -177,6 +228,97 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
             return "" + (char) b;
         } else {
             return "";
+        }
+    }
+
+    private class HexRowCell extends ListCell<byte[]> {
+        private final HBox hbox = new HBox(2);
+        private final HexaDataCell[] cells = new HexaDataCell[ROW_SIZE];
+
+        public HexRowCell() {
+            for (int i = 0; i < ROW_SIZE; i++) {
+                cells[i] = new HexaDataCell();
+                hbox.getChildren()
+                        .add(cells[i]);
+            }
+            setGraphic(hbox);
+            setStyle("-fx-background-color: transparent;");
+        }
+
+        @Override
+        protected void updateItem(byte[] item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setGraphic(null);
+            } else {
+                int rowIndex = getIndex();
+                for (int i = 0; i < ROW_SIZE; i++) {
+                    HexaDataCell cell = cells[i];
+                    if (i < item.length) {
+                        cell.setVisible(true);
+                        int byteIndex = rowIndex * ROW_SIZE + i;
+                        cell.setHexaValue("%02X".formatted(item[i]));
+                        cell.setAsciiValue(toASCII(item[i] & 0xFF));
+
+                        // Event handlers for selection
+                        cell.setOnDragDetected(event -> {
+                            cell.startFullDrag();
+                            getView().setSelectionStart(byteIndex);
+                            getView().setSelectionEnd(byteIndex);
+                            updateSelectionText();
+                            hexListView.refresh();
+                            abortDragDetect(cell);
+                        });
+                        cell.setOnMouseDragEntered(event -> {
+                            getView().setSelectionEnd(byteIndex);
+                            updateSelectionText();
+                            hexListView.refresh();
+                        });
+                        cell.setOnMouseClicked(event -> {
+                            resetSelection();
+                        });
+
+                        // Highlight
+                        updateCellHighlight(cell, byteIndex);
+                    } else {
+                        cell.setVisible(false);
+                    }
+                }
+                setGraphic(hbox);
+            }
+        }
+
+        private void updateCellHighlight(HexaDataCell cell, int byteIndex) {
+            HexaDataViewer view = getView();
+            Integer selectionStart = view.getSelectionStart();
+            Integer selectionEnd = view.getSelectionEnd();
+            var styleClass = cell.getStyleClass();
+
+            // Highlight selection
+            if (selectionStart != null && selectionEnd != null && selectionStart != -1 && selectionEnd != -1) {
+                int start = Math.min(selectionStart, selectionEnd);
+                int end = Math.max(selectionStart, selectionEnd);
+                if (byteIndex >= start && byteIndex <= end) {
+                    if (!styleClass.contains("hex-cell-highlight")) {
+                        styleClass.add("hex-cell-highlight");
+                    }
+                } else {
+                    styleClass.remove("hex-cell-highlight");
+                }
+            } else {
+                styleClass.remove("hex-cell-highlight");
+            }
+
+            // Highlight unpack
+            Integer unpackStart = view.getUnpackStart();
+            Integer unpackEnd = view.getUnpackEnd();
+            if (unpackStart != null && unpackEnd != null && byteIndex >= unpackStart && byteIndex <= unpackEnd) {
+                if (!styleClass.contains("unpack_cell")) {
+                    styleClass.add("unpack_cell");
+                }
+            } else {
+                styleClass.remove("unpack_cell");
+            }
         }
     }
 }

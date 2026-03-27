@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
-         fx:controller="com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController"
-         stylesheets="@../../MainWindow.css, @../DialogCommon.css, @ProgressDialog.css"
-         type="GridPane" xmlns="http://javafx.com/javafx/17.0.12">
+         stylesheets="@../../MainWindow.css, @../DialogCommon.css, @ProgressDialog.css" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12"
+         fx:controller="com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController">
     <GridPane styleClass="mpmDialog,progressDialog">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" minWidth="500.0"/>
@@ -18,9 +19,9 @@
             <RowConstraints/>
             <RowConstraints minHeight="50.0"/>
             <RowConstraints minHeight="20.0"/>
+            <RowConstraints minHeight="20.0"/>
         </rowConstraints>
-        <Label fx:id="textHeader" pickOnBounds="false" text="Restore Device State..."
-               GridPane.rowIndex="1">
+        <Label fx:id="textHeader" pickOnBounds="false" text="Restore Device State..." GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
@@ -30,12 +31,12 @@
                 <Insets/>
             </GridPane.margin>
         </Label>
-        <ProgressBar fx:id="progressBar" prefWidth="252.0" progress="0" styleClass="progress-bar"
-                     GridPane.rowIndex="3">
+        <ProgressBar fx:id="progressBar" prefWidth="252.0" progress="0" styleClass="progress-bar" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
         </ProgressBar>
+        <Button fx:id="cancelButton" text="Cancel" GridPane.rowIndex="4" onAction="#onCancel"/>
     </GridPane>
     <columnConstraints>
         <ColumnConstraints/>

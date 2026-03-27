@@ -7839,3 +7839,12 @@ favorites:
   filename: null
   channel: null
   score: 3
+- device: "VFX"
+  mode: "Single"
+  bank: "Factory Bank"
+  name: "CARIBE"
+  category: "Unknown"
+  command: "2E"
+  filename: null
+  channel: 0
+  score: 5

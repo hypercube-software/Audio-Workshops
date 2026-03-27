@@ -243,7 +243,7 @@ String generateJavaCode(String className, String typeAttribute, List<String> jav
                             System.out.println("Generate: " + javaFile);
                             writeJavaFile(Paths.get(outputDir), javaFile, javaCode, className);
                         } else {
-                            throw new RuntimeException("File: " + path + ", fx:root tag or 'type' attribute not found.");
+                            System.out.println("Warning, skip file: " + path + ", fx:root tag or 'type' attribute not found.");
                         }
                     } catch (ParserConfigurationException | SAXException | IOException e) {
                         throw new RuntimeException(e);

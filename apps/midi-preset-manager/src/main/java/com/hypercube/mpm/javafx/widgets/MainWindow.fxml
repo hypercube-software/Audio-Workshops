@@ -2,7 +2,7 @@
 
 <?import com.hypercube.mpm.javafx.widgets.browser.PatchBrowser?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@MainWindow.css" styleClass="mainWindow" type="GridPane"
          fx:controller="com.hypercube.mpm.javafx.widgets.MainWindowController"
@@ -15,41 +15,8 @@
         <RowConstraints/>
         <RowConstraints/>
     </rowConstraints>
-    <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
-        <Menu text="File">
-            <MenuItem text="Open existing project..." onAction="#onMenuOpenProject"/>
-            <MenuItem text="Save current project as..." onAction="#onMenuSaveProject"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="Exit" onAction="#onMenuExit"/>
-        </Menu>
-        <Menu text="Devices">
-            <MenuItem text="Reload Midi Device Library..."
-                      onAction="#onMenuReloadMidiDeviceLibrary"/>
-            <MenuItem text="Restore devices state..."
-                      onAction="#onMenuRestoreDeviceState"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="Update Categories..."
-                      onAction="#onMenuUpdateCategories"/>
-            <MenuItem text="Extract Patch names..."
-                      onAction="#onMenuExtractPatchNames"/>
-            <MenuItem text="Open Device Toolbox..."
-                      onAction="#onMenuOpenDeviceToolBox"/>
-        </Menu>
-        <Menu text="Midi">
-            <MenuItem text="All notes off"
-                      onAction="#onAllNotesOff"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="Rescan MIDI ports..."
-                      onAction="#onMenuScanMidiPorts"/>
-            <MenuItem text="Devices ports..."
-                      onAction="#onMenuDevicesPorts"/>
-        </Menu>
-        <Menu text="Help">
-            <CheckMenuItem fx:id="menuAlwaysOnTop" text="Always on top"
-                           onAction="#onMenuAlwaysOnTop"/>
-            <MenuItem text="About"/>
-        </Menu>
-    </MenuBar>
+    <fx:include source="AppMenu.fxml" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
+
     <PatchBrowser GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     <HBox GridPane.rowIndex="2" styleClass="InfoBar">
         <Label text="${controller.model.info}">

@@ -27,6 +27,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
+import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,6 +44,7 @@ import javax.sound.midi.MidiUnavailableException;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -89,16 +91,18 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 new HashSet<>(getModel().getCurrentDeviceState()
                         .getSelectedBankNames())
         );
+        CancelNotifier cancelNotifier = new CancelNotifier();
         ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
         dlg.updateTextHeader("Extract patch names from device  '%s'...".formatted(deviceName));
         dlg.updateProgress(0, "");
+        dlg.setCancelNotifier(cancelNotifier);
         runLongTaskWithDialog(dlg, () -> {
             deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
                 double progress = (double) currentCount / totalCount;
                 dlg.updateProgress(progress, "Preset %d/%d: '%s' category '%s'".formatted(currentCount, totalCount, midiPreset.getId()
                         .name(), midiPreset.getId()
                         .category()));
-            });
+            }, cancelNotifier);
         });
     }
 
@@ -328,60 +332,66 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             onMenuReloadMidiDeviceLibrary(null);
         } else if (!cfg.getSelectedPatches()
                 .isEmpty()) {
+            CancelNotifier cancelNotifier = new CancelNotifier();
             ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
             dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
                     .size()));
+            dlg.setCancelNotifier(cancelNotifier);
             runLongTaskWithDialog(dlg, () -> {
-                var sp = cfg.getSelectedPatches();
-                int totalSteps = sp.size() * 2 + 1;
-                dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
-                AtomicInteger stepsCount = new AtomicInteger();
-                IntStream.range(0, sp.size())
-                        .parallel()
-                        .forEach(i -> {
-                            var device = cfg.getMidiDeviceLibrary()
-                                    .getDevice(sp.get(i)
-                                            .getDevice())
-                                    .orElseThrow();
-                            cfg.getMidiPortsManager()
-                                    .getOutput(device.getOutputMidiDevice())
-                                    .ifPresent(out -> {
-                                        log.info("Wake up device '{}' on MIDI port '{}'", device.getDeviceName(), out.getName());
-                                        try {
-                                            out.open();
-                                            out.sleep(4000);
-                                            out.close();
-                                        } catch (MidiError e) {
-                                            log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
-                                        }
-                                    });
-                            double currentTotal = (double) stepsCount.incrementAndGet() / totalSteps;
-                            dlg.updateProgress(currentTotal);
-                        });
-                for (int i = 0; i < sp.size(); i++) {
-                    var selectedPatch = sp.get(i);
-                    double progress = (double) stepsCount.incrementAndGet() / totalSteps;
-                    dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(selectedPatch.getName(), selectedPatch.getDevice()));
-                    deviceStateManager.initDeviceStateWithPatch(selectedPatch);
-                    patchesManager.sendPatchToDevice(selectedPatch);
-                    MidiOutDevice port = getModel().getCurrentDeviceState()
-                            .getMidiOutDevice();
-                    if (port != null) {
-                        try {
-                            port.close();
-                        } catch (MidiError e) {
-                            log.error("Unexpected error closing MIDI port {}", port.getName(), e);
+                try {
+                    var sp = cfg.getSelectedPatches();
+                    int totalSteps = sp.size() * 2 + 1;
+                    dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
+                    AtomicInteger stepsCount = new AtomicInteger();
+                    IntStream.range(0, sp.size())
+                            .parallel()
+                            .forEach(i -> {
+                                var device = cfg.getMidiDeviceLibrary()
+                                        .getDevice(sp.get(i)
+                                                .getDevice())
+                                        .orElseThrow();
+                                cfg.getMidiPortsManager()
+                                        .getOutput(device.getOutputMidiDevice())
+                                        .ifPresent(out -> {
+                                            log.info("Wake up device '{}' on MIDI port '{}'", device.getDeviceName(), out.getName());
+                                            try {
+                                                out.open();
+                                                out.sleep(4000);
+                                                out.close();
+                                            } catch (MidiError e) {
+                                                log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
+                                            }
+                                        });
+                                double currentTotal = (double) stepsCount.incrementAndGet() / totalSteps;
+                                dlg.updateProgress(currentTotal);
+                            });
+                    for (Patch patch : sp) {
+                        cancelNotifier.checkIfShouldStop();
+                        double progress = (double) stepsCount.incrementAndGet() / totalSteps;
+                        dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(patch.getName(), patch.getDevice()));
+                        deviceStateManager.initDeviceStateWithPatch(patch);
+                        patchesManager.sendPatchToDevice(patch);
+                        MidiOutDevice port = getModel().getCurrentDeviceState()
+                                .getMidiOutDevice();
+                        if (port != null) {
+                            try {
+                                port.close();
+                            } catch (MidiError e) {
+                                log.error("Unexpected error closing MIDI port {}", port.getName(), e);
+                            }
                         }
                     }
-                }
-                onDeviceChanged(null);
-                midiRouter.setControllerMessageListener(this::onMidiController);
-                midiRouter.listenDawOutputs();
-                Optional.ofNullable(cfg.getSelectedOutput())
-                        .ifPresent(this::forceDeviceChange);
+                    onDeviceChanged(null);
+                    midiRouter.setControllerMessageListener(this::onMidiController);
+                    midiRouter.listenDawOutputs();
+                    Optional.ofNullable(cfg.getSelectedOutput())
+                            .ifPresent(this::forceDeviceChange);
 
-                dlg.updateProgress(1, "Done");
-                sleep(3000);
+                    dlg.updateProgress(1, "Done");
+                    sleep(3000);
+                } catch (CancellationException e) {
+                    log.warn("Cancelled by user");
+                }
             });
         }
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.hypercube.mpm.javafx.widgets.hexa2.HexaDataViewer?>
+<?import com.hypercube.mpm.javafx.widgets.hexa.HexaDataViewer?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>

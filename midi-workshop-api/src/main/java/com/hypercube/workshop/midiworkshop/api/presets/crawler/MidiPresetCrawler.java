@@ -19,6 +19,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.Extract
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
+import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -102,7 +104,7 @@ public class MidiPresetCrawler {
         }
     }
 
-    public void crawlAllPatches(CrawlingDomain crawlingDomain, MidiPresetConsumer midiPresetConsumer) {
+    public void crawlAllPatches(CrawlingDomain crawlingDomain, MidiPresetConsumer midiPresetConsumer, CancelNotifier cancelNotifier) {
         MidiDeviceDefinition device = library.getDevice(crawlingDomain.device())
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + crawlingDomain.device()));
 
@@ -163,9 +165,10 @@ public class MidiPresetCrawler {
                                     MidiPresetIdentity midiPresetIdentity = null;
                                     MidiPresetNaming presetNaming = mode.getPresetNaming() != null ? mode.getPresetNaming() : device.getPresetNaming();
                                     for (int retry = 0; retry < 2; retry++) {
+                                        checkIfShouldStop(cancelNotifier);
                                         midiPresetIdentity = switch (presetNaming) {
                                             case STANDARD ->
-                                                    getStandardPreset(device, mode, currentBankName, midiPreset,
+                                                    getStandardPreset(cancelNotifier, device, mode, currentBankName, midiPreset,
                                                             bankPreRequestSequence,
                                                             bankRequestSequence,
                                                             bankPostRequestSequence, out);
@@ -209,11 +212,18 @@ public class MidiPresetCrawler {
                             }
                         }
                     }
+                } catch (CancellationException e) {
+                    log.warn("Operation cancelled by user");
                 } catch (InvalidMidiDataException e) {
                     throw new MidiError(e);
                 }
             }
         }
+    }
+
+    private void checkIfShouldStop(CancelNotifier cancelNotifier) {
+        Optional.ofNullable(cancelNotifier)
+                .ifPresent(CancelNotifier::checkIfShouldStop);
     }
 
     private void selectPatch(MidiPreset midiPreset, MidiOutDevice out) {
@@ -357,12 +367,12 @@ public class MidiPresetCrawler {
                 .toList());
     }
 
-    private MidiPresetIdentity getStandardPreset(MidiDeviceDefinition device, MidiDeviceMode mode, String currentBankName, MidiPreset midiPreset,
+    private MidiPresetIdentity getStandardPreset(CancelNotifier cancelNotifier, MidiDeviceDefinition device, MidiDeviceMode mode, String currentBankName, MidiPreset midiPreset,
                                                  MidiRequestSequence preSequence,
                                                  MidiRequestSequence sequence,
                                                  MidiRequestSequence postSequence,
                                                  MidiOutDevice out) throws InvalidMidiDataException {
-        final var response = requestFields(device, mode, midiPreset, preSequence, sequence, postSequence, out);
+        final var response = requestFields(cancelNotifier, device, mode, midiPreset, preSequence, sequence, postSequence, out);
         if (response.getPatchName() != null) {
             return new MidiPresetIdentity(mode.getName(), currentBankName, response.getPatchName(), response.getCategory());
         } else {
@@ -379,7 +389,7 @@ public class MidiPresetCrawler {
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
 
-    private ExtractedFields requestFields(MidiDeviceDefinition device, MidiDeviceMode mode, MidiPreset midiPreset,
+    private ExtractedFields requestFields(CancelNotifier cancelNotifier, MidiDeviceDefinition device, MidiDeviceMode mode, MidiPreset midiPreset,
                                           MidiRequestSequence preSequence,
                                           MidiRequestSequence sequence,
                                           MidiRequestSequence postSequence,
@@ -397,6 +407,7 @@ public class MidiPresetCrawler {
                 CustomMidiEvent midiResponse = null;
                 for (int retry = 0; retry < 4; retry++) {
                     log.info("Request {}/{} \"{}\": {}", requestInstanceIndex + 1, requestInstances.size(), request.getName(), customMidiEvent.getHexValuesSpaced());
+                    checkIfShouldStop(cancelNotifier);
                     response = new ExtractedFields();
                     resetCurrentResponse();
                     out.send(customMidiEvent);

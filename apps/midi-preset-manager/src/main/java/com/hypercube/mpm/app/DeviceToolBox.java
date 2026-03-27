@@ -27,6 +27,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceDefinitionMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
+import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -115,7 +116,7 @@ public class DeviceToolBox {
         }
     }
 
-    public void dumpPresets(CrawlingDomain crawlingDomain, MidiPresetConsumer midiPresetConsumer) {
+    public void dumpPresets(CrawlingDomain crawlingDomain, MidiPresetConsumer guiMidiPresetConsumer, CancelNotifier cancelNotifier) {
         var mapper = new ObjectMapper(new YAMLFactory());
         mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.addMixIn(MidiDeviceBank.class, MidiDeviceBankMixin.class);
@@ -125,44 +126,10 @@ public class DeviceToolBox {
         module.addSerializer(MidiDevicePreset.class, new MidiDevicePresetSerializer());
         mapper.registerModule(module);
         try (PrintWriter out = new PrintWriter(new FileOutputStream("%s-presets.yml".formatted(crawlingDomain.device())))) {
-            MidiDeviceDefinition devicePresets = new MidiDeviceDefinition();
-            midiPresetCrawler.crawlAllPatches(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
-                devicePresets.setDeviceName(device.getDeviceName());
-                devicePresets.setBrand(device.getBrand());
-                String modeName = midiPreset.getId()
-                        .deviceMode();
-                String bankName = midiPreset.getId()
-                        .bankName();
-                MidiDeviceMode mode = devicePresets.getDeviceModes()
-                        .get(modeName);
-                if (mode == null) {
-                    mode = new MidiDeviceMode();
-                    mode.setName(modeName);
-                    devicePresets.getDeviceModes()
-                            .put(modeName, mode);
-                }
-                MidiDeviceBank bank = mode.getBank(bankName)
-                        .orElse(null);
-                if (bank == null) {
-                    bank = new MidiDeviceBank();
-                    bank.setName(bankName);
-                    bank.setPresetFormat(device.getPresetFormat());
-                    mode.getBanks()
-                            .put(bankName, bank);
-                }
-                String command = midiPreset.getCommand();
-                List<String> drumMap = midiPreset.getDrumKitNotes()
-                        .stream()
-                        .map(drumKitNote -> "%02X | %s".formatted(drumKitNote.note(), drumKitNote.title()))
-                        .toList();
-                MidiDevicePreset midiDevicePreset = new MidiDevicePreset(null, midiPreset.getId()
-                        .name(), command, midiPreset.getId()
-                        .category(), "", drumMap);
-                bank.getPresets()
-                        .add(midiDevicePreset);
-                midiPresetConsumer.onNewMidiPreset(device, midiPreset, currentCount, totalCount);
-            });
-            mapper.writeValue(out, devicePresets);
+            MidiDeviceDefinition midiDeviceDefinitionWithPresets = new MidiDeviceDefinition();
+            MidiPresetConsumer midiPresetConsumer = forgeMidiPresetConsumer(guiMidiPresetConsumer, midiDeviceDefinitionWithPresets);
+            midiPresetCrawler.crawlAllPatches(crawlingDomain, midiPresetConsumer, cancelNotifier);
+            mapper.writeValue(out, midiDeviceDefinitionWithPresets);
         } catch (IOException e) {
             throw new ApplicationError("Unexpected error dumping presets from device '%s'".formatted(crawlingDomain.device()), e);
         }
@@ -346,6 +313,52 @@ public class DeviceToolBox {
                             });
                     refreshUI(device);
                 });
+    }
+
+    /**
+     * This method return a method updating the output device
+     *
+     * @param guiMidiPresetConsumer this consumer will be also called to update the UI
+     * @param output                device to be updated before being saved to disk
+     * @return the midi consumer
+     */
+    private MidiPresetConsumer forgeMidiPresetConsumer(MidiPresetConsumer guiMidiPresetConsumer, MidiDeviceDefinition output) {
+        return (device, midiPreset, currentCount, totalCount) -> {
+            output.setDeviceName(device.getDeviceName());
+            output.setBrand(device.getBrand());
+            String modeName = midiPreset.getId()
+                    .deviceMode();
+            String bankName = midiPreset.getId()
+                    .bankName();
+            MidiDeviceMode mode = output.getDeviceModes()
+                    .get(modeName);
+            if (mode == null) {
+                mode = new MidiDeviceMode();
+                mode.setName(modeName);
+                output.getDeviceModes()
+                        .put(modeName, mode);
+            }
+            MidiDeviceBank bank = mode.getBank(bankName)
+                    .orElse(null);
+            if (bank == null) {
+                bank = new MidiDeviceBank();
+                bank.setName(bankName);
+                bank.setPresetFormat(device.getPresetFormat());
+                mode.getBanks()
+                        .put(bankName, bank);
+            }
+            String command = midiPreset.getCommand();
+            List<String> drumMap = midiPreset.getDrumKitNotes()
+                    .stream()
+                    .map(drumKitNote -> "%02X | %s".formatted(drumKitNote.note(), drumKitNote.title()))
+                    .toList();
+            MidiDevicePreset midiDevicePreset = new MidiDevicePreset(null, midiPreset.getId()
+                    .name(), command, midiPreset.getId()
+                    .category(), "", drumMap);
+            bank.getPresets()
+                    .add(midiDevicePreset);
+            guiMidiPresetConsumer.onNewMidiPreset(device, midiPreset, currentCount, totalCount);
+        };
     }
 
     private void createCustomPatch(MidiDeviceDefinition device, String selectedMode, int categoryCode, String patchName, File patchFile, byte[] response) {

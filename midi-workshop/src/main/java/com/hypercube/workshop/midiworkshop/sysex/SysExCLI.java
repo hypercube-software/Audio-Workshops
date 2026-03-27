@@ -215,7 +215,7 @@ public class SysExCLI {
                         .category(), "", drumMap);
                 bank.getPresets()
                         .add(midiDevicePreset);
-            });
+            }, null);
             mapper.writeValue(out, devicePresets);
         }
     }

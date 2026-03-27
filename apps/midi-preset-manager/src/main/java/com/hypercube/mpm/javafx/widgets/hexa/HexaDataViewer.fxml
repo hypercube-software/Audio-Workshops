@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../MainWindow.css,@HexaDataViewer.css"
          fx:controller="com.hypercube.mpm.javafx.widgets.hexa.HexaDataViewerController"
@@ -12,14 +12,11 @@
     <!-- DEFINE PROPERTY Integer:unpackStart -->
     <!-- DEFINE PROPERTY Integer:unpackEnd -->
     <!-- DEFINE PROPERTY String:selection -->
-    <ScrollPane fx:id="hexScrollPane" fitToWidth="true" fitToHeight="true" minViewportHeight="40.0"
-                minViewportWidth="800.0"
-                GridPane.vgrow="ALWAYS">
-        <TilePane fx:id="hexTilePane" hgap="2" prefColumns="16" vgap="2">
-        </TilePane>
-    </ScrollPane>
+    <ListView fx:id="hexListView" minHeight="40.0" minWidth="800.0"
+              GridPane.vgrow="ALWAYS">
+    </ListView>
     <columnConstraints>
-        <ColumnConstraints/>
+        <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints vgrow="ALWAYS"/>
