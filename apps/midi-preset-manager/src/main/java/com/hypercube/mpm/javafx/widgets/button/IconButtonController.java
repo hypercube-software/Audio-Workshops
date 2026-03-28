@@ -1,12 +1,14 @@
 package com.hypercube.mpm.javafx.widgets.button;
 
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.View;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 
+@JavaFXSpringController
 public class IconButtonController extends Controller<IconButton, Void> {
     @FXML
     Region region;

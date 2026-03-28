@@ -4,53 +4,34 @@ import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.app.PatchesManager;
 import com.hypercube.mpm.config.ConfigurationFactory;
-import com.hypercube.mpm.config.ProjectConfiguration;
-import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.event.*;
-import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
-import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
-import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
-import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
-import com.hypercube.mpm.javafx.widgets.dialog.sysex.SysexToolboxDialog;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.midi.VirtualKeyboard;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
-import com.hypercube.util.javafx.controller.DialogController;
-import com.hypercube.util.javafx.controller.DialogIcon;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.properties.SceneListener;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.util.javafx.worker.LongWork;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
-import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
-import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.CheckMenuItem;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sound.midi.MidiUnavailableException;
-import java.io.File;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
-public class MainWindowController extends Controller<MainWindow, MainModel> implements Initializable, SceneListener {
+@JavaFXSpringController
+@SuppressWarnings("unused")
+public class MainWindowController extends Controller<MainWindow, MainModel> implements SceneListener {
     @Autowired
     MidiRouter midiRouter;
     @Autowired
@@ -66,78 +47,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Autowired
     ConfigurationFactory configurationFactory;
 
-    @FXML
-    CheckMenuItem menuAlwaysOnTop;
-
-    @FXML
-    public void onMenuScanMidiPorts(ActionEvent event) {
-        configurationFactory.getProjectConfiguration()
-                .getMidiPortsManager()
-                .collectHardwareDevices();
-        deviceStateManager.initModel();
-    }
-
-    @FXML
-    public void onMenuExtractPatchNames(ActionEvent event) {
-        if (getModel().getCurrentDeviceState() == null) {
-            return;
-        }
-        var deviceName = getModel().getCurrentDeviceState()
-                .getId()
-                .getName();
-        CrawlingDomain crawlingDomain = new CrawlingDomain(deviceName, Set.of(getModel().getCurrentDeviceState()
-                .getId()
-                .getMode()),
-                new HashSet<>(getModel().getCurrentDeviceState()
-                        .getSelectedBankNames())
-        );
-        CancelNotifier cancelNotifier = new CancelNotifier();
-        ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
-        dlg.updateTextHeader("Extract patch names from device  '%s'...".formatted(deviceName));
-        dlg.updateProgress(0, "");
-        dlg.setCancelNotifier(cancelNotifier);
-        runLongTaskWithDialog(dlg, () -> {
-            deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
-                double progress = (double) currentCount / totalCount;
-                dlg.updateProgress(progress, "Preset %d/%d: '%s' category '%s'".formatted(currentCount, totalCount, midiPreset.getId()
-                        .name(), midiPreset.getId()
-                        .category()));
-            }, cancelNotifier);
-        });
-    }
-
-    @FXML
-    public void onMenuOpenDeviceToolBox(ActionEvent event) {
-        var dlg = DialogController.buildDialog(SysexToolboxDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, false);
-        dlg.showAndWait();
-    }
-
-    @FXML
-    public void onMenuUpdateCategories(ActionEvent event) {
-        runLongTask(() -> {
-            getModel().getCurrentDeviceState()
-                    .getCurrentSearchOutput()
-                    .stream()
-                    .filter(patch -> patch.getCategory() == null | patch.getCategory()
-                            .equals(MidiPresetCategory.UNKNOWN))
-                    .forEach(patch -> {
-                        getModel().getModeCategories()
-                                .stream()
-                                .filter(c -> c.matches(patch.getName()))
-                                .findFirst()
-                                .ifPresent(category -> {
-                                    log.info("'{}' is category '{}'", patch.getName(), category);
-                                    patchesManager.changePatchCategory(patch, category.name());
-                                });
-                    });
-            refreshPatches();
-        });
-    }
-
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void onViewLoaded() {
         setModel(MainModel.getObservableInstance());
-        deviceStateManager.initModel();
+
         addEventListener(SelectionChangedEvent.class, this::onSelectionChanged);
         addEventListener(SearchPatchesEvent.class, this::onSearchPatches);
         addEventListener(PatchScoreChangedEvent.class, this::onPatchScoreChanged);
@@ -148,7 +61,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Override
     public void onSceneAttach(Scene newScene) {
         try {
-            initDevices();
+            deviceStateManager.initDevices();
         } catch (MidiError e) {
             showError(e);
         }
@@ -166,109 +79,6 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     }
 
-    @FXML
-    public void onMenuOpenProject(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
-                .getName());
-        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
-                .getParentFile());
-        fileChooser.setTitle("Save project as...");
-        fileChooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter("MPM Project", "mpm-config.yml")
-                );
-        fileChooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter("All files", "*.*")
-                );
-        File selectedFile = fileChooser.showOpenDialog(JavaFXApplication.getMainStage());
-        if (selectedFile != null) {
-            configurationFactory.setConfigFile(selectedFile);
-            configurationFactory.loadConfig();
-        }
-    }
-
-    @FXML
-    public void onMenuSaveProject(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
-                .getName());
-        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
-                .getParentFile());
-        fileChooser.setTitle("Save project as...");
-        fileChooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter("MPM Project", "mpm-config.yml")
-                );
-        fileChooser.getExtensionFilters()
-                .add(
-                        new FileChooser.ExtensionFilter("All files", "*.*")
-                );
-        File selectedFile = fileChooser.showSaveDialog(JavaFXApplication.getMainStage());
-        if (selectedFile != null) {
-            configurationFactory.setConfigFile(selectedFile);
-            configurationFactory.saveConfig();
-        }
-    }
-
-    @FXML
-    public void onMenuExit(ActionEvent event) {
-        Platform.exit();
-    }
-
-    @FXML
-    public void onMenuReloadMidiDeviceLibrary(ActionEvent event) {
-        deviceStateManager.reloadMidiDeviceLibrary();
-        Optional.ofNullable(getModel().getCurrentDeviceState())
-                .flatMap(state -> configurationFactory.getProjectConfiguration()
-                        .getMidiDeviceLibrary()
-                        .getDevice(state
-                                .getId()
-                                .getName()))
-                .ifPresent(device -> {
-                    getModel().setCurrentDeviceState(null);
-                    forceDeviceChange(device.getDeviceName());
-                });
-        refreshPatches();
-    }
-
-    @FXML
-    public void onMenuRestoreDeviceState(ActionEvent event) {
-        initDevices();
-    }
-
-    @FXML
-    public void onMenuAlwaysOnTop(ActionEvent event) {
-        Stage stage = (Stage) getView().getScene()
-                .getWindow();
-        stage.setAlwaysOnTop(!stage.isAlwaysOnTop());
-        menuAlwaysOnTop.setSelected(stage.isAlwaysOnTop());
-    }
-
-    @FXML
-    public void onMenuDevicesPorts(ActionEvent event) {
-        var dlg = DialogController.buildDialog(DevicesPortsDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, false);
-        dlg.showAndWait();
-    }
-
-    @FXML
-    public void onAllNotesOff(ActionEvent event) {
-        ProjectConfiguration projectConfiguration = configurationFactory.getProjectConfiguration();
-        projectConfiguration
-                .getMidiDeviceLibrary()
-                .getDevices()
-                .forEach((name, device) -> {
-                    projectConfiguration
-                            .getMidiPortsManager()
-                            .getOutput(device.getOutputMidiDevice())
-                            .filter(MidiOutDevice::isOpen)
-                            .ifPresent(port -> {
-                                log.info("Send all off to MIDI port '{}'...", port.getName());
-                                port.sendAllOff();
-                            });
-                });
-    }
 
     private void showError(Throwable error) {
         String errorClassName = error.getClass()
@@ -313,90 +123,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         return msg;
     }
 
-    /**
-     * Restore the state of all devices when the application start
-     */
-    private void initDevices() {
-        var cfg = configurationFactory.getProjectConfiguration();
-        List<String> devices = getModel().getDevices();
-        log.info("Midi Device Library active: {}", devices.size());
-        if (devices
-                .isEmpty()) {
-            GenericDialogController.info("First Launch", """
-                    This is the first time you run this application.
-                    There is no device enabled yet in your library.
-                    You need to assign MIDI Ports to devices you want to use.
-                    Then they will appear in the list.
-                    """);
-            onMenuDevicesPorts(null);
-            onMenuReloadMidiDeviceLibrary(null);
-        } else if (!cfg.getSelectedPatches()
-                .isEmpty()) {
-            CancelNotifier cancelNotifier = new CancelNotifier();
-            ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
-            dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
-                    .size()));
-            dlg.setCancelNotifier(cancelNotifier);
-            runLongTaskWithDialog(dlg, () -> {
-                try {
-                    var sp = cfg.getSelectedPatches();
-                    int totalSteps = sp.size() * 2 + 1;
-                    dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
-                    AtomicInteger stepsCount = new AtomicInteger();
-                    IntStream.range(0, sp.size())
-                            .parallel()
-                            .forEach(i -> {
-                                var device = cfg.getMidiDeviceLibrary()
-                                        .getDevice(sp.get(i)
-                                                .getDevice())
-                                        .orElseThrow();
-                                cfg.getMidiPortsManager()
-                                        .getOutput(device.getOutputMidiDevice())
-                                        .ifPresent(out -> {
-                                            log.info("Wake up device '{}' on MIDI port '{}'", device.getDeviceName(), out.getName());
-                                            try {
-                                                out.open();
-                                                out.sleep(4000);
-                                                out.close();
-                                            } catch (MidiError e) {
-                                                log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
-                                            }
-                                        });
-                                double currentTotal = (double) stepsCount.incrementAndGet() / totalSteps;
-                                dlg.updateProgress(currentTotal);
-                            });
-                    for (Patch patch : sp) {
-                        cancelNotifier.checkIfShouldStop();
-                        double progress = (double) stepsCount.incrementAndGet() / totalSteps;
-                        dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(patch.getName(), patch.getDevice()));
-                        deviceStateManager.initDeviceStateWithPatch(patch);
-                        patchesManager.sendPatchToDevice(patch);
-                        MidiOutDevice port = getModel().getCurrentDeviceState()
-                                .getMidiOutDevice();
-                        if (port != null) {
-                            try {
-                                port.close();
-                            } catch (MidiError e) {
-                                log.error("Unexpected error closing MIDI port {}", port.getName(), e);
-                            }
-                        }
-                    }
-                    onDeviceChanged(null);
-                    midiRouter.setControllerMessageListener(this::onMidiController);
-                    midiRouter.listenDawOutputs();
-                    Optional.ofNullable(cfg.getSelectedOutput())
-                            .ifPresent(this::forceDeviceChange);
-
-                    dlg.updateProgress(1, "Done");
-                    sleep(3000);
-                } catch (CancellationException e) {
-                    log.warn("Cancelled by user");
-                }
-            });
-        }
-    }
 
     private void forceDeviceChange(String deviceName) {
+        log.info("forceDeviceChange: {}", deviceName);
         fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, List.of(), List.of(deviceName));
     }
 
@@ -445,17 +174,19 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         refreshPatches();
     }
 
+    @SuppressWarnings("unchecked")
     private void onSelectionChanged(SelectionChangedEvent<?> selectionChangedEvent) {
+        selectionChangedEvent.consume();
         String widgetId = selectionChangedEvent.getWidgetId();
-        log.info("{} changed ! Indexes: {}", widgetId, selectionChangedEvent.getSelectedIndexes()
+        log.info("{} {} changed ! Selected indexes: [{}]", this.toString(), widgetId, selectionChangedEvent.getSelectedIndexes()
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
         switch (widgetId) {
             case WidgetIdentifiers.WIDGET_ID_DEVICE ->
-                    runLongTask(() -> onDeviceChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+                    runLongTask(new LongWork("selectedDeviceChanged", () -> onDeviceChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MODE ->
-                    runLongTask(() -> onModeChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+                    runLongTask(new LongWork("selectedModeChanged", () -> onModeChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL ->
                     onChannelChanged((SelectionChangedEvent<Integer>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_CATEGORY ->
@@ -465,9 +196,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             case WidgetIdentifiers.WIDGET_ID_PATCH ->
                     onPatchChanged((SelectionChangedEvent<Patch>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
-                    runLongTask(() -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+                    runLongTask(new LongWork("sendCommand", () -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS ->
-                    runLongTask(() -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent));
+                    runLongTask(new LongWork("selectedMasterInputsChanged", () -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
         }
     }
 
@@ -475,10 +206,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         selectionChangedEvent.getSelectedItems()
                 .stream()
                 .findFirst()
-                .ifPresent(this::changeOuputChannel);
+                .ifPresent(this::changeOutputChannel);
     }
 
-    private void changeOuputChannel(int channel) {
+    private void changeOutputChannel(int channel) {
         log.info("Change output channel: {}", channel);
         var model = getModel();
         deviceStateManager.onChannelChanged(model, channel);
@@ -487,6 +218,8 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void restoreConfigSelection() {
+        midiRouter.setControllerMessageListener(this::onMidiController);
+        midiRouter.listenDawOutputs();
         var cfg = configurationFactory.getProjectConfiguration();
         Optional.ofNullable(cfg.getSelectedOutput())
                 .ifPresent(this::forceDeviceChange);

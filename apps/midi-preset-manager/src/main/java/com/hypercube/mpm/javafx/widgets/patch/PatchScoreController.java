@@ -4,18 +4,16 @@ import com.hypercube.mpm.javafx.event.PatchScoreChangedEvent;
 import com.hypercube.mpm.javafx.event.ScoreChangedEvent;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
 /**
@@ -26,7 +24,8 @@ import java.util.stream.IntStream;
  * </ul>
  */
 @Slf4j
-public class PatchScoreController extends Controller<PatchScore, Void> implements Initializable {
+@JavaFXSpringController
+public class PatchScoreController extends Controller<PatchScore, Void> {
 
     @Autowired
     ApplicationContext applicationContext;
@@ -43,10 +42,8 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
     ImageView star4;
     @FXML
     ImageView star5;
-
-    private List<ImageView> stars;
-
     Patch currentPatch;
+    private List<ImageView> stars;
 
     /**
      * This method is called when the component is used inside a TableView, it gives us the Patch we have to work with
@@ -62,7 +59,7 @@ public class PatchScoreController extends Controller<PatchScore, Void> implement
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void onViewLoaded() {
         stars = List.of(star1, star2, star3, star4, star5);
         IntStream.range(0, stars.size())
                 .forEach(index ->

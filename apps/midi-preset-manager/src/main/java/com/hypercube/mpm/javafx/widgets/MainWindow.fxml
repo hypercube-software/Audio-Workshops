@@ -15,7 +15,7 @@
         <RowConstraints/>
         <RowConstraints/>
     </rowConstraints>
-    <fx:include source="AppMenu.fxml" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
+    <fx:include source="menu/AppMenu.fxml" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
 
     <PatchBrowser GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"/>
     <HBox GridPane.rowIndex="2" styleClass="InfoBar">

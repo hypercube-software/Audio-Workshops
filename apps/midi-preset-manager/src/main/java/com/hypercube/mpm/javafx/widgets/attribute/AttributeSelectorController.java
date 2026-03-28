@@ -6,6 +6,7 @@ import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.javafx.widgets.button.IconButton;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import com.sun.javafx.binding.SelectBinding;
@@ -20,7 +21,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
@@ -29,12 +29,15 @@ import javafx.scene.input.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class AttributeSelectorController extends Controller<AttributeSelector, MainModel> implements Initializable {
+@JavaFXSpringController
+public class AttributeSelectorController extends Controller<AttributeSelector, MainModel> {
     @FXML
     Label label;
 
@@ -52,7 +55,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     private boolean userAction = false;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void onViewLoaded() {
         setModel(MainModel.getObservableInstance());
         addSelectionListener(attributes);
     }

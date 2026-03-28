@@ -8,6 +8,8 @@ import com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload;
 import com.hypercube.mpm.javafx.widgets.hexa.HexaDataViewer;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
+import com.hypercube.util.javafx.worker.LongWork;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
@@ -31,13 +33,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
+@JavaFXSpringController
 public class SysexToolboxDialogController extends DialogController<SysexToolboxDialog, Void> {
     @Autowired
     ConfigurationFactory configurationFactory;
@@ -111,7 +116,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
 
         hexResponse.getCtrl()
                 .clear();
-        runLongTask(() -> getSelectedDevice()
+        runLongTask(new LongWork("sendCommand", () -> getSelectedDevice()
                 .flatMap(device -> {
                     final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():-:" + textCommand.getText());
                     final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, null, "DeviceToolBoxCommand()")
@@ -119,12 +124,12 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
                     call.macro(cmd);
                     return deviceToolBox.request(device, call, this::onDeviceRequest);
                 })
-                .ifPresent(this::onDeviceResponse));
+                .ifPresent(this::onDeviceResponse)));
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
+    public void onViewLoaded() {
+        super.onViewLoaded();
 
         refreshView();
 

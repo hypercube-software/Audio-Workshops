@@ -6,6 +6,7 @@ import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.mpm.model.DeviceStateId;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import javafx.fxml.FXML;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Slf4j
+@JavaFXSpringController
 public class PatchBrowserController extends Controller<PatchBrowser, Void> {
     @Autowired
     DeviceToolBox deviceToolBox;

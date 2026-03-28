@@ -4,6 +4,7 @@ import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController
 import com.hypercube.util.javafx.binding.BindingManager;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.events.EventHelper;
+import com.hypercube.util.javafx.worker.LongWork;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,6 +13,8 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -19,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -44,6 +49,13 @@ public abstract class Controller<V extends Node, M> {
 
     public ObjectProperty<M> modelProperty() {
         return model;
+    }
+
+    /**
+     * Called after {@link FXMLLoader#load} created the view and {@link Initializable#initialize(URL, ResourceBundle)} is done
+     */
+    public void onViewLoaded() {
+
     }
 
     /**
@@ -107,18 +119,24 @@ public abstract class Controller<V extends Node, M> {
         }
     }
 
-    public void runLongTaskWithDialog(ProgressDialogController diag, Runnable code) {
+    public void runLongTaskWithDialog(ProgressDialogController diag, LongWork longWork) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                Thread thread = Thread.currentThread();
+                String backupName = thread.getName();
                 try {
+                    thread.setName(longWork.threadName() + "-" + thread.threadId());
                     while (!diag.isAttachedToScene()) {
                         sleep(100);
                     }
-                    code.run();
+                    longWork.code()
+                            .run();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
+                } finally {
+                    thread.setName(backupName);
                 }
                 return null;
             }
@@ -135,15 +153,22 @@ public abstract class Controller<V extends Node, M> {
         diag.showAndWait();
     }
 
-    public void runLongTask(Runnable code) {
+    public void runLongTask(LongWork longWork) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                Thread thread = Thread.currentThread();
+                String backupName = thread.getName();
                 try {
-                    code.run();
+                    thread
+                            .setName(longWork.threadName() + "-" + thread.threadId());
+                    longWork.code()
+                            .run();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
+                } finally {
+                    thread.setName(backupName);
                 }
                 return null;
             }

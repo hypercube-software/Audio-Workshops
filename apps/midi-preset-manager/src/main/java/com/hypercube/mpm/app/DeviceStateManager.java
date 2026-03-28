@@ -1,10 +1,18 @@
 package com.hypercube.mpm.app;
 
 import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ProjectConfiguration;
+import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
+import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
+import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
+import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
 import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.DeviceStateId;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
+import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.DialogIcon;
+import com.hypercube.util.javafx.worker.LongWork;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
@@ -13,6 +21,8 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
+import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * This class takes care of the device states displayed in the GUI
@@ -33,7 +46,7 @@ import java.util.Optional;
  *         <li>When the user select for the very fist time a {@link DeviceStateId} we create it</li>
  *     </ul>
  * </ul>
- * <p>Under the hood all states are saved in the map {@link MainModel.deviceStates} which is not observable</p>
+ * <p>Under the hood all states are saved in the map {@link MainModel#getDeviceStates()} which is not observable</p>
  * <p>The key for this map is obviously a {@link DeviceStateId}</p>
  */
 @Service
@@ -42,15 +55,16 @@ public class DeviceStateManager {
     private final MainModel model;
     private final ConfigurationFactory configurationFactory;
     private final MidiDeviceRequester midiDeviceRequester;
+    private final PatchesManager patchesManager;
 
-    public DeviceStateManager(ConfigurationFactory configurationFactory, MidiDeviceRequester midiDeviceRequester) {
+    public DeviceStateManager(ConfigurationFactory configurationFactory, MidiDeviceRequester midiDeviceRequester, PatchesManager patchesManager) {
         this.configurationFactory = configurationFactory;
         this.midiDeviceRequester = midiDeviceRequester;
+        this.patchesManager = patchesManager;
         this.model = MainModel.getObservableInstance();
     }
 
     public void initDeviceStateWithPatch(Patch selectedPatch) {
-
         initDeviceStateFromConfig(selectedPatch.getDeviceStateId(), selectedPatch);
         refreshCurrentDeviceState(selectedPatch.getDeviceStateId());
         changeModeOnDevice(getSelectedDevice(), model.getCurrentDeviceState(), selectedPatch.getMode(), true);
@@ -77,7 +91,7 @@ public class DeviceStateManager {
     }
 
     /**
-     * Create a device state in the map {@link MainModel#deviceStates} if needed
+     * Create a device state in the map {@link MainModel#getDeviceStates()} if needed
      * <p>This does NOT update the UI</p>
      *
      * @param id            state key used to store it in the map
@@ -122,7 +136,7 @@ public class DeviceStateManager {
     }
 
     /**
-     * put back the current state to the map {@link MainModel#deviceStates}
+     * put back the current state to the map {@link MainModel#getDeviceStates()}
      * <p>Note that the state can be an observable one now</p>
      */
     public void saveDeviceState() {
@@ -190,18 +204,17 @@ public class DeviceStateManager {
             MidiDeviceMode midiDeviceMode = device.getDeviceModes()
                     .get(newModeName);
             if (midiDeviceMode != null) {
-                String modeCommand = midiDeviceMode
-                        .getCommand();
-                MidiOutDevice midiOutDevice = currentState.getMidiOutDevice();
-                if (modeCommand != null && midiOutDevice != null) {
-                    if (!newModeName.equals(getCurrentDeviceMode(device))) {
-                        log.info("Switch to Mode on device: {}", newModeName);
-                        model.getCurrentDeviceMode()
-                                .put(device, midiDeviceMode);
-                        midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), device, modeCommand));
-                        midiOutDevice.sleep(device.getModeLoadTimeMs());
-                    }
-                }
+                Optional.ofNullable(midiDeviceMode.getCommand())
+                        .ifPresent(modeCommand -> Optional.ofNullable(currentState.getMidiOutDevice())
+                                .ifPresent(midiOutDevice -> {
+                                    if (!newModeName.equals(getCurrentDeviceMode(device))) {
+                                        log.info("Switch to Mode on device: {}", newModeName);
+                                        model.getCurrentDeviceMode()
+                                                .put(device, midiDeviceMode);
+                                        midiDeviceRequester.updateDevice(device, null, midiOutDevice, CommandCall.parse(device.getDefinitionFile(), device, modeCommand));
+                                        midiOutDevice.sleep(device.getModeLoadTimeMs());
+                                    }
+                                }));
             } else {
                 log.error("Unknown mode '{}' for device '{}'", newModeName, device.getDeviceName());
             }
@@ -271,6 +284,7 @@ public class DeviceStateManager {
         initModel();
     }
 
+    @PostConstruct
     public void initModel() {
         model.setDevices(buildDeviceList());
         model.setMidiInPorts(buildMidiInPortsList());
@@ -281,6 +295,78 @@ public class DeviceStateManager {
         return model.getCurrentDeviceState()
                 .getId()
                 .getChannel();
+    }
+
+    /**
+     * Restore the state of all devices when the application start
+     */
+    public void initDevices() {
+        var cfg = configurationFactory.getProjectConfiguration();
+        List<String> devices = model.getDevices();
+        log.info("Midi Device Library active: {}", devices.size());
+        if (devices
+                .isEmpty()) {
+            GenericDialogController.info("First Launch", """
+                    This is the first time you run this application.
+                    There is no device enabled yet in your library.
+                    You need to assign MIDI Ports to devices you want to use.
+                    Then they will appear in the list.
+                    """);
+        } else if (!cfg.getSelectedPatches()
+                .isEmpty()) {
+            CancelNotifier cancelNotifier = new CancelNotifier();
+            ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
+            dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
+                    .size()));
+            dlg.setCancelNotifier(cancelNotifier);
+            LongWork longWork = new LongWork("initDevices", () -> {
+                try {
+                    var sp = cfg.getSelectedPatches();
+                    int totalSteps = sp.size() * 2 + 1;
+                    dlg.updateProgress(0, "Wake up MIDI out devices with ActiveSensing...");
+                    AtomicInteger stepsCount = new AtomicInteger();
+                    sp.stream()
+                            .parallel()
+                            .forEach(patch -> {
+                                String deviceName = patch.getDevice();
+                                executeOnDeviceOutput(cfg, deviceName, out -> {
+                                    log.info("Wake up device '{}' on MIDI port '{}'", deviceName, out.getName());
+                                    out.sleep(4000);
+                                });
+                                double currentTotal = (double) stepsCount.incrementAndGet() / totalSteps;
+                                dlg.updateProgress(currentTotal);
+                            });
+                    for (Patch patch : sp) {
+                        cancelNotifier.checkIfShouldStop();
+                        double progress = (double) stepsCount.incrementAndGet() / totalSteps;
+                        dlg.updateProgress(progress, "'%s' on '%s' ...".formatted(patch.getName(), patch.getDevice()));
+                        initDeviceStateWithPatch(patch);
+                        patchesManager.sendPatchToDevice(patch);
+                    }
+                } catch (CancellationException e) {
+                    log.warn("Cancelled by user");
+                }
+                dlg.updateProgress(1, "Done");
+                dlg.sleep(3000);
+            });
+            dlg.runLongTaskWithDialog(dlg, longWork);
+        }
+    }
+
+    private void executeOnDeviceOutput(ProjectConfiguration cfg, String deviceName, Consumer<MidiOutDevice> fct) {
+        var device = cfg.getMidiDeviceLibrary()
+                .getDevice(deviceName)
+                .orElseThrow();
+        cfg.getMidiPortsManager()
+                .getOutput(device.getOutputMidiDevice())
+                .ifPresent(out -> {
+                    try (out) {
+                        out.open();
+                        fct.accept(out);
+                    } catch (MidiError e) {
+                        log.error("Unexpected error wakening device {}", device.getDeviceName(), e);
+                    }
+                });
     }
 
     private List<MidiPresetCategory> getModeCategories(MidiDeviceMode mode, int channel) {
@@ -381,7 +467,7 @@ public class DeviceStateManager {
      * <li>When the user select a device mode for the first time</li>
      * <li>When the user select a device for the first time: in this case 'defaultModeName' is null</li>
      * </lu>
-     * <p>Under the hood, {@link MainModel#deviceStates} will be updated</p>
+     * <p>Under the hood, {@link MainModel#getDeviceStates()} will be updated</p>
      */
     private DeviceStateId forgeDefaultDeviceStateId(MidiDeviceDefinition device, String defaultModeName) {
         String deviceName = device.getDeviceName();
@@ -405,7 +491,7 @@ public class DeviceStateManager {
      * When the user select a device mode:
      * <ul>
      *     <li>It is the technical equivalent to select the state id "device,mode,channel 0"</li>
-     *     <li>If this state is not yet in the map {@link MainModel#deviceStates}, it is created and added</li>
+     *     <li>If this state is not yet in the map {@link MainModel#getDeviceStates()}, it is created and added</li>
      * </ul>
      */
     private DeviceStateId getOrCreateDeviceStateId(MidiDeviceDefinition device, String modeName) {
@@ -419,7 +505,7 @@ public class DeviceStateManager {
     }
 
     /**
-     * Restore the current observable state from one in the map {@link MainModel#deviceStates}
+     * Restore the current observable state from one in the map {@link MainModel#getDeviceStates()}
      *
      * @param id key of the state in the map
      */
@@ -463,7 +549,7 @@ public class DeviceStateManager {
     }
 
     /**
-     * Log the content of the unobservable states in the map {@link MainModel#deviceStates}
+     * Log the content of the unobservable states in the map {@link MainModel#getDeviceStates()}
      */
     private void dumpStates() {
         model.getDeviceStates()
@@ -488,7 +574,7 @@ public class DeviceStateManager {
      * Restore the UI with a given device state
      *
      * @param device
-     * @param newState a state from the map {@link MainModel#deviceStates}
+     * @param newState a state from the map {@link MainModel#getDeviceStates()}
      */
     private void refreshCurrentDeviceState(MidiDeviceDefinition device, DeviceState newState) {
         log.info("---------------------------------------------------------------------------------");

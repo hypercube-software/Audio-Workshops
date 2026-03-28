@@ -4,6 +4,7 @@ import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.DialogIcon;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,11 +16,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.net.URL;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 @Slf4j
+@JavaFXSpringController
 public class GenericDialogController extends DialogController<GenericDialog, MainModel> {
     @Setter
     @Getter
@@ -82,11 +82,6 @@ public class GenericDialogController extends DialogController<GenericDialog, Mai
     public void setBehaviour(GenericDialogBehaviour behaviour) {
         this.behaviour = behaviour;
         updateVisibleWidgets(behaviour);
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
     }
 
     public void updateText(String header, String msg) {

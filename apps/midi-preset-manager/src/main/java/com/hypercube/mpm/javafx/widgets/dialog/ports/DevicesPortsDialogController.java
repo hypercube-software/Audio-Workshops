@@ -4,6 +4,7 @@ import com.hypercube.mpm.config.ConfigurationFactory;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
@@ -22,14 +23,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ResourceBundle;
 
 @Slf4j
+@JavaFXSpringController
 public class DevicesPortsDialogController extends DialogController<DevicesPortsDialog, Void> {
     public static final String INPUT_MIDI_DEVICE_YAML_DEFINITION = "inputMidiDevice:";
     public static final String OUTPUT_MIDI_DEVICE_YAML_DEFINITION = "outputMidiDevice:";
@@ -67,8 +67,8 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
+    public void onViewLoaded() {
+        super.onViewLoaded();
         var cfg = configurationFactory.getProjectConfiguration();
         List<String> midiInPorts = cfg.getMidiPortsManager()
                 .getInputs()

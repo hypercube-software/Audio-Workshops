@@ -2,6 +2,7 @@ package com.hypercube.mpm.javafx.widgets.hexa;
 
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,11 +17,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 @Slf4j
+@JavaFXSpringController
 public class HexaDataViewerController extends DialogController<HexaDataViewer, Void> {
 
     public static final int MAX_PAYLOAD_SIZE = 1024 * 1024;
@@ -45,8 +45,8 @@ public class HexaDataViewerController extends DialogController<HexaDataViewer, V
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
+    public void onViewLoaded() {
+        super.onViewLoaded();
         HexaDataViewer view = getView();
         view.setSelectionEnd(-1);
         view.setSelectionStart(-1);

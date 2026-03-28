@@ -47,7 +47,7 @@ public class ControllerHelper {
         var viewClass = widget.getClass();
         String fxmlFile = viewClass.getSimpleName() + ".fxml";
         var loader = new FXMLLoader(viewClass.getResource(fxmlFile));
-        loader.setControllerFactory(type -> forgeController(widget, controller));
+        loader.setControllerFactory(ControllerHelper::forgeController);
         if (!nonSceneBuilderLaunch) {
             System.out.println("==============================================================");
             System.out.println("SceneBuilder context");
@@ -59,6 +59,8 @@ public class ControllerHelper {
         try {
             loader.setRoot(widget);
             T view = loader.load();
+            Controller<T, ?> controllerInstance = loader.getController();
+            boundControllerToView(controller, controllerInstance, view);
             assert (view == widget);
         } catch (Exception e) {
             throw new ControllerHelperException("Unable to load " + fxmlFile, e);
@@ -66,22 +68,35 @@ public class ControllerHelper {
     }
 
     /**
-     * Use Spring to create the controller and wire things together
+     * WARNING: This method is only called when the view inherit from {@link com.hypercube.util.javafx.view.View}, otherwise you have to call {@link Controller#setView(Node)} yourself
      */
-    private static <T extends Node> Controller<T, ?> forgeController(T view, String controller) {
+    private static <T extends Node> void boundControllerToView(String controller, Controller<T, ?> controllerInstance, T view) {
+        if (controllerInstance.getView() == null) {
+            controllerInstance.setView(view);
+            view.setUserData(controllerInstance);
+            controllerInstance.onViewLoaded();
+        } else {
+            throw new ControllerHelperException("Your controller '%s' is shared between more than 1 views, this is forbidden.".formatted(controller));
+        }
+    }
+
+    /**
+     * Use Spring to create the controller and wire things together
+     * <p>This method is called directly from {@link FXMLLoader}</p>
+     */
+    @SuppressWarnings("unchecked")
+    private static <T extends Node> Controller<T, ?> forgeController(Class<?> type) {
         try {
+            String controller = type.getName();
             Controller<T, ?> controllerInstance;
             if (springContext != null) {
-                controllerInstance = (Controller<T, ?>) springContext
-                        .getAutowireCapableBeanFactory()
-                        .createBean(Class.forName(controller));
+                controllerInstance = (Controller<T, ?>) springContext.getBean(Class.forName(controller));
             } else {
                 controllerInstance = (Controller<T, ?>) Class.forName(controller)
                         .getConstructor()
                         .newInstance();
             }
-            controllerInstance.setView(view);
-            view.setUserData(controllerInstance);
+
             return controllerInstance;
         } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {

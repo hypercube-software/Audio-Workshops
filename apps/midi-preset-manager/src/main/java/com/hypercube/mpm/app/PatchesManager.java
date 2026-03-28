@@ -148,7 +148,7 @@ public class PatchesManager {
     public void saveSelectedPatchToConfig(Patch selectedPatch) {
         var cfg = configurationFactory.getProjectConfiguration();
         var stateId = selectedPatch != null ? selectedPatch.getDeviceStateId() : model.getCurrentDeviceState()
-                .getId();
+                                                                                 .getId();
         final List<Patch> list;
         list = cfg.getSelectedPatches()
                 .stream()
@@ -298,7 +298,9 @@ public class PatchesManager {
 
     private boolean patchNameMatches(MidiDevicePreset preset) {
         return model.getCurrentPatchNameFilter() == null || preset.name()
-                .contains(model.getCurrentPatchNameFilter());
+                .toLowerCase()
+                .contains(model.getCurrentPatchNameFilter()
+                        .toLowerCase());
     }
 
     private boolean patchCategoryMatches(MidiDevicePreset preset) {

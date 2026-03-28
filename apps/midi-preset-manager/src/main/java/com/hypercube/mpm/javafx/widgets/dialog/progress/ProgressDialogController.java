@@ -3,6 +3,7 @@ package com.hypercube.mpm.javafx.widgets.dialog.progress;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.properties.SceneListener;
 import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import javafx.animation.KeyFrame;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
+@JavaFXSpringController
 public class ProgressDialogController extends DialogController<ProgressDialog, MainModel> implements SceneListener {
 
     @FXML

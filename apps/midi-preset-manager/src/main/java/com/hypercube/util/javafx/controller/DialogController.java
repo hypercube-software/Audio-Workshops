@@ -2,7 +2,6 @@ package com.hypercube.util.javafx.controller;
 
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.util.javafx.view.View;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,10 +13,8 @@ import javafx.stage.Window;
 import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class DialogController<V extends Node, M> extends Controller<V, M> implements Initializable {
+public class DialogController<V extends Node, M> extends Controller<V, M> {
     protected DialogIcon dialogIcon;
     @Getter
     protected Stage dialogStage;
@@ -68,7 +65,7 @@ public class DialogController<V extends Node, M> extends Controller<V, M> implem
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void onViewLoaded() {
         makeDialogDraggable(getView());
     }
 

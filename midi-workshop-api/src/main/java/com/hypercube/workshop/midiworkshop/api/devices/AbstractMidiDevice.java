@@ -49,9 +49,15 @@ public abstract class AbstractMidiDevice implements Closeable {
 
     @Override
     public void close() {
+        String portType = this.getClass()
+                .getSimpleName();
         int count = openCount.get();
-        log.info("Close MIDI port '{}' (client count is {})", getName(), count);
-        if (count == 1 && device != null && device.isOpen()) {
+        if (count == 0) {
+            throw new MidiError("%s::close on '%s' called too much, since count is 0, something is wrong in your code (use try-with-resource)".formatted(portType, getName()));
+        }
+        boolean effectiveClose = count == 1 && device != null && device.isOpen();
+        log.info("{}::close '{}' (client count is {}): {}", portType, getName(), count, effectiveClose ? "closing" : "keep open");
+        if (effectiveClose) {
             try {
                 device.close();
             } catch (Exception e) {

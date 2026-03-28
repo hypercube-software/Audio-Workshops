@@ -4,6 +4,7 @@ import com.hypercube.mpm.javafx.event.MuteOutputDeviceEvent;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.beans.Observable;
@@ -15,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -24,12 +24,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 @Slf4j
-public class AttributeComboBoxController extends Controller<AttributeComboBox, MainModel> implements Initializable {
+@JavaFXSpringController
+public class AttributeComboBoxController extends Controller<AttributeComboBox, MainModel> {
     private static final PseudoClass PSEUDOCLASS_SELECTED = PseudoClass.getPseudoClass("selected");
     @FXML
     Label label;
@@ -41,7 +40,7 @@ public class AttributeComboBoxController extends Controller<AttributeComboBox, M
     private boolean userAction = false;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void onViewLoaded() {
         setModel(MainModel.getObservableInstance());
         attributes.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             userAction = true;

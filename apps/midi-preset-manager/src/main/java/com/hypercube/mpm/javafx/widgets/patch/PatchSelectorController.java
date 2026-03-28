@@ -9,6 +9,7 @@ import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
+import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.beans.Observable;
@@ -19,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -32,13 +32,13 @@ import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 @Slf4j
-public class PatchSelectorController extends Controller<PatchSelector, MainModel> implements Initializable {
+@JavaFXSpringController
+@SuppressWarnings({"rawtypes", "unused", "unchecked"})
+public class PatchSelectorController extends Controller<PatchSelector, MainModel> {
     @Autowired
     PatchesManager patchesManager;
     @Autowired
@@ -67,13 +67,14 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     private boolean userAction = false;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    @SuppressWarnings("unchecked")
+    public void onViewLoaded() {
         setModel(MainModel.getObservableInstance());
 
         colName.setCellValueFactory(new PropertyValueFactory<Patch, String>("name"));
         colMode.setCellValueFactory(new PropertyValueFactory<Patch, String>("mode"));
         colBank.setCellValueFactory(new PropertyValueFactory<Patch, String>("bank"));
-        colCategory.setCellValueFactory(new PropertyValueFactory<Patch, String>("category"));
+        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colCategory.setEditable(true);
         colCategory.setOnEditCommit(cellEditEvent -> {
             Patch item = cellEditEvent.getRowValue();
@@ -100,12 +101,8 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
 
-        patchList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            userAction = true;
-        });
-        patchList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            userAction = true;
-        });
+        patchList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userAction = true);
+        patchList.addEventFilter(KeyEvent.KEY_PRESSED, event -> userAction = true);
         patchList.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
