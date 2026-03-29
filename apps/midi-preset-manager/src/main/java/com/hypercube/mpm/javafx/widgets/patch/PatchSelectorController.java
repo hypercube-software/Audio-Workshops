@@ -32,6 +32,7 @@ import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -181,7 +182,13 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         String name = patch != null ? patch.getName() : "<none>";
         log.info("Selected item:{}", name);
         List<Patch> selection = patch == null ? List.of() : List.of(patch);
-        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, List.of(), selection);
+        List<Integer> selectedIndexes = getSelectedPatchIndex();
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, selectedIndexes, selection);
+    }
+
+    private List<Integer> getSelectedPatchIndex() {
+        return new ArrayList(patchList.getSelectionModel()
+                .getSelectedIndices());
     }
 
     private Patch getSelectedPatch() {

@@ -1,6 +1,6 @@
 package com.hypercube.mpm.javafx.widgets.dialog.ports;
 
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
@@ -35,7 +35,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
     public static final String OUTPUT_MIDI_DEVICE_YAML_DEFINITION = "outputMidiDevice:";
     public static final String DAW_MIDI_DEVICE_YAML_DEFINITION = "dawMidiDevice:";
     @Autowired
-    ConfigurationFactory configurationFactory;
+    ConfigurationService configurationService;
 
     @FXML
     TableView<MidiDeviceDefinition> deviceList;
@@ -69,7 +69,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
     @Override
     public void onViewLoaded() {
         super.onViewLoaded();
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         List<String> midiInPorts = cfg.getMidiPortsManager()
                 .getInputs()
                 .stream()
@@ -217,7 +217,7 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
     }
 
     private boolean validate() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         var undefinedDevices = devices.stream()
                 .filter(d ->
                         (d.getInputMidiDevice() != null && cfg.getMidiPortsManager()

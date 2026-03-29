@@ -3,7 +3,7 @@ package com.hypercube.mpm.javafx.widgets;
 import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.app.PatchesManager;
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.event.*;
 import com.hypercube.mpm.midi.MidiRouter;
 import com.hypercube.mpm.midi.VirtualKeyboard;
@@ -45,7 +45,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     @Autowired
     DeviceToolBox deviceToolBox;
     @Autowired
-    ConfigurationFactory configurationFactory;
+    ConfigurationService configurationService;
 
     @Override
     public void onViewLoaded() {
@@ -125,8 +125,11 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
 
     private void forceDeviceChange(String deviceName) {
-        log.info("forceDeviceChange: {}", deviceName);
-        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, List.of(), List.of(deviceName));
+        var selectedIndexes = List.of(getModel().getDevices()
+                .indexOf(deviceName));
+        List<String> selectedDevice = List.of(deviceName);
+        log.info("MainWindowController::forceDeviceChange: {} at index {}", deviceName, selectedIndexes.getFirst());
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, selectedIndexes, selectedDevice);
     }
 
     private void onPatchScoreChanged(PatchScoreChangedEvent patchScoreChangedEvent) {
@@ -145,7 +148,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
 
     private void onFilesDropped(FilesDroppedEvent filesDroppedEvent) {
         try {
-            var cfg = configurationFactory.getProjectConfiguration();
+            var cfg = configurationService.getProjectConfiguration();
 
             MainModel model = getModel();
             MidiDeviceLibrary midiDeviceLibrary = cfg.getMidiDeviceLibrary();
@@ -220,7 +223,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     private void restoreConfigSelection() {
         midiRouter.setControllerMessageListener(this::onMidiController);
         midiRouter.listenDawOutputs();
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         Optional.ofNullable(cfg.getSelectedOutput())
                 .ifPresent(this::forceDeviceChange);
         Optional.ofNullable(cfg.getSelectedInputs())
@@ -244,25 +247,25 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     }
 
     private void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems();
         try {
             midiRouter.changeMasterInputs(deviceOrPortNames);
             cfg.setSelectedInputs(deviceOrPortNames);
-            configurationFactory.saveConfig();
+            configurationService.saveConfig();
         } catch (MidiError e) {
             showError(e);
         }
     }
 
     private void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         midiRouter.changeSecondaryOutputs(selectedItems);
         cfg.setSelectedSecondaryOutputs(selectedItems);
-        configurationFactory.saveConfig();
+        configurationService.saveConfig();
     }
 
     private void onCategoriesChanged(SelectionChangedEvent<MidiPresetCategory> selectionChangedEvent) {
@@ -330,35 +333,43 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
      * Update the view given a selected device and select this device as the main destination for the MIDI router
      */
     private void onDeviceChanged(SelectionChangedEvent<String> selectionChangedEvent) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        MidiDeviceDefinition device = getMidiDevice(selectionChangedEvent);
+        log.info("Select device: {}", Optional.ofNullable(device)
+                .map(MidiDeviceDefinition::getDeviceName)
+                .orElse("none"));
+        updateProjectConfiguration(device);
+        deviceStateManager.onDeviceChanged(device);
+        try {
+            midiRouter.changeMainDestination(device);
+        } catch (MidiError e) {
+            log.error("Unexpected error in Midi Router", e);
+        }
+        refreshPatches();
+    }
 
-        MidiDeviceDefinition device = Optional.ofNullable(selectionChangedEvent)
+    private void updateProjectConfiguration(MidiDeviceDefinition device) {
+        Optional.ofNullable(device)
+                .ifPresent(d -> {
+                    configurationService.getProjectConfiguration()
+                            .setSelectedOutput(d.getDeviceName());
+                    configurationService.saveConfig();
+                });
+    }
+
+    private MidiDeviceDefinition getMidiDevice(SelectionChangedEvent<String> selectionChangedEvent) {
+        var cfg = configurationService.getProjectConfiguration();
+        return Optional.ofNullable(selectionChangedEvent)
                 .map(evt -> selectionChangedEvent.getSelectedItems())
                 .filter(selectedItems -> selectedItems.size() == 1)
                 .map(selectedItems -> {
                     String deviceName = selectedItems
                             .getFirst();
                     getModel().setSelectedDevice(deviceName);
-                    cfg.setSelectedOutput(deviceName);
-                    configurationFactory.saveConfig();
                     return cfg.getMidiDeviceLibrary()
                             .getDevice(deviceName)
                             .orElseThrow();
                 })
                 .orElse(null);
-        if (getModel().getCurrentDeviceState() == null || getModel().getCurrentDeviceState()
-                .getMidiOutDevice() == null || device == null || !getModel().getCurrentDeviceState()
-                .getId()
-                .getName()
-                .equals(device.getDeviceName())) {
-            deviceStateManager.onDeviceChanged(device);
-            try {
-                midiRouter.changeMainDestination(device);
-            } catch (MidiError e) {
-                log.error("Unexpected error in Midi Router", e);
-            }
-            refreshPatches();
-        }
     }
 
     private void refreshPatches() {

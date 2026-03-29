@@ -3,7 +3,7 @@ package com.hypercube.mpm.javafx.widgets.menu;
 import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.app.PatchesManager;
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.event.SelectionChangedEvent;
@@ -52,7 +52,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
     @Autowired
     DeviceToolBox deviceToolBox;
     @Autowired
-    ConfigurationFactory configurationFactory;
+    ConfigurationService configurationService;
     @Autowired
     DeviceStateManager deviceStateManager;
 
@@ -68,7 +68,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
 
     @FXML
     public void onMenuScanMidiPorts(ActionEvent event) {
-        configurationFactory.getProjectConfiguration()
+        configurationService.getProjectConfiguration()
                 .getMidiPortsManager()
                 .collectHardwareDevices();
         deviceStateManager.initModel();
@@ -110,7 +110,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
 
     @FXML
     public void onMenuAllNotesOff(ActionEvent event) {
-        ProjectConfiguration projectConfiguration = configurationFactory.getProjectConfiguration();
+        ProjectConfiguration projectConfiguration = configurationService.getProjectConfiguration();
         projectConfiguration
                 .getMidiDeviceLibrary()
                 .getDevices()
@@ -147,9 +147,9 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
     @FXML
     public void onMenuOpenProject(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
+        fileChooser.setInitialFileName(configurationService.getConfigFile()
                 .getName());
-        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
+        fileChooser.setInitialDirectory(configurationService.getConfigFile()
                 .getParentFile());
         fileChooser.setTitle("Save project as...");
         fileChooser.getExtensionFilters()
@@ -162,17 +162,17 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
                 );
         File selectedFile = fileChooser.showOpenDialog(JavaFXApplication.getMainStage());
         if (selectedFile != null) {
-            configurationFactory.setConfigFile(selectedFile);
-            configurationFactory.loadConfig();
+            configurationService.setConfigFile(selectedFile);
+            configurationService.loadConfig();
         }
     }
 
     @FXML
     public void onMenuSaveProject(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(configurationFactory.getConfigFile()
+        fileChooser.setInitialFileName(configurationService.getConfigFile()
                 .getName());
-        fileChooser.setInitialDirectory(configurationFactory.getConfigFile()
+        fileChooser.setInitialDirectory(configurationService.getConfigFile()
                 .getParentFile());
         fileChooser.setTitle("Save project as...");
         fileChooser.getExtensionFilters()
@@ -185,8 +185,8 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
                 );
         File selectedFile = fileChooser.showSaveDialog(JavaFXApplication.getMainStage());
         if (selectedFile != null) {
-            configurationFactory.setConfigFile(selectedFile);
-            configurationFactory.saveConfig();
+            configurationService.setConfigFile(selectedFile);
+            configurationService.saveConfig();
         }
     }
 
@@ -199,7 +199,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
     public void onMenuReloadMidiDeviceLibrary(ActionEvent event) {
         deviceStateManager.reloadMidiDeviceLibrary();
         Optional.ofNullable(getModel().getCurrentDeviceState())
-                .flatMap(state -> configurationFactory.getProjectConfiguration()
+                .flatMap(state -> configurationService.getProjectConfiguration()
                         .getMidiDeviceLibrary()
                         .getDevice(state
                                 .getId()
@@ -239,7 +239,10 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
     }
 
     private void forceDeviceChange(String deviceName) {
-        log.info("forceDeviceChange: {}", deviceName);
-        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, List.of(), List.of(deviceName));
+        var selectedIndexes = List.of(getModel().getDevices()
+                .indexOf(deviceName));
+        List<String> selectedDevice = List.of(deviceName);
+        log.info("AppMenuController::forceDeviceChange: {} at index {}", deviceName, selectedIndexes.getFirst());
+        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_DEVICE, selectedIndexes, selectedDevice);
     }
 }

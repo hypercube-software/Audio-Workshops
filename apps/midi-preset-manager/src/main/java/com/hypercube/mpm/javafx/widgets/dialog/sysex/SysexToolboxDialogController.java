@@ -2,7 +2,7 @@ package com.hypercube.mpm.javafx.widgets.dialog.sysex;
 
 import com.hypercube.mpm.app.DeviceStateManager;
 import com.hypercube.mpm.app.DeviceToolBox;
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.mpm.javafx.widgets.hexa.DataViewerPayload;
 import com.hypercube.mpm.javafx.widgets.hexa.HexaDataViewer;
@@ -45,7 +45,7 @@ import java.util.stream.IntStream;
 @JavaFXSpringController
 public class SysexToolboxDialogController extends DialogController<SysexToolboxDialog, Void> {
     @Autowired
-    ConfigurationFactory configurationFactory;
+    ConfigurationService configurationService;
     @Autowired
     DeviceToolBox deviceToolBox;
     @Autowired
@@ -152,7 +152,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     }
 
     private void refreshView() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         devices = cfg.getMidiDeviceLibrary()
                 .getDevices()

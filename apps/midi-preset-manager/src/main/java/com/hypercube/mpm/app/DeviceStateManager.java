@@ -1,6 +1,6 @@
 package com.hypercube.mpm.app;
 
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.config.ProjectConfiguration;
 import com.hypercube.mpm.javafx.bootstrap.JavaFXApplication;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
@@ -53,12 +53,12 @@ import java.util.function.Consumer;
 @Slf4j
 public class DeviceStateManager {
     private final MainModel model;
-    private final ConfigurationFactory configurationFactory;
+    private final ConfigurationService configurationService;
     private final MidiDeviceRequester midiDeviceRequester;
     private final PatchesManager patchesManager;
 
-    public DeviceStateManager(ConfigurationFactory configurationFactory, MidiDeviceRequester midiDeviceRequester, PatchesManager patchesManager) {
-        this.configurationFactory = configurationFactory;
+    public DeviceStateManager(ConfigurationService configurationService, MidiDeviceRequester midiDeviceRequester, PatchesManager patchesManager) {
+        this.configurationService = configurationService;
         this.midiDeviceRequester = midiDeviceRequester;
         this.patchesManager = patchesManager;
         this.model = MainModel.getObservableInstance();
@@ -98,20 +98,13 @@ public class DeviceStateManager {
      * @param selectedPatch optional, can be null
      */
     public void initDeviceStateFromConfig(DeviceStateId id, Patch selectedPatch) {
-        var cfg = configurationFactory.getProjectConfiguration();
-        var device = cfg.getMidiDeviceLibrary()
-                .getDevice(id.getName())
-                .orElseThrow();
+        var cfg = configurationService.getProjectConfiguration();
+        var device = getMidiDeviceDefinition(id);
         DeviceState deviceState;
         deviceState = new DeviceState();
         deviceState.setId(new DeviceStateId(id.getName(), id.getMode(), selectedPatch == null ? id.getChannel() : selectedPatch.getChannel()));
-        if (deviceState.getMidiOutDevice() == null && device.getOutputMidiDevice() != null) {
-            try {
-                deviceState.setMidiOutDevice(cfg.getMidiPortsManager()
-                        .openOutput(device.getOutputMidiDevice()));
-            } catch (MidiError e) {
-                log.error("Unable to open device {}", device.getOutputMidiDevice(), e);
-            }
+        if (deviceState.getMidiOutDevice() == null) {
+            updateDeviceStateOutputMidiPort(device, deviceState);
         }
         if (selectedPatch != null) {
             deviceState.setCurrentPatch(selectedPatch);
@@ -186,7 +179,6 @@ public class DeviceStateManager {
             model.setDeviceModes(List.of());
             model.setModeChannels(List.of());
         } else {
-            dumpStates();
             final DeviceStateId id = getLastUsedDeviceStateId(device);
             refreshDeviceModes(device);
             refreshCurrentDeviceState(id);
@@ -197,7 +189,7 @@ public class DeviceStateManager {
      * If the mode is changed, change effectively the mode in the hardware device via MIDI
      */
     public void changeModeOnDevice(MidiDeviceDefinition device, DeviceState currentState, String newModeName, boolean force) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         if (!currentState.getId()
                 .getMode()
                 .equals(newModeName) || force) {
@@ -280,8 +272,15 @@ public class DeviceStateManager {
     }
 
     public void reloadMidiDeviceLibrary() {
-        configurationFactory.forceLoadMidiDeviceLibrary();
+        configurationService.forceLoadMidiDeviceLibrary();
         initModel();
+        // Update the output midi ports in case they have changed
+        model.getDeviceStates()
+                .forEach((deviceStateId, state) -> {
+                    if (state.getMidiOutDevice() != null) {
+                        updateDeviceStateOutputMidiPort(getMidiDeviceDefinition(deviceStateId), state);
+                    }
+                });
     }
 
     @PostConstruct
@@ -301,7 +300,7 @@ public class DeviceStateManager {
      * Restore the state of all devices when the application start
      */
     public void initDevices() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         List<String> devices = model.getDevices();
         log.info("Midi Device Library active: {}", devices.size());
         if (devices
@@ -353,6 +352,25 @@ public class DeviceStateManager {
         }
     }
 
+    public void updateDeviceStateOutputMidiPort(MidiDeviceDefinition device, DeviceState deviceState) {
+        if (device.getOutputMidiDevice() != null) {
+            try {
+                deviceState.setMidiOutDevice(configurationService.getProjectConfiguration()
+                        .getMidiPortsManager()
+                        .openOutput(device.getOutputMidiDevice()));
+            } catch (MidiError e) {
+                log.error("Unable to open device {}", device.getOutputMidiDevice(), e);
+            }
+        }
+    }
+
+    private MidiDeviceDefinition getMidiDeviceDefinition(DeviceStateId id) {
+        return configurationService.getProjectConfiguration()
+                .getMidiDeviceLibrary()
+                .getDevice(id.getName())
+                .orElseThrow();
+    }
+
     private void executeOnDeviceOutput(ProjectConfiguration cfg, String deviceName, Consumer<MidiOutDevice> fct) {
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(deviceName)
@@ -384,19 +402,15 @@ public class DeviceStateManager {
     }
 
     private MidiDeviceDefinition getSelectedDevice() {
-        return configurationFactory.getProjectConfiguration()
-                .getMidiDeviceLibrary()
-                .getDevice(model.getCurrentDeviceState()
-                        .getId()
-                        .getName())
-                .orElseThrow();
+        return getMidiDeviceDefinition(model.getCurrentDeviceState()
+                .getId());
     }
 
     /**
      * When possible we replace the MIDI port name by a known device
      */
     private List<String> buildMidiInPortsList() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         return cfg.getMidiPortsManager()
                 .getInputs()
                 .stream()
@@ -419,7 +433,7 @@ public class DeviceStateManager {
      * When possible we replace the MIDI port name by a known device
      */
     private List<String> buildMidiThruPortsList() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         return cfg.getMidiPortsManager()
                 .getOutputs()
                 .stream()
@@ -439,7 +453,7 @@ public class DeviceStateManager {
     }
 
     private List<String> buildDeviceList() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         return cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .values()
@@ -510,6 +524,9 @@ public class DeviceStateManager {
      * @param id key of the state in the map
      */
     private void refreshCurrentDeviceState(DeviceStateId id) {
+        log.info("refreshCurrentDeviceState {}", Optional.ofNullable(id)
+                .map(DeviceStateId::toString)
+                .orElse("null"));
         if (id == null) {
             // device without modes, so no id, we empty everything
             model.setModeCategories(List.of());
@@ -517,10 +534,7 @@ public class DeviceStateManager {
             model.setModeChannels(List.of());
             model.setCurrentDeviceState(null);
         } else {
-            var device = configurationFactory.getProjectConfiguration()
-                    .getMidiDeviceLibrary()
-                    .getDevice(id.getName())
-                    .orElseThrow();
+            var device = getMidiDeviceDefinition(id);
 
             DeviceState deviceState = model.getDeviceStates()
                     .get(id);
@@ -622,6 +636,7 @@ public class DeviceStateManager {
      * Note: it is perfectly possible to have no modes for a device (DAW device for instance)
      */
     private void refreshDeviceModes(MidiDeviceDefinition device) {
+        log.info("refreshDeviceModes for device {}", device.getDeviceName());
         var modes = device.getDeviceModes()
                 .keySet()
                 .stream()

@@ -1,7 +1,8 @@
 package com.hypercube.mpm.app;
 
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.error.ApplicationError;
+import com.hypercube.mpm.model.DeviceStateId;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
@@ -33,10 +34,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PatchesManager {
     private final MainModel model;
-    private final ConfigurationFactory configurationFactory;
+    private final ConfigurationService configurationService;
 
-    public PatchesManager(ConfigurationFactory configurationFactory) {
-        this.configurationFactory = configurationFactory;
+    public PatchesManager(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
         this.model = MainModel.getObservableInstance();
     }
 
@@ -78,7 +79,7 @@ public class PatchesManager {
      * <p>This method also update the info bar on the bottom of the UI</p>
      */
     public void refreshPatches() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         if (model.getCurrentDeviceState() != null) {
             if (model.getCurrentDeviceState()
                     .getId()
@@ -122,7 +123,7 @@ public class PatchesManager {
                                     .stream()
                                     .filter(preset -> patchCategoryMatches(preset) && patchNameMatches(preset))
                                     .map(preset ->
-                                            configurationFactory.getScoredPatchFromFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
+                                            configurationService.getScoredPatchFromFavorite(forgePatch(device.getDeviceName(), currentModeName, channel, bank.getName(), preset)))
                                     .filter(this::patchScoreMatches))
                             .sorted(Comparator.comparing(Patch::getName))
                             .toList();
@@ -139,27 +140,47 @@ public class PatchesManager {
     }
 
     public void onPatchScoreChanged(Patch patch) {
-        configurationFactory.updateFavorites(patch);
+        configurationService.updateFavorites(patch);
     }
 
     /**
      * Save the user selection to restore it when the application start
      */
     public void saveSelectedPatchToConfig(Patch selectedPatch) {
-        var cfg = configurationFactory.getProjectConfiguration();
-        var stateId = selectedPatch != null ? selectedPatch.getDeviceStateId() : model.getCurrentDeviceState()
-                                                                                 .getId();
+        var cfg = configurationService.getProjectConfiguration();
+        final DeviceStateId stateId;
+        final String selectedPatchDevice;
+        final String selectedPatchMode;
+        if (selectedPatch != null) {
+            stateId = selectedPatch.getDeviceStateId();
+            selectedPatchDevice = selectedPatch.getDevice();
+            selectedPatchMode = selectedPatch.getMode();
+        } else {
+            stateId = model.getCurrentDeviceState()
+                    .getId();
+            selectedPatchDevice = null;
+            selectedPatchMode = null;
+        }
+
         final List<Patch> list;
         list = cfg.getSelectedPatches()
                 .stream()
-                .filter(sp -> !sp.getDeviceStateId()
-                        .equals(stateId))
+                .filter(sp -> (!sp.getDevice()
+                        .equals(selectedPatchDevice)) || (
+                        sp.getMode()
+                                .equals(selectedPatchMode) && !sp.getDeviceStateId()
+                                .equals(stateId))
+                )
                 .collect(Collectors.toList());
         if (selectedPatch != null) {
             list.add(selectedPatch);
         }
-        cfg.setSelectedPatches(list);
-        configurationFactory.saveConfig();
+        cfg.setSelectedPatches(list.stream()
+                .sorted(Comparator.comparing(Patch::getDevice)
+                        .thenComparing(Patch::getMode)
+                        .thenComparing(Patch::getChannel))
+                .toList());
+        configurationService.saveConfig();
     }
 
     /**
@@ -178,7 +199,7 @@ public class PatchesManager {
         if (selectedPatch == null) {
             return;
         }
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         var device = cfg.getMidiDeviceLibrary()
                 .getDevice(selectedPatch.getDevice())
                 .orElseThrow();
@@ -212,7 +233,7 @@ public class PatchesManager {
     }
 
     public void changePatchCategory(Patch patch, String newCategory) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         var def = patch.getDefinitionFile();
         if (def == null) {
             return;

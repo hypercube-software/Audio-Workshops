@@ -119,6 +119,11 @@ public abstract class Controller<V extends Node, M> {
         }
     }
 
+    /**
+     * Run a thread to keep the UI thread free displaying a dialog. The thread is named using {@link LongWork#threadName()}
+     *
+     * @param longWork provide the code to execute in the thread
+     */
     public void runLongTaskWithDialog(ProgressDialogController diag, LongWork longWork) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {
@@ -153,6 +158,11 @@ public abstract class Controller<V extends Node, M> {
         diag.showAndWait();
     }
 
+    /**
+     * Run a thread to keep the UI thread free. The thread is named using {@link LongWork#threadName()}
+     *
+     * @param longWork provide the code to execute in the thread
+     */
     public void runLongTask(LongWork longWork) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {

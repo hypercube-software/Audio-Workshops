@@ -91,9 +91,9 @@ public class MidiOutDevice extends AbstractMidiDevice {
     public void sendPresetChange(MidiPreset preset) {
         preset.getCommands()
                 .stream()
-                .map(cmd -> new CustomMidiEvent(cmd))
+                .map(CustomMidiEvent::new)
                 .forEach(evt -> {
-                    log.info("Send " + evt.getHexValues());
+                    log.info("Send {} through MIDI port {}", evt.getHexValues(), getName());
                     send(evt);
                 });
     }

@@ -23,7 +23,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ConfigurationFactory {
+public class ConfigurationService {
     private final MidiDeviceLibrary midiDeviceLibrary;
     private final MidiPortsManager midiPortsManager;
     @Value("${mpm-config:./mpm-config.yml}")

@@ -1,6 +1,6 @@
 package com.hypercube.mpm.midi;
 
-import com.hypercube.mpm.config.ConfigurationFactory;
+import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
@@ -65,7 +65,7 @@ public class MidiRouter {
     /**
      * Configuration, especially, {@link MidiDeviceLibrary}
      */
-    private final ConfigurationFactory configurationFactory;
+    private final ConfigurationService configurationService;
     /**
      * Used to protect the access of the list {@link #secondaryOutputs} in a threadsafe way
      */
@@ -178,7 +178,7 @@ public class MidiRouter {
     public void listenDawOutputs() {
         log.info("------------------------------------------------------------------------");
         log.info("Auto-routing DAW outputs to devices:");
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         cfg.getMidiDeviceLibrary()
                 .getDevices()
                 .values()
@@ -217,7 +217,7 @@ public class MidiRouter {
     }
 
     public RoutingSource getRoutingSourceByName(String deviceOrPortName) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         Optional<MidiDeviceDefinition> optionalDevice = cfg.getMidiDeviceLibrary()
                 .getDevice(deviceOrPortName);
@@ -288,7 +288,7 @@ public class MidiRouter {
      * <p>Not only we open the MIDI out of this device, but also the MIDI in</p>
      */
     public void changeMainDestination(MidiDeviceDefinition device) {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         closeMainDestinationListener();
         closeMainOutput();
@@ -405,7 +405,7 @@ public class MidiRouter {
     }
 
     private void closeSecondaryOutputs() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
         secondaryOutputNames.stream()
                 .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
                         .getDevice(deviceOrPortName))
@@ -426,7 +426,7 @@ public class MidiRouter {
     }
 
     private void openSecondaryOutputs() {
-        var cfg = configurationFactory.getProjectConfiguration();
+        var cfg = configurationService.getProjectConfiguration();
 
         synchronized (secondaryOutputsGuardian) {
             // open outputs
