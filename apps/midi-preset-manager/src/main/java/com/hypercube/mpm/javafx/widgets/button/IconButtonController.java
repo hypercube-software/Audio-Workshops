@@ -21,7 +21,8 @@ public class IconButtonController extends Controller<IconButton, Void> {
         super.onPropertyChange(widget, property, observable, oldValue, newValue);
         if ("iconClass".equals(property)) {
             region.getStyleClass()
-                    .setAll(getView().getIconClass());
+                    .setAll(getView().getIconClass()
+                            .split(","));
         }
         if ("tooltipText".equals(property)) {
             tooltip.setText(getView().getTooltipText());

@@ -11,6 +11,7 @@ import com.hypercube.mpm.javafx.widgets.WidgetIdentifiers;
 import com.hypercube.mpm.javafx.widgets.dialog.ports.DevicesPortsDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.progress.ProgressDialogController;
+import com.hypercube.mpm.javafx.widgets.dialog.project.ProjectDialog;
 import com.hypercube.mpm.javafx.widgets.dialog.sysex.SysexToolboxDialog;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.Controller;
@@ -20,6 +21,7 @@ import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.worker.LongWork;
 import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.thread.CancelNotifier;
 import jakarta.annotation.PostConstruct;
@@ -82,22 +84,27 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
         var deviceName = getModel().getCurrentDeviceState()
                 .getId()
                 .getName();
-        CrawlingDomain crawlingDomain = new CrawlingDomain(deviceName, Set.of(getModel().getCurrentDeviceState()
+        String modeName = getModel().getCurrentDeviceState()
                 .getId()
-                .getMode()),
+                .getMode();
+        CrawlingDomain crawlingDomain = new CrawlingDomain(deviceName, Set.of(modeName),
                 new HashSet<>(getModel().getCurrentDeviceState()
                         .getSelectedBankNames())
         );
         CancelNotifier cancelNotifier = new CancelNotifier();
         ProgressDialogController dlg = DialogController.buildDialog(ProgressDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, true);
-        dlg.updateTextHeader("Extract patch names from device  '%s'...".formatted(deviceName));
+        dlg.updateTextHeader("Extract patch names from device '%s' in mode '%s'...".formatted(deviceName, modeName));
         dlg.updateProgress(0, "");
         dlg.setCancelNotifier(cancelNotifier);
         LongWork longWork = new LongWork("ExtractPatchNames", () -> deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
             double progress = (double) currentCount / totalCount;
-            dlg.updateProgress(progress, "Preset %d/%d: '%s' category '%s'".formatted(currentCount, totalCount, midiPreset.getId()
-                    .name(), midiPreset.getId()
-                    .category()));
+            MidiPresetIdentity midiPresetId = midiPreset.getId();
+            dlg.updateProgress(progress, "Preset %d/%d: '%s' Bank: '%s' Category '%s'".formatted(
+                    currentCount,
+                    totalCount,
+                    midiPresetId.name(),
+                    midiPresetId.bankName(),
+                    midiPresetId.category()));
         }, cancelNotifier));
         runLongTaskWithDialog(dlg, longWork);
     }
@@ -188,6 +195,13 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
             configurationService.setConfigFile(selectedFile);
             configurationService.saveConfig();
         }
+    }
+
+    @FXML
+    public void onMenuEditProject(ActionEvent event) {
+        var dlg = DialogController.buildDialog(ProjectDialog.class, JavaFXApplication.getMainStage(), DialogIcon.NONE, false);
+        dlg.showAndWait();
+
     }
 
     @FXML

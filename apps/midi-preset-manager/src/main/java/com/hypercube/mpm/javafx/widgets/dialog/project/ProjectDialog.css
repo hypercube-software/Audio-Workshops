@@ -1,0 +1,17 @@
+.small-icon-button .tiny {
+    -fx-background-color: white;
+    -fx-min-width: 6px;
+    -fx-min-height: 6px;
+    -fx-max-width: 6px;
+    -fx-max-height: 6px;
+    -fx-pref-width: 6px;
+    -fx-pref-height: 6px;
+}
+
+#statesList .table-cell {
+    -fx-alignment: CENTER-LEFT;
+}
+
+#statesList {
+    -fx-border-color: white;
+}

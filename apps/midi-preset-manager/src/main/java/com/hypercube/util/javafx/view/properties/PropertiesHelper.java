@@ -21,14 +21,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * This class handle the lifecycle of a {@link Node} for you and avoid memory leaks related to properties listener
+ * <p>This class handle the lifecycle of a {@link Node} for you, and avoid memory leaks related to properties listener
+ * <p>Every instance of {@link View} own an instance of this helper
  * <ul>
  *     <li>Detect scene attach and detach</li>
+ *     <li>Make sure the user can't resize the window to 0, computing properly minWidth and minHeight for the stage</li>
  *     <li>Make sure listeners are released if detached from the scene</li>
  *     <li>Reattach listeners if reattached to the scene</li>
  *     <li>Your controller can implement {@link SceneListener} to be notified of scene attach/detach</li>
+ * </ul>
+ * <p>Side Note:</p>
+ * <p>The way we handle min stage size is not really optimized and could be improved</p>
+ * <ul>
+ *     <li>All {@link View} try to set the min stage size because any {@link View} can be used as a window</li>
+ *     <li>The root widget is always the first to set the min stage size, so everything works fine</li>
+ *     <li>Nevertheless, we should do that only for {@link View} used as a window</li>
  * </ul>
  */
 @RequiredArgsConstructor
@@ -36,8 +46,18 @@ import java.util.List;
 public class PropertiesHelper implements SceneListener {
     private final List<PropertyListener> listeners = new ArrayList<>();
     private final View<?> view;
-    private boolean widthSet = false;
-    private boolean heightSet = false;
+    /**
+     * Tells if the stage minHeight is set or not
+     */
+    private boolean stageMinWidthSet = false;
+    /**
+     * Tells if the stage minWidth is set or not
+     */
+    private boolean stageMinHeightSet = false;
+    /**
+     * Tells if the scene is already attached or not
+     */
+    private boolean sceneAttached = false;
 
     /**
      * This method must be called in all views to observe the scene change
@@ -46,14 +66,15 @@ public class PropertiesHelper implements SceneListener {
         Node node = (Node) view;
         node.sceneProperty()
                 .addListener(this::onSceneWindowChange);
+        // If the scene is already set, we immediately execute the listener
+        if (node.getScene() != null) {
+            onSceneWindowChange(node.sceneProperty(), null, node.getScene());
+        }
     }
 
     /**
      * This method must be used to observe any property change in a view ({@link StringProperty} only)
      * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
-     *
-     * @param propertyName
-     * @param property
      */
     public void declareListener(String propertyName, StringProperty property) {
         final Method m = getEventHandler(propertyName, String.class);
@@ -64,7 +85,7 @@ public class PropertiesHelper implements SceneListener {
                 if (m != null) {
                     m.invoke(view.getCtrl(), oldValue, newValue);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, stringChangeListener));
@@ -73,9 +94,6 @@ public class PropertiesHelper implements SceneListener {
     /**
      * This method must be used to observe any property change in a view ({@link BooleanProperty} only)
      * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
-     *
-     * @param propertyName
-     * @param property
      */
     public void declareListener(String propertyName, BooleanProperty property) {
         final Method m = getEventHandler(propertyName, Boolean.class);
@@ -86,7 +104,7 @@ public class PropertiesHelper implements SceneListener {
                 if (m != null) {
                     m.invoke(view.getCtrl(), oldValue, newValue);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, booleanChangeListener));
@@ -95,9 +113,6 @@ public class PropertiesHelper implements SceneListener {
     /**
      * This method must be used to observe any property change in a view ({@link BooleanProperty} only)
      * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
-     *
-     * @param propertyName
-     * @param property
      */
     public void declareListener(String propertyName, IntegerProperty property) {
         final Method m = getEventHandler(propertyName, Integer.class);
@@ -108,7 +123,7 @@ public class PropertiesHelper implements SceneListener {
                 if (m != null) {
                     m.invoke(view.getCtrl(), oldValue, newValue);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, integerChangeListener));
@@ -117,7 +132,6 @@ public class PropertiesHelper implements SceneListener {
     /**
      * This method must be used to observe any property change in a view ({@link ObjectProperty} only)
      * <p>The controller will be automatically notified via {@link Controller#onPropertyChange}</p>
-     *
      */
     public <T> void declareListener(String propertyName, ObjectProperty<T> property, Class<T> clazz) {
         final Method m = getEventHandler(propertyName, clazz);
@@ -131,7 +145,7 @@ public class PropertiesHelper implements SceneListener {
                 if (m != null) {
                     m.invoke(view.getCtrl(), oldValue, newValue);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, changeListener));
@@ -141,7 +155,7 @@ public class PropertiesHelper implements SceneListener {
      * Properties dedicated to event handlers are "special" in the sense they must start with "on"
      * <ul>
      *     <li>
-     *         This mean if you plan to detect changes, you have to declare {@code "onOnXXXChange"} for instance, not {@code "onXXXChange}"
+     *         This means if you plan to detect changes, you have to declare {@code "onOnXXXChange"} for instance, not {@code "onXXXChange}"
      *     </li>
      *     <li>
      *         If "on" prefix is missing, the error 'Unable to coerce to interface javafx.event.EventHandler.' will be raised by JavaFX
@@ -164,7 +178,7 @@ public class PropertiesHelper implements SceneListener {
                 if (m != null) {
                     m.invoke(view.getCtrl(), oldValue, newValue);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException ignored) {
             }
         };
         listeners.add(new PropertyListener(propertyName, property, changeListener));
@@ -173,13 +187,17 @@ public class PropertiesHelper implements SceneListener {
     public void onSceneWindowChange(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
         if (oldValue != null && newValue == null) {
             onSceneDetach(oldValue);
-        } else if (oldValue == null && newValue != null) {
+        } else if (newValue != null) {
             setMinSizeForStageWindow(newValue);
             setShowingListener(newValue);
         }
     }
 
     public void onSceneAttach(Scene newValue) {
+        if (sceneAttached) {
+            return;
+        }
+        sceneAttached = true;
         attachPropertyListener();
         if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneAttach(newValue);
@@ -187,24 +205,40 @@ public class PropertiesHelper implements SceneListener {
     }
 
     public void onSceneDetach(Scene oldValue) {
+        if (!sceneAttached) {
+            return;
+        }
+        sceneAttached = false;
         detachPropertyListener();
         if (view.getCtrl() instanceof SceneListener l) {
             l.onSceneDetach(oldValue);
         }
     }
 
+    /**
+     * Observe the window property of the scene
+     */
     private void setShowingListener(Scene scene) {
-
         scene.windowProperty()
-                .addListener((ObservableValue<? extends Window> observableValue, Window oldValue, Window newValue) -> {
-                    if (oldValue == null && newValue != null) {
-                        newValue.showingProperty()
-                                .addListener((ObservableValue<? extends Boolean> observableValue2, Boolean oldBoolValue, Boolean newBoolValue) -> {
-                                            if (!oldBoolValue && newBoolValue) {
-                                                onSceneAttach(scene);
-                                            }
-                                        }
-                                );
+                .addListener((ObservableValue<? extends Window> observableValue, Window oldValue, Window newValue) ->
+                        Optional.ofNullable(newValue)
+                                .ifPresent(value -> observeWindowShowing(scene, value)));
+        // the scene window is already set, we execute the listener immediately
+        if (scene.getWindow() != null) {
+            observeWindowShowing(scene, scene.getWindow());
+        }
+    }
+
+    private void observeWindowShowing(Scene scene, Window window) {
+        if (window.isShowing()) {
+            onSceneAttach(scene);
+        }
+        window.showingProperty()
+                .addListener((ObservableValue<? extends Boolean> observableValue, Boolean oldBoolValue, Boolean newBoolValue) -> {
+                    if (newBoolValue) {
+                        onSceneAttach(scene);
+                    } else {
+                        onSceneDetach(scene);
                     }
                 });
     }
@@ -214,35 +248,39 @@ public class PropertiesHelper implements SceneListener {
      */
     private void setMinSizeForStageWindow(Scene scene) {
         if (scene != null) {
-
             scene.windowProperty()
-                    .addListener((ObservableValue<? extends Window> observableWindowValue, Window oldWindowValue
-                            , Window window) -> {
-                        window.widthProperty()
-                                .addListener((ObservableValue<? extends Number> observableValue, Number oldWidthValue, Number newWidthValue) -> {
-                                    if (!widthSet) {
-
-                                        Stage stage = (Stage) window.getScene()
-                                                .getWindow();
-                                        if (stage.getMinWidth() == 0) {
-                                            stage.setMinWidth(newWidthValue.doubleValue());
-                                        }
-                                        widthSet = true;
-                                    }
-                                });
-                        window.heightProperty()
-                                .addListener((ObservableValue<? extends Number> observableValue, Number oldHeighValue, Number newHeightValue) -> {
-                                    if (!heightSet) {
-                                        Stage stage = (Stage) window.getScene()
-                                                .getWindow();
-                                        if (stage.getMinHeight() == 0) {
-                                            stage.setMinHeight(newHeightValue.doubleValue());
-                                        }
-                                        heightSet = true;
-                                    }
-                                });
-                    });
+                    .addListener((ObservableValue<? extends Window> observableWindowValue, Window oldWindowValue, Window window) ->
+                            Optional.ofNullable(window)
+                                    .ifPresent(this::observeWindowSize));
+            // if the scene window is already set, immediate call the listener
+            if (scene.getWindow() != null) {
+                observeWindowSize(scene.getWindow());
+            }
         }
+    }
+
+    /**
+     * Update the stage minWidth and minHeight IF NOT ALREADY SET to fit the window size when the window size change
+     */
+    private void observeWindowSize(Window window) {
+        window.widthProperty()
+                .addListener((ObservableValue<? extends Number> observableValue, Number oldWidthValue, Number newWidthValue) -> {
+                    if (!stageMinWidthSet && window instanceof Stage stage) {
+                        if (stage.getMinWidth() == 0) {
+                            stage.setMinWidth(newWidthValue.doubleValue());
+                        }
+                        stageMinWidthSet = true;
+                    }
+                });
+        window.heightProperty()
+                .addListener((ObservableValue<? extends Number> observableValue, Number oldHeighValue, Number newHeightValue) -> {
+                    if (!stageMinHeightSet && window instanceof Stage stage) {
+                        if (stage.getMinHeight() == 0) {
+                            stage.setMinHeight(newHeightValue.doubleValue());
+                        }
+                        stageMinHeightSet = true;
+                    }
+                });
     }
 
     private Method getEventHandler(String propertyName, Class<?> propertyType) {
@@ -263,50 +301,63 @@ public class PropertiesHelper implements SceneListener {
         return eventHandlerMethod;
     }
 
+    @SuppressWarnings("unchecked")
     private void attachPropertyListener() {
         listeners.forEach(pl -> {
-            if (pl.property() instanceof StringProperty sp) {
-                ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
-                sp.addListener(listener);
-                // force a notification in case we started late
-                if (sp.get() != null) {
-                    listener.changed(sp, null, sp.get());
+            switch (pl.property()) {
+                case StringProperty sp -> {
+                    ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
+                    sp.addListener(listener);
+                    // force a notification in case we started late
+                    if (sp.get() != null) {
+                        listener.changed(sp, null, sp.get());
+                    }
                 }
-            } else if (pl.property() instanceof BooleanProperty bp) {
-                ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
-                bp.addListener(listener);
-                // force a notification in case we started late
-                listener.changed(bp, null, bp.get());
-            } else if (pl.property() instanceof IntegerProperty bp) {
-                ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
-                bp.addListener(listener);
-                // force a notification in case we started late
-                listener.changed(bp, null, bp.get());
-            } else if (pl.property() instanceof ObjectProperty bp) {
-                ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
-                bp.addListener(listener);
-                // force a notification in case we started late
-                listener.changed(bp, null, bp.get());
-            } else {
-                throw new IllegalArgumentException("Unsupported listener");
+                case BooleanProperty bp -> {
+                    ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
+                    bp.addListener(listener);
+                    // force a notification in case we started late
+                    listener.changed(bp, null, bp.get());
+                }
+                case IntegerProperty bp -> {
+                    ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
+                    bp.addListener(listener);
+                    // force a notification in case we started late
+                    listener.changed(bp, null, bp.get());
+                }
+                case ObjectProperty<?> bp -> {
+                    ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
+                    bp.addListener(listener);
+                    // force a notification in case we started late
+                    listener.changed(bp, null, bp.get());
+                }
+                case null, default -> throw new IllegalArgumentException("Unsupported listener");
             }
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void detachPropertyListener() {
         listeners.forEach(pl -> {
-            if (pl.property() instanceof StringProperty sp) {
-                ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
-                sp.removeListener(listener);
-            } else if (pl.property() instanceof BooleanProperty bp) {
-                ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
-                bp.removeListener(listener);
-            } else if (pl.property() instanceof IntegerProperty bp) {
-                ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
-                bp.removeListener(listener);
-            } else if (pl.property() instanceof ObjectProperty bp) {
-                ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
-                bp.removeListener(listener);
+            switch (pl.property()) {
+                case StringProperty sp -> {
+                    ChangeListener<? super String> listener = (ChangeListener<? super String>) pl.listener();
+                    sp.removeListener(listener);
+                }
+                case BooleanProperty bp -> {
+                    ChangeListener<? super Boolean> listener = (ChangeListener<? super Boolean>) pl.listener();
+                    bp.removeListener(listener);
+                }
+                case IntegerProperty bp -> {
+                    ChangeListener<? super Number> listener = (ChangeListener<? super Number>) pl.listener();
+                    bp.removeListener(listener);
+                }
+                case ObjectProperty<?> bp -> {
+                    ChangeListener<Object> listener = (ChangeListener<Object>) pl.listener();
+                    bp.removeListener(listener);
+                }
+                case null, default -> {
+                }
             }
         });
     }

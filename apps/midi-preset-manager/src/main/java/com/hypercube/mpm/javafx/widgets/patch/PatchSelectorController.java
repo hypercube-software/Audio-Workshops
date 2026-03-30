@@ -10,6 +10,7 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
+import com.hypercube.util.javafx.view.lists.ListHelper;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.beans.Observable;
@@ -26,8 +27,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +89,14 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
         colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
 
-        bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChanged);
+        // current patch update:
+        // one listener on the model
         bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChanged);
+        // one listener on the user interaction
+        ListHelper.addSelectionChangeByUserListener(patchList, (observable, oldValue, newValue) -> onSelectedItemChangeByUser());
+
+
+        bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChanged);
         bindingManager.observePath("model.modeCategories", this::onModeCategoriesChanged);
         ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.modeCategories");
         currentPatchProperty.addListener(this::onModeCategoriesChanged);
@@ -102,16 +107,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
         addEventListener(ScoreChangedEvent.class, this::onScoreChangedEventChanged);
 
-        patchList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userAction = true);
-        patchList.addEventFilter(KeyEvent.KEY_PRESSED, event -> userAction = true);
-        patchList.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    if (userAction) {
-                        onSelectedItemChange();
-                        userAction = false;
-                    }
-                });
     }
 
     private void onModeCategoriesChanged(Observable observable) {
@@ -135,7 +130,7 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     }
 
     /**
-     * Update the view selection, when the model change
+     * Update the view selection, when the model change by user interaction or programmatically
      */
     private void onSelectedPatchChanged(Observable observable) {
         ObservableValue<? extends Patch> patchProperty = (ObservableValue<? extends Patch>) observable;
@@ -159,6 +154,20 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         });
     }
 
+    private void onSelectedItemChangeByUser() {
+        try {
+            userAction = true;
+            Patch patch = getSelectedPatch();
+            String name = patch != null ? patch.getName() : "<none>";
+            log.info("Item selected by user: {}", name);
+            List<Patch> selection = patch == null ? List.of() : List.of(patch);
+            List<Integer> selectedIndexes = getSelectedPatchIndex();
+            fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, selectedIndexes, selection);
+        } finally {
+            userAction = false;
+        }
+    }
+
     private void onScoreChangedEventChanged(ScoreChangedEvent scoreChangedEvent) {
         getModel().setCurrentPatchScoreFilter(scoreChangedEvent.getScore());
         refreshSearch();
@@ -177,14 +186,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         return Integer.parseInt(scoreFilter.getScore());
     }
 
-    private void onSelectedItemChange() {
-        Patch patch = getSelectedPatch();
-        String name = patch != null ? patch.getName() : "<none>";
-        log.info("Selected item:{}", name);
-        List<Patch> selection = patch == null ? List.of() : List.of(patch);
-        List<Integer> selectedIndexes = getSelectedPatchIndex();
-        fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, selectedIndexes, selection);
-    }
 
     private List<Integer> getSelectedPatchIndex() {
         return new ArrayList(patchList.getSelectionModel()

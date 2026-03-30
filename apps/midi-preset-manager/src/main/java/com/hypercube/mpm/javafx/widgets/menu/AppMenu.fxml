@@ -7,6 +7,7 @@
     <Menu text="File">
         <MenuItem text="Open existing project..." onAction="#onMenuOpenProject"/>
         <MenuItem text="Save current project as..." onAction="#onMenuSaveProject"/>
+        <MenuItem text="Edit current project..." onAction="#onMenuEditProject"/>
         <SeparatorMenuItem/>
         <MenuItem text="Exit" onAction="#onMenuExit"/>
     </Menu>
@@ -18,7 +19,7 @@
         <SeparatorMenuItem/>
         <MenuItem text="Update Categories..."
                   onAction="#onMenuUpdateCategories"/>
-        <MenuItem text="Extract Patch names..."
+        <MenuItem text="Extract Patch names from current mode..."
                   onAction="#onMenuExtractPatchNames"/>
         <MenuItem text="Open Device Toolbox..."
                   onAction="#onMenuOpenDeviceToolBox"/>
