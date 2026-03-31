@@ -57,7 +57,6 @@
                            dataSource="model.modeCategories"
                            editButtons="true"
                            onEditButtonClick="#onEditButtonClick"
-                           itemType="com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory"
                            labelMethod="name" minWidth="-Infinity"
                            selectedItems="model.currentDeviceState.currentSelectedCategories"
                            title="Categories"

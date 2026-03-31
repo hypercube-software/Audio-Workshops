@@ -9,6 +9,7 @@ import com.hypercube.util.javafx.controller.Controller;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.view.View;
 import com.hypercube.util.javafx.view.lists.DefaultCellFactory;
+import com.hypercube.util.javafx.view.lists.ListHelper;
 import com.sun.javafx.binding.SelectBinding;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -17,19 +18,18 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     Label label;
 
     @FXML
-    ListView attributes;
+    ListView<Object> attributes;
 
     @FXML
     IconButton addButton;
@@ -50,9 +50,6 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     IconButton removeButton;
 
     private List<String> acceptedFileTypes = List.of();
-
-    // boolean used to distinguish user action and programmatic action
-    private boolean userAction = false;
 
     @Override
     public void onViewLoaded() {
@@ -76,11 +73,11 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     public void onDataChange(Observable observable) {
         runOnJavaFXThread(() -> {
-            ObservableList<String> list = (ObservableList<String>) ((SelectBinding.AsObject) observable).getValue();
+            ObservableList<Object> list = (ObservableList<Object>) ((SelectBinding.AsObject) observable).getValue();
             if (list != null) {
                 log.info("Datasource {} for {} just changed with {} items", getView().getDataSource(), getView().getTitle(), list.size());
             }
-            attributes.setItems(list != null ? list : new SimpleListProperty());
+            attributes.setItems(list != null ? list : new SimpleListProperty<>());
             // since the data source changed, we can update the selection
             Observable selectedItem = bindingManager.resolvePropertyPath(getView().getSelectedItems());
             if (selectedItem != null) {
@@ -122,12 +119,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
     }
 
     public void onLabelMethodChange(String oldValue, String newValue) {
-        try {
-            Class<?> clazz = Class.forName(getView().getItemType());
-            attributes.setCellFactory(DefaultCellFactory.forge(newValue, clazz));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        attributes.setCellFactory(DefaultCellFactory.forge(newValue, Object.class));
     }
 
     @Override
@@ -146,30 +138,13 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
      * JavaFX does not provide a simple way to distinguish selection change between user or program
      * <p>Here a way to do it</p>
      */
-    private void addSelectionListener(ListView widget) {
-        widget.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            userAction = true;
-        });
-        widget.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            userAction = true;
-        });
-        MultipleSelectionModel<?> selectionModel = widget.getSelectionModel();
-        ObservableList<Integer> selectedIndices = selectionModel.getSelectedIndices();
-        ObservableList<?> selectedItems = selectionModel
-                .getSelectedItems();
-        selectedItems.addListener((ListChangeListener<Object>) c -> {
+    private void addSelectionListener(ListView<Object> widget) {
+        ListHelper.addSelectionChangeByUserListener(widget, (userAction, oldValue, newValue) -> {
             // It is CRUCIAL to runLater because we are in the middle of a list update
             // Any selection change inside the callback would raise a UnsupportedOperationExceptionPlatform.runLater(() -> {
-            Platform.runLater(() -> {
-                if (userAction) {
-                    onUserSelectedItems();
-                    userAction = false;
-                } else if (!selectedIndices.isEmpty()) {
-                    int itemIndex = selectedIndices.getFirst();
-                    log.info("selection changed, make item {} visible for {}", itemIndex, getView().getTitle());
-                    widget.scrollTo(itemIndex);
-                }
-            });
+            if (userAction) {
+                Platform.runLater(this::onUserSelectedItems);
+            }
         });
     }
 
@@ -179,7 +154,7 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
         if (db.hasFiles()) {
             List<File> files = db.getFiles()
                     .stream()
-                    .filter(f -> hasRightFileExtension(f))
+                    .filter(this::hasRightFileExtension)
                     .toList();
             files.forEach(f -> log.info(f.toString()));
             fireEvent(FilesDroppedEvent.class, files);
@@ -229,59 +204,52 @@ public class AttributeSelectorController extends Controller<AttributeSelector, M
 
     /**
      * Called when the model change, not the view. So when there is a programmatic update, not a user click
-     *
-     * @param observable
      */
     private void onModelSelectedItemsChange(Observable observable) {
         log.info("onModelSelectedItemsChange {} for {}", getView().getSelectedItems(), getView().getTitle());
-        List<Object> selectedItems = null;
+        final List<Object> selectedItems;
 
-        if (observable instanceof IntegerProperty integerProperty) {
-            int value = integerProperty.getValue();
-            selectedItems = List.of(value);
-        } else if (observable instanceof StringProperty stringProperty) {
-            String value = stringProperty.getValue();
-            selectedItems = value == null ? List.of() : List.of(value);
-        } else if (observable instanceof ObjectProperty objectProperty) {
-            Object value = objectProperty.getValue();
-            selectedItems = value == null ? List.of() : List.of(value);
-        } else if (observable instanceof SimpleListProperty simpleListProperty) {
-            ObservableList<Object> value = simpleListProperty.getValue();
-            selectedItems = value == null ? List.of() : value;
-        } else if (observable instanceof SelectBinding.AsObject<?> pathObserver) {
-            var value = pathObserver.getValue();
-            if (value == null) {
-                selectedItems = List.of();
-            } else if (value instanceof List listValue) {
-                selectedItems = listValue;
-            } else {
+        switch (observable) {
+            case IntegerProperty integerProperty -> {
+                int value = integerProperty.getValue();
                 selectedItems = List.of(value);
             }
-        } else {
-            return;
-        }
-        MultipleSelectionModel selectionModel = attributes.getSelectionModel();
-        selectionModel
-                .clearSelection();
-        if (selectedItems != null) {
-            if (selectedItems.size() > 1) {
-                selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+            case StringProperty stringProperty -> {
+                String value = stringProperty.getValue();
+                selectedItems = value == null ? List.of() : List.of(value);
             }
-            selectedItems
-                    .forEach(item -> {
-                        selectionModel.select(item);
-                    });
+            case ObjectProperty<?> objectProperty -> {
+                Object value = objectProperty.getValue();
+                selectedItems = value == null ? List.of() : List.of(value);
+            }
+            case SimpleListProperty simpleListProperty -> {
+                ObservableList<Object> value = simpleListProperty.getValue();
+                selectedItems = value == null ? List.of() : value;
+            }
+            case SelectBinding.AsObject<?> pathObserver -> {
+                var value = pathObserver.getValue();
+                if (value == null) {
+                    selectedItems = List.of();
+                } else if (value instanceof List listValue) {
+                    selectedItems = listValue;
+                } else {
+                    selectedItems = List.of(value);
+                }
+            }
+            case null, default -> {
+                return;
+            }
         }
+        ListHelper.selectItems(attributes, selectedItems);
     }
+
 
     /**
      * Called when the user do something, may be the selection didn't change, but we fire the event anyway
      */
     private void onUserSelectedItems() {
-        List indexes = new ArrayList(attributes.getSelectionModel()
-                .getSelectedIndices());
-        List items = new ArrayList(attributes.getSelectionModel()
-                .getSelectedItems());
+        List<Integer> indexes = ListHelper.getSelectedIndexes(attributes);
+        List<Object> items = ListHelper.getSelectedItems(attributes);
         log.info("Selected item on {}: {}", getView()
                 .getTitle(), indexes.stream()
                 .map(Object::toString)

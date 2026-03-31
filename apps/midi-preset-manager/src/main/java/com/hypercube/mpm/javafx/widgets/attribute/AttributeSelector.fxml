@@ -16,7 +16,6 @@
         <RowConstraints minHeight="70.0" prefHeight="70.0"/>
     </rowConstraints>
     <!-- DEFINE PROPERTY title -->
-    <!-- DEFINE PROPERTY itemType -->
     <!-- DEFINE PROPERTY dataSource -->
     <!-- DEFINE PROPERTY labelMethod -->
     <!-- DEFINE PROPERTY selectedItems -->

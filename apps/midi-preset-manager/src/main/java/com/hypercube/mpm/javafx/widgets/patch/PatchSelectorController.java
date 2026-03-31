@@ -26,7 +26,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,36 +44,36 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     DeviceToolBox deviceToolBox;
 
     @FXML
-    TableView patchList;
+    TableView<Patch> patchList;
     @FXML
     TextField searchBox;
     @FXML
     PatchScore scoreFilter;
     @FXML
-    TableColumn colName;
+    TableColumn<Patch, String> colName;
     @FXML
-    TableColumn colMode;
+    TableColumn<Patch, String> colMode;
     @FXML
-    TableColumn colBank;
+    TableColumn<Patch, String> colBank;
     @FXML
     TableColumn<Patch, String> colCategory;
     @FXML
-    TableColumn colScore;
+    TableColumn<Patch, Patch> colScore;
     @FXML
-    TableColumn colCommand;
+    TableColumn<Patch, String> colCommand;
     SimpleStringProperty currentPatchNameFilterProperty;
-    // boolean used to distinguish user action and programmatic action
-    private boolean userAction = false;
 
     @Override
     @SuppressWarnings("unchecked")
     public void onViewLoaded() {
         setModel(MainModel.getObservableInstance());
 
-        colName.setCellValueFactory(new PropertyValueFactory<Patch, String>("name"));
-        colMode.setCellValueFactory(new PropertyValueFactory<Patch, String>("mode"));
-        colBank.setCellValueFactory(new PropertyValueFactory<Patch, String>("bank"));
-        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+        ListHelper.configureColumn(colName, "name");
+        ListHelper.configureColumn(colMode, "mode");
+        ListHelper.configureColumn(colBank, "bank");
+        ListHelper.configureColumn(colCategory, "category");
+        ListHelper.configureColumn(colCommand, "command");
+
         colCategory.setEditable(true);
         colCategory.setOnEditCommit(cellEditEvent -> {
             Patch item = cellEditEvent.getRowValue();
@@ -87,18 +86,18 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
 
         colScore.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Patch, Patch>, ObservableValue<Patch>>) patch -> new SimpleObjectProperty<>(patch.getValue()));
         colScore.setCellFactory((Callback<TableColumn<Patch, Patch>, TableCell<Patch, Patch>>) param -> new PatchListCell());
-        colCommand.setCellValueFactory(new PropertyValueFactory<Patch, String>("command"));
+
 
         // current patch update:
         // one listener on the model
         bindingManager.observePath("model.currentDeviceState.currentPatch", this::onSelectedPatchChanged);
         // one listener on the user interaction
-        ListHelper.addSelectionChangeByUserListener(patchList, (observable, oldValue, newValue) -> onSelectedItemChangeByUser());
+        ListHelper.addSelectionChangeByUserListener(patchList, this::onSelectedItemChangeByUser);
 
 
         bindingManager.observePath("model.currentDeviceState.currentSearchOutput", this::onSearchOutputChanged);
         bindingManager.observePath("model.modeCategories", this::onModeCategoriesChanged);
-        ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.modeCategories");
+        ObservableValue<?> currentPatchProperty = bindingManager.resolvePropertyPath("model.modeCategories");
         currentPatchProperty.addListener(this::onModeCategoriesChanged);
 
         currentPatchNameFilterProperty = resolvePath("model.currentPatchNameFilter");
@@ -118,12 +117,12 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
     }
 
     private void onSearchOutputChanged(Observable observable) {
-        ObservableList list = Optional.ofNullable((ObservableList) ((SelectBinding.AsObject<?>) observable).get())
-                .orElse(new SimpleListProperty());
+        ObservableList<Patch> list = Optional.ofNullable((ObservableList<Patch>) ((SelectBinding.AsObject<?>) observable).get())
+                .orElse(new SimpleListProperty<>());
         log.info("SearchOutput updated with {} patches", list.size());
         patchList.setItems(list);
         // since the list is updated, try to update the selection
-        ObservableValue currentPatchProperty = bindingManager.resolvePropertyPath("model.currentDeviceState.currentPatch");
+        ObservableValue<Patch> currentPatchProperty = bindingManager.resolvePropertyPath("model.currentDeviceState.currentPatch");
         if (currentPatchProperty != null) {
             onSelectedPatchChanged(currentPatchProperty);
         }
@@ -136,10 +135,6 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         ObservableValue<? extends Patch> patchProperty = (ObservableValue<? extends Patch>) observable;
         log.info("onSelectedPatchChange {} for Patches", patchProperty);
         Patch newValue = patchProperty.getValue();
-        // scrollTo have the tendency to put items on top, so we don't call it if the user just selected the item
-        if (!userAction) {
-            patchList.scrollTo(newValue);
-        }
         // Tricky code: it is not advised to modify the selection during a selectionChanged event
         // so we use runLaterOnJavaFXThread
         runLaterOnJavaFXThread(() -> {
@@ -154,17 +149,14 @@ public class PatchSelectorController extends Controller<PatchSelector, MainModel
         });
     }
 
-    private void onSelectedItemChangeByUser() {
-        try {
-            userAction = true;
+    private void onSelectedItemChangeByUser(boolean userAction, Patch oldValue, Patch newValue) {
+        if (userAction) {
             Patch patch = getSelectedPatch();
             String name = patch != null ? patch.getName() : "<none>";
             log.info("Item selected by user: {}", name);
             List<Patch> selection = patch == null ? List.of() : List.of(patch);
             List<Integer> selectedIndexes = getSelectedPatchIndex();
             fireEvent(SelectionChangedEvent.class, WidgetIdentifiers.WIDGET_ID_PATCH, selectedIndexes, selection);
-        } finally {
-            userAction = false;
         }
     }
 

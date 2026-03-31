@@ -19,7 +19,7 @@ public class DefaultCellFactory {
      * @param itemClass       type of all items
      * @return the CellFactory
      */
-    public static Callback<ListView, ListCell> forge(String labelMethodName, Class<?> itemClass) {
+    public static <T> Callback<ListView<T>, ListCell<T>> forge(String labelMethodName, Class<T> itemClass) {
         final Method labelMethod;
         try {
             labelMethod = itemClass.getMethod(labelMethodName);
@@ -27,12 +27,12 @@ public class DefaultCellFactory {
             throw new RuntimeException("labelMethod '%s' not found in class '%s'".formatted(labelMethodName, itemClass.getName()));
         }
 
-        return new Callback<ListView, ListCell>() {
+        return new Callback<ListView<T>, ListCell<T>>() {
             @Override
-            public ListCell call(ListView listView) {
-                return new ListCell<Object>() {
+            public ListCell<T> call(ListView<T> listView) {
+                return new ListCell<T>() {
                     @Override
-                    protected void updateItem(Object item, boolean empty) {
+                    protected void updateItem(T item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty || item == null) {
                             setText(null);

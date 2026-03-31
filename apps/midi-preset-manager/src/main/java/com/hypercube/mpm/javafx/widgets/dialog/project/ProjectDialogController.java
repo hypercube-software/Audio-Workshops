@@ -15,6 +15,7 @@ import javafx.scene.control.TableView;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -63,6 +64,11 @@ public class ProjectDialogController extends DialogController<ProjectDialog, Pro
     @FXML
     public void onSaveButton(ActionEvent event) {
         close();
+    }
+
+    @FXML
+    public void onDeleteStates(ActionEvent event) {
+        List<DeviceState> selected = ListHelper.getSelectedItems(statesList);
     }
 
     private Supplier<IconButton> getWidgetFactory() {

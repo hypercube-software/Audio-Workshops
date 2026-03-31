@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.hypercube.mpm.javafx.widgets.button.IconButton?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" styleClass="mpmDialogShadow"
-         stylesheets="@../../MainWindow.css,@../DialogCommon.css,@ProjectDialog.css" type="GridPane" xmlns="http://javafx.com/javafx/17.0.12"
+         stylesheets="@../../MainWindow.css,@../DialogCommon.css,@ProjectDialog.css" type="GridPane"
+         xmlns="http://javafx.com/javafx/17.0.12"
          fx:controller="com.hypercube.mpm.javafx.widgets.dialog.project.ProjectDialogController">
     <!-- DEFINE PROPERTY String:errorMessage -->
     <GridPane styleClass="mpmDialog" vgap="10.0">
@@ -43,13 +45,11 @@
                 <TableColumn fx:id="colPatch" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" text="Preset"/>
             </columns>
         </TableView>
+        <IconButton iconClass="icon-remove" onAction="#onDeleteStates" GridPane.halignment="LEFT"
+                    GridPane.rowIndex="6"/>
         <HBox alignment="CENTER" spacing="20.0" GridPane.rowIndex="7">
-            <Button minWidth="100.0" onAction="#onSaveButton" text="Save to disk">
-
-            </Button>
-            <Button minWidth="100.0" onAction="#onCancelButton" text="Cancel">
-
-            </Button>
+            <Button minWidth="100.0" onAction="#onSaveButton" text="Save to disk"/>
+            <Button minWidth="100.0" onAction="#onCancelButton" text="Cancel"/>
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>

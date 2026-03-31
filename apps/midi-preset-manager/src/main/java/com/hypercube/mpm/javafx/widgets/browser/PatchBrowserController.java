@@ -2,6 +2,8 @@ package com.hypercube.mpm.javafx.widgets.browser;
 
 import com.hypercube.mpm.app.DeviceToolBox;
 import com.hypercube.mpm.javafx.event.EditButtonClickedEvent;
+import com.hypercube.mpm.javafx.widgets.attribute.AttributeSelector;
+import com.hypercube.mpm.javafx.widgets.combo.AttributeComboBox;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.mpm.model.DeviceStateId;
 import com.hypercube.mpm.model.MainModel;
@@ -16,6 +18,21 @@ import java.util.List;
 @Slf4j
 @JavaFXSpringController
 public class PatchBrowserController extends Controller<PatchBrowser, Void> {
+    @FXML
+    public AttributeSelector category;
+    @FXML
+    public AttributeSelector bank;
+    @FXML
+    public AttributeSelector channel;
+    @FXML
+    public AttributeSelector mode;
+    @FXML
+    public AttributeComboBox device;
+    @FXML
+    public AttributeComboBox passThru;
+    @FXML
+    public AttributeSelector master;
+    
     @Autowired
     DeviceToolBox deviceToolBox;
 
