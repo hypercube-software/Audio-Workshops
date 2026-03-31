@@ -162,24 +162,7 @@ public class PatchesManager {
             selectedPatchMode = null;
         }
 
-        final List<Patch> list;
-        list = cfg.getSelectedPatches()
-                .stream()
-                .filter(sp -> (!sp.getDevice()
-                        .equals(selectedPatchDevice)) || (
-                        sp.getMode()
-                                .equals(selectedPatchMode) && !sp.getDeviceStateId()
-                                .equals(stateId))
-                )
-                .collect(Collectors.toList());
-        if (selectedPatch != null) {
-            list.add(selectedPatch);
-        }
-        cfg.setSelectedPatches(list.stream()
-                .sorted(Comparator.comparing(Patch::getDevice)
-                        .thenComparing(Patch::getMode)
-                        .thenComparing(Patch::getChannel))
-                .toList());
+        cfg.addSelectedPatchToConfig(stateId, selectedPatch, selectedPatchDevice, selectedPatchMode);
         configurationService.saveConfig();
     }
 
