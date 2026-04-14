@@ -187,9 +187,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                 .collect(Collectors.joining(",")));
         switch (widgetId) {
             case WidgetIdentifiers.WIDGET_ID_DEVICE ->
-                    runLongTask(new LongWork("selectedDeviceChanged", () -> onDeviceChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+                    runLongTask(new LongWork<Void>("selectedDeviceChanged", () -> onDeviceChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MODE ->
-                    runLongTask(new LongWork("selectedModeChanged", () -> onModeChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+                    runLongTask(new LongWork<Void>("selectedModeChanged", () -> onModeChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MODE_CHANNEL ->
                     onChannelChanged((SelectionChangedEvent<Integer>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_CATEGORY ->
@@ -199,9 +199,9 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             case WidgetIdentifiers.WIDGET_ID_PATCH ->
                     onPatchChanged((SelectionChangedEvent<Patch>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
-                    runLongTask(new LongWork("sendCommand", () -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+                    runLongTask(new LongWork<Void>("sendCommand", () -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS ->
-                    runLongTask(new LongWork("selectedMasterInputsChanged", () -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+                    runLongTask(new LongWork<Void>("selectedMasterInputsChanged", () -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
         }
     }
 
@@ -246,7 +246,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         midiRouter.mute(muteOutputDeviceEvent.getDevice(), muteOutputDeviceEvent.isMute());
     }
 
-    private void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private Void onMasterInputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         var cfg = configurationService.getProjectConfiguration();
 
         List<String> deviceOrPortNames = selectionChangedEvent.getSelectedItems();
@@ -257,15 +257,17 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         } catch (MidiError e) {
             showError(e);
         }
+        return null;
     }
 
-    private void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private Void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         var cfg = configurationService.getProjectConfiguration();
 
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         midiRouter.changeSecondaryOutputs(selectedItems);
         cfg.setSelectedSecondaryOutputs(selectedItems);
         configurationService.saveConfig();
+        return null;
     }
 
     private void onCategoriesChanged(SelectionChangedEvent<MidiPresetCategory> selectionChangedEvent) {
@@ -310,7 +312,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
     /**
      * Called when the user change device mode
      */
-    private void onModeChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private Void onModeChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         List<String> selectedItems = selectionChangedEvent.getSelectedItems();
         if (selectedItems.isEmpty()) {
             var model = getModel();
@@ -327,12 +329,13 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     .getChannel());
             refreshPatches();
         }
+        return null;
     }
 
     /**
      * Update the view given a selected device and select this device as the main destination for the MIDI router
      */
-    private void onDeviceChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private Void onDeviceChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         MidiDeviceDefinition device = getMidiDevice(selectionChangedEvent);
         log.info("Select device: {}", Optional.ofNullable(device)
                 .map(MidiDeviceDefinition::getDeviceName)
@@ -345,6 +348,7 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
             log.error("Unexpected error in Midi Router", e);
         }
         refreshPatches();
+        return null;
     }
 
     private void updateProjectConfiguration(MidiDeviceDefinition device) {

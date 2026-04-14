@@ -24,7 +24,7 @@ import java.util.Arrays;
 public class HexaDataViewerController extends DialogController<HexaDataViewer, Void> {
 
     public static final int MAX_PAYLOAD_SIZE = 1024 * 1024;
-    public static final int ROW_SIZE = 16;
+    public static final int ROW_SIZE = 14;
     @FXML
     private ListView<byte[]> hexListView;
 

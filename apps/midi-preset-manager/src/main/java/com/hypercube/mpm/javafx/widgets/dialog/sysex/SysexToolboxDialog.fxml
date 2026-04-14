@@ -59,7 +59,7 @@
             <Button minWidth="100.0" onAction="#onSaveButton" text="Save to disk">
 
             </Button>
-            <Button minWidth="100.0" onAction="#onCancelButton" text="Cancel">
+            <Button minWidth="100.0" onAction="#onCloseButton" text="Close">
 
             </Button>
             <GridPane.margin>

@@ -22,6 +22,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePr
 import com.hypercube.workshop.midiworkshop.api.sysex.library.importer.PatchImporter;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.SysExUpdateListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceBankMixin;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceDefinitionMixin;
@@ -142,7 +143,7 @@ public class DeviceToolBox {
      *     <li>{@code command} can be a raw SysEx like F0 20 32 44 F7</li>
      * </ul>
      */
-    public Optional<byte[]> request(MidiDeviceDefinition device, CommandCall commandCall, Consumer<MidiRequestResponse> requestLogger) {
+    public Optional<byte[]> request(MidiDeviceDefinition device, CommandCall commandCall, Consumer<MidiRequestResponse> requestLogger, SysExUpdateListener sysExUpdateListener) {
         try {
             try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
                     .orElse(null)) {
@@ -162,7 +163,7 @@ public class DeviceToolBox {
                     }
                     output.open();
                     input.open();
-                    var midiRequestResponse = midiDeviceRequester.queryAndAggregate(device, input, output, commandCall);
+                    var midiRequestResponse = midiDeviceRequester.queryAndAggregate(device, input, output, commandCall, sysExUpdateListener);
                     requestLogger.accept(midiRequestResponse);
                     byte[] response = midiRequestResponse.response();
                     return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
@@ -200,6 +201,11 @@ public class DeviceToolBox {
         }
     }
 
+    /**
+     * Request a device to dump the current preset in a SysEx file. Existing file is overridden
+     *
+     * @param currentPatch used to forge teh patch file
+     */
     public void updateOrCreatePatch(Patch currentPatch) {
         final String selectedBank;
         final String selectedMode;
@@ -281,7 +287,7 @@ public class DeviceToolBox {
                 GenericDialogController.error("SysEx not saved", requestResponse.errorMessage());
             }
         };
-        request(device, commandCall, requestLogger).ifPresentOrElse(response ->
+        request(device, commandCall, requestLogger, null).ifPresentOrElse(response ->
                         createCustomPatch(device, selectedMode, categoryCode, patchName, patchFile, response),
                 () -> log.error("Received nothing from device '{}'!", device.getDeviceName()));
     }

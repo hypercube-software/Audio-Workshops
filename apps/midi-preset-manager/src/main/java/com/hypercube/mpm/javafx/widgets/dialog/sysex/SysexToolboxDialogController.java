@@ -10,12 +10,14 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.worker.LongWork;
+import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -68,6 +70,8 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     @FXML
     private HexaDataViewer hexResponse;
 
+    private Task<Void> currentTask = null;
+
     @FXML
     public void onSaveButton(ActionEvent event) {
         if (response != null && response.data() != null) {
@@ -99,7 +103,8 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     }
 
     @FXML
-    public void onCancelButton(ActionEvent event) {
+    public void onCloseButton(ActionEvent event) {
+        cancelCurrentTask();
         close();
     }
 
@@ -113,18 +118,21 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
 
     @FXML
     public void onSendCommand(ActionEvent event) {
-
+        cancelCurrentTask();
         hexResponse.getCtrl()
                 .clear();
-        runLongTask(new LongWork("sendCommand", () -> getSelectedDevice()
-                .flatMap(device -> {
-                    final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():-:" + textCommand.getText());
-                    final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, null, "DeviceToolBoxCommand()")
-                            .getFirst();
-                    call.macro(cmd);
-                    return deviceToolBox.request(device, call, this::onDeviceRequest);
-                })
-                .ifPresent(this::onDeviceResponse)));
+        currentTask = runLongTask(new LongWork<Void>("sendCommand", () -> {
+            getSelectedDevice()
+                    .flatMap(device -> {
+                        final CommandMacro cmd = CommandMacro.parse(CommandMacro.UNSAVED_MACRO, "DeviceToolBoxCommand():-:" + textCommand.getText());
+                        final CommandCall call = CommandCall.parse(CommandMacro.UNSAVED_MACRO, null, "DeviceToolBoxCommand()")
+                                .getFirst();
+                        call.macro(cmd);
+                        return deviceToolBox.request(device, call, this::onSysExReceived, this::onSysExUpdate);
+                    })
+                    .ifPresent(this::onDeviceResponse);
+            return null;
+        }));
     }
 
     @Override
@@ -149,6 +157,15 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
 
         response = new DataViewerPayload(fakePayload());
         hexResponse.setData(response);
+    }
+
+    private void onSysExUpdate(MidiInDevice midiInDevice, MidiRequestResponse partialMidiRequestResponse) {
+        onSysExReceived(partialMidiRequestResponse);
+    }
+
+    private void cancelCurrentTask() {
+        Optional.ofNullable(currentTask)
+                .ifPresent(Task::cancel);
     }
 
     private void refreshView() {
@@ -183,7 +200,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
                 .getSelectedItem());
     }
 
-    private void onDeviceRequest(MidiRequestResponse midiRequestResponse) {
+    private void onSysExReceived(MidiRequestResponse midiRequestResponse) {
         runOnJavaFXThread(() -> {
             hexCommand.setData(new DataViewerPayload(midiRequestResponse.request()));
             if (midiRequestResponse.errorMessage() != null) {

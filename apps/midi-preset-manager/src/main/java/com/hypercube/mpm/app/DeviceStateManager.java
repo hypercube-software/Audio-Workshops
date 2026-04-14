@@ -318,7 +318,7 @@ public class DeviceStateManager {
             dlg.updateTextHeader("Restore %d device states...".formatted(cfg.getSelectedPatches()
                     .size()));
             dlg.setCancelNotifier(cancelNotifier);
-            LongWork longWork = new LongWork("initDevices", () -> {
+            LongWork<Void> longWork = new LongWork<Void>("initDevices", () -> {
                 try {
                     var sp = cfg.getSelectedPatches();
                     int totalSteps = sp.size() * 2 + 1;
@@ -347,6 +347,7 @@ public class DeviceStateManager {
                 }
                 dlg.updateProgress(1, "Done");
                 dlg.sleep(3000);
+                return null;
             });
             dlg.runLongTaskWithDialog(dlg, longWork);
         }

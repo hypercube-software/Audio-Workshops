@@ -51,6 +51,13 @@ public class KurzweilExplorer {
             if (sampleInfo.getSize() > 0) {
                 ObjectWrite sampleData = query(device, input, output, cmdLoadSample);
                 log.info("Sample Block Name (via WRITE): {}, size {}", sampleData.getName(), "%02X".formatted(sampleData.getSize()));
+                try {
+                    Files.write(Path.of("Sample Info %d.dat".formatted(objectId)), sampleInfo.getName()
+                            .getBytes());
+                    Files.write(Path.of("Sample Block %d.dat".formatted(objectId)), sampleData.getPayload());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 ByteBuffer b = ByteBuffer.wrap(sampleData.getPayload());
                 b.order(ByteOrder.BIG_ENDIAN);
                 // SFH struct start at 0xC
@@ -120,7 +127,7 @@ public class KurzweilExplorer {
         converseWith(deviceName, (device, input, output) -> {
             CommandCall cmd = CommandCall.parse(device, "READ_PROGRAM_BANKS_NIBBLE()")
                     .getFirst();
-            MidiRequestResponse response = midiDeviceRequester.queryAndAggregate(device, input, output, cmd);
+            MidiRequestResponse response = midiDeviceRequester.queryAndAggregate(device, input, output, cmd, null);
             kurzweilSysExParser.parse(Manufacturer.KURZWEIL, response.response());
         });
     }

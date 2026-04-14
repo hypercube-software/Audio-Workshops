@@ -96,16 +96,19 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
         dlg.updateTextHeader("Extract patch names from device '%s' in mode '%s'...".formatted(deviceName, modeName));
         dlg.updateProgress(0, "");
         dlg.setCancelNotifier(cancelNotifier);
-        LongWork longWork = new LongWork("ExtractPatchNames", () -> deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
-            double progress = (double) currentCount / totalCount;
-            MidiPresetIdentity midiPresetId = midiPreset.getId();
-            dlg.updateProgress(progress, "Preset %d/%d: '%s' Bank: '%s' Category '%s'".formatted(
-                    currentCount,
-                    totalCount,
-                    midiPresetId.name(),
-                    midiPresetId.bankName(),
-                    midiPresetId.category()));
-        }, cancelNotifier));
+        LongWork<Void> longWork = new LongWork<Void>("ExtractPatchNames", () -> {
+            deviceToolBox.dumpPresets(crawlingDomain, (device, midiPreset, currentCount, totalCount) -> {
+                double progress = (double) currentCount / totalCount;
+                MidiPresetIdentity midiPresetId = midiPreset.getId();
+                dlg.updateProgress(progress, "Preset %d/%d: '%s' Bank: '%s' Category '%s'".formatted(
+                        currentCount,
+                        totalCount,
+                        midiPresetId.name(),
+                        midiPresetId.bankName(),
+                        midiPresetId.category()));
+            }, cancelNotifier);
+            return null;
+        });
         runLongTaskWithDialog(dlg, longWork);
     }
 
@@ -133,7 +136,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
 
     @FXML
     public void onMenuUpdateCategories(ActionEvent event) {
-        runLongTask(new LongWork("updateCategories", () -> {
+        runLongTask(new LongWork<Void>("updateCategories", () -> {
             getModel().getCurrentDeviceState()
                     .getCurrentSearchOutput()
                     .stream()
@@ -148,6 +151,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
                                 patchesManager.changePatchCategory(patch, category.name());
                             }));
             refreshPatches();
+            return null;
         }));
     }
 

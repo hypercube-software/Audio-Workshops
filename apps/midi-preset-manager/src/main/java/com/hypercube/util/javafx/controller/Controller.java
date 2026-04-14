@@ -10,7 +10,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 
@@ -36,9 +36,27 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public abstract class Controller<V extends Node, M> {
     protected BindingManager bindingManager = new BindingManager(this);
-    private V view;
+    private ObjectProperty<V> view = new SimpleObjectProperty<>();
     private ObjectProperty<M> model = new SimpleObjectProperty<>();
 
+    //---------------------------------------------------------------
+    // observable view
+    //---------------------------------------------------------------
+    public final V getView() {
+        return view.get();
+    }
+
+    public final void setView(V value) {
+        view.set(value);
+    }
+
+    public ObjectProperty<V> viewProperty() {
+        return view;
+    }
+
+    //---------------------------------------------------------------
+    // observable model
+    //---------------------------------------------------------------
     public final M getModel() {
         return model.get();
     }
@@ -63,8 +81,10 @@ public abstract class Controller<V extends Node, M> {
      * <p>Note: they are NOT available in {@link javafx.fxml.Initializable#initialize}, this is why you have this method</p>
      */
     public void onPropertyChange(View<?> widget, String property, ObservableValue<?> observable, Object oldValue, Object newValue) {
-        log.info("Property " + widget.getClass()
-                .getName() + "::" + property + " changed: " + newValue);
+        if (log.isInfoEnabled()) {
+            log.info("Property {}::{} changed: {}", widget.getClass()
+                    .getName(), property, newValue);
+        }
     }
 
     public <P> P resolvePath(String path) {
@@ -124,7 +144,7 @@ public abstract class Controller<V extends Node, M> {
      *
      * @param longWork provide the code to execute in the thread
      */
-    public void runLongTaskWithDialog(ProgressDialogController diag, LongWork longWork) {
+    public void runLongTaskWithDialog(ProgressDialogController diag, LongWork<Void> longWork) {
         Scene scene = getView().getScene();
         Task<Void> task = new Task<Void>() {
             @Override
@@ -132,12 +152,12 @@ public abstract class Controller<V extends Node, M> {
                 Thread thread = Thread.currentThread();
                 String backupName = thread.getName();
                 try {
-                    thread.setName(longWork.threadName() + "-" + thread.threadId());
+                    thread.setName(longWork.getThreadName() + "-" + thread.threadId());
                     while (!diag.isAttachedToScene()) {
                         sleep(100);
                     }
-                    longWork.code()
-                            .run();
+                    return longWork.getCode()
+                            .get();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
                 } finally {
@@ -146,35 +166,42 @@ public abstract class Controller<V extends Node, M> {
                 return null;
             }
         };
-        EventHandler<WorkerStateEvent> closeDialog = e -> {
-            Platform.runLater(() -> {
-                diag.close();
-            });
-        };
-        task.setOnSucceeded(closeDialog);
-        task.setOnFailed(closeDialog);
-        task.setOnCancelled(closeDialog);
+        task.setOnSucceeded(event -> {
+            log.info("task {} terminated", longWork.getThreadName());
+            Platform.runLater(diag::close);
+        });
+        task.setOnFailed(event -> {
+            log.info("task {} failed", longWork.getThreadName());
+            Platform.runLater(diag::close);
+        });
+        task.setOnCancelled(event -> {
+            log.info("task {} cancelled", longWork.getThreadName());
+            Platform.runLater(diag::close);
+        });
+        longWork.setTask(task);
         new Thread(task).start();
         diag.showAndWait();
     }
 
     /**
-     * Run a thread to keep the UI thread free. The thread is named using {@link LongWork#threadName()}
+     * Run a thread to keep the UI thread free. The thread is named using {@link LongWork#getThreadName()}}
+     * <p>Set the cursor to {@link Cursor#WAIT} during the work</p>
      *
      * @param longWork provide the code to execute in the thread
+     * @return the task which can be canceled
      */
-    public void runLongTask(LongWork longWork) {
+    public <T> Task<T> runLongTask(LongWork<T> longWork) {
         Scene scene = getView().getScene();
-        Task<Void> task = new Task<Void>() {
+        Task<T> task = new Task<T>() {
             @Override
-            protected Void call() throws Exception {
+            protected T call() throws Exception {
                 Thread thread = Thread.currentThread();
                 String backupName = thread.getName();
                 try {
                     thread
-                            .setName(longWork.threadName() + "-" + thread.threadId());
-                    longWork.code()
-                            .run();
+                            .setName(longWork.getThreadName() + "-" + thread.threadId());
+                    return longWork.getCode()
+                            .get();
                 } catch (Throwable e) {
                     log.error("Unexpected error", e);
                 } finally {
@@ -183,20 +210,22 @@ public abstract class Controller<V extends Node, M> {
                 return null;
             }
         };
-        EventHandler<WorkerStateEvent> resetCursor = e -> {
-            Platform.runLater(() -> {
-                if (scene != null) {
-                    scene.setCursor(Cursor.DEFAULT);
-                }
-            });
-        };
-        task.setOnSucceeded(resetCursor);
-        task.setOnFailed(resetCursor);
-        task.setOnCancelled(resetCursor);
-        if (scene != null) {
-            scene.setCursor(Cursor.WAIT);
-        }
+        longWork.setTask(task);
+        task.setOnSucceeded(event -> {
+            log.warn("Task {} terminated", longWork.getThreadName());
+            resetCursor(scene);
+        });
+        task.setOnFailed(event -> {
+            log.warn("Task {} failed", longWork.getThreadName());
+            resetCursor(scene);
+        });
+        task.setOnCancelled(event -> {
+            log.warn("Task {} cancelled", longWork.getThreadName());
+            resetCursor(scene);
+        });
+        waitCursor(scene);
         new Thread(task).start();
+        return task;
     }
 
     public void sleep(int ms) {
@@ -205,5 +234,15 @@ public abstract class Controller<V extends Node, M> {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void resetCursor(Scene scene) {
+        Platform.runLater(() -> Optional.ofNullable(scene)
+                .ifPresent(s -> s.setCursor(Cursor.DEFAULT)));
+    }
+
+    private void waitCursor(Scene scene) {
+        Optional.ofNullable(scene)
+                .ifPresent(s -> s.setCursor(Cursor.WAIT));
     }
 }

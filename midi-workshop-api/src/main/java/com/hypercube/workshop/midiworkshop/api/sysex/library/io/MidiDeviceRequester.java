@@ -12,6 +12,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequ
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiResponseMapper;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.SysExAggregatorListener;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.SysExUpdateListener;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
@@ -39,7 +40,7 @@ public class MidiDeviceRequester {
      */
     public void updateDevice(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, List<CommandCall> commands) {
         for (CommandCall commandCall : commands) {
-            queryAndAggregate(device, midiInDevice, midiOutDevice, commandCall);
+            queryAndAggregate(device, midiInDevice, midiOutDevice, commandCall, null);
         }
     }
 
@@ -81,13 +82,14 @@ public class MidiDeviceRequester {
     /**
      * Request a device. Optionally wait for multiple response.
      *
-     * @param device        device to query
-     * @param midiInDevice  can be null if you don't expect any response
-     * @param midiOutDevice cannot be null
-     * @param commandCall   command to send to the device
+     * @param device              device to query
+     * @param midiInDevice        can be null if you don't expect any response
+     * @param midiOutDevice       cannot be null
+     * @param commandCall         command to send to the device
+     * @param sysExUpdateListener to be notified of the reception progress
      * @return an empty response if no response was expected
      */
-    public MidiRequestResponse queryAndAggregate(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall) {
+    public MidiRequestResponse queryAndAggregate(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall, SysExUpdateListener sysExUpdateListener) {
         String errorMessage = null;
         try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
             try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
@@ -103,7 +105,8 @@ public class MidiDeviceRequester {
                         } else {
                             log.info("Send '{}' to {} and expected a response of unknown size", r.getName(), device.getDeviceName());
                         }
-                        listener = new SysExAggregatorListener();
+                        listener = new SysExAggregatorListener(buffer -> sysExUpdateListener.onBufferUpdate(midiInDevice,
+                                new MidiRequestResponse(requestBuffer.toByteArray(), buffer, null)));
                         midiInDevice.addSysExListener(listener);
                     } else {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
@@ -114,6 +117,8 @@ public class MidiDeviceRequester {
                         midiOutDevice.send(evt);
                         requestBuffer.write(evt.getMessage()
                                 .getMessage());
+                        // immediately display the request
+                        sysExUpdateListener.onBufferUpdate(midiInDevice, new MidiRequestResponse(requestBuffer.toByteArray(), null, null));
                         if (listener != null) {
                             int expectedSize = singleResponseSize;
                             if (expectedSize > 0) {
