@@ -163,8 +163,12 @@ public class DeviceToolBox {
                     }
                     output.open();
                     input.open();
+                    // execute the request
                     var midiRequestResponse = midiDeviceRequester.queryAndAggregate(device, input, output, commandCall, sysExUpdateListener);
-                    requestLogger.accept(midiRequestResponse);
+                    // display the response
+                    Optional.ofNullable(requestLogger)
+                            .ifPresent(rl -> rl.accept(midiRequestResponse));
+                    // return the response payload
                     byte[] response = midiRequestResponse.response();
                     return response == null || response.length == 0 ? Optional.empty() : Optional.of(response);
                 }

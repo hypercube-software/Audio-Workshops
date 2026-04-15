@@ -6,17 +6,69 @@ deviceName: "K2600R"
 presetFormat: BANK_MSB_LSB_PRG
 presetNaming: STANDARD
 macros:
+  # responses size are not fixed unfortunately, so we use "---"
+  # ids are in 14 bits so they need to be split in 2 MIDI Bytes
+  # For decimal 200 (binary 0000001 1001000) we need to call DIR_PROGRAM(0148)
+  # For decimal 999 (binary 0000111 1100111) we need to call DIR_PROGRAM(0767)
+  # Kurzweil use the term "TYPE" to talk about MIDI bytes and "ID" to talk about the real value
   - "Request(command,body)               : ---   : F0 07 00 78 command body F7"
   - "DIR(type,id)                        : ---   : Request($04,type id)"
+  - "DIR_PROGRAM(id)                     : ---   : DIR(0104,id)"
+  - "DIR_KEYMAP(id)                      : ---   : DIR(0105,id)"
+  - "DIR_SOUND_BLOCK(id)                 : ---   : DIR(0106,id)"
+  - "DIR_STUDIO(id)                      : ---   : DIR(0071,id)" # wrong
+  - "DIR_SETUP(id)                       : ---   : DIR(0107,id)"
+  # bank is in [0-9] or 7F for all banks. Each bank contains 100 items max
+  # DIR_PROGRAM_BANK(02) will give you program 200 to 299
+  # Those queries imply you will receive n SysEx for each item
   - "DIR_BANK(type,bank,ramonly)         : ---   : Request($0C,type bank ramonly)"
-  - "DIR_PROGRAM(id)                     : ---   : DIR($0104,id)"
-  - "DIR_PROGRAM_BANKS()                 : ---   : DIR_BANK($0104,7F,00)"
+  - "DIR_PROGRAM_BANK(bank)              : ---   : DIR_BANK(0104,bank,00)"
+  - "DIR_KEYMAP_BANK(bank)               : ---   : DIR_BANK(0105,bank,00)"
+  - "DIR_SOUND_BLOCK_BANK(bank)          : ---   : DIR_BANK(0106,bank,00)"
+  - "DIR_SETUP_BANK(bank)                : ---   : DIR_BANK(0107,bank,00)"
+  - "DIR_SONG_BANK(bank)                 : ---   : DIR_BANK(0070,bank,00)"
+  - "DIR_STUDIO_BANK(bank)               : ---   : DIR_BANK(0071,bank,00)"
+  - "DIR_INTONATION_BANK(bank)           : ---   : DIR_BANK(0067,bank,00)"
+  - "DIR_VELOCITY_BANK(bank)             : ---   : DIR_BANK(0068,bank,00)"
+  - "DIR_PRESSURE_BANK(bank)             : ---   : DIR_BANK(0069,bank,00)"
+  - "DIR_QUICK_ACCESS_BANK(bank)         : ---   : DIR_BANK(006F,bank,00)"
+
+  - "DIR_PROGRAM_BANKS()                 : ---   : DIR_PROGRAM_BANK(7F)" # return 461 SysEx !
+  - "DIR_KEYMAP_BANKS()                  : ---   : DIR_KEYMAP_BANK(7F)" # return 386 SysEx !
+  - "DIR_SOUND_BLOCK_BANKS()             : ---   : DIR_SOUND_BLOCK_BANK(7F)"  # return 325 SysEx !
+  - "DIR_SETUP_BANKS()                   : ---   : DIR_SETUP_BANK(7F)"
+  - "DIR_QUICK_ACCESS_BANKS()            : ---   : DIR_QUICK_ACCESS_BANK(7F)"
+  # those don't work
+  - "DIR_SONG_BANKS()                    : ---   : DIR_SONG_BANK(7F)"
+  - "DIR_STUDIO_BANKS()                  : ---   : DIR_STUDIO_BANK(7F)"
+  - "DIR_INTONATION_BANKS()              : ---   : DIR_INTONATION_BANK(7F)"
+  - "DIR_VELOCITY_BANKS()                : ---   : DIR_VELOCITY_BANK(7F)"
+  - "DIR_PRESSURE_BANKS()                : ---   : DIR_PRESSURE_BANK(7F)"
+
   # format = 0 for Nibble, 1 for packed stream
   - "READ(type,id,form)                  : ---   : Request($0A,type id form)"
-  - "READ_SAMPLE_BLOCK_NIBBLE(id)        : ---   : READ($0106, id, 00)"
+  # If you send a sample 200 via SDS, its goes into.. 201 !
+  # READ_SOUND_BLOCK_NIBBLE(0149) will give you the sound block 201
+  # Note that sound block does not contain PCM data, only settings
+  - "READ_PROGRAM_NIBBLE(id)             : ---   : READ(0104, id, 00)"
+  - "READ_KEYMAP_NIBBLE(id)              : ---   : READ(0105, id, 00)"
+  - "READ_SOUND_BLOCK_NIBBLE(id)         : ---   : READ(0106, id, 00)"
+  - "READ_SETUP_NIBBLE(id)               : ---   : READ(0107, id, 00)"
+  - "READ_STUDIO_NIBBLE(id)              : ---   : READ(0071, id, 00)"
+
   - "READ_BANK(type,bank,format,ramonly) : ---   : Request($0B,type bank format ramonly)"
-  - "READ_PROGRAM_BANKS_NIBBLE()         : ---   : READ_BANK($0104,7F,00,00)"
-  - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK($0104,bank,00,00)"
+  - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK(0104,bank,00,00)"
+  - "READ_KEYMAP_BANK_NIBBLE(bank)       : ---   : READ_BANK(0105,bank,00,00)"
+  - "READ_SOUND_BLOCK_BANK_NIBBLE(bank)  : ---   : READ_BANK(0106,bank,00,00)"
+  - "READ_SETUP_BANK_NIBBLE(bank)        : ---   : READ_BANK(0107,bank,00,00)"
+  - "READ_STUDIO_BANK_NIBBLE(bank)       : ---   : READ_BANK(0071,bank,00,00)"
+
+  - "READ_PROGRAM_BANKS_NIBBLE()         : ---   : READ_PROGRAM_BANK_NIBBLE(7F)"
+  - "READ_KEYMAP_BANKS_NIBBLE()          : ---   : READ_KEYMAP_BANK_NIBBLE(7F)"
+  - "READ_SOUND_BLOCK_BANKS_NIBBLE()     : ---   : READ_SOUND_BLOCK_BANK_NIBBLE(7F)"
+  - "READ_SETUP_BANKS_NIBBLE()           : ---   : READ_SETUP_BANK_NIBBLE(7F)"
+  - "READ_STUDIO_BANKS_NIBBLE()          : ---   : READ_STUDIO_BANK_NIBBLE(7F)"
+
   - "PatchName()                 : ---   : DIR_PROGRAM(kobjId) : PatchMapper"
 
 #

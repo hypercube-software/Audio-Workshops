@@ -91,11 +91,12 @@ public class MidiDeviceRequester {
      */
     public MidiRequestResponse queryAndAggregate(MidiDeviceDefinition device, MidiInDevice midiInDevice, MidiOutDevice midiOutDevice, CommandCall commandCall, SysExUpdateListener sysExUpdateListener) {
         String errorMessage = null;
+        SysExAggregatorListener listener = null;
         try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
             try (ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream()) {
                 for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                     List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
-                    final SysExAggregatorListener listener;
+
                     Integer singleResponseSize = r.getResponseSize();
                     if (singleResponseSize != null && midiInDevice != null) {
                         if (singleResponseSize > 0) {
@@ -110,7 +111,6 @@ public class MidiDeviceRequester {
                         midiInDevice.addSysExListener(listener);
                     } else {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
-                        listener = null;
                     }
                     for (CustomMidiEvent evt : events) {
                         log.info("Send %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
@@ -133,12 +133,18 @@ public class MidiDeviceRequester {
                     }
                     if (listener != null) {
                         midiInDevice.removeListener(listener);
+                        listener = null;
                     }
                 }
                 return new MidiRequestResponse(requestBuffer.toByteArray(), responseBuffer.toByteArray(), errorMessage);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            // task canceled, we need to be sure our listener is gone
+            if (listener != null) {
+                midiInDevice.removeListener(listener);
+            }
         }
     }
 

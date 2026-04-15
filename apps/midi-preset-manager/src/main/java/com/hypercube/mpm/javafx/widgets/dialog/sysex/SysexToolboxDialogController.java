@@ -155,12 +155,13 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
             }
         });
 
-        response = new DataViewerPayload(fakePayload());
-        hexResponse.setData(response);
+        //response = new DataViewerPayload(fakePayload());
+        //hexResponse.setData(response);
     }
 
     private void onSysExUpdate(MidiInDevice midiInDevice, MidiRequestResponse partialMidiRequestResponse) {
         onSysExReceived(partialMidiRequestResponse);
+        updateResponseLabel(getSelectedDevice().get(), partialMidiRequestResponse.response());
     }
 
     private void cancelCurrentTask() {
@@ -220,7 +221,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         runOnJavaFXThread(() -> {
             copyResponseInClipboard(unpackedResponse);
             updatePackedZone(device, unpackedResponse);
-            updateResponseLabel(device, unpackedResponse.length);
+            updateResponseLabel(device, unpackedResponse);
             hexResponse.setData(this.response);
         });
     }
@@ -253,15 +254,25 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         }
     }
 
-    private void updateResponseLabel(MidiDeviceDefinition device, int responseSize) {
-        String size = " $%X %d bytes".formatted(responseSize, responseSize);
-        if (device.getDecodingKey() == null) {
-            responseLabel.setText("Response:" + size);
-        } else if (unpackCheckBox.isSelected()) {
-            responseLabel.setText("Unpacked Response:" + size);
-        } else {
-            responseLabel.setText("Packed Response:" + size);
-        }
+    private void updateResponseLabel(MidiDeviceDefinition device, byte[] response) {
+        runOnJavaFXThread(() -> {
+            if (response == null) {
+                responseLabel.setText("");
+            } else {
+                int responseSize = response.length;
+                long nbSysEx = IntStream.range(0, response.length)
+                        .filter(i -> response[i] == (byte) 0xF0)
+                        .count();
+                String size = " $%X %d bytes, %d SysEx".formatted(responseSize, responseSize, nbSysEx);
+                if (device.getDecodingKey() == null) {
+                    responseLabel.setText("Response:" + size);
+                } else if (unpackCheckBox.isSelected()) {
+                    responseLabel.setText("Unpacked Response:" + size);
+                } else {
+                    responseLabel.setText("Packed Response:" + size);
+                }
+            }
+        });
     }
 
     @FXML
