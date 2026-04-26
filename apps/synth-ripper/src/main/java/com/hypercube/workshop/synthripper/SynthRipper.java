@@ -10,7 +10,7 @@ import com.hypercube.workshop.audioworkshop.api.line.AudioInputLine;
 import com.hypercube.workshop.audioworkshop.api.line.AudioOutputLine;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMMarker;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
@@ -43,7 +43,7 @@ public class SynthRipper {
     SynthRipperConfiguration conf;
     private PCMBufferFormat format;
     private PCMBufferFormat wavFormat;
-    private MidiOutDevice midiOutDevice;
+    private MidiOutPort hardwareMidiOutPort;
     private WavRecorder wavRecorder;
 
 
@@ -61,20 +61,20 @@ public class SynthRipper {
         initState();
     }
 
-    public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutDevice midiDevice) throws IOException {
+    public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutPort midiOutPort) throws IOException {
         createOutputDir();
         state.nbChannels = format.getNbChannels();
         state.maxNoteReleaseDurationSec = conf.getMidi()
                 .getMaxNoteReleaseDurationSec();
         state.maxNoteDurationSec = conf.getMidi()
                 .getMaxNoteDurationSec();
-        this.midiOutDevice = midiDevice;
-        this.midiOutDevice.open();
+        this.hardwareMidiOutPort = midiOutPort;
+        this.hardwareMidiOutPort.open();
         try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
             try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
                 try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
                     try (AudioOutputLine outputLine = new AudioOutputLine(audioOutputDevice, format)) {
-                        midiDevice.sendAllOff();
+                        midiOutPort.sendAllOff();
                         threadLogger.start();
                         outputLine.start();
                         inputLine.record((sampleBuffer, pcmBuffer, pcmSize) -> onNewBuffer(fftCalculator, shortTermFFTCalculator, sampleBuffer, pcmBuffer, pcmSize), outputLine);
@@ -86,8 +86,8 @@ public class SynthRipper {
         } catch (LineUnavailableException | IOException e) {
             throw new SynthRipperError(e);
         } finally {
-            midiDevice.sendAllOff();
-            midiDevice.close();
+            midiOutPort.sendAllOff();
+            midiOutPort.close();
         }
         savePresets();
     }
@@ -249,7 +249,7 @@ public class SynthRipper {
                     threadLogger.log("Release time is " + state.durationInSec + " sec");
                     state.getCurrentRecordedSynthNote()
                             .setReleaseTimeInSec(state.durationInSec);
-                    midiOutDevice.sendAllOff();
+                    hardwareMidiOutPort.sendAllOff();
                     state.changeState(SynthRipperStateEnum.NOTE_OFF_DONE);
                 } else if (state.endOfNoteRecord()) {
                     onNoteRecordTerminated();
@@ -321,7 +321,7 @@ public class SynthRipper {
         MidiEvent noteOff = new MidiEvent(new ShortMessage(ShortMessage.NOTE_OFF, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote
                 .getNote()
                 .value(), 0), 0);
-        midiOutDevice.send(noteOff);
+        hardwareMidiOutPort.send(noteOff);
 
         if (!state.isSilentBuffer()) {
             threadLogger.log("Looping sound detected");
@@ -364,7 +364,7 @@ public class SynthRipper {
             threadLogger.log("======================================================");
             threadLogger.log("Preset Change \"%s\"".formatted(currentRecordedSynthNote.getPreset()
                     .getId()));
-            midiOutDevice.sendPresetChange(currentRecordedSynthNote.getPreset());
+            hardwareMidiOutPort.sendPresetChange(currentRecordedSynthNote.getPreset());
         }
         if (previousRecordedSynthNote != null && currentRecordedSynthNote.getControlChange() != previousRecordedSynthNote.getControlChange()) {
             threadLogger.log("--------------------");
@@ -379,15 +379,15 @@ public class SynthRipper {
                     .value()), 0);
             threadLogger.log("Send Control Change " + currentRecordedSynthNote.getControlChange() + " with value " + currentRecordedSynthNote.getCcValue()
                     .value() + " on channel " + currentRecordedSynthNote.getChannel());
-            midiOutDevice.send(controlChangeEvent);
+            hardwareMidiOutPort.send(controlChangeEvent);
         } else {
             threadLogger.log("Reset all controllers on channel " + currentRecordedSynthNote.getChannel());
-            midiOutDevice.sendAllControllersOff(currentRecordedSynthNote.getChannel());
+            hardwareMidiOutPort.sendAllControllersOff(currentRecordedSynthNote.getChannel());
         }
         MidiEvent noteOn = new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote.getNote()
                 .value(), currentRecordedSynthNote.getVelocity()
                 .value()), 0);
-        midiOutDevice.send(noteOn);
+        hardwareMidiOutPort.send(noteOn);
     }
 
     private void acquireNoiseFloor(FFTCalculator fftCalculator, SampleBuffer buffer) {

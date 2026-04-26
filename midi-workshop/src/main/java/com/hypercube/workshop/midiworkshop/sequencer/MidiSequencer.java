@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.sequencer;
 
 import com.hypercube.workshop.midiworkshop.api.clock.MidiClockType;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.seq.KeySignature;
 import com.hypercube.workshop.midiworkshop.api.seq.MidiSequence;
 import com.hypercube.workshop.midiworkshop.api.seq.RelativeTimeUnit;
@@ -20,7 +20,7 @@ import static com.hypercube.workshop.midiworkshop.api.seq.RelativeTimeUnit.*;
 @Slf4j
 public class MidiSequencer {
 
-    public void playResource(MidiOutDevice out, String path, int tempo) {
+    public void playResource(MidiOutPort out, String path, int tempo) {
         try (com.hypercube.workshop.midiworkshop.api.seq.MidiSequencer sequencer = new com.hypercube.workshop.midiworkshop.api.seq.MidiSequencer(tempo, MidiClockType.NONE, null, out)) {
             try (InputStream in = this.getClass()
                     .getClassLoader()
@@ -44,7 +44,7 @@ public class MidiSequencer {
     }
 
 
-    public void playSequence(MidiClockType clockType, MidiOutDevice clock, MidiOutDevice out, int tempo) {
+    public void playSequence(MidiClockType clockType, MidiOutPort clock, MidiOutPort out, int tempo) {
         try (com.hypercube.workshop.midiworkshop.api.seq.MidiSequencer sequencer = new com.hypercube.workshop.midiworkshop.api.seq.MidiSequencer(tempo, clockType, clock, out)) {
 
             MidiSequence s = new MidiSequence(4, new TimeSignature(4, 4), new KeySignature(0, false));

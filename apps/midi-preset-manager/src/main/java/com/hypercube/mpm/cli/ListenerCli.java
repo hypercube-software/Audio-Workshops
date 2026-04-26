@@ -1,8 +1,8 @@
 package com.hypercube.mpm.cli;
 
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
-import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.remote.server.NetworkServer;
+import com.hypercube.workshop.midiworkshop.api.ports.AbstractMidiDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.remote.server.NetworkServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -23,7 +23,7 @@ public class ListenerCli {
                 .midiDeviceLibrary()
                 .load(ConfigHelper.getApplicationFolder(MidiPresetManagerCliApplication.class));
         listDevices();
-        networkServer.start(8000);
+        networkServer.start(10092);
     }
 
     private void listDevices() {

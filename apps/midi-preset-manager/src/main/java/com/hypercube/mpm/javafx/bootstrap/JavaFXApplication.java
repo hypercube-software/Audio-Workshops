@@ -3,6 +3,7 @@ package com.hypercube.mpm.javafx.bootstrap;
 import com.hypercube.mpm.MidiPresetManagerApplication;
 import com.hypercube.mpm.javafx.event.StageReadyEvent;
 import com.hypercube.mpm.midi.MidiRouter;
+import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.ControllerHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -47,6 +48,19 @@ public class JavaFXApplication extends Application {
         MidiRouter midiRouter = applicationContext.getBeanFactory()
                 .getBean(MidiRouter.class);
         midiRouter.terminate();
+        MainModel.getObservableInstance()
+                .getDeviceStates()
+                .values()
+                .forEach(s -> {
+                    try {
+                        if (s.getMidiOutPort() != null) {
+                            s.getMidiOutPort()
+                                    .close();
+                        }
+                    } catch (Exception e) {
+                        log.error("Unexpected error", e);
+                    }
+                });
         applicationContext.close();
         Platform.exit();
     }

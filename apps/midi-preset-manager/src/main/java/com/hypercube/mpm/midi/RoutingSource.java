@@ -1,9 +1,9 @@
 package com.hypercube.mpm.midi;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,18 +25,18 @@ public final class RoutingSource implements Closeable {
     /**
      * Low level MIDI port (bound {@link #device} if not null)
      */
-    private final MidiInDevice port;
+    private final MidiInPort port;
     /**
      * Name of the routing source (which is the port name)
      */
     private final String name;
     /**
      * RoutingSource towards secondary outputs (DAW) if {@link #device} is not null
-     * <p>{@link MidiTransformer} are bound to a specific {@link MidiOutDevice} name
+     * <p>{@link MidiTransformer} are bound to a specific {@link MidiOutPort} name
      */
     private final Map<String, MidiTransformer> secondaryTransformers = new HashMap<>();
 
-    public RoutingSource(MidiDeviceDefinition device, MidiInDevice port) {
+    public RoutingSource(MidiDeviceDefinition device, MidiInPort port) {
         this.device = device;
         this.port = port;
         if (port == null) {
@@ -61,12 +61,12 @@ public final class RoutingSource implements Closeable {
         port.removeListener(listener);
     }
 
-    public void addSecondaryOutputTransformer(MidiOutDevice secondaryOutput, MidiDeviceDefinition dawDevice, MidiTransformerListener controllerMessageListener) {
+    public void addSecondaryOutputTransformer(MidiOutPort secondaryOutput, MidiDeviceDefinition dawDevice, MidiTransformerListener controllerMessageListener) {
         secondaryTransformers
                 .put(secondaryOutput.getName(), new MidiTransformer(device, dawDevice, controllerMessageListener));
     }
 
-    public List<CustomMidiEvent> transformToSecondaryOutput(MidiOutDevice secondaryOutput, int outputChannel, CustomMidiEvent event) {
+    public List<CustomMidiEvent> transformToSecondaryOutput(MidiOutPort secondaryOutput, int outputChannel, CustomMidiEvent event) {
         return secondaryTransformers
                 .get(secondaryOutput.getName())
                 .transform(outputChannel, event);

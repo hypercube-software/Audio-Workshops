@@ -2,7 +2,7 @@ package com.hypercube.midi.translator.model;
 
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -97,9 +97,7 @@ public class DeviceInstance {
                 events.add(forgeSysExEvent(eventPayload));
             }
             return events;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidMidiDataException e) {
+        } catch (IOException | InvalidMidiDataException e) {
             throw new RuntimeException(e);
         }
     }
@@ -110,7 +108,7 @@ public class DeviceInstance {
      * @param out
      * @param timeMs
      */
-    public void sleep(MidiOutDevice out, long timeMs) {
+    public void sleep(MidiOutPort out, long timeMs) {
         try {
             long start = System.currentTimeMillis();
             for (; ; ) {
@@ -127,7 +125,7 @@ public class DeviceInstance {
         }
     }
 
-    public void sendAndWaitResponse(MidiOutDevice out, CustomMidiEvent customMidiEvent) {
+    public void sendAndWaitResponse(MidiOutPort out, CustomMidiEvent customMidiEvent) {
         int previousSize = getStateSize();
         readyToReceiveNextResponse();
         out.send(customMidiEvent);
@@ -140,7 +138,7 @@ public class DeviceInstance {
         currentResponseSize = 0;
     }
 
-    private void waitReceive(MidiOutDevice out, int previousSize) {
+    private void waitReceive(MidiOutPort out, int previousSize) {
         log.info("    Waiting data...");
         long now = System.currentTimeMillis();
         while (getStateSize() == previousSize && (System.currentTimeMillis() - now < 3000)) {
@@ -148,7 +146,7 @@ public class DeviceInstance {
         }
     }
 
-    private void waitIdle(MidiOutDevice out) {
+    private void waitIdle(MidiOutPort out) {
         for (; ; ) {
             long now = System.currentTimeMillis();
             long inactivityMs = now - getLastTimeReceiveMs();

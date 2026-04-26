@@ -198,8 +198,10 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
                     onBanksChanged((SelectionChangedEvent<String>) selectionChangedEvent);
             case WidgetIdentifiers.WIDGET_ID_PATCH ->
                     onPatchChanged((SelectionChangedEvent<Patch>) selectionChangedEvent);
-            case WidgetIdentifiers.WIDGET_ID_PASSTHRU_OUTPUTS ->
-                    runLongTask(new LongWork<Void>("sendCommand", () -> onSecondaryOutputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+            case WidgetIdentifiers.WIDGET_ID_INPUTS_PASSTHRU_OUTPUTS ->
+                    runLongTask(new LongWork<Void>("sendCommand", () -> onInputsPassThroughChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
+            case WidgetIdentifiers.WIDGET_ID_DEVICE_PASSTHRU_OUTPUTS ->
+                    runLongTask(new LongWork<Void>("sendCommand", () -> onDevicePassThroughChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
             case WidgetIdentifiers.WIDGET_ID_MASTER_INPUTS ->
                     runLongTask(new LongWork<Void>("selectedMasterInputsChanged", () -> onMasterInputsChanged((SelectionChangedEvent<String>) selectionChangedEvent)));
         }
@@ -260,12 +262,28 @@ public class MainWindowController extends Controller<MainWindow, MainModel> impl
         return null;
     }
 
-    private Void onSecondaryOutputsChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+    private Void onInputsPassThroughChanged(SelectionChangedEvent<String> selectionChangedEvent) {
         var cfg = configurationService.getProjectConfiguration();
 
-        List<String> selectedItems = selectionChangedEvent.getSelectedItems();
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems()
+                .stream()
+                .filter(i -> !i.isBlank())
+                .toList();
         midiRouter.changeSecondaryOutputs(selectedItems);
         cfg.setSelectedSecondaryOutputs(selectedItems);
+        configurationService.saveConfig();
+        return null;
+    }
+
+    private Void onDevicePassThroughChanged(SelectionChangedEvent<String> selectionChangedEvent) {
+        var cfg = configurationService.getProjectConfiguration();
+
+        List<String> selectedItems = selectionChangedEvent.getSelectedItems()
+                .stream()
+                .filter(i -> !i.isBlank())
+                .toList();
+        midiRouter.changeDevicePassThrough(selectedItems);
+
         configurationService.saveConfig();
         return null;
     }

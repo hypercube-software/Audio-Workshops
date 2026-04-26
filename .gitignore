@@ -54,3 +54,4 @@ midi-workshop-api/src/test/resources/devices-library/*/
 
 /apps/midi-preset-manager/config/*
 /apps/midi-preset-manager/TODO.txt
+/midi-workshop-api/src/test/resources/Kurzweil/anapads.krz

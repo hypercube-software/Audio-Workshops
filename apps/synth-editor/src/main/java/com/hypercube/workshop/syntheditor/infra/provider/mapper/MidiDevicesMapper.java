@@ -1,7 +1,7 @@
 package com.hypercube.workshop.syntheditor.infra.provider.mapper;
 
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.syntheditor.infra.provider.dto.MidiDeviceDTO;
 import com.hypercube.workshop.syntheditor.infra.provider.dto.MidiDevicesDTO;
 import org.mapstruct.Mapper;
@@ -12,19 +12,19 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MidiDevicesMapper {
 
-    default MidiDevicesDTO toDTO(List<MidiInDevice> inputs, List<MidiOutDevice> outputs) {
+    default MidiDevicesDTO toDTO(List<MidiInPort> inputs, List<MidiOutPort> outputs) {
         return new MidiDevicesDTO(toInDTO(inputs), toOutDTO(outputs));
     }
 
-    List<MidiDeviceDTO> toOutDTO(List<MidiOutDevice> outputs);
+    List<MidiDeviceDTO> toOutDTO(List<MidiOutPort> outputs);
 
-    List<MidiDeviceDTO> toInDTO(List<MidiInDevice> inputs);
-
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "type", constant = "INPUT")
-    MidiDeviceDTO toDTO(MidiInDevice input);
+    List<MidiDeviceDTO> toInDTO(List<MidiInPort> inputs);
 
     @Mapping(target = "name", source = "name")
     @Mapping(target = "type", constant = "INPUT")
-    MidiDeviceDTO toDTO(MidiOutDevice output);
+    MidiDeviceDTO toDTO(MidiInPort input);
+
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "type", constant = "INPUT")
+    MidiDeviceDTO toDTO(MidiOutPort output);
 }

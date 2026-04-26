@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.clock;
 
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.io.IOException;
 public class TimerBasedMidiClock implements MidiClock {
     private static final int MIDI_CLOCK_PPQ = 24;
 
-    private final MidiOutDevice clock;
+    private final MidiOutPort clock;
 
     private final Object signal = new Object();
 
@@ -22,7 +22,7 @@ public class TimerBasedMidiClock implements MidiClock {
     private volatile boolean exit = false;
     private long avgSendDurationInNanoSec;
 
-    public TimerBasedMidiClock(MidiOutDevice clock) {
+    public TimerBasedMidiClock(MidiOutPort clock) {
         this.clock = clock;
 
         clock.open();

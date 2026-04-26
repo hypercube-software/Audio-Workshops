@@ -2,15 +2,16 @@ package com.hypercube.mpm.midi;
 
 import com.hypercube.mpm.config.ConfigurationService;
 import com.hypercube.mpm.javafx.error.ApplicationError;
+import com.hypercube.mpm.midi.group.MidiOutPortGroup;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
+import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceController;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,6 @@ import javax.sound.midi.ShortMessage;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible to orchestrate the different MIDI connections inside the application
@@ -54,11 +54,10 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class MidiRouter {
     /**
      * For primary input and secondary inputs towards synths
-     * <p>{@link MidiTransformer} are bound to a specific {@link MidiInDevice} name
+     * <p>{@link MidiTransformer} are bound to a specific {@link MidiInPort} name
      */
     private final Map<String, MidiTransformer> inputTransformers = new ConcurrentHashMap<>();
 
@@ -67,34 +66,21 @@ public class MidiRouter {
      */
     private final ConfigurationService configurationService;
     /**
-     * Used to protect the access of the list {@link #secondaryOutputs} in a threadsafe way
-     */
-    private final Object secondaryOutputsGuardian = new Object();
-    /**
      * Inputs from the DAW, typically
      */
-    private final List<MidiInDevice> secondaryInputs = new ArrayList<>();
+    private final List<MidiInPort> secondaryInputs = new ArrayList<>();
     /**
      * Input master Keyboard controllers, the map key is the input midi port name
      */
     private final Map<String, RoutingSource> sources = new HashMap<>();
+    private final MidiOutPortGroup devicePassThrough;
+    private final MidiOutPortGroup inputsPassThrough;
     /**
      * This listener will be set by the GUI to display CC or NRPN identifiers received from the MIDI (it's just informative)
      */
     @Setter
     private MidiTransformerListener controllerMessageListener;
-    /**
-     * Outputs towards the DAW, typically
-     */
-    private List<MidiOutDevice> secondaryOutputs = new ArrayList<>();
-    /**
-     * List of secondary outputs given by the GUI (device names, or ports names)
-     */
-    private List<String> secondaryOutputNames = new ArrayList<>();
-    /**
-     * The user can temporarily disable the output
-     */
-    private boolean secondaryOutputsMuted;
+
     /**
      * Output to the synth currently used
      */
@@ -102,15 +88,15 @@ public class MidiRouter {
 
     // As you should know, in JAVA, two method references pointing to the same method are not equals
     // So it is crucial to use the same all the time
-    private final MidiListener mainDestinationEventListener = this::onMainDestinationEvent;
+    private final MidiListener mainDestinationEventListener = new SysExMidiListener(this::onMainDestinationEvent);
     /**
-     * {@link MidiInDevice} bound to the INPUT of the synth currently used
+     * {@link MidiInPort} bound to the INPUT of the synth currently used
      */
-    private MidiInDevice mainDestinationMidiIn;
+    private MidiInPort mainDestinationMidiIn;
     /**
-     * {@link MidiOutDevice} bound to the OUTPUT of the synth currently used (only used to display CC information to the user)
+     * {@link MidiOutPort} bound to the OUTPUT of the synth currently used (only used to display CC information to the user)
      */
-    private MidiOutDevice mainDestinationMidiOut;
+    private MidiOutPort mainDestinationMidiOut;
     /**
      * The user can temporarily disable the output
      */
@@ -120,7 +106,14 @@ public class MidiRouter {
      * <p>Range is [0-15], not [1-16]</p>
      */
     private int outputChannel = 0;
-    private final MidiListener mainSourceEventListener = this::onMainSourceEvent;
+    private final MidiListener mainSourceEventListener = new SysExMidiListener(this::onMainSourceEvent);
+
+    public MidiRouter(ConfigurationService configurationService) {
+        this.configurationService = configurationService;
+        this.devicePassThrough = new MidiOutPortGroup(configurationService, "device passthrough", null, null);
+        this.inputsPassThrough = new MidiOutPortGroup(configurationService, "inputs passthrough", this::onInputsPassthroughOpen, this::onInputsPassThroughClosed);
+    }
+
 
     /**
      * Changes the MIDI channel of a MidiEvent.
@@ -185,21 +178,21 @@ public class MidiRouter {
                 .stream()
                 .filter(d -> d.getDawMidiDevice() != null && d.getOutputMidiDevice() != null)
                 .forEach(outputDevice -> {
-                    MidiInDevice dawMidiInDevice = cfg.getMidiPortsManager()
+                    MidiInPort dawHardwareMidiInPort = cfg.getMidiPortsManager()
                             .getInput(outputDevice.getDawMidiDevice())
                             .orElse(null);
-                    MidiOutDevice midiOutDevice = cfg.getMidiPortsManager()
+                    MidiOutPort midiOutPort = cfg.getMidiPortsManager()
                             .getOutput(outputDevice.getOutputMidiDevice())
                             .orElse(null);
-                    if (dawMidiInDevice != null && midiOutDevice != null) {
+                    if (dawHardwareMidiInPort != null && midiOutPort != null) {
                         var dawDevice = cfg.getMidiDeviceLibrary()
                                 .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
                                 .orElse(null);
                         log.info("{} will go to {}", outputDevice.getDawMidiDevice(), outputDevice.getOutputMidiDevice());
-                        dawMidiInDevice.open();
+                        dawHardwareMidiInPort.open();
                         // TODO: Memory leak on this listener
-                        dawMidiInDevice.addListener((device, event) -> onDAWEvent(outputDevice, midiOutDevice, event));
-                        secondaryInputs.add(dawMidiInDevice);
+                        dawHardwareMidiInPort.addListener((device, event) -> onDAWEvent(outputDevice, midiOutPort, event));
+                        secondaryInputs.add(dawHardwareMidiInPort);
                         try {
                             String key = outputDevice.getDeviceName();
                             var dup = inputTransformers.get(key);
@@ -253,7 +246,7 @@ public class MidiRouter {
                 .toList();
         List<RoutingSource> routingSourcesAlreadyOpen = sources.values()
                 .stream()
-                .filter(routingSource -> newRoutingSources.contains(routingSource))
+                .filter(newRoutingSources::contains)
                 .toList();
         routingSourcesToClose.forEach(routingSource -> {
             try {
@@ -262,8 +255,6 @@ public class MidiRouter {
                 throw new MidiError(e);
             }
         });
-        List<String> secondaryOutputsNamesBackup = new ArrayList<>(secondaryOutputNames);
-        closeSecondaryOutputs();
         closeMainSourceListener();
         sources.clear();
         newRoutingSources
@@ -279,8 +270,7 @@ public class MidiRouter {
                 });
 
         installMainSourceListenerWithTransformer(mainDestination);
-        secondaryOutputNames = secondaryOutputsNamesBackup;
-        openSecondaryOutputs();
+        inputsPassThrough.restart();
     }
 
     /**
@@ -318,23 +308,25 @@ public class MidiRouter {
     /**
      * The GUI call this method to select secondary MIDI destinations
      *
-     * @param deviceOrPortNames {@link MidiDeviceDefinition} names or {@link MidiOutDevice} names
+     * @param deviceOrPortNames {@link MidiDeviceDefinition} names or {@link MidiOutPort} names
      */
     public void changeSecondaryOutputs(List<String> deviceOrPortNames) {
-        closeSecondaryOutputs();
-        secondaryOutputNames = new ArrayList<>(deviceOrPortNames); // make it read/write
-        openSecondaryOutputs();
+        inputsPassThrough.changePorts(deviceOrPortNames);
+    }
+
+    public void changeDevicePassThrough(List<String> deviceOrPortNames) {
+        devicePassThrough.changePorts(deviceOrPortNames);
     }
 
     /**
      * This listener receive messages from the master keyboard controller and redirect the traffic to the currently selected synth
      * <p>A specific {@link MidiTransformer} will take care of CC/NRPN conversion</p>
      */
-    public void onMainSourceEvent(MidiInDevice midiInDevice, CustomMidiEvent event) {
-        String deviceName = midiInDevice.getName();
+    public void onMainSourceEvent(MidiInPort midiInPort, CustomMidiEvent event) {
+        String deviceName = midiInPort.getName();
         if (event.getMessage()
                 .getStatus() <= 0xF0) {
-            log.info("onMainSourceEvent: Receive from {}: {}", deviceName, event.toString());
+            log.info("onMainSourceEvent: Receive from {}: {}", deviceName, event);
         }
         RoutingSource source = sources.get(deviceName);
 
@@ -346,9 +338,7 @@ public class MidiRouter {
         if (mainDestinationMidiOut != null && !mainDestinationMidiOutMuted) {
             redirectTrafficToMainOutput(source, event, transformed);
         }
-        if (!secondaryOutputsMuted) {
-            redirectTrafficToSecondaryOutputs(source, event);
-        }
+        redirectTrafficToSecondaryOutputs(source, event);
     }
 
     public void changeOutputChannel(Integer channel) {
@@ -360,19 +350,17 @@ public class MidiRouter {
         log.info("Shutdown Midi Router...");
         try {
             if (mainDestinationMidiOut != null) {
-                log.info("Close {}", mainDestinationMidiOut.getName());
+                log.info("Close Main output: '{}'", mainDestinationMidiOut.getName());
                 mainDestinationMidiOut.close();
             }
-            for (MidiOutDevice currentMidiOut : secondaryOutputs) {
-                log.info("Close {}", currentMidiOut.getName());
-                currentMidiOut.close();
-            }
-            for (RoutingSource sources : sources.values()) {
-                sources.close();
+            inputsPassThrough.closePorts();
+            for (RoutingSource source : sources.values()) {
+                log.info("Close Routine Source input: '{}'", source.getPortName());
+                source.close();
             }
             closeMainDestinationListener();
-            for (MidiInDevice dawMidiIn : secondaryInputs) {
-                log.info("Close {}", dawMidiIn.getName());
+            for (MidiInPort dawMidiIn : secondaryInputs) {
+                log.info("Close DAW input '{}'", dawMidiIn.getName());
                 dawMidiIn.close();
             }
 
@@ -387,9 +375,8 @@ public class MidiRouter {
                 .equals(device)) {
             mainDestinationMidiOutMuted = mute;
         }
-        if (secondaryOutputNames.contains(device)) {
-            secondaryOutputsMuted = mute;
-        }
+        inputsPassThrough.mute(device, mute);
+        devicePassThrough.mute(device, mute);
     }
 
     public void sendToMainDestination(CustomMidiEvent outputEvent) {
@@ -398,71 +385,36 @@ public class MidiRouter {
         }
     }
 
+    private void onInputsPassThroughClosed(MidiDeviceDefinition midiDeviceDefinition) {
+        sources.values()
+                .forEach(src -> src.removeSecondaryTransformer(midiDeviceDefinition.getOutputMidiDevice()));
+    }
+
     private void closeMainOutput() {
         if (mainDestinationMidiOut != null) {
             mainDestinationMidiOut.close();
         }
     }
 
-    private void closeSecondaryOutputs() {
+    private void onInputsPassthroughOpen(MidiOutPort midiOutPort) {
+        // install transformers
         var cfg = configurationService.getProjectConfiguration();
-        secondaryOutputNames.stream()
-                .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
-                        .getDevice(deviceOrPortName))
-                .flatMap(Optional::stream)
-                .forEach(device -> sources.values()
-                        .forEach(src -> src.removeSecondaryTransformer(device.getOutputMidiDevice())));
-        synchronized (secondaryOutputsGuardian) {
-            for (MidiOutDevice midiOut : secondaryOutputs) {
-                try {
-                    midiOut.close();
-                } catch (MidiError e) {
-                    log.warn("Unable to close {}", midiOut.getName());
-                }
-            }
-            secondaryOutputs.clear();
-        }
-        secondaryOutputNames.clear();
-    }
-
-    private void openSecondaryOutputs() {
-        var cfg = configurationService.getProjectConfiguration();
-
-        synchronized (secondaryOutputsGuardian) {
-            // open outputs
-            secondaryOutputs = secondaryOutputNames.stream()
-                    .map(deviceOrPortName -> cfg.getMidiDeviceLibrary()
-                            .getDevice(deviceOrPortName)
-                            .map(MidiDeviceDefinition::getOutputMidiDevice)
-                            .orElse(deviceOrPortName))
-                    .map(cfg.getMidiPortsManager()::getOutput)
-                    .flatMap(Optional::stream)
-                    .collect(Collectors.toList());
-
-            // install transformers
-            cfg.getMidiDeviceLibrary()
-                    .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
-                    .ifPresent(dawDevice -> {
-                        sources.values()
-                                .forEach(src ->
-                                        secondaryOutputs.forEach(out -> src.addSecondaryOutputTransformer(out, dawDevice, controllerMessageListener)));
-                    });
-
-            for (MidiOutDevice midiOut : secondaryOutputs) {
-                midiOut.open();
-            }
-        }
+        cfg.getMidiDeviceLibrary()
+                .getDevice(MidiDeviceDefinition.DAW_DEVICE_NAME)
+                .ifPresent(dawDevice -> sources.values()
+                        .forEach(src -> src.addSecondaryOutputTransformer(midiOutPort, dawDevice, controllerMessageListener)));
     }
 
     /**
      * This listener receive message from the currently selected synth.
-     * <p>We just notify the GUI about what we receive</p>
+     * <p>We notify the GUI about what we receive and forward to selected ports</p>
      */
-    private void onMainDestinationEvent(MidiInDevice midiInDevice, CustomMidiEvent event) {
+    private void onMainDestinationEvent(MidiInPort midiInPort, CustomMidiEvent event) {
         if (event.getMessage()
-                .getStatus() <= 0xF0) {
+                .getStatus() != ShortMessage.ACTIVE_SENSING) {
             log.info("onMainDestinationEvent: Receive from {}: {}", mainDestination.getDeviceName(), event.toString());
         }
+        devicePassThrough.send(event);
     }
 
     /**
@@ -470,23 +422,21 @@ public class MidiRouter {
      * <p>If one of them is the same as the input, we send the origin event instead of the transformed ones</p>
      */
     private void redirectTrafficToSecondaryOutputs(RoutingSource source, CustomMidiEvent event) {
-        synchronized (secondaryOutputsGuardian) {
-            for (MidiOutDevice midiOut : secondaryOutputs) {
-                String sourceName = source.withDevice() ? source.getDeviceName() : source.getPortName();
-                String targetPort = midiOut.getName();
-                if (targetPort
-                        .equals(source.getPortName())) {
-                    log.info("\tSecondaryOutput routed 'As Is' from '{}' to '{}': {}", sourceName, targetPort, event.toString());
-                    midiOut.send(event);
-                } else {
-                    List<CustomMidiEvent> transformed = source.transformToSecondaryOutput(midiOut, outputChannel, event);
-                    for (var evt : transformed) {
-                        log.info("\tSecondaryOutput routed 'Transformed' from '{}' to '{}': {}", sourceName, targetPort, evt.toString());
-                        midiOut.send(evt);
-                    }
+        inputsPassThrough.forEach(midiOut -> {
+            String sourceName = source.withDevice() ? source.getDeviceName() : source.getPortName();
+            String targetPort = midiOut.getName();
+            if (targetPort
+                    .equals(source.getPortName())) {
+                log.info("\tSecondaryOutput routed 'As Is' from '{}' to '{}': {}", sourceName, targetPort, event.toString());
+                midiOut.send(event);
+            } else {
+                List<CustomMidiEvent> transformed = source.transformToSecondaryOutput(midiOut, outputChannel, event);
+                for (var evt : transformed) {
+                    log.info("\tSecondaryOutput routed 'Transformed' from '{}' to '{}': {}", sourceName, targetPort, evt.toString());
+                    midiOut.send(evt);
                 }
             }
-        }
+        });
     }
 
     /**
@@ -502,7 +452,7 @@ public class MidiRouter {
             for (CustomMidiEvent outputEvent : transformed) {
                 if (outputEvent.getMessage()
                         .getStatus() <= 0xF0) {
-                    log.info("\tMainOutput routed 'Transformed' to '{}': {}", mainDestination.getDeviceName(), outputEvent.toString());
+                    log.info("\tMainOutput routed 'Transformed' to '{}': {}", mainDestination.getDeviceName(), outputEvent);
                 }
                 sendToMainDestination(outputEvent);
             }
@@ -510,24 +460,24 @@ public class MidiRouter {
     }
 
     /**
-     * This listener redirect traffic from DAW ({@link #secondaryInputs}) to the right synth ({@link #secondaryOutputs})
+     * This listener redirect traffic from DAW ({@link #secondaryInputs}) to the right synth
      * <p>A specific {@link MidiTransformer} will take care of CC/NRPN conversion</p>
      */
-    private void onDAWEvent(MidiDeviceDefinition outputDevice, MidiOutDevice midiOutDevice, CustomMidiEvent event) {
+    private void onDAWEvent(MidiDeviceDefinition outputDevice, MidiOutPort midiOutPort, CustomMidiEvent event) {
         if (event.getMessage()
                 .getStatus() <= 0xF0) {
-            log.info("Receive from DAW, targeting {}: {}", outputDevice.getDeviceName(), event.toString());
+            log.info("Receive from DAW, targeting {}: {}", outputDevice.getDeviceName(), event);
         }
 
         List<CustomMidiEvent> transformed = inputTransformers.get(outputDevice.getDeviceName())
                 .transform(-1, event);
         for (CustomMidiEvent outputEvent : transformed) {
-            if (midiOutDevice != null) {
+            if (midiOutPort != null) {
                 if (outputEvent.getMessage()
                         .getStatus() <= 0xF0) {
-                    log.info("   Route to {}: {}", midiOutDevice.getName(), outputEvent.toString());
+                    log.info("   Route to {}: {}", midiOutPort.getName(), outputEvent);
                 }
-                midiOutDevice.send(outputEvent);
+                midiOutPort.send(outputEvent);
             }
         }
     }
@@ -548,7 +498,7 @@ public class MidiRouter {
      */
     private void closeMainDestinationListener() {
         if (mainDestinationMidiIn != null) {
-            log.info("Stop listening {}", mainDestinationMidiIn.getName());
+            log.info("Stop Main input '{}'", mainDestinationMidiIn.getName());
             mainDestinationMidiIn.removeListener(mainDestinationEventListener);
             mainDestinationMidiIn.close();
             mainDestinationMidiIn = null;
@@ -592,7 +542,7 @@ public class MidiRouter {
                 });
     }
 
-    private void dumpListeners(String name, MidiInDevice device) {
+    private void dumpListeners(String name, MidiInPort device) {
         log.info("#### LISTENERS for {} on {}:", name, device.getName());
         device.getListeners()
                 .forEach(l -> log.info("#### LISTENER {}", l.getClass()

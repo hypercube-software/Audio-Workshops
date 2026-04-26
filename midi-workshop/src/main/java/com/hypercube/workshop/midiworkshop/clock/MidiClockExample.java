@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.clock;
 
 import com.hypercube.workshop.midiworkshop.api.clock.*;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.seq.TimeSignature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.io.IOException;
 @Component
 public class MidiClockExample {
 
-    void startClock(MidiClockType clockType, MidiOutDevice out, int tempo) {
+    void startClock(MidiClockType clockType, MidiOutPort out, int tempo) {
 
         try (MidiClock clock = clockType == MidiClockType.SEQ ? new SequencerBasedMidiClock(out) : new TimerBasedMidiClock(out)) {
 

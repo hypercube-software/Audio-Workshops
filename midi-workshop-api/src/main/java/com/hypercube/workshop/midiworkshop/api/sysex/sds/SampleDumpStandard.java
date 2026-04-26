@@ -1,10 +1,10 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.sds;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.XORChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +29,13 @@ public class SampleDumpStandard {
             DumpWait.class
     );
     private final MidiDeviceDefinition deviceDefinition;
-    private final MidiInDevice inPort;
-    private final MidiOutDevice outPort;
+    private final MidiInPort inPort;
+    private final MidiOutPort outPort;
     private final SysExMidiListener listener = new SysExMidiListener();
     private final Map<Class<? extends SampleDumpStandardMessage>, Method> fromBytesMethods = new HashMap<>();
     private final Map<Class<? extends SampleDumpStandardMessage>, Method> MatchesMethods = new HashMap<>();
 
-    public SampleDumpStandard(MidiDeviceDefinition deviceDefinition, MidiInDevice inPort, MidiOutDevice outPort) {
+    public SampleDumpStandard(MidiDeviceDefinition deviceDefinition, MidiInPort inPort, MidiOutPort outPort) {
         this.deviceDefinition = deviceDefinition;
         this.inPort = inPort;
         this.outPort = outPort;

@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.monitor;
 
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -45,7 +45,7 @@ public class MidiMonitorCLI {
             }
         } else {
             // Beware of infinite loop backs ! we retire the outputDevice from the list of inputDevices
-            List<MidiInDevice> inputDevices = m.getInputs()
+            List<MidiInPort> inputDevices = m.getInputs()
                     .stream()
                     .filter(d -> !d.getName()
                             .equals(outputDevice))
@@ -63,9 +63,9 @@ public class MidiMonitorCLI {
         MidiPortsManager m = new MidiPortsManager();
         m.collectHardwareDevices();
         m.getInputs()
-                .forEach(d -> log.info(String.format("INPUT  Device \"%s\"", d.getName())));
+                .forEach(d -> log.info("INPUT  Device '{}'", d.getName()));
         m.getOutputs()
-                .forEach(d -> log.info(String.format("OUTPUT Device \"%s\"", d.getName())));
+                .forEach(d -> log.info("OUTPUT Device '{}'", d.getName()));
     }
 
 }

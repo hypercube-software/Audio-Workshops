@@ -2,8 +2,9 @@ package com.hypercube.workshop.midiworkshop.api.seq;
 
 import com.hypercube.workshop.midiworkshop.api.MidiMetaMessages;
 import com.hypercube.workshop.midiworkshop.api.clock.*;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.HardwareMidiOutPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @SuppressWarnings("java:S1481")
 public class MidiSequencer implements Closeable {
-    private final MidiOutDevice out;
+    private final MidiOutPort out;
     private final Sequencer sequencer;
     private final Thread shutdownHook;
     @Setter
@@ -43,7 +44,7 @@ public class MidiSequencer implements Closeable {
      * @param clockDevice can be null
      * @param out         MIDI out device
      */
-    public MidiSequencer(int tempo, MidiClockType clockType, MidiOutDevice clockDevice, MidiOutDevice out) {
+    public MidiSequencer(int tempo, MidiClockType clockType, MidiOutPort clockDevice, MidiOutPort out) {
         this.tempo = tempo;
         this.out = out;
         if (clockDevice != null && clockType != MidiClockType.NONE) {
@@ -56,8 +57,9 @@ public class MidiSequencer implements Closeable {
             out.open();
             out.sendAllOff();
             sequencer = MidiSystem.getSequencer(false);
-
-            out.bindToSequencer(sequencer);
+            if (out instanceof HardwareMidiOutPort hPort) {
+                hPort.bindToSequencer(sequencer);
+            }
             sequencer.addMetaEventListener(this::onMetaEvent);
             sequencer.open();
             shutdownHook = new Thread(this::onJVMShutdown);

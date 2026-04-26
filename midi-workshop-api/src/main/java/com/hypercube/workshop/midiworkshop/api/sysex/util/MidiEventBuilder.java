@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.util;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.HardwareMidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +86,7 @@ public class MidiEventBuilder {
     }
 
     public static CustomMidiEvent forgeCustomMidiEvent(byte[] payload) {
-        return forgeCustomMidiEvent(payload, MidiOutDevice.NO_TIME_STAMP);
+        return forgeCustomMidiEvent(payload, HardwareMidiOutPort.NO_TIME_STAMP);
     }
 
     public static CustomMidiEvent forgeCustomMidiEvent(byte[] payload, long ticks) {

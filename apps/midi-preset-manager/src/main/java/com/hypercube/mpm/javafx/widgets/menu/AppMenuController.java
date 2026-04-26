@@ -19,7 +19,7 @@ import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.DialogIcon;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.worker.LongWork;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
@@ -127,7 +127,7 @@ public class AppMenuController extends Controller<MenuBar, MainModel> implements
                 .forEach((name, device) -> projectConfiguration
                         .getMidiPortsManager()
                         .getOutput(device.getOutputMidiDevice())
-                        .filter(MidiOutDevice::isOpen)
+                        .filter(MidiOutPort::isOpen)
                         .ifPresent(port -> {
                             log.info("Send all off to MIDI port '{}'...", port.getName());
                             port.sendAllOff();

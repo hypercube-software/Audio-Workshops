@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.clock;
 
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.seq.MidiSequence;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +15,7 @@ public class SequencerBasedMidiClock implements MidiClock {
 
     private final Object midiTickSignal = new Object();
 
-    public SequencerBasedMidiClock(MidiOutDevice clock) {
+    public SequencerBasedMidiClock(MidiOutPort clock) {
         try {
             clockSequencer = MidiSystem.getSequencer(false);
             // javax.sound.midi.Sequencer send all note off on loop end which is a VERY bad idea for the MIDI Clock accuracy

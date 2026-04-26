@@ -1,7 +1,7 @@
 package com.hypercube.mpm.model;
 
 import com.hypercube.util.javafx.model.NotObservable;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +48,7 @@ public class DeviceState {
     private boolean lastUsed;
 
     @NotObservable
-    private MidiOutDevice midiOutDevice;
+    private MidiOutPort midiOutPort;
 
     public int getPatchIndex() {
         if (currentSearchOutput == null || currentPatch == null) {

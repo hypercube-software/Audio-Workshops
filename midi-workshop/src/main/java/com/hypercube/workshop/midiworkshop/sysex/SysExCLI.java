@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
 import com.hypercube.workshop.midiworkshop.api.presets.crawler.MidiPresetCrawler;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
@@ -240,7 +240,7 @@ public class SysExCLI {
         sampleDumpStandardExample.request(deviceName, sampleId);
     }
 
-    private void receiveBulkMemory(Device model, MidiOutDevice out) {
+    private void receiveBulkMemory(Device model, MidiOutPort out) {
         model.getMemory()
                 .getMemoryMaps()
                 .stream()
@@ -263,7 +263,7 @@ public class SysExCLI {
                 });
     }
 
-    private void receiveNonBulkMemory(DeviceMemoryDumper dumper, Device model, MidiOutDevice out) {
+    private void receiveNonBulkMemory(DeviceMemoryDumper dumper, Device model, MidiOutPort out) {
         dumper.visitMemory(new DeviceMemoryVisitor() {
             @Override
             public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
@@ -285,7 +285,7 @@ public class SysExCLI {
         });
     }
 
-    private Thread initListener(MidiInDevice inputDevice, MidiMonitorEventListener listener) throws InterruptedException {
+    private Thread initListener(MidiInPort inputDevice, MidiMonitorEventListener listener) throws InterruptedException {
         Thread listenerThread = new Thread(() -> {
             try {
                 listenerThreadReady.await();
@@ -319,11 +319,11 @@ public class SysExCLI {
         }
     }
 
-    private void onMidiEvent(MidiInDevice device, MidiEvent evt, File output, AtomicInteger total) {
+    private void onMidiEvent(MidiInPort midiInPort, MidiEvent evt, File output, AtomicInteger total) {
         if (evt.getMessage()
                 .getStatus() == SysexMessage.SYSTEM_EXCLUSIVE) {
             try {
-                log.info("Receive SYSEX from device " + device.getName());
+                log.info("Receive SYSEX from midiInPort {}", midiInPort.getName());
                 byte[] data = evt.getMessage()
                         .getMessage();
                 if (data[3] == SYSEX_GENERAL_INFORMATION && data[4] == SYSEX_IDENTITY_RESPONSE) {

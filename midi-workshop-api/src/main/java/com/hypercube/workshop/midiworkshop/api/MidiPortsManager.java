@@ -1,12 +1,14 @@
 package com.hypercube.workshop.midiworkshop.api;
 
-import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MultiMidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.remote.client.MidiInNetworkDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.remote.client.MidiOutNetworkDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.AbstractMidiDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.HardwareMidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MultiMidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.HardwareMidiOutPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
+import com.hypercube.workshop.midiworkshop.api.ports.remote.client.NetworkMidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.remote.client.NetworkMidiOutPort;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,11 @@ public class MidiPortsManager {
     /**
      * This list include real hardware input devices and network ones
      */
-    private final List<MidiInDevice> inputs = new ArrayList<>();
+    private final List<MidiInPort> inputs = new ArrayList<>();
     /**
      * This list include real hardware output devices and network ones
      */
-    private final List<MidiOutDevice> outputs = new ArrayList<>();
+    private final List<MidiOutPort> outputs = new ArrayList<>();
 
     public static boolean isJdkVersionAtLeast(int requiredMajorVersion) {
         String javaVersion = System.getProperty("java.version");
@@ -83,7 +85,7 @@ public class MidiPortsManager {
                             if (!firstScan) {
                                 log.info("New output MIDI device detected: {}", deviceName);
                             }
-                            outputs.add(new MidiOutDevice(device));
+                            outputs.add(new HardwareMidiOutPort(device));
                         }
                     }
                     if (device.getMaxTransmitters() > 0 || device.getMaxTransmitters() == -1) {
@@ -92,7 +94,7 @@ public class MidiPortsManager {
                             if (!firstScan) {
                                 log.info("New input MIDI device detected: {}", deviceName);
                             }
-                            inputs.add(new MidiInDevice(device));
+                            inputs.add(new HardwareMidiInPort(device));
                         }
                     }
                 }
@@ -105,7 +107,7 @@ public class MidiPortsManager {
         sortDevices();
     }
 
-    public Optional<MidiInDevice> getInput(String name) {
+    public Optional<MidiInPort> getInput(String name) {
         if (name == null) {
             return Optional.empty();
         }
@@ -114,10 +116,13 @@ public class MidiPortsManager {
                         .equals(name))
                 .findFirst()
                 .orElseGet(() -> {
-                    if (MidiOutNetworkDevice.isRemoteAddress(name)) {
+                    if (NetworkMidiOutPort.isRemoteAddress(name)) {
                         return getOutput(name).map(o -> {
-                                    MidiOutNetworkDevice midiOutNetworkDevice = (MidiOutNetworkDevice) o;
-                                    var midiInNetworkDevice = midiOutNetworkDevice.getMidiInNetworkDevice();
+                                    NetworkMidiOutPort networkMidiOutPort = (NetworkMidiOutPort) o;
+                                    if (!networkMidiOutPort.isOpen()) {
+                                        networkMidiOutPort.open();
+                                    }
+                                    var midiInNetworkDevice = networkMidiOutPort.getNetworkMidiInPort();
                                     if (midiInNetworkDevice != null && !inputs.contains(midiInNetworkDevice)) {
                                         inputs.add(midiInNetworkDevice);
                                     }
@@ -130,7 +135,7 @@ public class MidiPortsManager {
                 }));
     }
 
-    public Optional<MidiOutDevice> getOutput(String name) {
+    public Optional<MidiOutPort> getOutput(String name) {
         if (name == null) {
             return Optional.empty();
         }
@@ -139,8 +144,8 @@ public class MidiPortsManager {
                         .equals(name))
                 .findFirst()
                 .orElseGet(() -> {
-                    if (MidiOutNetworkDevice.isRemoteAddress(name)) {
-                        MidiOutDevice device = new MidiOutNetworkDevice(name);
+                    if (NetworkMidiOutPort.isRemoteAddress(name)) {
+                        NetworkMidiOutPort device = new NetworkMidiOutPort(name);
                         outputs.add(device);
                         return device;
                     } else {
@@ -149,22 +154,20 @@ public class MidiPortsManager {
                 }));
     }
 
-    public MidiOutDevice openOutput(String name) {
-        MidiOutDevice out = getOutput(name)
-                .orElseThrow(() -> new MidiError("Output Port '%s' not found".formatted(name)));
+    public MidiOutPort openOutput(String name) {
+        MidiOutPort out = getOutput(name).orElseThrow(() -> new MidiError("Output Port '%s' not found".formatted(name)));
         out.open();
         return out;
     }
 
-    public MidiInDevice openInput(String name) {
-        MidiInDevice in = getInput(name)
-                .orElseThrow(() -> new MidiError("Input Port '%s' not found".formatted(name)));
+    public MidiInPort openInput(String name) {
+        MidiInPort in = getInput(name).orElseThrow(() -> new MidiError("Input Port '%s' not found".formatted(name)));
         in.open();
         return in;
     }
 
-    public MidiInDevice openInputs(List<MidiInDevice> devices) {
-        MidiInDevice in = new MultiMidiInDevice(devices);
+    public MidiInPort openInputs(List<MidiInPort> devices) {
+        MidiInPort in = new MultiMidiInPort(devices);
         in.open();
         return in;
     }
@@ -196,11 +199,11 @@ public class MidiPortsManager {
     private void cleanupHardwareDevices(Set<String> actualHardwareInputs, Set<String> actualHardwareOutputs) {
         var inputsToDelete = inputs.stream()
                 .filter(d -> !actualHardwareInputs.contains(d.getName()))
-                .filter(d -> !(d instanceof MidiInNetworkDevice))
+                .filter(d -> !(d instanceof NetworkMidiInPort))
                 .toList();
         var outputsToDelete = outputs.stream()
                 .filter(d -> !actualHardwareOutputs.contains(d.getName()))
-                .filter(d -> !(d instanceof MidiOutNetworkDevice))
+                .filter(d -> !(d instanceof NetworkMidiOutPort))
                 .toList();
         inputsToDelete.forEach(midiInDevice -> {
             log.info("Input MIDI device removed: {}", midiInDevice.getName());

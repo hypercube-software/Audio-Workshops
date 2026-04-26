@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
-import com.hypercube.workshop.midiworkshop.api.devices.remote.NetworkIdBuilder;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.ports.remote.NetworkIdBuilder;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetNaming;

@@ -10,7 +10,7 @@ import com.hypercube.mpm.model.MainModel;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
 import com.hypercube.util.javafx.worker.LongWork;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
@@ -159,7 +159,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
         //hexResponse.setData(response);
     }
 
-    private void onSysExUpdate(MidiInDevice midiInDevice, MidiRequestResponse partialMidiRequestResponse) {
+    private void onSysExUpdate(MidiInPort midiInPort, MidiRequestResponse partialMidiRequestResponse) {
         onSysExReceived(partialMidiRequestResponse);
         updateResponseLabel(getSelectedDevice().get(), partialMidiRequestResponse.response());
     }

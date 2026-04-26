@@ -5,8 +5,8 @@ import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.javafx.widgets.dialog.generic.GenericDialogController;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.JavaFXSpringController;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -73,12 +73,12 @@ public class DevicesPortsDialogController extends DialogController<DevicesPortsD
         List<String> midiInPorts = cfg.getMidiPortsManager()
                 .getInputs()
                 .stream()
-                .map(MidiInDevice::getName)
+                .map(MidiInPort::getName)
                 .toList();
         List<String> midiOutPorts = cfg.getMidiPortsManager()
                 .getOutputs()
                 .stream()
-                .map(MidiOutDevice::getName)
+                .map(MidiOutPort::getName)
                 .toList();
         setUpColumn(colName, null);
         setUpColumn(colBrand, null);

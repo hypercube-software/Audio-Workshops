@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.io.response;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +25,7 @@ public class SysExAggregatorListener implements MidiListener {
     private final Consumer<byte[]> sysExUpdateListener;
 
     @Override
-    public void onEvent(MidiInDevice device, CustomMidiEvent event) {
+    public void onEvent(MidiInPort device, CustomMidiEvent event) {
         try {
             buffer.write(event.getMessage()
                     .getMessage());

@@ -11,8 +11,8 @@ import com.hypercube.workshop.audioworkshop.synth.vca.VCA;
 import com.hypercube.workshop.audioworkshop.synth.vco.CorrectVCO;
 import com.hypercube.workshop.audioworkshop.synth.vco.VCO;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +56,7 @@ public class AudioSynth {
         midiNote = 0;
     }
 
-    void synth(MidiInDevice midiInDevice, AudioOutputDevice audioOutputDevice) {
+    void synth(MidiInPort midiInPort, AudioOutputDevice audioOutputDevice) {
         try {
             int bufferSizeMs = 100;
             PCMBufferFormat format = new PCMBufferFormat(100, SAMPLE_RATE, BitDepth.BIT_DEPTH_16, 1, PCMEncoding.SIGNED, ByteOrder.BIG_ENDIAN);
@@ -83,9 +83,9 @@ public class AudioSynth {
             stop = false;
             log.info("Play some notes ! Use the pitch bend to exit...");
             thread.start();
-            midiInDevice.listen((device, evt) -> onMidiEvent(evt, vca));
+            midiInPort.listen((device, evt) -> onMidiEvent(evt, vca));
         } catch (MidiError e) {
-            log.error("The Output device is Unavailable: " + midiInDevice.getName());
+            log.error("The Output device is Unavailable: {}", midiInPort.getName());
         }
     }
 }

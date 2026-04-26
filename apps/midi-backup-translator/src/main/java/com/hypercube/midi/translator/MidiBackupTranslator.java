@@ -2,9 +2,9 @@ package com.hypercube.midi.translator;
 
 import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,18 +22,18 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @RequiredArgsConstructor
 public class MidiBackupTranslator implements Closeable {
     private final ProjectConfiguration conf;
-    private MidiInDevice midiInDevice;
-    private MidiOutDevice midiOutDevice;
+    private final ConcurrentLinkedDeque<CustomMidiEvent> eventQueue = new ConcurrentLinkedDeque<>();
+    private MidiInPort midiInPort;
+    private MidiOutPort midiOutPort;
     private int bandwidth;
     private Thread consumer;
-    private ConcurrentLinkedDeque<CustomMidiEvent> eventQueue = new ConcurrentLinkedDeque<>();
     private boolean stop;
     private volatile CustomMidiEvent lastDropped;
 
     @Override
     public void close() {
-        if (midiInDevice != null) {
-            midiInDevice.close();
+        if (midiInPort != null) {
+            midiInPort.close();
         }
     }
 
@@ -42,7 +42,7 @@ public class MidiBackupTranslator implements Closeable {
         long prevSend = -1;
         long prevSize = -1;
         double maxBytesPerSec = bandwidth;
-        log.info("maxBytesPerSec: " + maxBytesPerSec);
+        log.info("maxBytesPerSec: {}", maxBytesPerSec);
         while (!stop) {
             long now = System.nanoTime();
             double delta = now - prevSend;
@@ -59,7 +59,7 @@ public class MidiBackupTranslator implements Closeable {
                 if (requireThrottling) {
                     if (prevSend == -1 || currentBandwidth < maxBytesPerSec) {
                         log.info("Sent!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
-                        midiOutDevice.send(event);
+                        midiOutPort.send(event);
                         prevSend = now;
                         prevSize = payloadSize;
                     } else {
@@ -68,11 +68,11 @@ public class MidiBackupTranslator implements Closeable {
                     }
                 } else {
                     //log.info("Unthrottled Sent!  %s payloadSize: %d bytesPerSec: %f >= %f".formatted(event.getHexValues(), payloadSize, currentBandwidth, maxBytesPerSec));
-                    midiOutDevice.send(event);
+                    midiOutPort.send(event);
                 }
             } else if (lastDropped != null && currentBandwidth < maxBytesPerSec) {
                 //log.info("Send last dropped: %s".formatted(lastDropped.getHexValues()));
-                midiOutDevice.send(lastDropped);
+                midiOutPort.send(lastDropped);
                 prevSend = now;
                 prevSize = lastDropped.getMessage()
                         .getLength();
@@ -81,7 +81,7 @@ public class MidiBackupTranslator implements Closeable {
         }
     }
 
-    private void onMidiEvent(MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
+    private void onMidiEvent(MidiInPort midiInPort, CustomMidiEvent customMidiEvent) {
         if (customMidiEvent.getMessage()
                 .getStatus() == ShortMessage.CONTROL_CHANGE) {
             int cc = customMidiEvent.getMessage()
@@ -110,10 +110,10 @@ public class MidiBackupTranslator implements Closeable {
         }
     }
 
-    void translate(MidiInDevice in, MidiOutDevice out, Integer bandwidth) {
+    void translate(MidiInPort in, MidiOutPort out, Integer bandwidth) {
         try {
-            this.midiInDevice = in;
-            this.midiOutDevice = out;
+            this.midiInPort = in;
+            this.midiOutPort = out;
             // Midi throughtput 3125 bytes / sec
             this.bandwidth = Optional.ofNullable(bandwidth)
                     .orElse(3125);
@@ -122,7 +122,7 @@ public class MidiBackupTranslator implements Closeable {
             consumer.start();
             in.listen(this::onMidiEvent);
         } catch (MidiError e) {
-            log.error("The Output device is Unavailable: " + in.getName());
+            log.error("The Output device is Unavailable: {}", in.getName());
         } finally {
             stop = true;
             try {

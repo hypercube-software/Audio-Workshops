@@ -1,9 +1,9 @@
 package com.hypercube.workshop.syntheditor.service;
 
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryVisitor;
@@ -34,8 +34,8 @@ import java.util.List;
 public class SynthEditorService implements SynthEditorBusListener {
     private final WebSocketBus bus;
     private final MidiPortsManager midiPortsManager = new MidiPortsManager();
-    private MidiInDevice inputDevice;
-    private MidiOutDevice outputDevice;
+    private MidiInPort inputDevice;
+    private MidiOutPort outputDevice;
     private RolandDevice device;
     private EditableParameters editableParameters = new EditableParameters();
 

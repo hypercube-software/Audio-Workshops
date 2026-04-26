@@ -68,6 +68,22 @@ public class BitStreamReader {
         return value;
     }
 
+    public int readShort() {
+        return readBits(16);
+    }
+
+    public int readSignedShort() {
+        return (short) readBits(16);
+    }
+
+    public long readLong() {
+        return readBits(32) & 0xFFFFFFFFL;
+    }
+
+    public int readByte() {
+        return readBits(8);
+    }
+
     public void skipBytes(int size) {
         if (size != 0) {
             readBits(size * 8);
@@ -101,4 +117,6 @@ public class BitStreamReader {
         bitIndex++;
         return bitValue;
     }
+
+
 }

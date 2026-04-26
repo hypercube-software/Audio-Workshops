@@ -3,9 +3,9 @@ package com.hypercube.workshop.midiworkshop.monitor;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiControl;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,70 +16,74 @@ import javax.sound.midi.SysexMessage;
 @Slf4j
 @Component
 public class MidiMonitor {
-    private MidiInDevice midiInDevice;
+    private MidiInPort midiInPort;
 
-    public void monitor(MidiInDevice midiInDevice) {
-        monitor(midiInDevice, null);
+    public void monitor(MidiInPort midiInPort) {
+        monitor(midiInPort, null);
     }
 
-    public void monitor(MidiInDevice midiInDevice, MidiMonitorEventListener eventListener) {
+    public void monitor(MidiInPort midiInPort, MidiMonitorEventListener eventListener) {
         try {
-            this.midiInDevice = midiInDevice;
-            midiInDevice.listen((device, event) -> onMidiEvent(device, event, eventListener));
+            this.midiInPort = midiInPort;
+            midiInPort.listen((port, event) -> onMidiEvent(port, event, eventListener));
         } catch (MidiError e) {
-            log.error("The Output device is Unavailable: " + midiInDevice.getName());
+            log.error("The Output device is Unavailable: " + midiInPort.getName());
         }
     }
 
     public void close() {
-        if (midiInDevice != null) {
-            midiInDevice.close();
+        if (midiInPort != null) {
+            midiInPort.close();
         }
     }
 
-    private void onMidiEvent(MidiInDevice midiInDevice, CustomMidiEvent evt, MidiMonitorEventListener eventListener) {
+    private void logHexValues(CustomMidiEvent evt) {
+        log.info("MIDI: {}", evt.getHexValues());
+    }
+
+    private void onMidiEvent(MidiInPort midiInPort, CustomMidiEvent evt, MidiMonitorEventListener eventListener) {
         if (evt.getMessage()
                 .getStatus() == ShortMessage.NOTE_ON) {
             MidiNote note = MidiNote.fromValue(evt.getMessage()
                     .getMessage()[1]);
             int velocity = evt.getMessage()
                     .getMessage()[2];
-            log.info("MIDI: " + evt.getHexValues() + " Note ON:" + note.name() + " Velocity: " + velocity);
+            log.info("MIDI: {} Note ON:{} Velocity: {}", evt.getHexValues(), note.name(), velocity);
         } else if (evt.getMessage()
                 .getStatus() == ShortMessage.NOTE_OFF) {
             MidiNote note = MidiNote.fromValue(evt.getMessage()
                     .getMessage()[1]);
             int velocity = evt.getMessage()
                     .getMessage()[2];
-            log.info("MIDI: " + evt.getHexValues() + " Note OFF:" + note.name() + " Velocity: " + velocity);
+            log.info("MIDI: {} Note OFF:{} Velocity: {}", evt.getHexValues(), note.name(), velocity);
         } else if (evt.getMessage()
                 .getStatus() == ShortMessage.CONTROL_CHANGE) {
             MidiControl ctrl = MidiControl.fromId(evt.getMessage()
                     .getMessage()[1]);
             int value = evt.getMessage()
                     .getMessage()[2];
-            log.info("MIDI: " + evt.getHexValues() + " Control Change:" + ctrl.name() + " Value: " + value);
+            log.info("MIDI: {} Control Change:{} Value: {}", evt.getHexValues(), ctrl.name(), value);
         } else if (evt.getMessage()
                 .getStatus() == ShortMessage.ACTIVE_SENSING) {
             // silent
         } else if (evt.getMessage()
                 .getStatus() == SysexMessage.SYSTEM_EXCLUSIVE) {
             var msg = (SysexMessage) (evt.getMessage());
-            log.info("MIDI: System Exclusive:" + msg.getData().length + " bytes");
+            log.info("MIDI: System Exclusive:{} bytes", msg.getData().length);
         } else {
-            log.info("MIDI: " + evt.getHexValues());
+            logHexValues(evt);
         }
         if (eventListener != null) {
-            eventListener.onEvent(midiInDevice, evt);
+            eventListener.onEvent(midiInPort, evt);
         }
     }
 
-    private void filterEvent(CustomMidiEvent evt, MidiOutDevice out) {
-        log.info("MIDI: " + evt.getHexValues());
+    private void filterEvent(CustomMidiEvent evt, MidiOutPort out) {
+        logHexValues(evt);
         out.send(evt);
     }
 
-    void filter(MidiInDevice in, MidiOutDevice out) {
+    void filter(MidiInPort in, MidiOutPort out) {
         try {
             in.listen((device, evt) -> filterEvent(evt, out));
         } catch (MidiError e) {

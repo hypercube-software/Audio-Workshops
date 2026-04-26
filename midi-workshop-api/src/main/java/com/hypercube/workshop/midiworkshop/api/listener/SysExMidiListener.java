@@ -1,8 +1,8 @@
 package com.hypercube.workshop.midiworkshop.api.listener;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class SysExMidiListener implements MidiListener {
     }
 
     @Override
-    public void onEvent(MidiInDevice device, CustomMidiEvent event) {
+    public void onEvent(MidiInPort device, CustomMidiEvent event) {
         if (event.getMessage() instanceof SysexMessage sysexMsg) {
             // This fix an insane bug in Java MIDI API where sysex can be received "split"
             // msg.getMessage() will give you a final F7 whereas it is absolutely not completely received !
@@ -54,6 +54,10 @@ public class SysExMidiListener implements MidiListener {
                 }
             } catch (InvalidMidiDataException | IOException e) {
                 throw new MidiError(e);
+            }
+        } else {
+            if (listener != null) {
+                listener.onEvent(device, event);
             }
         }
     }

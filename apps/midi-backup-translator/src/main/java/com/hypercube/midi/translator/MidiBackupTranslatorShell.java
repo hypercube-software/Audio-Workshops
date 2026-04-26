@@ -4,11 +4,12 @@ import com.hypercube.midi.translator.config.project.ProjectConfiguration;
 import com.hypercube.midi.translator.config.project.ProjectConfigurationFactory;
 import com.hypercube.midi.translator.config.project.ProjectDevice;
 import com.hypercube.midi.translator.model.DeviceInstance;
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.devices.AbstractMidiDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.AbstractMidiDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.request.MidiRequest;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.Optional;
 public class MidiBackupTranslatorShell {
     private final ProjectConfigurationFactory projectConfigurationFactory;
 
-    private static void wakeUpDevice(MidiOutDevice out, DeviceInstance device) {
+    private static void wakeUpDevice(MidiOutPort out, DeviceInstance device) {
         log.info("Wake up MIDI out device '{}' with ActiveSensing...", out.getName());
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 4000) {
@@ -102,7 +103,7 @@ public class MidiBackupTranslatorShell {
             if (device.getBackupFile()
                     .exists() && device.isEnabled() && (deviceName == null || projectDevice.getName()
                     .equals(deviceName))) {
-                log.info("Restore device: " + projectDevice.getName() + "...");
+                log.info("Restore device: {}...", projectDevice.getName());
                 try (var out = m.openOutput(projectDevice.getOutputMidiDevice())) {
                     var state = device.loadState();
                     log.info("Send {} SysEx events...", state.size());
@@ -164,11 +165,11 @@ public class MidiBackupTranslatorShell {
 
     private void backupDevice(ProjectDevice projectDevice, DeviceInstance deviceInstance, MidiPortsManager midiPortsManager, String macro) {
         log.info("-------------------------------------------------------");
-        log.info("Backup device: " + projectDevice.getName() + "...");
-        log.info("inactivityTimeoutMs : " + deviceInstance.getInactivityTimeoutMs());
-        log.info("sysexPauseMs        : " + deviceInstance.getSysexPauseMs());
-        log.info("inputMidiDevice     : " + projectDevice.getInputMidiDevice());
-        log.info("outputMidiDevice    : " + projectDevice.getOutputMidiDevice());
+        log.info("Backup device: {}...", projectDevice.getName());
+        log.info("inactivityTimeoutMs : {}", deviceInstance.getInactivityTimeoutMs());
+        log.info("sysexPauseMs        : {}", deviceInstance.getSysexPauseMs());
+        log.info("inputMidiDevice     : {}", projectDevice.getInputMidiDevice());
+        log.info("outputMidiDevice    : {}", projectDevice.getOutputMidiDevice());
         log.info("-------------------------------------------------------");
         try (var in = midiPortsManager.openInput(projectDevice.getInputMidiDevice())) {
             in.addSysExListener((midiInDevice, sysExEvent) -> onSysEx(deviceInstance, midiInDevice, sysExEvent));
@@ -194,7 +195,7 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutDevice out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
+    private void sendBulkRequests(ProjectDevice projectDevice, DeviceInstance device, MidiOutPort out, List<MidiRequest> midiRequests) throws InvalidMidiDataException {
         for (int requestIndex = 0; requestIndex < projectDevice.getDumpRequests()
                 .size(); requestIndex++) {
             var requests = projectDevice.getDumpRequestTemplates()
@@ -229,7 +230,7 @@ public class MidiBackupTranslatorShell {
     }
 
     @SuppressWarnings("java:S106")
-    private void onSysEx(DeviceInstance device, MidiInDevice midiInDevice, com.hypercube.workshop.midiworkshop.api.CustomMidiEvent customMidiEvent) {
+    private void onSysEx(DeviceInstance device, MidiInPort midiInPort, CustomMidiEvent customMidiEvent) {
         byte[] data = customMidiEvent.getMessage()
                 .getMessage();
         if (device.getCurrentResponseSize() == 0) {

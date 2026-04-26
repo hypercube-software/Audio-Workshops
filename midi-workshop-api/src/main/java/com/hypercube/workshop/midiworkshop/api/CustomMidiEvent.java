@@ -1,6 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api;
 
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.HardwareMidiOutPort;
 
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
@@ -26,12 +26,12 @@ public class CustomMidiEvent extends MidiEvent {
     }
 
     /**
-     * Constructs a new {@code MidiEvent} with tick -1 ({@link MidiOutDevice#NO_TIME_STAMP}).
+     * Constructs a new {@code MidiEvent} with tick -1 ({@link HardwareMidiOutPort#NO_TIME_STAMP}).
      *
      * @param message the MIDI message contained in the event
      */
     public CustomMidiEvent(MidiMessage message) {
-        super(message, MidiOutDevice.NO_TIME_STAMP);
+        super(message, HardwareMidiOutPort.NO_TIME_STAMP);
     }
 
     public String getHexValues() {

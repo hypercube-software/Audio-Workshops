@@ -3,9 +3,9 @@ package com.hypercube.workshop.midiworkshop.presets.kurzweil;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
@@ -132,7 +132,7 @@ public class KurzweilExplorer {
         });
     }
 
-    private <T extends BaseObject> T query(MidiDeviceDefinition device, MidiInDevice input, MidiOutDevice output, String cmtDirSample) {
+    private <T extends BaseObject> T query(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample) {
         return (T) midiDeviceRequester.query(device, input, output, CommandCall.parse(device, cmtDirSample)
                         .getFirst())
                 .map(response -> {

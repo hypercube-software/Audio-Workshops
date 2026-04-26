@@ -2,11 +2,11 @@ package com.hypercube.workshop.midiworkshop.api.presets.crawler;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiInDevice;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiDeviceTimeout;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
@@ -109,10 +109,10 @@ public class MidiPresetCrawler {
                 .orElseThrow(() -> new MidiConfigError("Device not declared in the library: " + crawlingDomain.device()));
 
         String outputMidiDevice = device.getOutputMidiDevice();
-        try (MidiOutDevice out = midiPortsManager.getOutput(outputMidiDevice)
+        try (MidiOutPort out = midiPortsManager.getOutput(outputMidiDevice)
                 .orElse(null)) {
             String inputMidiDevice = device.getInputMidiDevice();
-            try (MidiInDevice in = midiPortsManager.getInput(inputMidiDevice)
+            try (MidiInPort in = midiPortsManager.getInput(inputMidiDevice)
                     .orElse(null)) {
                 if (out == null) {
                     throw new MidiConfigError("MIDI OUT Device not found: '%s".formatted(outputMidiDevice));
@@ -226,7 +226,7 @@ public class MidiPresetCrawler {
                 .ifPresent(CancelNotifier::checkIfShouldStop);
     }
 
-    private void selectPatch(MidiPreset midiPreset, MidiOutDevice out) {
+    private void selectPatch(MidiPreset midiPreset, MidiOutPort out) {
         log.info("Select Bank '{}' Program '{}' in mode '{}'", midiPreset.getId()
                 .bankName(), midiPreset.getIdentifiers()
                 .getPrg(), midiPreset.getId()
@@ -267,7 +267,7 @@ public class MidiPresetCrawler {
         return presetCount;
     }
 
-    private void changeMode(MidiDeviceMode mode, MidiDeviceDefinition device, MidiOutDevice out) {
+    private void changeMode(MidiDeviceMode mode, MidiDeviceDefinition device, MidiOutPort out) {
         log.info("Set mode " + mode.getName());
         // no command mean the device switch automatically to the right mode (Like Yamaha TG-500)
         if (mode.getCommand() != null) {
@@ -321,7 +321,7 @@ public class MidiPresetCrawler {
         }
     }
 
-    private void send(MidiRequestSequence sequence, MidiOutDevice out) {
+    private void send(MidiRequestSequence sequence, MidiOutPort out) {
         for (var request : sequence.getMidiRequests()) {
             List<CustomMidiEvent> requestInstances = MidiEventBuilder.parse(request.getValue());
             for (int requestInstanceIndex = 0; requestInstanceIndex < requestInstances.size(); requestInstanceIndex++) {
@@ -332,7 +332,7 @@ public class MidiPresetCrawler {
         }
     }
 
-    private void onResponse(MidiInDevice midiInDevice, CustomMidiEvent customMidiEvent) {
+    private void onResponse(MidiInPort hardwareMidiInPort, CustomMidiEvent customMidiEvent) {
         try {
             currentSysEx.write(customMidiEvent.getMessage()
                     .getMessage());
@@ -371,7 +371,7 @@ public class MidiPresetCrawler {
                                                  MidiRequestSequence preSequence,
                                                  MidiRequestSequence sequence,
                                                  MidiRequestSequence postSequence,
-                                                 MidiOutDevice out) throws InvalidMidiDataException {
+                                                 MidiOutPort out) throws InvalidMidiDataException {
         final var response = requestFields(cancelNotifier, device, mode, midiPreset, preSequence, sequence, postSequence, out);
         if (response.getPatchName() != null) {
             return new MidiPresetIdentity(mode.getName(), currentBankName, response.getPatchName(), response.getCategory());
@@ -393,7 +393,7 @@ public class MidiPresetCrawler {
                                           MidiRequestSequence preSequence,
                                           MidiRequestSequence sequence,
                                           MidiRequestSequence postSequence,
-                                          MidiOutDevice out) throws InvalidMidiDataException {
+                                          MidiOutPort out) throws InvalidMidiDataException {
         sendPreSequence(device, preSequence, out);
         ExtractedFields response = null;
         expectedResponseSize = sequence.getTotalSize();
@@ -458,7 +458,7 @@ public class MidiPresetCrawler {
         return input;
     }
 
-    private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutDevice out) {
+    private void sendPreSequence(MidiDeviceDefinition device, MidiRequestSequence preSequence, MidiOutPort out) {
         if (preSequence != null) {
             for (var request : preSequence.getMidiRequests()) {
                 MidiEventBuilder.parse(request.getValue())
@@ -478,7 +478,7 @@ public class MidiPresetCrawler {
         }
     }
 
-    private void sendPostSequence(MidiDeviceDefinition device, MidiRequestSequence postSequence, MidiOutDevice out) {
+    private void sendPostSequence(MidiDeviceDefinition device, MidiRequestSequence postSequence, MidiOutPort out) {
         if (postSequence != null) {
             for (var request : postSequence.getMidiRequests()) {
                 MidiEventBuilder.parse(request.getValue())

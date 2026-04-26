@@ -5,8 +5,8 @@ import com.hypercube.mpm.javafx.error.ApplicationError;
 import com.hypercube.mpm.model.DeviceStateId;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
-import com.hypercube.workshop.midiworkshop.api.devices.MidiOutDevice;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
@@ -189,8 +189,8 @@ public class PatchesManager {
         log.info("Send patch '{}' to '{}' on channel {} via MIDI port '{}'", selectedPatch.getName(),
                 selectedPatch.getDevice(), selectedPatch.getChannel(),
                 device.getOutputMidiDevice());
-        MidiOutDevice port = model.getCurrentDeviceState()
-                .getMidiOutDevice();
+        MidiOutPort port = model.getCurrentDeviceState()
+                .getMidiOutPort();
         if (port == null) {
             log.info("Port not open: {}", device.getOutputMidiDevice());
             return;
@@ -321,7 +321,7 @@ public class PatchesManager {
     /**
      * Some devices need to first select a factory patch before sending a SysEx Edit Buffer update
      */
-    private void selectEditBuffer(Patch selectedPatch, MidiDeviceDefinition device, MidiOutDevice port) {
+    private void selectEditBuffer(Patch selectedPatch, MidiDeviceDefinition device, MidiOutPort port) {
         if (selectedPatch.getCommand() != null) {
             List<Integer> digits = forgeCommand(device.getPresetFormat(), selectedPatch.getCommand());
             int channel = selectedPatch.getChannel();

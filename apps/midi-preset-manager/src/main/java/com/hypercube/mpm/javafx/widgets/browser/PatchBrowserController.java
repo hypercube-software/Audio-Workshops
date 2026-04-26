@@ -29,10 +29,12 @@ public class PatchBrowserController extends Controller<PatchBrowser, Void> {
     @FXML
     public AttributeComboBox device;
     @FXML
-    public AttributeComboBox passThru;
+    public AttributeComboBox inputPassThru;
+    @FXML
+    public AttributeComboBox devicePassThru;
     @FXML
     public AttributeSelector master;
-    
+
     @Autowired
     DeviceToolBox deviceToolBox;
 
