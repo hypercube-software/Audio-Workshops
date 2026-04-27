@@ -48,23 +48,22 @@ public class KFObjectDeserializer extends KFDeserializer {
             }
             ProgramSegmentType type = ProgramSegmentType.fromTag(segmentTag)
                     .orElse(null);
-            int segmentSize = switch (type) {
-                case null -> 0;
-                case PGMSEGTAG, ENCSEGTAG, LYRSEGTAG, HOBSEGTAG, KB3SEGTAG -> 15;
-                case FXSEGTAG, ASRSEGTAG, LFOSEGTAG -> 7;
-                case FUNSEGTAG -> 3;
-                case ENVSEGTAG, IMPSEGTAG, KDFXSEGTAG -> 0;
-                case CALSEGTAG -> 31;
-            };
-            segments.add(deserializeKFProgramSegment(in, type, segmentSize));
+            int instanceId = segmentTag & (~type.getMask());
+            segments.add(deserializeKFProgramSegment(in, type, instanceId));
         }
 
         return new KFProgram(data, objectId, segments);
     }
 
-    private static KFProgramSegment deserializeKFProgramSegment(BitStreamReader in, ProgramSegmentType programSegmentType, int segmentSize) {
-        log.info("{} size {}", programSegmentType, segmentSize);
-        return new KFProgramSegment(programSegmentType);
+    private static KFProgramSegment deserializeKFProgramSegment(BitStreamReader in, ProgramSegmentType programSegmentType, int instanceId) {
+        int segmentSize = programSegmentType.getSize() - 1; // tag already read
+        log.info("{} (tag {}) size {} instanceId {}", programSegmentType, programSegmentType.getTag(), segmentSize, instanceId);
+        byte[] content = new byte[segmentSize];
+        RawData segmentContent = new RawData(content, in.getBitPos() / 8);
+        for (int i = 0; i < segmentSize; i++) {
+            content[i] = (byte) in.readByte();
+        }
+        return new KFProgramSegment(segmentContent, programSegmentType);
     }
 
     private static KFSoundBlock deserializeSoundBlock(RawData data, BitStreamReader in, int objectId) {
