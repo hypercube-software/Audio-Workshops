@@ -51,6 +51,7 @@ macros:
   # READ_SOUND_BLOCK_NIBBLE(0149) will give you the sound block 201
   # Note that sound block does not contain PCM data, only settings
   - "READ_PROGRAM_NIBBLE(id)             : ---   : READ(0104, id, 00)"
+  - "READ_PROGRAM_STREAM(id)             : ---   : READ(0104, id, 01)"
   - "READ_KEYMAP_NIBBLE(id)              : ---   : READ(0105, id, 00)"
   - "READ_SOUND_BLOCK_NIBBLE(id)         : ---   : READ(0106, id, 00)"
   - "READ_SETUP_NIBBLE(id)               : ---   : READ(0107, id, 00)"

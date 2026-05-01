@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class KFObject {
-    private final RawData data;
-    private final KObject type;
-    private final int objectId;
+    protected final RawData data;
+    protected final KObject type;
+    protected final int objectId;
 }

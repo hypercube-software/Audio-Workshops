@@ -9,7 +9,7 @@ public class BitStreamReader {
 
     public BitStreamReader(byte[] data) {
         this.data = data;
-        reset();
+        setBitPos(0);
     }
 
     /**
@@ -45,10 +45,14 @@ public class BitStreamReader {
         return byteIndex * 8 + bitIndex;
     }
 
+    public void setBitPos(int bitPos) {
+        this.byteIndex = bitPos / 8;
+        this.bitIndex = bitPos % 8;
+        this.currentByte = byteIndex < data.length ? (data[byteIndex] & 0xFF) : 0;
+    }
+
     public void reset() {
-        this.byteIndex = 0;
-        this.bitIndex = 0;
-        this.currentByte = data[byteIndex];
+        setBitPos(0);
     }
 
     /**
@@ -119,4 +123,7 @@ public class BitStreamReader {
     }
 
 
+    public int getBytePos() {
+        return getBitPos() / 8;
+    }
 }

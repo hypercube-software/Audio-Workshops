@@ -10,6 +10,7 @@ import com.hypercube.mpm.model.DeviceState;
 import com.hypercube.mpm.model.MainModel;
 import com.hypercube.mpm.model.Patch;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetConsumer;
 import com.hypercube.workshop.midiworkshop.api.presets.crawler.CrawlingDomain;
@@ -36,6 +37,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,6 +73,7 @@ public class DeviceToolBox {
     private final MidiPresetCrawler midiPresetCrawler;
     private final MidiDeviceRequester midiDeviceRequester;
     private final PatchImporter patchImporter;
+    private File initialDirectory;
 
     private static File getBankFolder(String deviceMode, String bankName, MidiDeviceDefinition midiDeviceDefinition) {
         String fullPath = "%s/%s/%s/%s".formatted(
@@ -183,7 +188,10 @@ public class DeviceToolBox {
     public void restoreSysEx(Scene scene) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Restore SysEx");
-
+        if (initialDirectory == null) {
+            initialDirectory = new File(".");
+        }
+        fileChooser.setInitialDirectory(initialDirectory);
         fileChooser.getExtensionFilters()
                 .addAll(
                         new FileChooser.ExtensionFilter("System Exclusive", "*.syx"),
@@ -193,9 +201,10 @@ public class DeviceToolBox {
         Window stage = scene.getWindow();
 
         File file = fileChooser.showOpenDialog(stage);
-
         if (file != null) {
             try {
+                initialDirectory = file.getParentFile();
+                restoreSysEx(file);
                 GenericDialogController.info("SysEx restored", """
                         The device have successfully received the SysEx file.
                         """);
@@ -323,6 +332,20 @@ public class DeviceToolBox {
                             });
                     refreshUI(device);
                 });
+    }
+
+    private void restoreSysEx(File file) {
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+            MidiEvent msg = new MidiEvent(new SysexMessage(data, data.length), 0);
+            Optional.ofNullable(MainModel.getObservableInstance()
+                            .getCurrentDeviceState())
+                    .ifPresent(state -> state.getMidiOutPort()
+                            .send(msg));
+        } catch (IOException | InvalidMidiDataException e) {
+            throw new MidiError(e);
+        }
+
     }
 
     /**

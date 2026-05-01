@@ -1,5 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
  * <p>00000010000100</p>
  * <p>0x0084</p>
  */
+@Getter
 public enum KObject {
     PROGRAM(0x0104),
     KEYMAP(0x0105),

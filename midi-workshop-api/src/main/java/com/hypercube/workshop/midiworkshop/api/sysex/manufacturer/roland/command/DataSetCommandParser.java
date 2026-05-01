@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DataSetCommandParser implements RolandCommandParser {
     @Override
     public void parse(int deviceId, RolandDevice model, SysExReader buffer) {
-        MemoryInt24 address = MemoryInt24.fromPacked(buffer.getInt24());
+        MemoryInt24 address = MemoryInt24.from(buffer.getInt24());
         int size = buffer.remaining() - 1;
         DeviceMemory memory = model.getMemory();
         for (int i = 0; i < size; i++) {

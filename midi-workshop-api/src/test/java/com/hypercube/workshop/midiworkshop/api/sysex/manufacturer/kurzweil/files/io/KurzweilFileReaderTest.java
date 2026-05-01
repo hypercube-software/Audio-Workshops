@@ -25,6 +25,8 @@ class KurzweilFileReaderTest {
         File file = new File("./src/test/resources/Kurzweil/anapads.krz");
         try (KurzweilFileReader kurzweilFileReader = new KurzweilFileReader(file)) {
             KurzweilFile kurzweilFile = kurzweilFileReader.read();
+            KurzweilFileConverter kurzweilFileConverter = new KurzweilFileConverter();
+            kurzweilFileConverter.toSysEx(kurzweilFile, new File("./target/output"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

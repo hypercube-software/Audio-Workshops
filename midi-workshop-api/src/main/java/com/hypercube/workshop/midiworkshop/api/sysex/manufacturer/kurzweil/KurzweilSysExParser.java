@@ -4,9 +4,15 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFProgramDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
-import com.hypercube.workshop.midiworkshop.api.sysex.util.*;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.LCDScreenDump;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExReader;
+import jakarta.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
@@ -16,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -100,28 +108,51 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     private BaseObject parseWRITE(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
         int objectId = reader.getInt16();
-        int size = reader.getInt24();
+        int unpackedSize = reader.getInt24();
         int mode = reader.getByte();
         String name = reader.getString();
-        StreamFormat format = StreamFormat.fromCode(reader.getByte());
-        String objectName = KObject.fromType(objectType)
+        int formatCode = reader.getByte();
+        StreamFormat format = StreamFormat.fromCode(formatCode);
+        String objectTypeName = KObject.fromType(objectType)
                 .map(KObject::name)
                 .orElse("Unknown !");
-        log.info("Object: {}", objectName);
+        log.info("Object: {}", objectTypeName);
         log.info("Mode: {}", mode);
         log.info("Name: {}", name);
-        log.info("Size  : %06X".formatted(size));
+        log.info("Unpacked Size  : {}", Long.toHexString(unpackedSize));
         log.info("Format: {}", format);
-        byte[] payload = getBitStream(reader);
+        byte[] payload = getBitStream(reader, format, unpackedSize);
+        int checksum = reader.getByte();
+        int f7 = reader.getByte();
+
+        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
+        KFProgramDeserializer kfObjectDeserializer = new KFProgramDeserializer();
+        BitStreamReader in = new BitStreamReader(unpacked);
+        var segments = kfObjectDeserializer.deserializeProgramSegments(new RawData(unpacked, 0), in);
+        kfObjectDeserializer.dump(segments);
+        return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked);
+    }
+
+    @Nonnull
+    private byte[] getUnpacked(Command command, StreamFormat format, byte[] payload, int checksum, String objectName) {
         byte[] unpacked = switch (format) {
             case STREAM -> readStream(payload);
             case NIBBLE -> readNibbleStream(payload);
         };
-        int cheksum = reader.getByte();
-        int f7 = reader.getByte();
-        log.info("Unpacked size  : 0x%06X bytes".formatted(unpacked.length));
-
-        return new ObjectWrite(objectType, objectId, size, mode, name, format, unpacked);
+        SimpleSumChecksum chk = new SimpleSumChecksum();
+        for (byte value : payload) {
+            chk.update(value);
+        }
+        int expectedChecksum = chk.getValue();
+        boolean checkSumOK = checksum == expectedChecksum;
+        log.info("Unpacked size  : 0x%06X bytes , checksum OK ? = {}".formatted(unpacked.length), checkSumOK);
+        try {
+            Files.write(Path.of("Packed " + command.name() + " prg " + objectName + ".syx"), payload);
+            Files.write(Path.of("Unpacked " + command.name() + " prg " + objectName + ".dat"), unpacked);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return unpacked;
     }
 
     private ObjectInfo parseINFO(Command command, SysExReader reader) {
@@ -160,23 +191,20 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         int objectType = reader.getInt16();
         int objectId = reader.getInt16();
         int offset = reader.getInt24();
-        int size = reader.getInt24();
-        String objectName = KObject.fromType(objectType)
+        int unpackedSize = reader.getInt24();
+        String objectTypeName = KObject.fromType(objectType)
                 .map(KObject::name)
                 .orElse("Unknown !");
-        log.info("Object: {}", objectName);
+        log.info("Object: {}", objectTypeName);
         log.info("Offset: %06X".formatted(offset));
-        log.info("Size  : %06X".formatted(size));
+        log.info("Unpacked Size  : %06X".formatted(unpackedSize));
         StreamFormat format = StreamFormat.fromCode(reader.getByte());
         log.info("Format: {}", format);
-        byte[] payload = getBitStream(reader);
-        byte[] unpacked = switch (format) {
-            case STREAM -> readStream(payload);
-            case NIBBLE -> readNibbleStream(payload);
-        };
-        log.info("Unpacked size  : 0x%06X bytes".formatted(unpacked.length));
-
-        return new ObjectLoad(objectType, objectId, size, offset, format, unpacked);
+        byte[] payload = getBitStream(reader, format, unpackedSize);
+        int checksum = reader.getByte();
+        int f7 = reader.getByte();
+        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
+        return new ObjectLoad(objectType, objectId, unpackedSize, offset, format, unpacked);
     }
 
     private byte[] readNibbleStream(byte[] payload) {
@@ -203,16 +231,21 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         return out.toByteArray();
     }
 
-    private byte[] getBitStream(SysExReader reader) {
-        SysExChecksum sysExChecksum = new SimpleSumChecksum();
+    private byte[] getBitStream(SysExReader reader, StreamFormat format, int unpackedSize) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            while (reader.remaining() != 2) {
-                int v = reader.getByte();
-                sysExChecksum.update(v);
-                out.write(v);
+            int streamSize = reader.remaining() - 2; // remove checksum and final F7
+            int theoreticalStreamSize = switch (format) {
+                case StreamFormat.NIBBLE -> unpackedSize * 2;
+                case STREAM -> (int) Math.ceil((unpackedSize * 8) / 7f);
+            };
+            if (theoreticalStreamSize != streamSize) {
+                log.error("This stream seems truncated");
+            }
+            for (int i = 0; i < streamSize; i++) {
+                out.write(reader.getByte());
             }
             byte[] payload = out.toByteArray();
-            log.info("BitStream size : 0x%06X bytes".formatted(payload.length));
+            log.info("BitStream size : 0x{} bytes", Integer.toHexString(payload.length));
             return payload;
         } catch (IOException e) {
             throw new MidiError(e);

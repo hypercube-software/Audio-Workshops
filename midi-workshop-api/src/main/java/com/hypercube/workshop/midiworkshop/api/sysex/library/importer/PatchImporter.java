@@ -161,7 +161,7 @@ public class PatchImporter {
 
         SysExChecksum sysExChecksum = ctx.getDevice()
                 .newCheckSum();
-        
+
         int offset = MidiEventBuilder.parseNumber(location.offset());
         int size = Integer.parseInt(location.value()
                 .substring(2));

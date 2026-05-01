@@ -14,23 +14,24 @@ public class SysExReader {
     private final ByteBuffer buffer;
 
     public static List<byte[]> splitSysEx(byte[] input) {
-        byte delimiter = (byte) 0xF7;
+        byte delimiter = (byte) 0xF0;
         List<byte[]> result = new ArrayList<>();
         if (input == null) {
             return result;
         }
 
-        int start = 0;
+        int start = -1;
+
         for (int i = 0; i < input.length; i++) {
             if (input[i] == delimiter) {
-                if (i > start) {
+                if (start != -1) {
                     result.add(Arrays.copyOfRange(input, start, i));
                 }
-                start = i + 1;
+                start = i;
             }
         }
 
-        if (start < input.length) {
+        if (start != -1) {
             result.add(Arrays.copyOfRange(input, start, input.length));
         }
 
@@ -74,7 +75,7 @@ public class SysExReader {
         int b2 = buffer.get();
         int b1 = buffer.get();
         int b0 = buffer.get();
-        return b0 | (b1 << 8) | (b2 << 16);
+        return b0 | (b1 << 7) | (b2 << 14);
     }
 
     public String readASCIIString(int size) {

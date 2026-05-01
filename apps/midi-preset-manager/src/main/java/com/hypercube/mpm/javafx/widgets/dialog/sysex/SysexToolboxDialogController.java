@@ -71,13 +71,21 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
     private HexaDataViewer hexResponse;
 
     private Task<Void> currentTask = null;
+    private File initialDirectory;
 
     @FXML
     public void onSaveButton(ActionEvent event) {
+        if (currentTask != null) {
+            currentTask.cancel();
+        }
+
         if (response != null && response.data() != null) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save SysEx response");
-
+            if (initialDirectory == null) {
+                initialDirectory = new File(".");
+            }
+            fileChooser.setInitialDirectory(initialDirectory);
             fileChooser.getExtensionFilters()
                     .addAll(
                             new FileChooser.ExtensionFilter("System Exclusive", "*.syx"),
@@ -91,6 +99,7 @@ public class SysexToolboxDialogController extends DialogController<SysexToolboxD
 
             if (file != null) {
                 try {
+                    initialDirectory = file.getParentFile();
                     Files.write(file.toPath(), response.data());
                     GenericDialogController.info("Response Saved", """
                             The device response is successfully saved as SysEx file.
