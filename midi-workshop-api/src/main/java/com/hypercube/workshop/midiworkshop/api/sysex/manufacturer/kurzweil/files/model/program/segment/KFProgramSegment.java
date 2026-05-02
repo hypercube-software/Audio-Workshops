@@ -24,4 +24,8 @@ public class KFProgramSegment {
     public int getInstanceId() {
         return id.instanceId();
     }
+
+    public long getPosition() {
+        return segmentContent.position();
+    }
 }

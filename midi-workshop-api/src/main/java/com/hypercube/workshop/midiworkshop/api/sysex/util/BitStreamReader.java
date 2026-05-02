@@ -126,4 +126,12 @@ public class BitStreamReader {
     public int getBytePos() {
         return getBitPos() / 8;
     }
+
+    public byte[] readBytes(int size) {
+        byte[] data = new byte[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = (byte) readByte();
+        }
+        return data;
+    }
 }

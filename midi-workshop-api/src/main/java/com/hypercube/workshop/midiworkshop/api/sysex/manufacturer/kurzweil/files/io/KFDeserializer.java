@@ -44,13 +44,18 @@ public abstract class KFDeserializer {
     }
 
     protected String readName(BitStreamReader in) {
+        // see official readme.txt where they talk about "offset to data"
+        // offset to jump over name include its own size
+        int ofs = in.readShort() - 2;
         int beforeName = in.getBytePos();
-        int ofs = in.readShort(); // offset to jump over name include its own size
+        byte[] chars = in.readBytes(ofs);
         StringBuilder name = new StringBuilder();
-        for (int i = 0; i < ofs - 2; i++) {
-            int ch = in.readBits(8);
+        for (int i = 0; i < ofs; i++) {
+            int ch = chars[i];
             if (ch != 0) {
                 name.append((char) ch);
+            } else {
+                break;
             }
         }
         int afterName = in.getBytePos();

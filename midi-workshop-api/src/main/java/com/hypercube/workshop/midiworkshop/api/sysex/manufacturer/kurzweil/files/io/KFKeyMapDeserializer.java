@@ -9,7 +9,7 @@ import java.util.List;
 public class KFKeyMapDeserializer extends KFDeserializer {
 
     public KFKeyMap deserialize(RawData data, int objectId) {
-        BitStreamReader in = data.getBitStream();
+        BitStreamReader in = data.bitStreamReader();
         String name = readName(in);
         // TODO
         return new KFKeyMap(data, objectId, name, List.of());

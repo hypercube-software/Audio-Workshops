@@ -69,18 +69,22 @@ public class KurzweilFileReader implements Closeable {
             RawData data = readRawData(blockSize);
             objects.addAll(objectDeserializer.deserializeObjects(data));
         }
+
         try {
-            log.info("Read samples at {} OffsetSampleData={}",
-                    Long.toHexString(channel.position()),
-                    Long.toHexString(header.getOffsetSampleData()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            for (KFSoundBlock block : objects.stream()
+            List<KFSoundBlock> soundBlocks = objects.stream()
                     .filter(s -> s.getType() == KObject.SOUND_BLOCK)
                     .map(s -> (KFSoundBlock) s)
-                    .toList()) {
+                    .toList();
+            if (!soundBlocks.isEmpty()) {
+                try {
+                    log.info("Read samples at {} OffsetSampleData={}",
+                            Long.toHexString(channel.position()),
+                            Long.toHexString(header.getOffsetSampleData()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            for (KFSoundBlock block : soundBlocks) {
                 int sampleID = 0;
                 for (KFSoundBlockHeader h : block.getHeaders()) {
                     long pos = header.getOffsetSampleData() + h.sampleStart() * 2;

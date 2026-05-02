@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class KFSoundBlockDeserializer extends KFDeserializer {
     public KFSoundBlock deserialize(RawData data, int objectId) {
-        BitStreamReader in = data.getBitStream();
+        BitStreamReader in = data.bitStreamReader();
         String name = readName(in);
         // See official spec sblock.h, struct SBLK
         int base = in.readShort();   /* base sfh ID */

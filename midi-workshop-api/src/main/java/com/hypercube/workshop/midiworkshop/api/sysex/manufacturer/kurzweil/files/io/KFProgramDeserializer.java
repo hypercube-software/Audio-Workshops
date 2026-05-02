@@ -7,18 +7,16 @@ import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
 public class KFProgramDeserializer extends KFDeserializer {
 
-    public List<KFProgramSegment> deserializeProgramSegments(RawData data, BitStreamReader in) {
+    public List<KFProgramSegment> deserializeProgramSegments(RawData data) {
+        BitStreamReader in = data.bitStreamReader();
         List<KFProgramSegment> segments = new ArrayList<>();
-        HashSet<Integer> ids = new HashSet<>();
         for (; ; ) {
-            long position = data.position() + in.getBytePos();
+            long segmentPos = data.position() + in.getBytePos();
             int segmentTag = in.readByte();
             if (segmentTag == 0) {
                 break;
@@ -26,30 +24,21 @@ public class KFProgramDeserializer extends KFDeserializer {
             ProgramSegmentIdentifier id = ProgramSegmentIdentifier.fromTag(segmentTag)
                     .orElse(null);
             if (id == null) {
-                log.error("Unknown segment tag %d $%X at position $%X".formatted(segmentTag, segmentTag, position));
+                log.error("Unknown segment tag %d $%X at position $%X".formatted(segmentTag, segmentTag, segmentPos));
                 break;
             }
-            KFProgramSegment segment = deserializeKFProgramSegment(data, in, id);
-            // sanity check
-            if (ids.contains(segment.getRawTag())) {
-                log.error("Duplicate tags: %s %d:".formatted(segment.getType(), segment.getRawTag()));
-            } else {
-                ids.add(segment.getRawTag());
-            }
+            KFProgramSegment segment = deserializeKFProgramSegment(data, segmentPos, id);
             segments.add(segment);
         }
-        var sortedSegments = segments.stream()
-                .sorted(Comparator.comparingInt(KFProgramSegment::getRawTag))
-                .toList();
-        sortedSegments.forEach(this::dumpSegment);
+        segments.forEach(this::dumpSegment);
         return segments;
     }
 
     public KFProgram deserialize(RawData data, int objectId) {
-        BitStreamReader in = data.getBitStream();
+        BitStreamReader in = data.bitStreamReader();
         String name = readName(in);
         int segmentsStart = in.getBytePos();
-        List<KFProgramSegment> segments = deserializeProgramSegments(data, in);
+        List<KFProgramSegment> segments = deserializeProgramSegments(data);
         return new KFProgram(data, objectId, name, segmentsStart, segments);
     }
 
@@ -62,25 +51,31 @@ public class KFProgramDeserializer extends KFDeserializer {
         String typeStr = "%d/$%X".formatted(type
                 .getTag(), type
                 .getTag());
-        log.info("{} => RAW TAG {} (tag id {} size {} instanceId {})",
-                type,
+        String position = Long.toHexString(segment.getSegmentContent()
+                .position() - 1); // position start just after the segment tag, so we do -1
+        final String format;
+        if (segment instanceof KFProgramCommon common) {
+            format = " format: " + common.getFmt();
+        } else {
+            format = "";
+        }
+        log.info("{} {} at 0x{} => RAW TAG {} (tag id {} size {} instanceId {}) {}",
+                type.name(),
+                segment.getType()
+                        .getOrgName(),
+                position,
                 instStr,
                 typeStr,
                 type.getSize(),
-                instanceId);
+                instanceId,
+                format);
     }
 
-    private KFProgramSegment deserializeKFProgramSegment(RawData data, BitStreamReader in, ProgramSegmentIdentifier id) {
-
+    private KFProgramSegment deserializeKFProgramSegment(RawData data, long segmentPos, ProgramSegmentIdentifier id) {
+        BitStreamReader in = data.bitStreamReader();
         int contentSize = id.type()
                 .getSize() - 1; // tag already read
-
-
-        byte[] content = new byte[contentSize];
-        RawData segmentContent = new RawData(content, in.getBitPos() / 8);
-        for (int i = 0; i < contentSize; i++) {
-            content[i] = (byte) in.readByte();
-        }
+        RawData segmentContent = data.readChildBlock(contentSize);
         return switch (id.type()) {
             case MASTSEGTAG -> deserializeKFMasterSegment(segmentContent, id);
             case CHANSEGTAG -> deserializeKFChannelSegment(segmentContent, id);

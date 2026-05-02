@@ -17,7 +17,7 @@ public class KFObjectDeserializer extends KFDeserializer {
 
     public List<KFObject> deserializeObjects(RawData data) {
         List<KFObject> objects = new ArrayList<>();
-        BitStreamReader in = data.getBitStream();
+        BitStreamReader in = data.bitStreamReader();
         for (; ; ) {
             final long position = data.position() + in.getBytePos();
             final int objectTypeId;
@@ -46,10 +46,7 @@ public class KFObjectDeserializer extends KFDeserializer {
                     Integer.toHexString(inputId),
                     Long.toHexString(position)
             );
-            RawData objectContent = new RawData(new byte[size], position);
-            for (int i = 0; i < size; i++) {
-                objectContent.content()[i] = (byte) in.readByte();
-            }
+            RawData objectContent = data.readChildBlock(size);
             objects.add(switch (type) {
                 case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId);
                 case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId);

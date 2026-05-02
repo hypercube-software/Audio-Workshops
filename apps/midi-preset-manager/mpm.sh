@@ -43,7 +43,7 @@ JAR_PATH="${SCRIPT_DIR}/${JAR_NAME}"
 if [ -f "$JAR_PATH" ]; then
     echo "Launching application $JAR_NAME on $ARCH architecture..."
     # Execute the JAR using the determined JAVA_HOME and pass all script arguments ($@)
-    "$JAVA_HOME/bin/java" $DEBUG -jar "$JAR_PATH" "$@"
+    "$JAVA_HOME/bin/java" $DEBUG --enable-native-access=ALL-UNNAMED -jar "$JAR_PATH" "$@"
 else
     echo "ERROR: The JAR file for the $ARCH architecture was not found."
     echo "Searched path: $JAR_PATH"

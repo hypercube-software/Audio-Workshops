@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
@@ -22,6 +23,7 @@ public class KFProgram extends KFObject {
         this.segments = segments;
     }
 
+    @JsonIgnore
     public byte[] getSegmentContent() {
         return Arrays.copyOfRange(data.content(), segmentsStart, data.content().length);
     }

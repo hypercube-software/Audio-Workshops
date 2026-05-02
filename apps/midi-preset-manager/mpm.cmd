@@ -4,4 +4,4 @@
 @rem ---------------------------------------------------------------------------------------------------
 set JAVA_HOME=C:\Java\graalvm-jdk-24.0.1+9.1
 set DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:10092
-%JAVA_HOME%\bin\java %DEBUG% -jar mpm-win.jar %*
+%JAVA_HOME%\bin\java %DEBUG% --enable-native-access=ALL-UNNAMED -jar mpm-win.jar %*

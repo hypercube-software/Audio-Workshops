@@ -22,7 +22,9 @@ class KurzweilFileReaderTest {
     @Test
     @Disabled
     void read() {
-        File file = new File("./src/test/resources/Kurzweil/anapads.krz");
+        //String pathname = "./src/test/resources/Kurzweil/anapads.krz";
+        String pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\NEWFILE.K26";
+        File file = new File(pathname);
         try (KurzweilFileReader kurzweilFileReader = new KurzweilFileReader(file)) {
             KurzweilFile kurzweilFile = kurzweilFileReader.read();
             KurzweilFileConverter kurzweilFileConverter = new KurzweilFileConverter();

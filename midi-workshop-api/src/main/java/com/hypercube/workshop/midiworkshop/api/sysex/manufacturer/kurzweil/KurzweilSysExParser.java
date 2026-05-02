@@ -128,7 +128,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
         KFProgramDeserializer kfObjectDeserializer = new KFProgramDeserializer();
         BitStreamReader in = new BitStreamReader(unpacked);
-        var segments = kfObjectDeserializer.deserializeProgramSegments(new RawData(unpacked, 0), in);
+        var segments = kfObjectDeserializer.deserializeProgramSegments(new RawData(unpacked, 0));
         kfObjectDeserializer.dump(segments);
         return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked);
     }
