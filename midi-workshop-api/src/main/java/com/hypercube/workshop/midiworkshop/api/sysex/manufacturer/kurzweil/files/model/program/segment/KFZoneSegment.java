@@ -7,14 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFZoneSegment extends KFProgramSegment {
-    private int tag;
     private int chan;
     private int prog;
     private int lokey;
     private int hikey;
     private int flags; // xmode, xpchg, pwheel
     private int trans;
-    private int[] ctls = new int[8];
+    private int[] ctls;
 
     public KFZoneSegment(RawData segmentContent, ProgramSegmentIdentifier id) {
         super(segmentContent, id);

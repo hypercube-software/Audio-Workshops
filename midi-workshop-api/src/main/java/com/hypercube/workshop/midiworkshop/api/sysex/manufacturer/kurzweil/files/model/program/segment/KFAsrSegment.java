@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFAsrSegment extends KFProgramSegment {
-    private int tag;
     private int rfu1;
     private int trigger;
     private int flags; // hold, rept

@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFChannelSegment extends KFProgramSegment {
-    private int tag;
     private int chan;
     private int nlyrs;
     private int flags; // enable, progLock

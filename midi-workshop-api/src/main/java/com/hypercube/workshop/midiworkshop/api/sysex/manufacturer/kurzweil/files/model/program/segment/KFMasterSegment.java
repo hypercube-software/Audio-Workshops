@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFMasterSegment extends KFProgramSegment {
-    private int tag;
     private int bitfields1; // seqTempoLock, displayLink, rANO, rpchg, rmode
     private int scsiID;
     private int bchan;

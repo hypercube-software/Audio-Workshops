@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFLfoSegment extends KFProgramSegment {
-    private int tag;
     private int rfu1;
     private int rateCtl;
     private int minRate;

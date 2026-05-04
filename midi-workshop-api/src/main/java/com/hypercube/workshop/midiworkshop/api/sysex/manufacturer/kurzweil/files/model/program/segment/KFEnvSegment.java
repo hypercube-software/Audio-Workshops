@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFEnvSegment extends KFProgramSegment {
-    private int tag;
     private int flags; // loopSeg, loopCnt
-    private int[][] segs = new int[7][2];
+    private int[][] segs;
 
     public KFEnvSegment(RawData segmentContent, ProgramSegmentIdentifier id) {
         super(segmentContent, id);

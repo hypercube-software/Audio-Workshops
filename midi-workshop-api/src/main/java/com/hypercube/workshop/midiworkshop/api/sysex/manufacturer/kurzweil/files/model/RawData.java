@@ -11,12 +11,18 @@ import lombok.experimental.Accessors;
 public final class RawData {
     private final byte[] content;
     private final long position;
-    private final BitStreamReader bitStreamReader;
+    private BitStreamReader bitStreamReader;
 
     public RawData(byte[] content, long position) {
         this.content = content;
         this.position = position;
-        this.bitStreamReader = new BitStreamReader(content);
+    }
+
+    public BitStreamReader bitStreamReader() {
+        if (bitStreamReader == null) {
+            bitStreamReader = new BitStreamReader(content);
+        }
+        return bitStreamReader;
     }
 
     public int size() {

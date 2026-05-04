@@ -1,8 +1,11 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
 import java.util.Arrays;
 import java.util.Optional;
 
+@JsonIgnoreType
 public record ProgramSegmentIdentifier(int rawValue, ProgramSegmentType type, int instanceId) {
     public static Optional<ProgramSegmentIdentifier> fromTag(int rawTag) {
         var tags = Arrays.stream(ProgramSegmentType.values())

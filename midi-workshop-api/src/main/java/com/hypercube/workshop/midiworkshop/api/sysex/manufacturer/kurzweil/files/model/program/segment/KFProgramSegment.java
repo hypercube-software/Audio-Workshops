@@ -3,6 +3,8 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 
+import java.util.HexFormat;
+
 @Getter
 public class KFProgramSegment {
     private final RawData segmentContent;
@@ -11,6 +13,11 @@ public class KFProgramSegment {
     public KFProgramSegment(RawData segmentContent, ProgramSegmentIdentifier id) {
         this.segmentContent = segmentContent;
         this.id = id;
+    }
+
+    public int getTag() {
+        return id.type()
+                .getTag();
     }
 
     public int getRawTag() {
@@ -27,5 +34,12 @@ public class KFProgramSegment {
 
     public long getPosition() {
         return segmentContent.position();
+    }
+
+    public String getContent() {
+        return HexFormat.of()
+                .withUpperCase()
+                .withDelimiter(" ")
+                .formatHex(segmentContent.content());
     }
 }

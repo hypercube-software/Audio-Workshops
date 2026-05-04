@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFHobbesSegment extends KFProgramSegment {
-    private int tag;
     private int subTag;
     private int coarse;
     private int fine;

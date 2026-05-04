@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFArpSegment extends KFProgramSegment {
-    private int tag; // loKey might be the tag if it's 26 bytes and follows the pattern
+    // tag: loKey might be the tag if it's 26 bytes and follows the pattern
     private int hiKey;
     private int initialState;
     private int latchMode;

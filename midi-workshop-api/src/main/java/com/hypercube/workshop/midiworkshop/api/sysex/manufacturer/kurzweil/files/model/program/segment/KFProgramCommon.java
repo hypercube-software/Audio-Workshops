@@ -4,10 +4,29 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import lombok.Getter;
 import lombok.Setter;
 
+/*
+typedef	struct {
+	ubyte	tag;
+    ubyte	fmt;
+    ubyte	numLayers;
+    ubyte	modeFlags;
+    byte	bendRange;
+    ubyte	portSlope;
+    byte	mixControl;
+    byte	mixRange;
+    byte	coarse1;
+    byte	control1;
+    byte	range1;
+    byte	dest1;
+    byte	coarse2;
+    byte	control2;
+    byte	range2;
+    byte	dest2;
+} pgmb;
+ */
 @Getter
 @Setter
 public class KFProgramCommon extends KFProgramSegment {
-    private int tag;
     private int fmt;
     private int numLayers;
     private int modeFlags;

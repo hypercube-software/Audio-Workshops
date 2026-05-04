@@ -6,16 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class KFEfxSegment extends KFProgramSegment {
-    private int chan;
-    private int prog;
-    private int mix;
-    private int ctl1;
-    private int out1;
-    private int ctl2;
-    private int out2;
-
-    public KFEfxSegment(RawData segmentContent, ProgramSegmentIdentifier id) {
+public class KFHammSegment3 extends KFProgramSegment {
+    public KFHammSegment3(RawData segmentContent, ProgramSegmentIdentifier id) {
         super(segmentContent, id);
     }
 }

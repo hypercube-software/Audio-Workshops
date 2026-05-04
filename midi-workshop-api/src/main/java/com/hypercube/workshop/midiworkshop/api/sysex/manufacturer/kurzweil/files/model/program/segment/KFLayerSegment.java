@@ -4,10 +4,10 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 public class KFLayerSegment extends KFProgramSegment {
-    private int tag;
     private int loEnable;
     private int trans;
     private int tune;

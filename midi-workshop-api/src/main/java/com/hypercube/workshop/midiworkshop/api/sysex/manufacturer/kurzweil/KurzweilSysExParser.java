@@ -4,8 +4,10 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFProgramDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.segment.KFProgramSegmentDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.KFProgram;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -126,10 +128,10 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         int f7 = reader.getByte();
 
         byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
-        KFProgramDeserializer kfObjectDeserializer = new KFProgramDeserializer();
-        BitStreamReader in = new BitStreamReader(unpacked);
-        var segments = kfObjectDeserializer.deserializeProgramSegments(new RawData(unpacked, 0));
-        kfObjectDeserializer.dump(segments);
+        KFProgram program = new KFProgram(new RawData(unpacked, 0), objectId, name, 0);
+        KFProgramSegmentDeserializer kfProgramSegmentDeserializer = new KFProgramSegmentDeserializer(program);
+        kfProgramSegmentDeserializer.deserialize("", program);
+        KFDeserializer.dump(program);
         return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked);
     }
 

@@ -1,6 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;

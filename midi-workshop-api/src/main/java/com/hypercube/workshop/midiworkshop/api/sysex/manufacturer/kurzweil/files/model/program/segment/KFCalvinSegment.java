@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFCalvinSegment extends KFProgramSegment {
-    private int tag;
     private int subTag;
     private int trans;
     private int dtune;

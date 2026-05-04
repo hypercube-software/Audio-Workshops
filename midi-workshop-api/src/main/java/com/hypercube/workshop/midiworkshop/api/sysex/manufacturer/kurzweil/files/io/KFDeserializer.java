@@ -12,11 +12,11 @@ import java.nio.file.Files;
 
 @Slf4j
 public abstract class KFDeserializer {
-    public void dump(Object obj) {
+    public static void dump(Object obj) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.configure(com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+            //mapper.configure(com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
             String json = mapper.writeValueAsString(obj);
             String simpleName = obj.getClass()
                     .getSimpleName();

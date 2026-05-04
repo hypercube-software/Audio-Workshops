@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KFEncSegment extends KFProgramSegment {
-    private int tag;
     private int rfu1;
     private int flags; // natural
     private int atTime;
