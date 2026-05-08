@@ -23,7 +23,7 @@ public class ListenerCli {
                 .midiDeviceLibrary()
                 .load(ConfigHelper.getApplicationFolder(MidiPresetManagerCliApplication.class));
         listDevices();
-        networkServer.start(10092);
+        networkServer.start(10192);
     }
 
     private void listDevices() {

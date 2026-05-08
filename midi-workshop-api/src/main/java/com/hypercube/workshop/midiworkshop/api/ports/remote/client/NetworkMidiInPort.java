@@ -22,8 +22,8 @@ public class NetworkMidiInPort extends MidiInPort {
     }
 
     @Override
-    protected void effectiveClose() {
-
+    protected void effectiveOpen() throws Exception {
+        // Parent NetworkMidiOutPort handles the connection
     }
 
     void onNewMidiEvent(CustomMidiEvent event) {

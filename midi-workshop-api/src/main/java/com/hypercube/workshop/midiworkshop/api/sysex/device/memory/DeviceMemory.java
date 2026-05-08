@@ -32,7 +32,7 @@ public class DeviceMemory {
                 .filter(s -> s.contains(address))
                 .findFirst()
                 .orElseThrow(() -> new MidiError("Memory address not mapped: %s".formatted(address)));
-        //log.info("Write 0x%02X at %s in space %s".formatted(value, address, space));
+        //log.info("Write {} at {} in space {}", "0x%02X".formatted(value), address, space);
         space.writeByte(address, value);
         written.add(address.value());
     }

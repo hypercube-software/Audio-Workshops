@@ -18,27 +18,12 @@ public class MultiMidiInPort extends MidiInPort {
     }
 
     @Override
-    public void open() {
-        super.open();
-        for (var port : ports) {
-            port.open();
-        }
-    }
-
-    @Override
     public boolean isOpen() {
         boolean allOpen = true;
         for (var port : ports) {
             allOpen &= port.isOpen();
         }
         return allOpen;
-    }
-
-    @Override
-    public void close() {
-        for (var port : ports) {
-            port.close();
-        }
     }
 
     @Override
@@ -64,6 +49,17 @@ public class MultiMidiInPort extends MidiInPort {
     }
 
     @Override
+    protected void effectiveOpen() {
+        for (var port : ports) {
+            port.open();
+        }
+    }
+
+    @Override
     protected void effectiveClose() {
+        for (var port : ports) {
+            port.close();
+        }
+        super.effectiveClose();
     }
 }

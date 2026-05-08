@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.ports.remote.msg;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.Getter;
 
@@ -13,12 +14,10 @@ import java.io.OutputStream;
 public class MidiNetworkMessage extends NetworkMessage {
     private CustomMidiEvent event;
     private long packetId;
-    private long timeStamp;
 
-    public MidiNetworkMessage(NetWorkMessageOrigin origin, long networkId, long packetId, long timeStamp, CustomMidiEvent event) {
+    public MidiNetworkMessage(NetWorkMessageOrigin origin, long networkId, long packetId, CustomMidiEvent event) {
         super(origin, NetworkMessageType.MIDI_EVENT, networkId);
         this.packetId = packetId;
-        this.timeStamp = timeStamp;
         this.event = event;
     }
 
@@ -35,7 +34,6 @@ public class MidiNetworkMessage extends NetworkMessage {
             int size = event.getMessage()
                     .getLength();
             writeInt32(out, packetId);
-            writeInt32(out, timeStamp);
             writeInt16(out, size);
             out.write(data);
 
@@ -48,9 +46,8 @@ public class MidiNetworkMessage extends NetworkMessage {
     protected void completeDeserialize(InputStream in) throws IOException {
         super.completeDeserialize(in);
         packetId = readInt32(in);
-        timeStamp = readInt32(in);
         int size = readInt16(in);
         byte[] data = in.readNBytes(size);
-        event = MidiEventBuilder.forgeCustomMidiEvent(data, timeStamp);
+        event = MidiEventBuilder.forgeCustomMidiEvent(data, MidiOutPort.NO_TIME_STAMP);
     }
 }

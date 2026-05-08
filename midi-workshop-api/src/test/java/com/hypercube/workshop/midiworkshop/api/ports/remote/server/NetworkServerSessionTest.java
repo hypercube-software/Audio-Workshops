@@ -22,7 +22,7 @@ class NetworkServerSessionTest {
         long sendTimeStamp = 0; // we don't test this here
         AtomicInteger count = new AtomicInteger();
         for (int i = 0; i < 10; i++) {
-            session.addNewPacket(NetWorkMessageOrigin.TCP, (long) i, sendTimeStamp, new byte[]{(byte) i});
+            session.addNewPacket(NetWorkMessageOrigin.TCP, (long) i, new byte[]{(byte) i});
             int finalI = i;
             session.takePacket()
                     .ifPresent(p -> count.incrementAndGet());
@@ -34,9 +34,9 @@ class NetworkServerSessionTest {
     void reorderPackets() {
         long sendTimeStamp = 0; // we don't test this here
         AtomicInteger count = new AtomicInteger();
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 2L, sendTimeStamp, new byte[]{2});
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 1L, sendTimeStamp, new byte[]{1});
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 0L, sendTimeStamp, new byte[]{0});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 2L, new byte[]{2});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 1L, new byte[]{1});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 0L, new byte[]{0});
 
         session.takePacket()
                 .ifPresent(p -> count.incrementAndGet());
@@ -51,11 +51,11 @@ class NetworkServerSessionTest {
     void reorderPacketsWithPause() {
         AtomicInteger count = new AtomicInteger();
         long sendTimeStamp = 0; // we don't test this here
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 2L, sendTimeStamp, new byte[]{2});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 2L, new byte[]{2});
 
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 1L, sendTimeStamp, new byte[]{1});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 1L, new byte[]{1});
 
-        session.addNewPacket(NetWorkMessageOrigin.TCP, 0L, sendTimeStamp, new byte[]{0});
+        session.addNewPacket(NetWorkMessageOrigin.TCP, 0L, new byte[]{0});
 
         session.takePacket()
                 .ifPresent(p -> count.incrementAndGet());

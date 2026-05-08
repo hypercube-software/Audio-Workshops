@@ -20,6 +20,9 @@ public abstract class MidiOutPort extends AbstractMidiDevice {
     public static final int CTRL_ALL_CONTROLLERS_OFF = 121;
     public static final int CC_BANK_SELECT_MSB = 0x00;
     public static final int CC_BANK_SELECT_LSB = 0x20;
+    /**
+     * Used for immediate messages
+     */
     public static final int NO_TIME_STAMP = -1;
     private final ShortMessage clockMessage;
     private final ShortMessage activeSensingMessage;

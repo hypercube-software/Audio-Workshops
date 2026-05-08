@@ -192,15 +192,15 @@ public class MidiPresetCrawler {
                                         if (presetNaming != MidiPresetNaming.STANDARD) {
                                             populateDrumKitMap(presetNaming, midiPreset);
                                         }
-                                        log.info("Bank  name  : " + midiPresetIdentity.bankName());
-                                        log.info("Patch name  : " + midiPresetIdentity.name());
-                                        log.info("Category    : " + midiPresetIdentity.category());
-                                        log.info("Preset Cmd  : " + midiPreset.getCommand());
-                                        log.info("Program Chg : " + program);
+                                        log.info("Bank  name  : {}", midiPresetIdentity.bankName());
+                                        log.info("Patch name  : {}", midiPresetIdentity.name());
+                                        log.info("Category    : {}", midiPresetIdentity.category());
+                                        log.info("Preset Cmd  : {}", midiPreset.getCommand());
+                                        log.info("Program Chg : {}", program);
                                         if (!midiPreset.getDrumKitNotes()
                                                 .isEmpty()) {
-                                            log.info("DrumMap    : " + midiPreset.getDrumKitNotes()
-                                                    .size() + " notes");
+                                            log.info("DrumMap    : {} notes", midiPreset.getDrumKitNotes()
+                                                    .size());
                                         }
                                         log.info("");
                                         midiPreset.setId(midiPresetIdentity);
@@ -268,7 +268,7 @@ public class MidiPresetCrawler {
     }
 
     private void changeMode(MidiDeviceMode mode, MidiDeviceDefinition device, MidiOutPort out) {
-        log.info("Set mode " + mode.getName());
+        log.info("Set mode {}", mode.getName());
         // no command mean the device switch automatically to the right mode (Like Yamaha TG-500)
         if (mode.getCommand() != null) {
             MidiRequestSequence setModeRequestSequence = forgeRequestSequence(device, mode.getCommand());
@@ -336,8 +336,8 @@ public class MidiPresetCrawler {
         try {
             currentSysEx.write(customMidiEvent.getMessage()
                     .getMessage());
-            /*log.info("Receive %d bytes, current total: 0x%X".formatted(customMidiEvent.getMessage()
-                    .getMessage().length, currentSysex.size()));*/
+            /*log.info("Receive {} bytes, current total: {}", customMidiEvent.getMessage()
+                    .getMessage().length, "0x%X".formatted(currentSysEx.size()));*/
             if (expectedResponseSize > 0 && currentSysEx.size() == expectedResponseSize) {
                 currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysEx.toByteArray(), currentSysEx.size())));
             } else if (expectedResponseSize == 0) {
@@ -415,16 +415,16 @@ public class MidiPresetCrawler {
                         midiResponse = waitResponse();
                         int receivedSize = midiResponse.getMessage()
                                 .getLength();
-                        log.info("Received " + receivedSize + " bytes ($%X)".formatted(receivedSize));
+                        log.info("Received {} bytes (${})", receivedSize, "%X".formatted(receivedSize));
                         dumpResponse(midiResponse);
                         if (sequence.getTotalSize() == 0 || receivedSize == sequence.getTotalSize()) {
                             break;
                         } else {
-                            log.error("Wrong size received: " + receivedSize + " bytes instead of " + sequence.getTotalSize());
+                            log.error("Wrong size received: {} bytes instead of {}", receivedSize, sequence.getTotalSize());
                             break;
                         }
                     } catch (MidiDeviceTimeout timeout) {
-                        log.warn("No response after %d seconds, Retry...".formatted(timeout.getTimeoutInSec()));
+                        log.warn("No response after {} seconds, Retry...", timeout.getTimeoutInSec());
                     }
                 }
                 // extract fields from the response
@@ -470,7 +470,7 @@ public class MidiPresetCrawler {
                                 var resp = waitResponse();
                                 int receivedSize = resp.getMessage()
                                         .getLength();
-                                log.info("Received " + receivedSize + " bytes ($%X)".formatted(receivedSize));
+                                log.info("Received {} bytes (${})", receivedSize, "%X".formatted(receivedSize));
                             }
                         });
             }
@@ -489,7 +489,7 @@ public class MidiPresetCrawler {
                                 var resp = waitResponse();
                                 int receivedSize = resp.getMessage()
                                         .getLength();
-                                log.info("Received " + receivedSize + " bytes ($%X)".formatted(receivedSize));
+                                log.info("Received {} bytes (${})", receivedSize, "%X".formatted(receivedSize));
                             }
                         });
             }

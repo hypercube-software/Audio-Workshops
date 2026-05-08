@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.ports.remote.server;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.ports.remote.client.NetworkMidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
@@ -23,7 +24,7 @@ public class MidiDispatcher {
                     .midiPortsManager()
                     .getOutput(device.getOutputMidiDevice())
                     .ifPresentOrElse(port -> {
-                        CustomMidiEvent evt = MidiEventBuilder.forgeCustomMidiEvent(packet.payload(), packet.sendTimestamp());
+                        CustomMidiEvent evt = MidiEventBuilder.forgeCustomMidiEvent(packet.payload(), MidiOutPort.NO_TIME_STAMP);
                         log.info("Send {} to device {}", evt.getHexValues(), device.getDeviceName());
                         if (!(port instanceof NetworkMidiOutPort)) {
                             if (!port.isOpen()) {

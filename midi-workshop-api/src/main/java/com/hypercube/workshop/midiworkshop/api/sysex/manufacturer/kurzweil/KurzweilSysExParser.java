@@ -90,7 +90,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                     if (command == null) {
                         throw new MidiError("Unknown command code %02X".formatted(commandId));
                     }
-                    log.info("Parsing Command %s(%02X) for product %s(%02X)".formatted(command.name(), commandId, product.name(), productId));
+                    log.info("Parsing Command {}({}) for product {}({})", command.name(), "%02X".formatted(commandId), product.name(), "%02X".formatted(productId));
                     return switch (command) {
                         case LOAD -> parseLOAD(command, reader);
                         case SCREEN_REPLY -> parseScreenReply(command, reader);
@@ -147,7 +147,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         }
         int expectedChecksum = chk.getValue();
         boolean checkSumOK = checksum == expectedChecksum;
-        log.info("Unpacked size  : 0x%06X bytes , checksum OK ? = {}".formatted(unpacked.length), checkSumOK);
+        log.info("Unpacked size  : {} bytes , checksum OK ? = {}", "0x%06X".formatted(unpacked.length), checkSumOK);
         try {
             Files.write(Path.of("Packed " + command.name() + " prg " + objectName + ".syx"), payload);
             Files.write(Path.of("Unpacked " + command.name() + " prg " + objectName + ".dat"), unpacked);
@@ -163,7 +163,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         int size = reader.getInt24();
         boolean inRam = reader.getByte() == 1;
         String name = reader.getString();
-        log.info("Object Type %04X Object ID %04X Size: %X InRAM: %s : %s".formatted(objectType, objectId, size, inRam, name));
+        log.info("Object Type {} Object ID {} Size: {} InRAM: {} : {}", "%04X".formatted(objectType), "%04X".formatted(objectId), "%X".formatted(size), inRam, name);
         return new ObjectInfo(objectType, objectId, size, inRam, name);
     }
 
@@ -184,7 +184,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         splitBySize(text, 40).forEach(l ->
                 sb.append(l + "\n"));
         String allText = sb.toString();
-        log.info("\n" + allText);
+        log.info("\n{}", allText);
         int f7 = reader.getByte();
         return new ObjectScreenText(0, 0, allText.length(), allText);
     }
@@ -198,8 +198,8 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 .map(KObject::name)
                 .orElse("Unknown !");
         log.info("Object: {}", objectTypeName);
-        log.info("Offset: %06X".formatted(offset));
-        log.info("Unpacked Size  : %06X".formatted(unpackedSize));
+        log.info("Offset: {}", "%06X".formatted(offset));
+        log.info("Unpacked Size  : {}", "%06X".formatted(unpackedSize));
         StreamFormat format = StreamFormat.fromCode(reader.getByte());
         log.info("Format: {}", format);
         byte[] payload = getBitStream(reader, format, unpackedSize);

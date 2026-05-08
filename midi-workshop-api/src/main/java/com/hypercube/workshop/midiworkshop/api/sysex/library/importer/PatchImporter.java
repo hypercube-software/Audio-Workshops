@@ -148,13 +148,12 @@ public class PatchImporter {
         for (byte b : overridden) {
             h.append("%02X".formatted((int) (b & 0xFF)));
         }
-        log.info("Override %d bytes at pos 0x%04X with value 0x%s instead of 0x%s".formatted(
+        log.info("Override {} bytes at pos {} with value 0x{} instead of 0x{}",
                 overridden.length,
-                offset,
+                "0x%04X".formatted(offset),
                 hexValues,
                 h.toString()
-                        .trim()
-        ));
+                        .trim());
     }
 
     private void applyChecksum(OverrideContext ctx, byte[] patchData, OverrideLocation location) {
@@ -170,11 +169,10 @@ public class PatchImporter {
             sysExChecksum.update(patchData[i + start]);
         }
         int ck = sysExChecksum.getValue();
-        log.info("Override checksum at pos 0x%04X with value 0x%02X instead of 0x%02X".formatted(
-                offset,
-                ck,
-                patchData[offset]
-        ));
+        log.info("Override checksum at pos {} with value {} instead of {}",
+                "0x%04X".formatted(offset),
+                "0x%02X".formatted(ck),
+                "0x%02X".formatted(patchData[offset]));
         patchData[offset] = (byte) ck;
     }
 
@@ -266,8 +264,8 @@ public class PatchImporter {
             List<byte[]> messages = new ArrayList<>();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             boolean inSysEx = false;
-            for (int i = 0; i < content.length; i++) {
-                int value = content[i] & 0xFF;
+            for (byte b : content) {
+                int value = b & 0xFF;
                 if (value == 0xF0) {
                     inSysEx = true;
                     out.reset();

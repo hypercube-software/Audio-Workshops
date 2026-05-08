@@ -40,17 +40,27 @@ public abstract class NetworkMessage {
     }
 
     protected static long readInt32(InputStream in) throws IOException {
-        long a = in.read() & 0xFFL;
-        long b = in.read() & 0xFFL;
-        long c = in.read() & 0xFFL;
-        long d = in.read() & 0xFFL;
-        return (a << 24) | (b << 16) | (c << 8) | d;
+        int a = in.read();
+        int b = in.read();
+        int c = in.read();
+        int d = in.read();
+        if ((a | b | c | d) < 0) {
+            throw new IOException("Connection lost");
+        }
+        return ((long) a << 24) | ((long) b << 16) | ((long) c << 8) | d;
     }
 
     protected static int readInt16(InputStream in) throws IOException {
-        int a = in.read() & 0xFF;
-        int b = in.read() & 0xFF;
+        int a = in.read();
+        int b = in.read();
+        if ((a | b) < 0) {
+            throw new IOException("Connection lost");
+        }
         return (a << 8) | b;
+    }
+
+    public String getHexNetworkId() {
+        return "%08X".formatted(networkId);
     }
 
     public abstract void serialize(OutputStream out);

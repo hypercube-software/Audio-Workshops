@@ -72,6 +72,11 @@ public abstract class MidiInPort extends AbstractMidiDevice {
         addListener(new SysExMidiListener(listener));
     }
 
+    @Override
+    protected void effectiveOpen() throws Exception {
+        // does nothing by default
+    }
+
     /**
      * BEWARE, In JAVA, two method references pointing to the same method are not equals
      * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
@@ -94,15 +99,9 @@ public abstract class MidiInPort extends AbstractMidiDevice {
         }
     }
 
-    /**
-     * Make sure you don't call this method if you are in a try-with-resource, it will break the internal reference counter
-     */
     @Override
-    public void close() {
-        if (getOpenCount() == 1) {
-            stopListening();
-        }
-        super.close();
+    protected void effectiveClose() {
+        stopListening();
     }
 
     /**

@@ -27,16 +27,42 @@ public class NetworkMidiOutPort extends MidiOutPort {
     public static final int MAX_UDP_PACKET_SIZE = 65507;
     private static final int CONNECTION_TIMEOUT_MS = 2000;
 
+    /**
+     * Connection host for TCP and UDP
+     */
     private final String host;
+    /**
+     * Connection port for TCP and UDP
+     */
     private final int port;
+    /**
+     * Device name which is defined in the midi device library
+     */
     private final String deviceName;
+    /**
+     * CRC32 of the deviceName
+     */
     private final long networkId;
+    /**
+     * Something like "hypercube.serverpit.com:10192:DS-330"
+     */
     private final String definition;
-    // MidiOutNetworkDevice is multi-clients, this mean connections are shared between instances using the same definition
-    // The key of this hashmap is the "definition" string
+    /**
+     * The key of this hashmap is the "definition" string
+     * <p>MidiOutNetworkDevice is multi-clients, this mean connections are shared between instances using the same definition
+     */
     private final Map<String, MidiOutConnection> connections = new ConcurrentHashMap<>();
+    /**
+     * IP Address of the server
+     */
     private InetAddress inetAddress;
+    /**
+     * Thread waiting network messages
+     */
     private Thread listener;
+    /**
+     * Input port receiving the MIDI messages from the network
+     */
     @Getter
     private NetworkMidiInPort networkMidiInPort;
 
@@ -60,22 +86,14 @@ public class NetworkMidiOutPort extends MidiOutPort {
     }
 
     @Override
-    public void open() {
-        super.open();
-        if (getOpenCount() == 1) {
-            try {
-                connections.putIfAbsent(definition, openMidiOutConnection());
-                sendViaTCP(new OpenSesssionNetworkMessage(NetWorkMessageOrigin.TCP, networkId));
-            } catch (IOException e) {
-                log.error("Unexpected error opening {}", definition, e);
-                return;
-            }
-        }
+    public void send(MidiMessage msg, long timestamp) {
+        sendViaTCPAndUDP(new MidiNetworkMessage(NetWorkMessageOrigin.BOTH, networkId, getSession().getNextPacketId(), new CustomMidiEvent(msg)));
     }
 
     @Override
-    public void send(MidiMessage msg, long timestamp) {
-        sendViaTCPAndUDP(new MidiNetworkMessage(NetWorkMessageOrigin.BOTH, networkId, getSession().getNextPacketId(), timestamp, new CustomMidiEvent(msg)));
+    protected void effectiveOpen() throws IOException {
+        connections.putIfAbsent(definition, openMidiOutConnection());
+        sendViaTCP(new OpenSesssionNetworkMessage(NetWorkMessageOrigin.TCP, networkId));
     }
 
     @Override
@@ -93,16 +111,23 @@ public class NetworkMidiOutPort extends MidiOutPort {
                 listener.interrupt();
             }
             if (hasMidiOutConnection()) {
+                var connection = getMidiOutConnection();
                 try {
-                    getTcpOutputStream().close();
+                    connection.tcpOutputStream().close();
                 } catch (IOException e) {
                     log.error("Unable to close output TCP stream for {}", definition);
                 }
                 try {
-                    getTcpInputStream().close();
+                    connection.tcpInputStream().close();
                 } catch (IOException e) {
                     log.error("Unable to close input TCP stream for {}", definition);
                 }
+                try {
+                    connection.clientTCPSocket().close();
+                } catch (IOException e) {
+                    log.error("Unable to close TCP socket for {}", definition);
+                }
+                connection.clientUDPSocket().close();
                 connections.remove(definition);
             }
         }
@@ -123,20 +148,7 @@ public class NetworkMidiOutPort extends MidiOutPort {
             NetworkClientSession session = new NetworkClientSession();
             networkMidiInPort = new NetworkMidiInPort(definition, this);
             networkMidiInPort.open();
-            listener = new Thread(() -> {
-                try {
-                    for (; ; ) {
-                        NetworkMessage msg = NetworkMessage.deserialize(NetWorkMessageOrigin.TCP, tcpInputStream);
-                        if (msg instanceof MidiNetworkMessage midiNetworkMessage) {
-                            networkMidiInPort.onNewMidiEvent(midiNetworkMessage.getEvent());
-                        } else {
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Stop MidiInNetworkDevice '{}': {}", networkMidiInPort.getName(), e.getMessage());
-                }
-            });
+            listener = new Thread(() -> listenNetworkMessages(tcpInputStream));
             listener.start();
             return new MidiOutConnection(
                     session,
@@ -149,6 +161,26 @@ public class NetworkMidiOutPort extends MidiOutPort {
         }
     }
 
+    /**
+     * Wait for incoming messages and push them to the {@link NetworkMidiInPort}
+     */
+    private void listenNetworkMessages(InputStream tcpInputStream) {
+        try {
+            for (; ; ) {
+                NetworkMessage msg = NetworkMessage.deserialize(NetWorkMessageOrigin.TCP, tcpInputStream);
+                if (msg instanceof MidiNetworkMessage midiNetworkMessage) {
+                    networkMidiInPort.onNewMidiEvent(midiNetworkMessage.getEvent());
+                } else {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Stop MidiInNetworkDevice '{}': {}", networkMidiInPort.getName(), e.getMessage());
+        } finally {
+            log.info("Network listener for remote device {} terminated", deviceName);
+        }
+    }
+
     private InetAddress resolveHostIP() {
         try {
             return InetAddress.getByName(host);
@@ -157,13 +189,24 @@ public class NetworkMidiOutPort extends MidiOutPort {
         }
     }
 
+    /**
+     * The whole idea here is sent as fast as possible MIDI messages over the network
+     * <ul>
+     *     <li>UDP is fast but there is no guaranty the packet will not be lost</li>
+     *     <li>TCP is slow but there is a guaranty the packet will not be lost</li>
+     * </ul>
+     * So we send in TCP and UDP and the fastest win. The server take care of ordering and duplicate packets
+     */
     private void sendViaTCPAndUDP(NetworkMessage msg) {
         try {
-            // the fastest win
             sendViaUDP(msg);
+        } catch (Exception e) {
+            log.warn("Unable to send packet via UDP to {}", getEndpoint(), e);
+        }
+        try {
             sendViaTCP(msg);
         } catch (IOException e) {
-            throw new RemoteDeviceError("Unable to send packet to %s".formatted(getEndpoint()), e);
+            throw new RemoteDeviceError("Unable to send packet via TCP to %s".formatted(getEndpoint()), e);
         }
     }
 
@@ -197,12 +240,11 @@ public class NetworkMidiOutPort extends MidiOutPort {
     }
 
     private void sendViaTCP(NetworkMessage msg) throws IOException {
-        var out = getTcpOutputStream();
-        if (out != null) {
+        var connection = getMidiOutConnection();
+        synchronized (connection.tcpOutputStream()) {
+            var out = connection.tcpOutputStream();
             msg.serialize(out);
             out.flush();
-        } else {
-            log.info("TCP link closed for device {} !", deviceName);
         }
     }
 
@@ -211,7 +253,10 @@ public class NetworkMidiOutPort extends MidiOutPort {
             msg.serialize(outputStream);
             byte[] payload = outputStream.toByteArray();
             if (payload.length <= MAX_UDP_PACKET_SIZE) {
-                getUdpDatagramSocket().send(new DatagramPacket(payload, payload.length, inetAddress, port));
+                var socket = getUdpDatagramSocket();
+                synchronized (socket) {
+                    socket.send(new DatagramPacket(payload, payload.length, inetAddress, port));
+                }
             } else {
                 log.warn("Packet size {} exceed max UDP size {}, use only TCP...", payload.length, MAX_UDP_PACKET_SIZE);
             }

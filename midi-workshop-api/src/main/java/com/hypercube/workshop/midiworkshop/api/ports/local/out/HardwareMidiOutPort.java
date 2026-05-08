@@ -20,36 +20,6 @@ public class HardwareMidiOutPort extends MidiOutPort {
     }
 
     @Override
-    public void close() {
-        if (getOpenCount() == 1) {
-            Optional.ofNullable(receiver)
-                    .ifPresent(Receiver::close);
-            receiver = null;
-        }
-        super.close();
-    }
-
-    @Override
-    public void open() {
-        try {
-            if (!port.isOpen()) {
-                port.open();
-            }
-            if (receiver == null) {
-                receiver = port.getReceiver();
-            } else {
-                log.info("Receiver already set for {}", getName());
-            }
-            super.open();
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(port, e);
-        }
-        if (receiver == null) {
-            throw new MidiError("Unable to listen '%s' receiver is null".formatted(getName()));
-        }
-    }
-
-    @Override
     public boolean isOpen() {
         return port != null && port.isOpen();
     }
@@ -76,8 +46,26 @@ public class HardwareMidiOutPort extends MidiOutPort {
     }
 
     @Override
+    protected void effectiveOpen() throws MidiUnavailableException {
+        if (!port.isOpen()) {
+            port.open();
+        }
+        if (receiver == null) {
+            receiver = port.getReceiver();
+        } else {
+            log.info("Receiver already set for {}", getName());
+        }
+        if (receiver == null) {
+            throw new MidiError("Unable to listen '%s' receiver is null".formatted(getName()));
+        }
+    }
+
+    @Override
     protected void effectiveClose() {
         log.info("Effective close on {}", name);
+        Optional.ofNullable(receiver)
+                .ifPresent(Receiver::close);
+        receiver = null;
         port.close();
     }
 }

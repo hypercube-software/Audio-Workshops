@@ -40,8 +40,7 @@ public class MidiResponseMapper {
     public void dumpFields(ExtractedFields extractedFields) {
         log.info("Extracted field:");
         fields.keySet()
-                .stream()
-                .forEach(field -> log.info("%10s: %s".formatted(field, extractedFields.getField(field))));
+                .forEach(field -> log.info("{}:{}", "%10s".formatted(field), extractedFields.getField(field)));
     }
 
     private void extract(MidiDeviceMode mode, ExtractedFields currentResponse, CustomMidiEvent event, MidiResponseField field) {

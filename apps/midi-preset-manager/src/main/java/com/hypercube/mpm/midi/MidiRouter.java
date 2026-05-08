@@ -411,7 +411,8 @@ public class MidiRouter {
      */
     private void onMainDestinationEvent(MidiInPort midiInPort, CustomMidiEvent event) {
         if (event.getMessage()
-                .getStatus() != ShortMessage.ACTIVE_SENSING) {
+                .getStatus() != ShortMessage.ACTIVE_SENSING && event.getMessage()
+                .getStatus() != ShortMessage.TIMING_CLOCK) {
             log.info("onMainDestinationEvent: Receive from {}: {}", mainDestination.getDeviceName(), event.toString());
         }
         devicePassThrough.send(event);

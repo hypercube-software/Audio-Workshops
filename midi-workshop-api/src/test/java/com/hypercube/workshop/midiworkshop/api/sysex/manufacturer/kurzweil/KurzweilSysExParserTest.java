@@ -45,7 +45,8 @@ public class KurzweilSysExParserTest {
         //
         KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
         //String file = "/SysEx/Kurzweil/K2600R/READ_NIBBLE_200.syx";
-        String file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\202 - Orch Pad 4 original NIBBLE.syx";
+        //String file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\202 - Orch Pad 4 original NIBBLE.syx";
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/199 - Default Program NIBBLE.syx";
         byte[] payload = Files.readAllBytes(Path.of(file));
 
         //

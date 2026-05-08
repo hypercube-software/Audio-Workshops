@@ -31,39 +31,23 @@ public class HardwareMidiInPort extends MidiInPort {
         this.port = port;
     }
 
-
-    @Override
-    public void open() {
-        try {
-            if (port != null && !port.isOpen()) {
-                port.open();
-            }
-            super.open();
-            startListening();
-        } catch (MidiUnavailableException e) {
-            throw new MidiError(port, e);
-        }
-    }
-
-    /**
-     * Make sure you don't call this method if you are in a try-with-resource, it will break the internal reference counter
-     */
-    @Override
-    public void close() {
-        if (getOpenCount() == 1) {
-            stopListening();
-        }
-        super.close();
-    }
-
     @Override
     public boolean isOpen() {
         return port != null && port.isOpen();
     }
 
     @Override
+    protected void effectiveOpen() throws MidiUnavailableException {
+        if (port != null && !port.isOpen()) {
+            port.open();
+        }
+        startListening();
+    }
+
+    @Override
     protected void effectiveClose() {
         log.info("Effective close on {}", name);
+        stopListening();
         port.close();
     }
 
@@ -78,7 +62,7 @@ public class HardwareMidiInPort extends MidiInPort {
             @Override
             public void send(MidiMessage message, long timeStamp) {
                 CustomMidiEvent event = new CustomMidiEvent(message, timeStamp);
-                //log.info("%d listeners, receive %s".formatted(listeners.size(), event.toString()));
+                //log.info("{} listeners, receive {}", listeners.size(), event.toString());
                 for (MidiListener listener : listeners) {
                     try {
                         Thread.currentThread()

@@ -61,7 +61,7 @@ public class MidiDeviceRequester {
             for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                 List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
                 for (CustomMidiEvent evt : events) {
-                    log.info("Send %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
+                    log.info("Send {} to {}", evt.getHexValuesSpaced(), device.getDeviceName());
                     midiOutPort.send(evt);
                     requestBuffer.write(evt.getMessage()
                             .getMessage());
@@ -69,7 +69,7 @@ public class MidiDeviceRequester {
             }
             return listener.waitResponse(3)
                     .map(payload -> {
-                        log.info("Receive %d (0x%X) bytes".formatted(payload.length, payload.length));
+                        log.info("Receive {} ({}) bytes", payload.length, "0x%X".formatted(payload.length));
                         return new MidiRequestResponse(requestBuffer.toByteArray(), payload, null);
                     });
         } catch (IOException e) {
@@ -113,7 +113,7 @@ public class MidiDeviceRequester {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
                     }
                     for (CustomMidiEvent evt : events) {
-                        log.info("Send %s to %s".formatted(evt.getHexValuesSpaced(), device.getDeviceName()));
+                        log.info("Send {} to {}", evt.getHexValuesSpaced(), device.getDeviceName());
                         midiOutPort.send(evt);
                         requestBuffer.write(evt.getMessage()
                                 .getMessage());
@@ -130,7 +130,11 @@ public class MidiDeviceRequester {
                             }
                             byte[] sysExResponse = listener.getSysExResponse();
                             responseBuffer.write(sysExResponse);
-                            log.info("Receive %d (0x%X) bytes, %d (0x%X) in total".formatted(sysExResponse.length, sysExResponse.length, responseBuffer.size(), responseBuffer.size()));
+                            log.info("Receive {} ({}) bytes, {} ({}) in total",
+                                    sysExResponse.length,
+                                    "0x%X".formatted(sysExResponse.length),
+                                    responseBuffer.size(),
+                                    "0x%X".formatted(responseBuffer.size()));
                         }
                     }
                     if (listener != null) {

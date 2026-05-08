@@ -96,7 +96,7 @@ public class MidiDeviceLibrary {
                 .map(File::new)
                 .orElse(new File(applicationFolder.getAbsolutePath(), DEVICES_LIBRARY_FOLDER));
         if (libraryFolder.exists()) {
-            log.info("Loading midi devices library from %s...".formatted(libraryFolder.toString()));
+            log.info("Loading midi devices library from {}...", libraryFolder.toString());
             try (Stream<File> midiDeviceDefinitionStream = Files.walk(libraryFolder.toPath())
                     .filter(p -> p.getFileName()
                             .toString()
@@ -124,7 +124,7 @@ public class MidiDeviceLibrary {
             } catch (IOException e) {
                 throw new MidiConfigError("Unable to read library folder:" + libraryFolder.toString());
             }
-            log.info("%d devices defined: %s".formatted(devices.size(), getDevicesNames()));
+            log.info("{} devices defined: {}", devices.size(), getDevicesNames());
             loaded = true;
             setControllerSysExTemplate();
         } else {
@@ -173,7 +173,7 @@ public class MidiDeviceLibrary {
                 .stream()
                 .filter(d -> d.matchNetworkId(networkId))
                 .findFirst()
-                .orElseThrow(() -> new MidiConfigError("Device with network id %4X not found".formatted(networkId))));
+                .orElseThrow(() -> new MidiConfigError("Device with network id 0x%08X not found".formatted(networkId))));
     }
 
 
@@ -380,7 +380,7 @@ public class MidiDeviceLibrary {
      * @return the definition including macros
      */
     private MidiDeviceDefinition loadMidiDeviceDefinition(Map<String, MidiDeviceDefinition> devices, File midiDeviceFile) {
-        log.debug("Load " + midiDeviceFile.toString());
+        log.debug("Load {}", midiDeviceFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
             SimpleModule module = new SimpleModule();
