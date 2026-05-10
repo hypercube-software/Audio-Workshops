@@ -110,27 +110,27 @@ public enum ProgramSegmentType {
     /**
      * fxrtb.h (KDFX real-time effects parameters).
      */
-    FXRTSEGTAG(0x68, 8, "fxrtb", KFFXRootTable.class, null),
+    FXRTSEGTAG(0x68, 8, "fxrtb", KFFXRootTableSegment.class, new KFFXRootTableDeserializer()),
 
     /**
      * fxrtb.h FXMOD.
      */
-    FXPTSEGTAG(0x69, 8, "fxptb", KFFXPartSegment.class, null),
+    FXPTSEGTAG(0x69, 8, "fxptb", KFFXPartSegment.class, new KFFXPartDeserializer()),
 
     /**
      * hammsegb.h (hammond organ simulation parameter segment).
      */
-    HAMSEG1TAG(0x78, 32, "hammsegb", KFHammSegment1.class, null),
+    HAMSEG1TAG(0x78, 32, "hammsegb", KFHammSegment1.class, new KFHamm1Deserializer()),
 
     /**
      * hammsegb.h (hammond organ simulation parameter segment).
      */
-    HAMSEG2TAG(0x79, 32, "hammsegb", KFHammSegment2.class, null),
+    HAMSEG2TAG(0x79, 32, "hammsegb", KFHammSegment2.class, new KFHamm2Deserializer()),
 
     /**
      * hammsegb.h (hammond organ simulation parameter segment).
      */
-    HAMSEG3TAG(0x7A, 32, "hammsegb", KFHammSegment3.class, null),
+    HAMSEG3TAG(0x7A, 32, "hammsegb", KFHammSegment3.class, new KFHamm3Deserializer()),
 
     /**
      * Unknown block type.

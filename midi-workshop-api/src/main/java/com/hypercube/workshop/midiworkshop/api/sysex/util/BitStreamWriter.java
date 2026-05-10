@@ -66,4 +66,22 @@ public class BitStreamWriter {
     public int getBitPos() {
         return (output.size() * 8) + bitIndex;
     }
+
+    public int getBytePos() {
+        return getBitPos() / 2;
+    }
+
+    public void writeBytes(byte[] value) {
+        for (byte v : value) {
+            writeByte(v);
+        }
+    }
+
+    public void writeByte(int value) {
+        writeBits(value, 8);
+    }
+
+    public void writeShort(int value) {
+        writeBits(value, 16);
+    }
 }

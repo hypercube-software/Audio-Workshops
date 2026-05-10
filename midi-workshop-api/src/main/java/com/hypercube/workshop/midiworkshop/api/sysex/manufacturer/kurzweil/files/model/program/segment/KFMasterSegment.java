@@ -1,11 +1,17 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "bitfields1", "scsiID", "bchan", "rvmap", "rpmap", "intTbl", "intKey", "sysxID",
+        "trans", "dtune", "sampflags", "playflags", "rfu2", "samptime", "curSetup", "oldSetup", "curBank", "curEntry", "fxflags",
+        "curEffect", "localKbdChan", "fxMix", "echan", "bitfields2", "curSong", "tvmap", "tpmap", "curDisk", "contrast", "view",
+        "confirm", "xflags", "kbdTrans", "xvmap", "xpmap", "dchan", "bitfields3", "markList", "bitfields4", "bitfields5",
+        "bitfields6", "bitfields7", "seqClickProg", "seqQuantGrid", "seqQuantAmt", "seqQuantSwing", "listIndex", "listTop", "seqTempo"})
 public class KFMasterSegment extends KFProgramSegment {
     private int bitfields1; // seqTempoLock, displayLink, rANO, rpchg, rmode
     private int scsiID;

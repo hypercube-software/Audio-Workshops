@@ -1,11 +1,14 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "subTag", "coarse", "fine", "kScale", "vScale", "control", "range", "depth",
+        "minDepth", "maxDepth", "source", "bitfields1", "moreTscr", "bitfields2", "bitfields3"})
 public class KFHobbesSegment extends KFProgramSegment {
     private int subTag;
     private int coarse;

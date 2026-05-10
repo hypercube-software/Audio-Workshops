@@ -1,11 +1,13 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "hiKey", "initialState", "latchMode", "playOrder", "glissando", "tempoSource", "onOffControl", "clocksPerBeat", "durationPerBeat", "initialTempo", "velocityMode", "velocityFixed", "velocityCtrl", "noteShift", "shiftLimit", "limitOption", "arpSyncFlags", "rfu1", "rfu2", "rfu3"})
 public class KFArpSegment extends KFProgramSegment {
     // tag: loKey might be the tag if it's 26 bytes and follows the pattern
     private int hiKey;

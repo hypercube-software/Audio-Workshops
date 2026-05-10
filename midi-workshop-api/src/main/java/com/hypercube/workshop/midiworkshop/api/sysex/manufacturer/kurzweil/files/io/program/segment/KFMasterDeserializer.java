@@ -3,8 +3,69 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFMasterSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 
 public class KFMasterDeserializer implements KFSegmentDeserializer {
+
+    @Override
+    public void serialize(KFProgramSegment segment, BitStreamWriter out) {
+        KFMasterSegment m = (KFMasterSegment) segment;
+        BitStreamWriter segmentContent = new BitStreamWriter();
+        segmentContent.writeByte(m.getBitfields1());
+        segmentContent.writeByte(m.getScsiID());
+        segmentContent.writeByte(m.getBchan());
+        segmentContent.writeShort(m.getRvmap());
+        segmentContent.writeShort(m.getRpmap());
+        segmentContent.writeShort(m.getIntTbl());
+        segmentContent.writeByte(m.getIntKey());
+        segmentContent.writeByte(m.getSysxID());
+        segmentContent.writeByte(m.getTrans());
+        segmentContent.writeByte(m.getDtune());
+        segmentContent.writeByte(m.getSampflags());
+        segmentContent.writeByte(m.getPlayflags());
+        segmentContent.writeByte(m.getRfu2());
+        segmentContent.writeByte(m.getSamptime());
+        segmentContent.writeShort(m.getCurSetup());
+        segmentContent.writeShort(m.getOldSetup());
+        segmentContent.writeShort(m.getCurBank());
+        segmentContent.writeByte(m.getCurEntry());
+        segmentContent.writeByte(m.getFxflags());
+        segmentContent.writeByte(m.getCurEffect());
+        segmentContent.writeByte(m.getLocalKbdChan());
+        segmentContent.writeByte(m.getFxMix());
+        segmentContent.writeByte(m.getEchan());
+        segmentContent.writeByte(m.getBitfields2());
+        segmentContent.writeByte(m.getCurSong());
+        segmentContent.writeShort(m.getTvmap());
+        segmentContent.writeShort(m.getTpmap());
+        segmentContent.writeByte(m.getCurDisk());
+        segmentContent.writeByte(m.getContrast());
+        segmentContent.writeByte(m.getView());
+        segmentContent.writeByte(m.getConfirm());
+        segmentContent.writeByte(m.getXflags());
+        segmentContent.writeByte(m.getKbdTrans());
+        segmentContent.writeShort(m.getXvmap());
+        segmentContent.writeShort(m.getXpmap());
+        segmentContent.writeByte(m.getDchan());
+        segmentContent.writeByte(m.getBitfields3());
+        for (int mark : m.getMarkList()) {
+            segmentContent.writeByte(mark);
+        }
+        segmentContent.writeByte(m.getBitfields4());
+        segmentContent.writeByte(m.getBitfields5());
+        segmentContent.writeByte(m.getBitfields6());
+        segmentContent.writeByte(m.getBitfields7());
+        segmentContent.writeShort(m.getSeqClickProg());
+        segmentContent.writeShort(m.getSeqQuantGrid());
+        segmentContent.writeByte(m.getSeqQuantAmt());
+        segmentContent.writeByte(m.getSeqQuantSwing());
+        segmentContent.writeByte(m.getListIndex());
+        segmentContent.writeByte(m.getListTop());
+        segmentContent.writeShort(m.getSeqTempo());
+        byte[] result = segmentContent.toByteArray();
+        segment.updateContent(result, out.getBytePos());
+        out.writeBytes(result);
+    }
 
     @Override
     public void deserialize(KFProgramSegment segment) {

@@ -1,12 +1,14 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-@JsonIgnoreType
-public record ProgramSegmentIdentifier(int rawValue, ProgramSegmentType type, int instanceId) {
+@JsonPropertyOrder({"type", "instanceId", "rawValue"})
+public record ProgramSegmentIdentifier(int rawValue,
+                                       ProgramSegmentType type,
+                                       int instanceId) {
     public static Optional<ProgramSegmentIdentifier> fromTag(int rawTag) {
         var tags = Arrays.stream(ProgramSegmentType.values())
                 .sorted((o1, o2) -> Integer.compare(o1.getTag(), o2.getTag()))

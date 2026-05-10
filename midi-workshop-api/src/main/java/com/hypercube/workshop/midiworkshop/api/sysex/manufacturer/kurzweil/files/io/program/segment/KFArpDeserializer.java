@@ -3,8 +3,38 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFArpSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 
 public class KFArpDeserializer implements KFSegmentDeserializer {
+
+    @Override
+    public void serialize(KFProgramSegment segment, BitStreamWriter out) {
+        KFArpSegment arpSegment = (KFArpSegment) segment;
+        BitStreamWriter segmentContent = new BitStreamWriter();
+        segmentContent.writeByte(arpSegment.getHiKey());
+        segmentContent.writeByte(arpSegment.getInitialState());
+        segmentContent.writeByte(arpSegment.getLatchMode());
+        segmentContent.writeByte(arpSegment.getPlayOrder());
+        segmentContent.writeByte(arpSegment.getGlissando());
+        segmentContent.writeByte(arpSegment.getTempoSource());
+        segmentContent.writeByte(arpSegment.getOnOffControl());
+        segmentContent.writeShort(arpSegment.getClocksPerBeat());
+        segmentContent.writeShort(arpSegment.getDurationPerBeat());
+        segmentContent.writeShort(arpSegment.getInitialTempo());
+        segmentContent.writeByte(arpSegment.getVelocityMode());
+        segmentContent.writeByte(arpSegment.getVelocityFixed());
+        segmentContent.writeByte(arpSegment.getVelocityCtrl());
+        segmentContent.writeByte(arpSegment.getNoteShift());
+        segmentContent.writeByte(arpSegment.getShiftLimit());
+        segmentContent.writeByte(arpSegment.getLimitOption());
+        segmentContent.writeByte(arpSegment.getArpSyncFlags());
+        segmentContent.writeByte(arpSegment.getRfu1());
+        segmentContent.writeShort(arpSegment.getRfu2());
+        segmentContent.writeShort(arpSegment.getRfu3());
+        byte[] result = segmentContent.toByteArray();
+        segment.updateContent(result, out.getBytePos());
+        out.writeBytes(result);
+    }
 
     @Override
     public void deserialize(KFProgramSegment segment) {

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ typedef struct {
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonPropertyOrder({"lyr", "asr", "fcn1", "lfo", "fcn2", "enc", "atk", "env", "cseg", "hseq"})
 public class KFLayer {
     private KFLayerSegment lyr;
     private List<KFAsrSegment> asr;
@@ -32,6 +34,6 @@ public class KFLayer {
     private KFEncSegment enc;
     private KFEncSegment atk;
     private List<KFEnvSegment> env;
-    private KFCalvinSegment cseg;
+    private KFCalvinSegment cseg; // provide pointer to the keymap
     private List<KFHobbesSegment> hseq;
 }

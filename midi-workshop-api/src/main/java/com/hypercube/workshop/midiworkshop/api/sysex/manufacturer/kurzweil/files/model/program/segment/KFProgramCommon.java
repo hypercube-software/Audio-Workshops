@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,9 @@ typedef	struct {
  */
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "fmt", "numLayers", "modeFlags", "bendRange", "portSlope", "mixControl", "mixRange",
+        "coarse1", "control1", "range1", "dest1", "coarse2", "control2", "range2", "dest2"})
+
 public class KFProgramCommon extends KFProgramSegment {
     private int fmt;
     private int numLayers;

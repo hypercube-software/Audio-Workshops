@@ -1,0 +1,1223 @@
+{
+  "type": "PROGRAM",
+  "asr": {
+    "atime": 0,
+    "dtime": 0,
+    "flags": 0,
+    "id": {
+      "instanceId": 1,
+      "rawValue": 17,
+      "type": "ASRSEGTAG"
+    },
+    "rfu1": 0,
+    "rfu2": 0,
+    "rtime": 0,
+    "segmentContent": {
+      "content": "00 00 00 00 00 00 00",
+      "position": 17
+    },
+    "trigger": 0
+  },
+  "data": {
+    "content": "08 04 01 00 37 40 00 00 00 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 19 00 00 00 15 00 00 00 00 00 00 00 1b 00 00 00 0f 00 01 00 00 00 00 00 68 00 00 c7 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 69 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 18 00 00 00 19 00 00 00 14 00 00 00 00 00 00 00 15 00 00 00 00 00 00 00 1a 00 00 00 1b 00 00 00 78 01 24 4f 50 00 01 f4 07 00 0c 13 18 1c 1f 24 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 79 00 00 00 00 00 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 09 00 00 00 0c 6c 00 7f 00 04 00 00 00 00 00 00 10 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 18 00 00 00 19 00 00 00 14 00 00 00 00 00 00 00 15 00 00 00 00 00 00 00 1a 00 00 00 1b 00 00 00 20 00 01 00 00 00 49 00 00 00 48 00 00 00 47 00 27 00 00 00 00 00 46 00 00 00 00 00 00 00 00 00 21 00 64 00 00 00 00 00 64 00 00 00 00 00 00 00 22 00 64 00 00 00 00 00 64 00 00 00 00 00 00 00 23 00 64 00 00 00 00 00 64 00 00 00 00 00 00 00 40 7f 00 00 2b 00 00 00 00 00 00 40 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 50 3e 00 00 00 00 00 00 00 00 00 00 00 00 00 00 51 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 52 28 00 00 00 00 00 00 00 00 00 00 00 00 03 00 53 01 06 00 00 23 00 00 00 00 00 00 00 00 02 04 00 00",
+    "position": 0
+  },
+  "efx": {
+    "chan": 0,
+    "ctl1": 0,
+    "ctl2": 0,
+    "id": {
+      "instanceId": 0,
+      "rawValue": 15,
+      "type": "EFXSEGTAG"
+    },
+    "mix": 0,
+    "out1": 0,
+    "out2": 0,
+    "prog": 1,
+    "segmentContent": {
+      "content": "00 01 00 00 00 00 00",
+      "position": 41
+    }
+  },
+  "fcn1": {
+    "arg1": 0,
+    "arg2": 0,
+    "id": {
+      "instanceId": 1,
+      "rawValue": 25,
+      "type": "FCNSEGTAG"
+    },
+    "op": 0,
+    "segmentContent": {
+      "content": "00 00 00",
+      "position": 25
+    }
+  },
+  "fcn2": {
+    "arg1": 0,
+    "arg2": 0,
+    "id": {
+      "instanceId": 3,
+      "rawValue": 27,
+      "type": "FCNSEGTAG"
+    },
+    "op": 0,
+    "segmentContent": {
+      "content": "00 00 00",
+      "position": 37
+    }
+  },
+  "fxrt": {
+    "asr1": {
+      "atime": 0,
+      "dtime": 0,
+      "flags": 0,
+      "id": {
+        "instanceId": 0,
+        "rawValue": 16,
+        "type": "ASRSEGTAG"
+      },
+      "rfu1": 0,
+      "rfu2": 0,
+      "rtime": 0,
+      "segmentContent": {
+        "content": "00 00 00 00 00 00 00",
+        "position": 201
+      },
+      "trigger": 0
+    },
+    "asr2": {
+      "atime": 0,
+      "dtime": 0,
+      "flags": 0,
+      "id": {
+        "instanceId": 1,
+        "rawValue": 17,
+        "type": "ASRSEGTAG"
+      },
+      "rfu1": 0,
+      "rfu2": 0,
+      "rtime": 0,
+      "segmentContent": {
+        "content": "00 00 00 00 00 00 00",
+        "position": 209
+      },
+      "trigger": 0
+    },
+    "fcn1": {
+      "arg1": 0,
+      "arg2": 0,
+      "id": {
+        "instanceId": 0,
+        "rawValue": 24,
+        "type": "FCNSEGTAG"
+      },
+      "op": 0,
+      "segmentContent": {
+        "content": "00 00 00",
+        "position": 217
+      }
+    },
+    "fcn2": {
+      "arg1": 0,
+      "arg2": 0,
+      "id": {
+        "instanceId": 1,
+        "rawValue": 25,
+        "type": "FCNSEGTAG"
+      },
+      "op": 0,
+      "segmentContent": {
+        "content": "00 00 00",
+        "position": 221
+      }
+    },
+    "fcn3": {
+      "arg1": 0,
+      "arg2": 0,
+      "id": {
+        "instanceId": 2,
+        "rawValue": 26,
+        "type": "FCNSEGTAG"
+      },
+      "op": 0,
+      "segmentContent": {
+        "content": "00 00 00",
+        "position": 241
+      }
+    },
+    "fcn4": {
+      "arg1": 0,
+      "arg2": 0,
+      "id": {
+        "instanceId": 3,
+        "rawValue": 27,
+        "type": "FCNSEGTAG"
+      },
+      "op": 0,
+      "segmentContent": {
+        "content": "00 00 00",
+        "position": 245
+      }
+    },
+    "id": {
+      "instanceId": 0,
+      "rawValue": 104,
+      "type": "FXRTSEGTAG"
+    },
+    "lfo1": {
+      "id": {
+        "instanceId": 0,
+        "rawValue": 20,
+        "type": "LFOSEGTAG"
+      },
+      "maxRate": 0,
+      "minRate": 0,
+      "phase": 0,
+      "rateCtl": 0,
+      "rfu1": 0,
+      "rfu2": 0,
+      "segmentContent": {
+        "content": "00 00 00 00 00 00 00",
+        "position": 225
+      },
+      "shape": 0
+    },
+    "lfo2": {
+      "id": {
+        "instanceId": 1,
+        "rawValue": 21,
+        "type": "LFOSEGTAG"
+      },
+      "maxRate": 0,
+      "minRate": 0,
+      "phase": 0,
+      "rateCtl": 0,
+      "rfu1": 0,
+      "rfu2": 0,
+      "segmentContent": {
+        "content": "00 00 00 00 00 00 00",
+        "position": 233
+      },
+      "shape": 0
+    },
+    "patch": [
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 57
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 65
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 73
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 81
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 89
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 97
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 105
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 113
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 121
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 129
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 137
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 145
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 153
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 161
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 169
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 177
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 185
+        },
+        "source": 0,
+        "strip": 0
+      },
+      {
+        "adjust": 0,
+        "depth": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 105,
+          "type": "FXPTSEGTAG"
+        },
+        "num": 0,
+        "param": 0,
+        "rfu": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 00 00",
+          "position": 193
+        },
+        "source": 0,
+        "strip": 0
+      }
+    ],
+    "rfu": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "segmentContent": {
+      "content": "00 00 c7 00 00 00 00",
+      "position": 49
+    },
+    "studio": 199,
+    "vers": 0
+  },
+  "hammseg1": {
+    "balance": 0,
+    "bartones": [
+      244,
+      7,
+      0,
+      12,
+      19,
+      24,
+      28,
+      31,
+      36
+    ],
+    "basekey": 36,
+    "bass_f": 0,
+    "bass_g": 0,
+    "bitfields1": 80,
+    "emph_f": 0,
+    "emph_g": 0,
+    "id": {
+      "instanceId": 0,
+      "rawValue": 120,
+      "type": "HAMSEG1TAG"
+    },
+    "noizvol": 0,
+    "nwheels": 79,
+    "par1_f": 0,
+    "par1_g": 0,
+    "par1_q": 0,
+    "par2_f": 0,
+    "par2_g": 0,
+    "par2_q": 0,
+    "resmap": 1,
+    "segmentContent": {
+      "content": "01 24 4f 50 00 01 f4 07 00 0c 13 18 1c 1f 24 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+      "position": 249
+    },
+    "toneleak": 0,
+    "treb_f": 0,
+    "treb_g": 0,
+    "version": 1,
+    "volmap": 0,
+    "volume": 0
+  },
+  "hammseg2": {
+    "bass_q": 0,
+    "chorusCtl": 0,
+    "chorusSelect": 0,
+    "id": {
+      "instanceId": 0,
+      "rawValue": 121,
+      "type": "HAMSEG2TAG"
+    },
+    "leakmode": 0,
+    "leslieCtl": 0,
+    "noizdecay": 0,
+    "noizlevel": 0,
+    "noizpitch": 0,
+    "noizrtrig": 0,
+    "noizvel": 52,
+    "perc1": 0,
+    "perc2": 0,
+    "percdecay": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "perclcomp": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "perclevel": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "percvel": 0,
+    "rfu2": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "rfu3": 0,
+    "segmentContent": {
+      "content": "00 00 00 00 00 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+      "position": 281
+    },
+    "treb_q": 0
+  },
+  "hammseg3": {
+    "drawbars": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "id": {
+      "instanceId": 0,
+      "rawValue": 122,
+      "type": "HAMSEG3TAG"
+    },
+    "keyclick": 0,
+    "loTune": 0,
+    "noizran": 0,
+    "rcvMap": 0,
+    "relclick": 0,
+    "rfu4": 0,
+    "rfu5": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "rfu6": 0,
+    "rfu7": 0,
+    "segmentContent": {
+      "content": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+      "position": 313
+    }
+  },
+  "layers": [
+    {
+      "asr": [
+        {
+          "atime": 0,
+          "dtime": 0,
+          "flags": 0,
+          "id": {
+            "instanceId": 0,
+            "rawValue": 16,
+            "type": "ASRSEGTAG"
+          },
+          "rfu1": 0,
+          "rfu2": 0,
+          "rtime": 0,
+          "segmentContent": {
+            "content": "00 00 00 00 00 00 00",
+            "position": 361
+          },
+          "trigger": 0
+        },
+        {
+          "atime": 0,
+          "dtime": 0,
+          "flags": 0,
+          "id": {
+            "instanceId": 1,
+            "rawValue": 17,
+            "type": "ASRSEGTAG"
+          },
+          "rfu1": 0,
+          "rfu2": 0,
+          "rtime": 0,
+          "segmentContent": {
+            "content": "00 00 00 00 00 00 00",
+            "position": 369
+          },
+          "trigger": 0
+        }
+      ],
+      "atk": {
+        "atCtl": 70,
+        "atKScale": 0,
+        "atRange": 0,
+        "atTime": 0,
+        "atVScale": 0,
+        "dtCtl": 0,
+        "dtKScale": 0,
+        "dtRange": 0,
+        "dtTime": 0,
+        "flags": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 39,
+          "type": "ATKSEGTAG"
+        },
+        "rfu1": 0,
+        "rtCtl": 0,
+        "rtKScale": 0,
+        "rtRange": 0,
+        "rtTime": 0,
+        "segmentContent": {
+          "content": "00 00 00 00 00 46 00 00 00 00 00 00 00 00 00",
+          "position": 425
+        }
+      },
+      "cseg": {
+        "alg": 1,
+        "ccr": 0,
+        "ckScale": 0,
+        "cpitch": 0,
+        "cvScale": 0,
+        "dtune": 0,
+        "fineHz": 0,
+        "fpitch": 0,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 64,
+          "type": "CALSEGTAG"
+        },
+        "keymap": 1,
+        "legato": 0,
+        "pcontrol": 0,
+        "pdepth": 0,
+        "pmax": 0,
+        "pmin": 0,
+        "prange": 0,
+        "psource": 0,
+        "rfu2": 0,
+        "root": 0,
+        "segmentContent": {
+          "content": "7f 00 00 2b 00 00 00 00 00 00 40 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00",
+          "position": 489
+        },
+        "skeymap": 0,
+        "slegato": 64,
+        "sroot": 0,
+        "subTag": 127,
+        "tcontrol": 0,
+        "tkScale": 43,
+        "trange": 0,
+        "trans": 0,
+        "tshift": 0,
+        "tvScale": 0
+      },
+      "enc": {
+        "atCtl": 73,
+        "atKScale": 0,
+        "atRange": 0,
+        "atTime": 0,
+        "atVScale": 0,
+        "dtCtl": 72,
+        "dtKScale": 0,
+        "dtRange": 0,
+        "dtTime": 0,
+        "flags": 1,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 32,
+          "type": "ENCSEGTAG"
+        },
+        "rfu1": 0,
+        "rtCtl": 71,
+        "rtKScale": 0,
+        "rtRange": 0,
+        "rtTime": 0,
+        "segmentContent": {
+          "content": "00 01 00 00 00 49 00 00 00 48 00 00 00 47 00",
+          "position": 409
+        }
+      },
+      "env": [
+        {
+          "flags": 0,
+          "id": {
+            "instanceId": 0,
+            "rawValue": 33,
+            "type": "ENVSEGTAG"
+          },
+          "segmentContent": {
+            "content": "00 64 00 00 00 00 00 64 00 00 00 00 00 00 00",
+            "position": 441
+          },
+          "segs": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "flags": 0,
+          "id": {
+            "instanceId": 1,
+            "rawValue": 34,
+            "type": "ENVSEGTAG"
+          },
+          "segmentContent": {
+            "content": "00 64 00 00 00 00 00 64 00 00 00 00 00 00 00",
+            "position": 457
+          },
+          "segs": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        },
+        {
+          "flags": 0,
+          "id": {
+            "instanceId": 2,
+            "rawValue": 35,
+            "type": "ENVSEGTAG"
+          },
+          "segmentContent": {
+            "content": "00 64 00 00 00 00 00 64 00 00 00 00 00 00 00",
+            "position": 473
+          },
+          "segs": [
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              100,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "fcn1": [
+        {
+          "arg1": 0,
+          "arg2": 0,
+          "id": {
+            "instanceId": 0,
+            "rawValue": 24,
+            "type": "FCNSEGTAG"
+          },
+          "op": 0,
+          "segmentContent": {
+            "content": "00 00 00",
+            "position": 377
+          }
+        },
+        {
+          "arg1": 0,
+          "arg2": 0,
+          "id": {
+            "instanceId": 1,
+            "rawValue": 25,
+            "type": "FCNSEGTAG"
+          },
+          "op": 0,
+          "segmentContent": {
+            "content": "00 00 00",
+            "position": 381
+          }
+        }
+      ],
+      "fcn2": [
+        {
+          "arg1": 0,
+          "arg2": 0,
+          "id": {
+            "instanceId": 2,
+            "rawValue": 26,
+            "type": "FCNSEGTAG"
+          },
+          "op": 0,
+          "segmentContent": {
+            "content": "00 00 00",
+            "position": 401
+          }
+        },
+        {
+          "arg1": 0,
+          "arg2": 0,
+          "id": {
+            "instanceId": 3,
+            "rawValue": 27,
+            "type": "FCNSEGTAG"
+          },
+          "op": 0,
+          "segmentContent": {
+            "content": "00 00 00",
+            "position": 405
+          }
+        }
+      ],
+      "hseq": [
+        {
+          "bitfields1": 0,
+          "bitfields2": 0,
+          "bitfields3": 0,
+          "coarse": 0,
+          "control": 0,
+          "depth": 0,
+          "fine": 0,
+          "id": {
+            "instanceId": 0,
+            "rawValue": 80,
+            "type": "HOBSEGTAG"
+          },
+          "kscale": 0,
+          "maxDepth": 0,
+          "minDepth": 0,
+          "moreTscr": 0,
+          "range": 0,
+          "segmentContent": {
+            "content": "3e 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+            "position": 521
+          },
+          "source": 0,
+          "subTag": 62,
+          "vscale": 0
+        },
+        {
+          "bitfields1": 0,
+          "bitfields2": 0,
+          "bitfields3": 0,
+          "coarse": 0,
+          "control": 0,
+          "depth": 0,
+          "fine": 0,
+          "id": {
+            "instanceId": 1,
+            "rawValue": 81,
+            "type": "HOBSEGTAG"
+          },
+          "kscale": 0,
+          "maxDepth": 0,
+          "minDepth": 0,
+          "moreTscr": 0,
+          "range": 0,
+          "segmentContent": {
+            "content": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+            "position": 537
+          },
+          "source": 0,
+          "subTag": 0,
+          "vscale": 0
+        },
+        {
+          "bitfields1": 0,
+          "bitfields2": 3,
+          "bitfields3": 0,
+          "coarse": 0,
+          "control": 0,
+          "depth": 0,
+          "fine": 0,
+          "id": {
+            "instanceId": 2,
+            "rawValue": 82,
+            "type": "HOBSEGTAG"
+          },
+          "kscale": 0,
+          "maxDepth": 0,
+          "minDepth": 0,
+          "moreTscr": 0,
+          "range": 0,
+          "segmentContent": {
+            "content": "28 00 00 00 00 00 00 00 00 00 00 00 00 03 00",
+            "position": 553
+          },
+          "source": 0,
+          "subTag": 40,
+          "vscale": 0
+        },
+        {
+          "bitfields1": 0,
+          "bitfields2": 2,
+          "bitfields3": 4,
+          "coarse": 6,
+          "control": 0,
+          "depth": 0,
+          "fine": 0,
+          "id": {
+            "instanceId": 3,
+            "rawValue": 83,
+            "type": "HOBSEGTAG"
+          },
+          "kscale": 0,
+          "maxDepth": 0,
+          "minDepth": 0,
+          "moreTscr": 0,
+          "range": 0,
+          "segmentContent": {
+            "content": "01 06 00 00 23 00 00 00 00 00 00 00 00 02 04",
+            "position": 569
+          },
+          "source": 0,
+          "subTag": 1,
+          "vscale": 35
+        }
+      ],
+      "lfo": [
+        {
+          "id": {
+            "instanceId": 0,
+            "rawValue": 20,
+            "type": "LFOSEGTAG"
+          },
+          "maxRate": 0,
+          "minRate": 0,
+          "phase": 0,
+          "rateCtl": 0,
+          "rfu1": 0,
+          "rfu2": 0,
+          "segmentContent": {
+            "content": "00 00 00 00 00 00 00",
+            "position": 385
+          },
+          "shape": 0
+        },
+        {
+          "id": {
+            "instanceId": 1,
+            "rawValue": 21,
+            "type": "LFOSEGTAG"
+          },
+          "maxRate": 0,
+          "minRate": 0,
+          "phase": 0,
+          "rateCtl": 0,
+          "rfu1": 0,
+          "rfu2": 0,
+          "segmentContent": {
+            "content": "00 00 00 00 00 00 00",
+            "position": 393
+          },
+          "shape": 0
+        }
+      ],
+      "lyr": {
+        "dlyCtl": 0,
+        "dlyMax": 0,
+        "dlyMin": 0,
+        "eswitch": 127,
+        "flags": 0,
+        "hiEnable": 0,
+        "hiKey": 108,
+        "id": {
+          "instanceId": 0,
+          "rawValue": 9,
+          "type": "LYRSEGTAG"
+        },
+        "loEnable": 0,
+        "loKey": 12,
+        "moreFlags": 4,
+        "segmentContent": {
+          "content": "00 00 00 0c 6c 00 7f 00 04 00 00 00 00 00 00",
+          "position": 345
+        },
+        "trans": 0,
+        "tune": 0,
+        "vrange": 0,
+        "vtrig": 0,
+        "xfade": 0
+      }
+    }
+  ],
+  "lfo": {
+    "id": {
+      "instanceId": 1,
+      "rawValue": 21,
+      "type": "LFOSEGTAG"
+    },
+    "maxRate": 0,
+    "minRate": 0,
+    "phase": 0,
+    "rateCtl": 0,
+    "rfu1": 0,
+    "rfu2": 0,
+    "segmentContent": {
+      "content": "00 00 00 00 00 00 00",
+      "position": 29
+    },
+    "shape": 0
+  },
+  "name": "Default Program",
+  "objectId": 327,
+  "pgm": {
+    "bendRange": 55,
+    "coarse1": 0,
+    "coarse2": 0,
+    "control1": 0,
+    "control2": 0,
+    "dest1": 0,
+    "dest2": 0,
+    "fmt": 4,
+    "id": {
+      "instanceId": 0,
+      "rawValue": 8,
+      "type": "PGMSEGTAG"
+    },
+    "mixControl": 0,
+    "mixRange": 0,
+    "modeFlags": 0,
+    "numLayers": 1,
+    "portSlope": 64,
+    "range1": 0,
+    "range2": 0,
+    "segmentContent": {
+      "content": "04 01 00 37 40 00 00 00 00 00 00 00 00 00 00",
+      "position": 1
+    }
+  },
+  "segmentsStart": 0,
+  "type": "PROGRAM"
+}

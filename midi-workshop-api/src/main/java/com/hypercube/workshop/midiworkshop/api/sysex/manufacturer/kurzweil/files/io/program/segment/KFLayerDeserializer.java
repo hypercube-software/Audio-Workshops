@@ -3,8 +3,33 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFLayerSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 
 public class KFLayerDeserializer implements KFSegmentDeserializer {
+
+    @Override
+    public void serialize(KFProgramSegment segment, BitStreamWriter out) {
+        KFLayerSegment layer = (KFLayerSegment) segment;
+        BitStreamWriter segmentContent = new BitStreamWriter();
+        segmentContent.writeByte(layer.getLoEnable());
+        segmentContent.writeByte(layer.getTrans());
+        segmentContent.writeByte(layer.getTune());
+        segmentContent.writeByte(layer.getLoKey());
+        segmentContent.writeByte(layer.getHiKey());
+        segmentContent.writeByte(layer.getVRange());
+        segmentContent.writeByte(layer.getESwitch());
+        segmentContent.writeByte(layer.getFlags());
+        segmentContent.writeByte(layer.getMoreFlags());
+        segmentContent.writeByte(layer.getVTrig());
+        segmentContent.writeByte(layer.getHiEnable());
+        segmentContent.writeByte(layer.getDlyCtl());
+        segmentContent.writeByte(layer.getDlyMin());
+        segmentContent.writeByte(layer.getDlyMax());
+        segmentContent.writeByte(layer.getXfade());
+        byte[] result = segmentContent.toByteArray();
+        segment.updateContent(result, out.getBytePos());
+        out.writeBytes(result);
+    }
 
     @Override
     public void deserialize(KFProgramSegment segment) {

@@ -3,12 +3,13 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFHeader;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.header.KFHeaderDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KurzweilFile;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample.KFSoundBlock;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample.KFSoundBlockHeader;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.header.KFHeader;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlockHeader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -49,7 +50,8 @@ public class KurzweilFileReader implements Closeable {
             if (!targetDir.exists()) {
                 targetDir.mkdirs();
             }
-            mapper.writeValue(new File(targetDir, "kurzweil_dump.json"), kurzweilFile);
+            mapper.writeValue(new File(targetDir, "kurzweil_dump_%s.json".formatted(kurzweilFile.file()
+                    .getName())), kurzweilFile);
         } catch (IOException e) {
             log.error("Failed to serialize KurzweilFile to JSON", e);
         }

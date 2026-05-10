@@ -1,9 +1,10 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io;
+package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample;
 
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample.KFSoundBlock;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample.KFSoundBlockEnvelope;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample.KFSoundBlockHeader;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlockEnvelope;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlockHeader;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ public class KFSoundBlockDeserializer extends KFDeserializer {
         for (int i = 0; i < nbEnvelopes; i++) {
             envelopes.add(deserializeSoundBlockEnv(in));
         }
-        return new KFSoundBlock(data, objectId, name, headers, envelopes);
+        return new KFSoundBlock(data, name, objectId, headers, envelopes);
     }
 
     private KFSoundBlockEnvelope deserializeSoundBlockEnv(BitStreamReader in) {

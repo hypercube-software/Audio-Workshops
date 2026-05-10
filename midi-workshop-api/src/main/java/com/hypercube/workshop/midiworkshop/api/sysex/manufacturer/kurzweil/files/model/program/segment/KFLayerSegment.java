@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "loEnable", "trans", "tune", "loKey", "hiKey", "vRange", "eSwitch", "flags",
+        "moreFlags", "vTrig", "hiEnable", "dlyCtl", "dlyMin", "dlyMax", "xfade"})
 public class KFLayerSegment extends KFProgramSegment {
     private int loEnable;
     private int trans;

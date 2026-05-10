@@ -1,19 +1,25 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.json.HexDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.json.HexSerializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import lombok.Getter;
-import lombok.experimental.Accessors;
+import lombok.Setter;
 
-@JsonIgnoreType
-@Getter()
-@Accessors(fluent = true)
+@Getter
+@Setter
 public final class RawData {
-    private final byte[] content;
-    private final long position;
+    @JsonSerialize(using = HexSerializer.class)
+    @JsonDeserialize(using = HexDeserializer.class)
+    private byte[] content;
+    private long position;
+    @JsonIgnore
     private BitStreamReader bitStreamReader;
 
-    public RawData(byte[] content, long position) {
+    public RawData(@JsonDeserialize(using = HexDeserializer.class) byte[] content, long position) {
         this.content = content;
         this.position = position;
     }

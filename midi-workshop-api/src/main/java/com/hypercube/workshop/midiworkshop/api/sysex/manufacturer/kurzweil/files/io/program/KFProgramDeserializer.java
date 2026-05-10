@@ -8,6 +8,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.ProgramSegmentType;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,10 +18,16 @@ public class KFProgramDeserializer extends KFDeserializer {
         BitStreamReader in = data.bitStreamReader();
         String name = readName(in);
         int segmentsStart = in.getBytePos();
-        var program = new KFProgram(data, objectId, name, segmentsStart);
+        var program = new KFProgram(data, name, objectId, segmentsStart);
         KFProgramSegmentDeserializer d = new KFProgramSegmentDeserializer(program);
         d.deserialize("", program);
         return program;
+    }
+
+    public void serialize(KFProgram program, BitStreamWriter out) {
+        writeName(program.getName(), out);
+        KFProgramSegmentDeserializer d = new KFProgramSegmentDeserializer(program);
+        d.serialize("", program, out);
     }
 
     private void dumpSegment(KFProgramSegment segment) {
@@ -33,7 +40,7 @@ public class KFProgramDeserializer extends KFDeserializer {
                 .getTag(), type
                 .getTag());
         String position = Long.toHexString(segment.getSegmentContent()
-                .position() - 1); // position start just after the segment tag, so we do -1
+                .getPosition() - 1); // position start just after the segment tag, so we do -1
         final String format;
         if (segment instanceof KFProgramCommon common) {
             format = " format: " + common.getFmt();

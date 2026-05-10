@@ -3,8 +3,21 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFFcnSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 
 public class KFFcnDeserializer implements KFSegmentDeserializer {
+
+    @Override
+    public void serialize(KFProgramSegment segment, BitStreamWriter out) {
+        KFFcnSegment fcnSegment = (KFFcnSegment) segment;
+        BitStreamWriter segmentContent = new BitStreamWriter();
+        segmentContent.writeByte(fcnSegment.getOp());
+        segmentContent.writeByte(fcnSegment.getArg1());
+        segmentContent.writeByte(fcnSegment.getArg2());
+        byte[] result = segmentContent.toByteArray();
+        segment.updateContent(result, out.getBytePos());
+        out.writeBytes(result);
+    }
 
     @Override
     public void deserialize(KFProgramSegment segment) {

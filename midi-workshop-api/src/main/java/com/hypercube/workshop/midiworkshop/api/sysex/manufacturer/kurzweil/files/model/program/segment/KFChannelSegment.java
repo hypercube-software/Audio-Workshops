@@ -1,11 +1,14 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "chan", "nlyrs", "flags", "prog", "volume", "pan", "trans", "dtune", "brange",
+        "playflags", "portRate", "outflags", "rfu1", "rfu2"})
 public class KFChannelSegment extends KFProgramSegment {
     private int chan;
     private int nlyrs;

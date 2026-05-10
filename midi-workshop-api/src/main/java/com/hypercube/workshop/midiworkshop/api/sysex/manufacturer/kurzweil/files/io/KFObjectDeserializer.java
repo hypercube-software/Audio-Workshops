@@ -1,7 +1,10 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.studio.KFStudioDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -15,12 +18,13 @@ public class KFObjectDeserializer extends KFDeserializer {
     private KFProgramDeserializer kfProgramDeserializer = new KFProgramDeserializer();
     private KFSoundBlockDeserializer kfSoundBlockDeserializer = new KFSoundBlockDeserializer();
     private KFKeyMapDeserializer kfKeyMapDeserializer = new KFKeyMapDeserializer();
+    private KFStudioDeserializer kfStudioDeserializer = new KFStudioDeserializer();
 
     public List<KFObject> deserializeObjects(RawData data) {
         List<KFObject> objects = new ArrayList<>();
         BitStreamReader in = data.bitStreamReader();
         for (; ; ) {
-            final long position = data.position() + in.getBytePos();
+            final long position = data.getPosition() + in.getBytePos();
             final int objectTypeId;
             final int objectId;
             int inputId = in.readBits(16);
@@ -52,7 +56,9 @@ public class KFObjectDeserializer extends KFDeserializer {
                 case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId);
                 case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId);
                 case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId);
-                default -> new KFObject(objectContent, type, objectId);
+                case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId);
+                default ->
+                        throw new IllegalArgumentException("Not yet supported: " + type); //new KFObject(objectContent, type, objectId);
             });
         }
         return objects;

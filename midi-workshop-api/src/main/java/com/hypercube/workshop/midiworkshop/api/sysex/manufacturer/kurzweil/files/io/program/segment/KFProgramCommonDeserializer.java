@@ -3,8 +3,33 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramCommon;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment.KFProgramSegment;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 
 public class KFProgramCommonDeserializer implements KFSegmentDeserializer {
+
+    @Override
+    public void serialize(KFProgramSegment segment, BitStreamWriter out) {
+        KFProgramCommon pgm = (KFProgramCommon) segment;
+        BitStreamWriter segmentContent = new BitStreamWriter();
+        segmentContent.writeByte(pgm.getFmt());
+        segmentContent.writeByte(pgm.getNumLayers());
+        segmentContent.writeByte(pgm.getModeFlags());
+        segmentContent.writeByte(pgm.getBendRange());
+        segmentContent.writeByte(pgm.getPortSlope());
+        segmentContent.writeByte(pgm.getMixControl());
+        segmentContent.writeByte(pgm.getMixRange());
+        segmentContent.writeByte(pgm.getCoarse1());
+        segmentContent.writeByte(pgm.getControl1());
+        segmentContent.writeByte(pgm.getRange1());
+        segmentContent.writeByte(pgm.getDest1());
+        segmentContent.writeByte(pgm.getCoarse2());
+        segmentContent.writeByte(pgm.getControl2());
+        segmentContent.writeByte(pgm.getRange2());
+        segmentContent.writeByte(pgm.getDest2());
+        byte[] result = segmentContent.toByteArray();
+        segment.updateContent(result, out.getBytePos());
+        out.writeBytes(result);
+    }
 
     @Override
     public void deserialize(KFProgramSegment segment) {

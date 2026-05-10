@@ -128,7 +128,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         int f7 = reader.getByte();
 
         byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
-        KFProgram program = new KFProgram(new RawData(unpacked, 0), objectId, name, 0);
+        KFProgram program = new KFProgram(new RawData(unpacked, 0), name, objectId, 0);
         KFProgramSegmentDeserializer kfProgramSegmentDeserializer = new KFProgramSegmentDeserializer(program);
         kfProgramSegmentDeserializer.deserialize("", program);
         KFDeserializer.dump(program);

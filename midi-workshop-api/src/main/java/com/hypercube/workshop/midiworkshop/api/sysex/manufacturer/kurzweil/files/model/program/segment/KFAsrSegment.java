@@ -1,11 +1,13 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.segment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonPropertyOrder({"id", "segmentContent", "rfu1", "trigger", "flags", "dtime", "atime", "rfu2", "rtime"})
 public class KFAsrSegment extends KFProgramSegment {
     private int rfu1;
     private int trigger;

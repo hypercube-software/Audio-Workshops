@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.sample;
+package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock;
 
 import lombok.Getter;
 import lombok.Setter;
