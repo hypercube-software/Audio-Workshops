@@ -84,4 +84,8 @@ public class BitStreamWriter {
     public void writeShort(int value) {
         writeBits(value, 16);
     }
+
+    public void writeInt32(long value) {
+        writeBits((int) value, 32);
+    }
 }

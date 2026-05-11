@@ -6,6 +6,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlockEnvelope;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlockHeader;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -13,31 +14,67 @@ import java.util.List;
 
 @Slf4j
 public class KFSoundBlockDeserializer extends KFDeserializer {
+
     public KFSoundBlock deserialize(RawData data, int objectId) {
         BitStreamReader in = data.bitStreamReader();
         String name = readName(in);
-        // See official spec sblock.h, struct SBLK
-        int base = in.readShort();   /* base sfh ID */
-        int nsfh = in.readShort() + 1;   /* #of headers -1 */
-        int off = in.readShort();
-        int sflags = in.readByte();
-        in.skipBytes(1);
-        int copyID = in.readShort();
-        int rfu = in.readShort();
+
+        KFSoundBlock soundBlock = new KFSoundBlock(data, name, objectId, new ArrayList<>(), new ArrayList<>());
+
+        soundBlock.setBase(in.readShort());
+        int nsfh = in.readShort(); // nsfh is #of headers -1, so loop nsfh + 1 times
+        soundBlock.setNsfh(nsfh);
+        soundBlock.setOff(in.readShort());
+        soundBlock.setSflags(in.readByte());
+        soundBlock.setUnused(in.readByte()); // skip unused byte
+        soundBlock.setCopyID(in.readShort());
+        soundBlock.setRfu(in.readShort());
+
+        KFSoundBlockHeaderDeserializer headerDeserializer = new KFSoundBlockHeaderDeserializer();
         List<KFSoundBlockHeader> headers = new ArrayList<>();
-        for (int i = 0; i < nsfh; i++) {
-            log.info("Read SFH {}", i);
-            headers.add(deserializeSoundBlockHeader(in));
+        for (int i = 0; i <= nsfh; i++) {
+            log.info("Read KFSoundBlockHeader {}", i);
+            headers.add(headerDeserializer.deserialize(in));
         }
+        soundBlock.setHeaders(headers);
+
+        // Deserialize envelopes - assuming they follow the headers directly
         int remain = data.size() - (in.getBitPos() / 8);
-        int nbEnvelopes = remain / 12;
+        int nbEnvelopes = remain / 12; // Assuming 12 bytes per envelope as per previous deserializeSoundBlockEnv
         List<KFSoundBlockEnvelope> envelopes = new ArrayList<>();
+        // No dedicated deserializer for KFSoundBlockEnvelope yet, so I'll reuse the logic here.
         for (int i = 0; i < nbEnvelopes; i++) {
             envelopes.add(deserializeSoundBlockEnv(in));
         }
-        return new KFSoundBlock(data, name, objectId, headers, envelopes);
+        soundBlock.setEnvelopes(envelopes);
+
+
+        return soundBlock;
     }
 
+    public void serialize(KFSoundBlock soundBlock, BitStreamWriter out) {
+        writeName(soundBlock.getName(), out);
+
+        out.writeShort(soundBlock.getBase());
+        out.writeShort(soundBlock.getNsfh());
+        out.writeShort(soundBlock.getOff());
+        out.writeByte(soundBlock.getSflags());
+        out.writeByte(soundBlock.getUnused()); // unused byte
+        out.writeShort(soundBlock.getCopyID());
+        out.writeShort(soundBlock.getRfu());
+
+        KFSoundBlockHeaderDeserializer headerDeserializer = new KFSoundBlockHeaderDeserializer();
+        for (KFSoundBlockHeader header : soundBlock.getHeaders()) {
+            headerDeserializer.serialize(header, out);
+        }
+
+        // Serialize envelopes
+        for (KFSoundBlockEnvelope env : soundBlock.getEnvelopes()) {
+            serializeSoundBlockEnv(env, out);
+        }
+    }
+
+    // Re-adding envelope deserialization logic
     private KFSoundBlockEnvelope deserializeSoundBlockEnv(BitStreamReader in) {
         KFSoundBlockEnvelope env = new KFSoundBlockEnvelope();
         env.setAttackRate(in.readSignedShort());
@@ -49,21 +86,13 @@ public class KFSoundBlockDeserializer extends KFDeserializer {
         return env;
     }
 
-    private KFSoundBlockHeader deserializeSoundBlockHeader(BitStreamReader in) {
-        KFSoundBlockHeader header = new KFSoundBlockHeader();
-        header.setRootk(in.readByte());     /* MIDI key # */
-        header.setFlags(in.readByte());
-        header.setAmp1(in.readByte());    /* normal attack amp adjust ) */
-        header.setAmp2(in.readByte());    /* alt attack amp adjust */
-        header.setPitch(in.readShort());    /* pitch at highest playback rate*/
-        header.setNameOffset(in.readShort());     /* offset to name if any, 0 if none */
-        header.setSos(in.readLong());     /* normal start of span */
-        header.setAlt(in.readLong());     /* alt (legato)  start of span */
-        header.setLos(in.readLong());      /* loop of span */
-        header.setEos(in.readLong());      /* end of span */
-        header.setEnv1(in.readShort());     /* normal expansion envelope */
-        header.setEnv2(in.readShort());     /* alt (legato) expansion env */
-        header.setSrate(in.readLong());    /* 1/sampling rate in nanosecs */
-        return header;
+    // Re-adding envelope serialization logic
+    private void serializeSoundBlockEnv(KFSoundBlockEnvelope env, BitStreamWriter out) {
+        out.writeShort(env.getAttackRate());
+        out.writeShort(env.getAttackLevel());
+        out.writeShort(env.getDecayRate());
+        out.writeShort(env.getDecayLevel());
+        out.writeShort(env.getReleaseRate());
+        out.writeShort(env.getReleaseLevel());
     }
 }

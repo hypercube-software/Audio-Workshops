@@ -1,24 +1,64 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * <pre>
+ * sound file header, contained in SBLK
+ * typedef struct {
+ *   ubyte	rootk;     // MIDI key #
+ *   ubyte flags;
+ *   byte	amp1;    // normal attack amp adjust )
+ *   byte	amp2;    // alt attack amp adjust
+ *   word	pitch;    // pitch at highest playback rate
+ *   word	name;     // offset to name if any, 0 if none
+ *   long	sos;     // normal start of span
+ *   long	alt;     // alt (legato)  start of span
+ *   long	los;      // loop of span
+ *   long	eos;      // end of span
+ *   word	env1;     // normal expansion envelope
+ *   word	env2;     // alt (legato) expansion env
+ *   long	srate;    // 1/sampling rate in nanosecs
+ * } SFH;
+ * </pre>
+ */
 @Getter
 @Setter
+@JsonPropertyOrder({"rootk", "flags", "amp1", "amp2", "pitch", "nameOffset", "sos", "alt", "los", "eos", "env1", "env2", "srate"})
 public class KFSoundBlockHeader {
-    private int rootk;/* MIDI key # */
+    /**
+     * Root MIDI key
+     */
+    private int rootk;
     private int flags;
-    private int amp1;/* normal attack amp adjust ) */
-    private int amp2;/* alt attack amp adjust */
-    private int pitch;/* pitch at highest playback rate*/
-    private int nameOffset;/* offset to name if any, 0 if none */
-    private long sos;/* normal start of span */
-    private long alt;/* alt (legato)  start of span */
-    private long los; /* loop of span */
-    private long eos;/* end of span */
-    private int env1;/* normal expansion envelope */
-    private int env2;/* alt (legato) expansion env */
-    private long srate;/* 1/sampling rate in nanosecs */
+    private int amp1;
+    private int amp2;
+    private int pitch;
+    private int nameOffset; // 'name' in C struct is actually an offset
+    /**
+     * Sample start
+     */
+    private long sos;
+    /**
+     * Alt Sample start
+     */
+    private long alt;
+    /**
+     * sample loop start
+     */
+    private long los;
+    /**
+     * Sample end
+     */
+    private long eos;
+    private int env1;
+    private int env2;
+    /**
+     * Sample period in nanoseconds
+     */
+    private long srate;
 
     public long sampleStart() {
         return sos;

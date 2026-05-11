@@ -96,7 +96,10 @@ public class KurzweilFileReader implements Closeable {
                     long remainingBytes = stream.length() - stream.getFilePointer();
                     if (remainingBytes >= sampleData.length) {
                         stream.readFully(sampleData);
-                        Files.write(Path.of("./target/sample_%dKhz_16Bits_BE_%s_%d.pcm".formatted(h.sampleFrequency(), block.getName(), sampleID)), sampleData);
+                        Path path = Path.of("./target/sample_%dKhz_16Bits_BE_%s_%d.pcm".formatted(h.sampleFrequency(), block.getName(), sampleID));
+                        log.info("Generate {}", path.toFile()
+                                .getCanonicalPath());
+                        Files.write(path, sampleData);
                     } else {
                         log.error("ERROR, this file does not contains the sample ! (EOF)");
                     }

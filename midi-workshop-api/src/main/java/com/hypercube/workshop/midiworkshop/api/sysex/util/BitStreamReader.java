@@ -80,7 +80,11 @@ public class BitStreamReader {
         return (short) readBits(16);
     }
 
-    public long readLong() {
+    public int readSignedInt32() {
+        return readBits(32);
+    }
+
+    public long readUnsignedInt32() {
         return readBits(32) & 0xFFFFFFFFL;
     }
 
@@ -134,4 +138,5 @@ public class BitStreamReader {
         }
         return data;
     }
+
 }
