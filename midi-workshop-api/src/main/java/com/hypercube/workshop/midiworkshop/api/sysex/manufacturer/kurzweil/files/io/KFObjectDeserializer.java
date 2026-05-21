@@ -28,10 +28,11 @@ public class KFObjectDeserializer extends KFDeserializer {
             final int objectTypeId;
             final int objectId;
             int inputId = in.readBits(16);
-            if (inputId == 0) {
+            if (inputId == 0 || in.getBytePos() == data.size()) {
                 break;
             }
             int HighestBit = inputId & 0x8000;
+
             if (HighestBit != 0) {
                 // 10 bits object id
                 objectTypeId = (HighestBit >>> 8) | ((inputId & 0b0111110000000000) >>> 10);
@@ -41,24 +42,27 @@ public class KFObjectDeserializer extends KFDeserializer {
                 objectTypeId = inputId >>> 8;
                 objectId = inputId & 0xFF;
             }
+
             KObject type = KObject.fromId(objectTypeId)
                     .orElse(KObject.UNKNOWN);
             int size = in.readShort() - 4; // size include what we already read
-            log.info("Read type {} of size {} id {} encoded as {} at position {}",
+            log.info("Read type {} of size ${} id {} encoded as ${} at position ${}",
                     type.name(),
                     Integer.toHexString(size),
                     objectId,
                     Integer.toHexString(inputId),
                     Long.toHexString(position)
             );
+            if (type == KObject.UNKNOWN) {
+                throw new IllegalArgumentException("Unknown block: " + objectTypeId);
+            }
             RawData objectContent = data.readChildBlock(size);
             objects.add(switch (type) {
                 case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId);
                 case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId);
                 case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId);
                 case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId);
-                default ->
-                        throw new IllegalArgumentException("Not yet supported: " + type); //new KFObject(objectContent, type, objectId);
+                default -> throw new IllegalArgumentException("Not yet supported: " + type);
             });
         }
         return objects;

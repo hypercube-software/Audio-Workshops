@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,6 +60,8 @@ public class KFSoundBlockHeader {
      * Sample period in nanoseconds
      */
     private long srate;
+    @JsonIgnore
+    private byte[] pcmData;
 
     public long sampleStart() {
         return sos;
@@ -84,7 +87,25 @@ public class KFSoundBlockHeader {
         return sampleEnd() - sampleStart() + 1;
     }
 
-    public int sampleFrequency() {
-        return (int) Math.ceil((1F / samplePeriodNs()) * 1_000_000_000L);
+    public int byteDepth() {
+        return 2;
+    }
+
+    public void setPcmData(byte[] data) {
+        this.pcmData = data;
+        long offset = sos;
+        sos = relativize(sos, offset);
+        alt = relativize(alt, offset);
+        los = relativize(los, offset);
+        eos = relativize(eos, offset);
+
+    }
+
+    public int sampleRate() {
+        return (int) Math.floor((1F / samplePeriodNs()) * 1_000_000_000L);
+    }
+
+    private long relativize(long value, long startPos) {
+        return value != 0 ? value - startPos : 0;
     }
 }

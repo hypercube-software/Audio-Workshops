@@ -45,7 +45,6 @@ public class KurzweilFileReader implements Closeable {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             mapper.configure(com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
             String json = mapper.writeValueAsString(kurzweilFile);
-            log.info("KurzweilFile JSON: {}", json);
             File targetDir = new File("target");
             if (!targetDir.exists()) {
                 targetDir.mkdirs();
@@ -87,23 +86,28 @@ public class KurzweilFileReader implements Closeable {
                 }
             }
             for (KFSoundBlock block : soundBlocks) {
-                int sampleID = 0;
                 for (KFSoundBlockHeader h : block.getHeaders()) {
-                    long pos = header.getOffsetSampleData() + h.sampleStart() * 2;
+                    long pos = header.getOffsetSampleData() + h.sampleStart() * h.byteDepth();
                     log.info("Read sample block '{}' of {} samples at pos {}...", block.getName(), h.sampleLength(), Long.toHexString(pos));
-                    byte[] sampleData = new byte[(int) h.sampleLength() * 2];
+                    byte[] pcmData = new byte[(int) h.sampleLength() * h.byteDepth()];
                     stream.seek(pos);
                     long remainingBytes = stream.length() - stream.getFilePointer();
-                    if (remainingBytes >= sampleData.length) {
-                        stream.readFully(sampleData);
-                        Path path = Path.of("./target/sample_%dKhz_16Bits_BE_%s_%d.pcm".formatted(h.sampleFrequency(), block.getName(), sampleID));
+                    if (remainingBytes >= pcmData.length) {
+                        stream.readFully(pcmData);
+                        Path path = Path.of("./target/sample_%d_%dKhz_16Bits_BE_%d_%s.pcm".formatted(
+                                block.getObjectId(),
+                                h.sampleRate(),
+                                h.sampleLength(),
+                                block.getName()
+                        ));
                         log.info("Generate {}", path.toFile()
                                 .getCanonicalPath());
-                        Files.write(path, sampleData);
+                        Files.write(path, pcmData);
+                        h.setPcmData(pcmData);
                     } else {
                         log.error("ERROR, this file does not contains the sample ! (EOF)");
+                        h.setPcmData(new byte[0]);
                     }
-                    sampleID++;
                 }
             }
         } catch (IOException e) {

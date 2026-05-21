@@ -24,9 +24,12 @@ class KurzweilFileReaderTest {
     void read() {
         String pathname = "./src/test/resources/Kurzweil/anapads.krz";
         //String pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\Solina Phase 2.K26";
+        //String pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\K2600R\\werksoun\\bavaria.krz";
         File file = new File(pathname);
         try (KurzweilFileReader kurzweilFileReader = new KurzweilFileReader(file)) {
             KurzweilFile kurzweilFile = kurzweilFileReader.read();
+            kurzweilFile.objects()
+                    .forEach(KFDeserializer::dump);
             KurzweilFileConverter kurzweilFileConverter = new KurzweilFileConverter();
             kurzweilFileConverter.toSysEx(kurzweilFile, new File("./target/output"));
         } catch (IOException e) {

@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.KFProgram;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,8 @@ public abstract class KFDeserializer {
             String json = mapper.writeValueAsString(obj);
             String simpleName = obj.getClass()
                     .getSimpleName();
-            if (obj instanceof KFProgram prg) {
-                simpleName += "_" + prg.getName();
+            if (obj instanceof KFObject kfObject) {
+                simpleName += "_" + kfObject.getObjectId() + "_" + kfObject.getName();
             }
             File targetDir = new File("./target");
             File file = new File(targetDir, "kurzweil_dump_%s.json".formatted(simpleName));
