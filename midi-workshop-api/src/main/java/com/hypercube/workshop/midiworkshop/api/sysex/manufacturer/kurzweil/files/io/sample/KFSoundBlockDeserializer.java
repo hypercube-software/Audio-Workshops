@@ -15,10 +15,11 @@ import java.util.List;
 @Slf4j
 public class KFSoundBlockDeserializer extends KFDeserializer {
 
-    public KFSoundBlock deserialize(RawData data, int objectId) {
+    public KFSoundBlock deserialize(RawData data, int objectId, String name) {
         BitStreamReader in = data.bitStreamReader();
-        String name = readName(in);
-
+        if (name == null) {
+            name = readName(in);
+        }
         KFSoundBlock soundBlock = new KFSoundBlock(data, name, objectId, new ArrayList<>(), new ArrayList<>());
 
         soundBlock.setBase(in.readShort());
@@ -54,7 +55,10 @@ public class KFSoundBlockDeserializer extends KFDeserializer {
 
     public void serialize(KFSoundBlock soundBlock, BitStreamWriter out) {
         writeName(soundBlock.getName(), out);
+        serializeContent(soundBlock, out);
+    }
 
+    public void serializeContent(KFSoundBlock soundBlock, BitStreamWriter out) {
         out.writeShort(soundBlock.getBase());
         out.writeShort(soundBlock.getNsfh());
         out.writeShort(soundBlock.getOff());

@@ -15,10 +15,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class KFKeyMapDeserializer extends KFDeserializer {
 
-    public KFKeyMap deserialize(RawData data, int objectId) {
-        BitStreamReader in = data.bitStreamReader();
-        String name = readName(in);
+    public void serializeContent(KFKeyMap keyMap, BitStreamWriter out) {
+        out.writeShort(keyMap.getBlock());
+        out.writeShort(keyMap.getMethod());
+        out.writeShort(keyMap.getPitch());
+        out.writeShort(keyMap.getCents());
+        out.writeShort(keyMap.getNelem());
+        out.writeShort(keyMap.getEsize());
 
+        for (int l : keyMap.getLevel()) {
+            out.writeShort(l);
+        }
+    }
+
+    public KFKeyMap deserialize(RawData data, int objectId, String name) {
+        BitStreamReader in = data.bitStreamReader();
+        if (name == null) {
+            name = readName(in);
+        }
         KFKeyMap keyMap = new KFKeyMap(data, name, objectId);
 
         keyMap.setBlock(in.readShort());
@@ -69,15 +83,6 @@ public class KFKeyMapDeserializer extends KFDeserializer {
 
     public void serialize(KFKeyMap keyMap, BitStreamWriter out) {
         writeName(keyMap.getName(), out);
-        out.writeShort(keyMap.getBlock());
-        out.writeShort(keyMap.getMethod());
-        out.writeShort(keyMap.getPitch());
-        out.writeShort(keyMap.getCents());
-        out.writeShort(keyMap.getNelem());
-        out.writeShort(keyMap.getEsize());
-
-        for (int l : keyMap.getLevel()) {
-            out.writeShort(l);
-        }
+        serializeContent(keyMap, out);
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -69,5 +70,10 @@ public class KFKeyMap extends KFObject {
                 mask.add(m);
             }
         }
+    }
+
+    public boolean containsSampleBlock(KFSoundBlock sample) {
+        return entries.stream()
+                .anyMatch(e -> e.getSblk() == sample.getObjectId());
     }
 }

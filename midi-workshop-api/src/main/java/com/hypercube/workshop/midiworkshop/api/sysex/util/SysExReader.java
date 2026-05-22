@@ -67,6 +67,10 @@ public class SysExReader {
         return data;
     }
 
+    public int getInt14() {
+        return unpack14bitValue(buffer.getShort());
+    }
+
     public int getInt16() {
         return buffer.getShort();
     }
@@ -103,5 +107,9 @@ public class SysExReader {
             str += (char) c;
         }
         return str;
+    }
+
+    private int unpack14bitValue(int value) {
+        return ((value & 0x7F00) >>> 1) | (value & 0x7F);
     }
 }

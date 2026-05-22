@@ -7,7 +7,9 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KurzweilSysExParser;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.segment.KFProgramSegmentDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KurzweilFile;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.keymap.KFKeyMap;
@@ -24,9 +26,19 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 
 @Slf4j
 public class KurzweilFileConverter {
+    private static void checkGeneratedSysEx(File outputFile) {
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        try {
+            var r = kurzweilSysExParser.parse(Manufacturer.KURZWEIL, Files.readAllBytes(outputFile.toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void toSysEx(KurzweilFile input, File outputFolder) {
         outputFolder.mkdirs();
         var programs = input.objects()
@@ -38,7 +50,7 @@ public class KurzweilFileConverter {
                         .anyMatch(l -> l.getCseg()
                                 .getKeymap() >= 200))
                 .toList();
-        var samples = input.objects()
+        List<KFSoundBlock> samples = input.objects()
                 .stream()
                 .filter(o -> o.getType() == KObject.SOUND_BLOCK)
                 .map(o -> (KFSoundBlock) o)
@@ -53,33 +65,48 @@ public class KurzweilFileConverter {
             File outputFile = new File(outputFolder, "%3d - %s.syx".formatted(midiProgram.getObjectId(), midiProgram.getName()));
             log.info("Generate {}", outputFile);
 
-            BitStreamWriter o = new BitStreamWriter();
-            KFProgramSegmentDeserializer d = new KFProgramSegmentDeserializer(midiProgram);
-            d.serialize("", midiProgram, o);
-            midiProgram.getData()
-                    .setContent(o.toByteArray());
-            midiProgram.getData()
-                    .setPosition(0);
-            midiProgram.setSegmentsStart(0);
+            byte[] programPayload = serializeProgram(midiProgram);
             try (FileOutputStream out = new FileOutputStream(outputFile)) {
                 for (var keymap : keymaps) {
-                    if (midiProgram.contains(keymap)) {
-                        writeObject(out, samples.getFirst());
-                        writeObject(out, keymap);
+                    if (midiProgram.containsKeyMap(keymap)) {
+                        for (var sample : samples) {
+                            if (keymap.containsSampleBlock(sample)) {
+                                byte[] samplePayload = serializeSampleBlock(sample);
+                                writeObject(out, sample, samplePayload);
+                            }
+                        }
+                        byte[] keymapPayload = serializeKeymap(keymap);
+                        writeObject(out, keymap, keymapPayload);
                     }
                 }
                 dumpProgram(midiProgram, outputFolder);
-                writeObject(out, midiProgram);
+                writeObject(out, midiProgram, programPayload);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
-            try {
-                var r = kurzweilSysExParser.parse(Manufacturer.KURZWEIL, Files.readAllBytes(outputFile.toPath()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            checkGeneratedSysEx(outputFile);
         }
+    }
+
+    private byte[] serializeKeymap(KFKeyMap keymap) {
+        BitStreamWriter o = new BitStreamWriter();
+        KFKeyMapDeserializer s = new KFKeyMapDeserializer();
+        s.serializeContent(keymap, o);
+        return o.toByteArray();
+    }
+
+    private byte[] serializeSampleBlock(KFSoundBlock sample) {
+        BitStreamWriter o = new BitStreamWriter();
+        KFSoundBlockDeserializer s = new KFSoundBlockDeserializer();
+        s.serializeContent(sample, o);
+        return o.toByteArray();
+    }
+
+    private byte[] serializeProgram(KFProgram midiProgram) {
+        BitStreamWriter o = new BitStreamWriter();
+        KFProgramDeserializer d = new KFProgramDeserializer();
+        d.serializeContent(midiProgram, o);
+        return o.toByteArray();
     }
 
     private void writeNibblePayload(FileOutputStream out, byte[] packed) throws IOException {
@@ -92,7 +119,7 @@ public class KurzweilFileConverter {
         out.write(chk.getValue());
     }
 
-    private void writeObject(FileOutputStream out, KFObject kObject) throws IOException {
+    private void writeObject(FileOutputStream out, KFObject kObject, byte[] unpackedPayload) throws IOException {
         out.write(0xF0);
         out.write(0x07); // manufacturer Kurzweil
         out.write(0x00); // device ID
@@ -102,10 +129,8 @@ public class KurzweilFileConverter {
                 .getType()); // object type id
         writePacked14Bits(out, kObject.getObjectId()); // object id
 
-        byte[] unpacked = kObject.getData()
-                .getContent();
-        byte[] packed = packNibble(unpacked);
-        writePacked24Bit(out, unpacked.length);
+        byte[] packed = packNibble(unpackedPayload);
+        writePacked24Bit(out, unpackedPayload.length);
         out.write(0x00); // override mode
         for (byte c : kObject.getName()
                 .getBytes(StandardCharsets.US_ASCII)) {

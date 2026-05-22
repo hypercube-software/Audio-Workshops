@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KFProgramDeserializer extends KFDeserializer {
 
-    public KFProgram deserialize(RawData data, int objectId) {
+    public KFProgram deserialize(RawData data, int objectId, String name) {
         BitStreamReader in = data.bitStreamReader();
-        String name = readName(in);
+        if (name == null) {
+            name = readName(in);
+        }
         int segmentsStart = in.getBytePos();
         var program = new KFProgram(data, name, objectId, segmentsStart);
         KFProgramSegmentDeserializer d = new KFProgramSegmentDeserializer(program);
@@ -26,6 +28,10 @@ public class KFProgramDeserializer extends KFDeserializer {
 
     public void serialize(KFProgram program, BitStreamWriter out) {
         writeName(program.getName(), out);
+        serializeContent(program, out);
+    }
+
+    public void serializeContent(KFProgram program, BitStreamWriter out) {
         KFProgramSegmentDeserializer d = new KFProgramSegmentDeserializer(program);
         d.serialize("", program, out);
     }

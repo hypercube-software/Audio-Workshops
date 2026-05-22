@@ -5,9 +5,13 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.segment.KFProgramSegmentDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.keymap.KFKeyMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.KFProgram;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -107,18 +111,20 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 .toList();
     }
 
+
     private BaseObject parseWRITE(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int unpackedSize = reader.getInt24();
         int mode = reader.getByte();
         String name = reader.getString();
         int formatCode = reader.getByte();
         StreamFormat format = StreamFormat.fromCode(formatCode);
-        String objectTypeName = KObject.fromType(objectType)
-                .map(KObject::name)
-                .orElse("Unknown !");
+        KObject kObjectType = KObject.fromType(objectType)
+                .orElseThrow(() -> new MidiError("Unexpected object type"));
+        String objectTypeName = kObjectType.name();
         log.info("Object: {}", objectTypeName);
+        log.info("Object Id: {}", objectId);
         log.info("Mode: {}", mode);
         log.info("Name: {}", name);
         log.info("Unpacked Size  : {}", Long.toHexString(unpackedSize));
@@ -127,16 +133,31 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         int checksum = reader.getByte();
         int f7 = reader.getByte();
 
-        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
-        KFProgram program = new KFProgram(new RawData(unpacked, 0), name, objectId, 0);
-        KFProgramSegmentDeserializer kfProgramSegmentDeserializer = new KFProgramSegmentDeserializer(program);
-        kfProgramSegmentDeserializer.deserialize("", program);
-        KFDeserializer.dump(program);
+        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectId, objectTypeName);
+        final RawData rawData = new RawData(unpacked, 0);
+        switch (kObjectType) {
+            case PROGRAM -> {
+                KFProgramDeserializer deserializer = new KFProgramDeserializer();
+                KFProgram program = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(program);
+            }
+            case SOUND_BLOCK -> {
+                KFSoundBlockDeserializer deserializer = new KFSoundBlockDeserializer();
+                KFSoundBlock soundBlock = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(soundBlock);
+            }
+            case KEYMAP -> {
+                KFKeyMapDeserializer deserializer = new KFKeyMapDeserializer();
+                KFKeyMap keyMap = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(keyMap);
+            }
+            default -> throw new IllegalArgumentException("Not yet implemented:" + kObjectType.name());
+        }
         return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked);
     }
 
     @Nonnull
-    private byte[] getUnpacked(Command command, StreamFormat format, byte[] payload, int checksum, String objectName) {
+    private byte[] getUnpacked(Command command, StreamFormat format, byte[] payload, int checksum, int objectId, String objectName) {
         byte[] unpacked = switch (format) {
             case STREAM -> readStream(payload);
             case NIBBLE -> readNibbleStream(payload);
@@ -149,8 +170,8 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         boolean checkSumOK = checksum == expectedChecksum;
         log.info("Unpacked size  : {} bytes , checksum OK ? = {}", "0x%06X".formatted(unpacked.length), checkSumOK);
         try {
-            Files.write(Path.of("Packed " + command.name() + " prg " + objectName + ".syx"), payload);
-            Files.write(Path.of("Unpacked " + command.name() + " prg " + objectName + ".dat"), unpacked);
+            Files.write(Path.of("./target/Packed " + command.name() + "_" + objectId + "_" + objectName + ".syx"), payload);
+            Files.write(Path.of("./target/Unpacked " + command.name() + "_" + objectId + "_" + objectName + ".dat"), unpacked);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -205,7 +226,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         byte[] payload = getBitStream(reader, format, unpackedSize);
         int checksum = reader.getByte();
         int f7 = reader.getByte();
-        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectTypeName);
+        byte[] unpacked = getUnpacked(command, format, payload, checksum, objectId, objectTypeName);
         return new ObjectLoad(objectType, objectId, unpackedSize, offset, format, unpacked);
     }
 

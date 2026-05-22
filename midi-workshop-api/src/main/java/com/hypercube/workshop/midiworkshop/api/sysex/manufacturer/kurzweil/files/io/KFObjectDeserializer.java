@@ -58,9 +58,9 @@ public class KFObjectDeserializer extends KFDeserializer {
             }
             RawData objectContent = data.readChildBlock(size);
             objects.add(switch (type) {
-                case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId);
-                case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId);
-                case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId);
+                case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId, null);
+                case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId, null);
+                case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId, null);
                 case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId);
                 default -> throw new IllegalArgumentException("Not yet supported: " + type);
             });

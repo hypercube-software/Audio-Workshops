@@ -55,7 +55,7 @@ public class KFProgram extends KFObject {
         return Arrays.copyOfRange(data.getContent(), segmentsStart, data.getContent().length);
     }
 
-    public boolean contains(KFKeyMap keymap) {
+    public boolean containsKeyMap(KFKeyMap keymap) {
         return getLayers()
                 .stream()
                 .anyMatch(l -> l.getCseg()
