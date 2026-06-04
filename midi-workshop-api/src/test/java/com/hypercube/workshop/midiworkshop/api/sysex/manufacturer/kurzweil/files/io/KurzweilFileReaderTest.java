@@ -23,8 +23,9 @@ class KurzweilFileReaderTest {
     @Disabled
     void read() {
         String pathname = "./src/test/resources/Kurzweil/anapads.krz";
-        //String pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\Solina Phase 2.K26";
-        //String pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\K2600R\\werksoun\\bavaria.krz";
+        //pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\Solina Phase 2.K26";
+        pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\K2600R\\werksoun\\bavaria.krz";
+        //pathname = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\ExportFX.K26";
         File file = new File(pathname);
         try (KurzweilFileReader kurzweilFileReader = new KurzweilFileReader(file)) {
             KurzweilFile kurzweilFile = kurzweilFileReader.read();

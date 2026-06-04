@@ -5,13 +5,21 @@ import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.intonationtable.KFIntonationTableDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.pressuremap.KFPressureMapDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.studio.KFStudioDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.velocitymap.KFVelocityMapDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.intonationtable.KFIntonationTable;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.keymap.KFKeyMap;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.pressuremap.KFPressureMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.KFProgram;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.studio.KFStudio;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.velocitymap.KFVelocityMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -150,6 +158,26 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 KFKeyMapDeserializer deserializer = new KFKeyMapDeserializer();
                 KFKeyMap keyMap = deserializer.deserialize(rawData, objectId, name);
                 KFDeserializer.dump(keyMap);
+            }
+            case STUDIO_2 -> {
+                KFStudioDeserializer deserializer = new KFStudioDeserializer();
+                KFStudio keyMap = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(keyMap);
+            }
+            case INTONATION_TABLE -> {
+                KFIntonationTableDeserializer deserializer = new KFIntonationTableDeserializer();
+                KFIntonationTable intonationTable = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(intonationTable);
+            }
+            case VELOCITY_MAP -> {
+                KFVelocityMapDeserializer deserializer = new KFVelocityMapDeserializer();
+                KFVelocityMap velocityMap = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(velocityMap);
+            }
+            case PRESSURE_MAP -> {
+                KFPressureMapDeserializer deserializer = new KFPressureMapDeserializer();
+                KFPressureMap pressureMap = deserializer.deserialize(rawData, objectId, name);
+                KFDeserializer.dump(pressureMap);
             }
             default -> throw new IllegalArgumentException("Not yet implemented:" + kObjectType.name());
         }

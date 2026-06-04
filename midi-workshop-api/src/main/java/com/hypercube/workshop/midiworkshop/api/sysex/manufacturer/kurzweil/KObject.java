@@ -23,6 +23,7 @@ public enum KObject {
     PROGRAM(0x0104),
     KEYMAP(0x0105),
     STUDIO(0x0071),
+    STUDIO_2(0x010C),
     SONG(0x0070),
     SETUP(0x0107),
     SOUND_BLOCK(0x0106),

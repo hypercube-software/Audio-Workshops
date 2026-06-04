@@ -53,6 +53,66 @@ public class KurzweilSysExParserTest {
     }
 
     @Test
+    void parseStudio() throws Exception {
+        //
+        // GIVEN
+        //
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/banks/Studio Bank 0 NIBBLE.syx";
+        byte[] payload = Files.readAllBytes(Path.of(file));
+
+        //
+        // WHEN
+        //
+        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+    }
+
+    @Test
+    void parseIntonation() throws Exception {
+        //
+        // GIVEN
+        //
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/banks/Intonation Bank 0 NIBBLE.syx";
+        byte[] payload = Files.readAllBytes(Path.of(file));
+
+        //
+        // WHEN
+        //
+        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+    }
+
+    @Test
+    void parseVelocity() throws Exception {
+        //
+        // GIVEN
+        //
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/banks/Velocity Bank 0 NIBBLE.syx";
+        byte[] payload = Files.readAllBytes(Path.of(file));
+
+        //
+        // WHEN
+        //
+        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+    }
+
+    @Test
+    void parsePressure() throws Exception {
+        //
+        // GIVEN
+        //
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/banks/Pressure Bank 0 NIBBLE.syx";
+        byte[] payload = Files.readAllBytes(Path.of(file));
+
+        //
+        // WHEN
+        //
+        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+    }
+
+    @Test
     @Disabled
     void workInProgress() throws Exception {
         //

@@ -13,29 +13,50 @@ macros:
   # Kurzweil use the term "TYPE" to talk about MIDI bytes and "ID" to talk about the real value
   - "Request(command,body)               : ---   : F0 07 00 78 command body F7"
   - "DIR(type,id)                        : ---   : Request($04,type id)"
+  - "DIR_NULL(id)                        : ---   : DIR(0000,id)" # null
+  - "DIR_SRAM1(id)                       : ---   : DIR(0001,id)" # sram
+  - "DIR_SRAM2(id)                       : ---   : DIR(0002,id)" # sram
+  - "DIR_TABLE(id)                       : ---   : DIR(0003,id)" # table
+  - "DIR_INTONATION(id)                  : ---   : DIR(0067,id)" # Equal, Just, ...
+  - "DIR_VELOCITY(id)                    : ---   : DIR(0068,id)" # Linear, Light1, ...
+  - "DIR_PRESSURE(id)                    : ---   : DIR(0069,id)" # Linear, Easy, Easier...
+  - "DIR_006A(id)                        : ---   : DIR(006A,id)" # main, edprop, ...
+  - "DIR_MODE(id)                        : ---   : DIR(006B,id)" # ProgramMode, SetupMode, QuickAccessMode...
+  - "DIR_006C(id)                        : ---   : DIR(006C,id)" # main,edprog,mngb,mng2a3...
+  - "DIR_006D(id)                        : ---   : DIR(006D,id)" # mel50,mel51,mel54,mel66...
+  - "DIR_QUICK_ACCESS(id)                : ---   : DIR(006F,id)" # Keys, Analog, Hard Edge
+  - "DIR_SONG(id)                        : ---   : DIR(0070,id)" # NewSong, Slow Drive Arr...
+  - "DIR_LFO_SHAPES(id)                  : ---   : DIR(0072,id)" # Sine, +Sine, Square, +Square, ...
+  - "DIR_FUN(id)                         : ---   : DIR(0073,id)" # a+b, a-b, (a+b)/2
   - "DIR_PROGRAM(id)                     : ---   : DIR(0104,id)"
   - "DIR_KEYMAP(id)                      : ---   : DIR(0105,id)"
   - "DIR_SOUND_BLOCK(id)                 : ---   : DIR(0106,id)"
-  - "DIR_STUDIO(id)                      : ---   : DIR(0071,id)" # wrong
-  - "DIR_SETUP(id)                       : ---   : DIR(0107,id)"
+  - "DIR_SETUP(id)                       : ---   : DIR(0109,id)"
+  - "DIR_STUDIO(id)                      : ---   : DIR(010C,id)"
+  - "DIR_KDFX_PRESET(id)                 : ---   : DIR(010D,id)"
+  - "DIR_EQ_PRESET(id)                   : ---   : DIR(010E,id)" # ClearBase, FlatBase...
+  - "DIR_REVERB_PRESET(id)               : ---   : DIR(010F,id)" # MiniVerb, Dual MiniVerb...
+  - "DIR_FILTER_PRESET(id)               : ---   : DIR(0110,id)" # Bass Shelf, Treble Shelf, LowPass1...
+
+
   # bank is in [0-9] or 7F for all banks. Each bank contains 100 items max
   # DIR_PROGRAM_BANK(02) will give you program 200 to 299
   # Those queries imply you will receive n SysEx for each item
   - "DIR_BANK(type,bank,ramonly)         : ---   : Request($0C,type bank ramonly)"
-  - "DIR_PROGRAM_BANK(bank)              : ---   : DIR_BANK(0104,bank,00)"
-  - "DIR_KEYMAP_BANK(bank)               : ---   : DIR_BANK(0105,bank,00)"
-  - "DIR_SOUND_BLOCK_BANK(bank)          : ---   : DIR_BANK(0106,bank,00)"
-  - "DIR_SETUP_BANK(bank)                : ---   : DIR_BANK(0107,bank,00)"
-  - "DIR_SONG_BANK(bank)                 : ---   : DIR_BANK(0070,bank,00)"
-  - "DIR_STUDIO_BANK(bank)               : ---   : DIR_BANK(0071,bank,00)"
   - "DIR_INTONATION_BANK(bank)           : ---   : DIR_BANK(0067,bank,00)"
   - "DIR_VELOCITY_BANK(bank)             : ---   : DIR_BANK(0068,bank,00)"
   - "DIR_PRESSURE_BANK(bank)             : ---   : DIR_BANK(0069,bank,00)"
   - "DIR_QUICK_ACCESS_BANK(bank)         : ---   : DIR_BANK(006F,bank,00)"
+  - "DIR_SONG_BANK(bank)                 : ---   : DIR_BANK(0070,bank,00)" # return 51 SysEx
+  - "DIR_PROGRAM_BANK(bank)              : ---   : DIR_BANK(0104,bank,00)"
+  - "DIR_KEYMAP_BANK(bank)               : ---   : DIR_BANK(0105,bank,00)"
+  - "DIR_SOUND_BLOCK_BANK(bank)          : ---   : DIR_BANK(0106,bank,00)"
+  - "DIR_SETUP_BANK(bank)                : ---   : DIR_BANK(0107,bank,00)"
+  - "DIR_STUDIO_BANK(bank)               : ---   : DIR_BANK(010C,bank,00)" # return 100 SysEx
 
-  - "DIR_PROGRAM_BANKS()                 : ---   : DIR_PROGRAM_BANK(7F)" # return 461 SysEx !
-  - "DIR_KEYMAP_BANKS()                  : ---   : DIR_KEYMAP_BANK(7F)" # return 386 SysEx !
-  - "DIR_SOUND_BLOCK_BANKS()             : ---   : DIR_SOUND_BLOCK_BANK(7F)"  # return 325 SysEx !
+  - "DIR_PROGRAM_BANKS()                 : ---   : DIR_PROGRAM_BANK(7F)"     # return 461 SysEx !
+  - "DIR_KEYMAP_BANKS()                  : ---   : DIR_KEYMAP_BANK(7F)"      # return 386 SysEx !
+  - "DIR_SOUND_BLOCK_BANKS()             : ---   : DIR_SOUND_BLOCK_BANK(7F)" # return 325 SysEx !
   - "DIR_SETUP_BANKS()                   : ---   : DIR_SETUP_BANK(7F)"
   - "DIR_QUICK_ACCESS_BANKS()            : ---   : DIR_QUICK_ACCESS_BANK(7F)"
   # those don't work
@@ -47,22 +68,23 @@ macros:
 
   # format = 0 for Nibble, 1 for packed stream
   - "READ(type,id,form)                  : ---   : Request($0A,type id form)"
-  # If you send a sample 200 via SDS, its goes into.. 201 !
-  # READ_SOUND_BLOCK_NIBBLE(0149) will give you the sound block 201
-  # Note that sound block does not contain PCM data, only settings
   - "READ_PROGRAM_NIBBLE(id)             : ---   : READ(0104, id, 00)"
   - "READ_PROGRAM_STREAM(id)             : ---   : READ(0104, id, 01)"
   - "READ_KEYMAP_NIBBLE(id)              : ---   : READ(0105, id, 00)"
+  # If you send a sample 200 via SDS, its goes into.. 201 !
+  # READ_SOUND_BLOCK_NIBBLE(0149) will give you the sound block 201
+  # Note that sound block does not contain PCM data, only settings
   - "READ_SOUND_BLOCK_NIBBLE(id)         : ---   : READ(0106, id, 00)"
   - "READ_SETUP_NIBBLE(id)               : ---   : READ(0107, id, 00)"
-  - "READ_STUDIO_NIBBLE(id)              : ---   : READ(0071, id, 00)"
+  # READ_STUDIO_NIBBLE(0147) will give you the default STUDIO 199
+  - "READ_STUDIO_NIBBLE(id)              : ---   : READ(010C, id, 00)"
 
   - "READ_BANK(type,bank,format,ramonly) : ---   : Request($0B,type bank format ramonly)"
-  - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK(0104,bank,00,00)"
-  - "READ_KEYMAP_BANK_NIBBLE(bank)       : ---   : READ_BANK(0105,bank,00,00)"
-  - "READ_SOUND_BLOCK_BANK_NIBBLE(bank)  : ---   : READ_BANK(0106,bank,00,00)"
-  - "READ_SETUP_BANK_NIBBLE(bank)        : ---   : READ_BANK(0107,bank,00,00)"
-  - "READ_STUDIO_BANK_NIBBLE(bank)       : ---   : READ_BANK(0071,bank,00,00)"
+  - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK(0104,bank,00,00)" # return 87 sysEX
+  - "READ_KEYMAP_BANK_NIBBLE(bank)       : ---   : READ_BANK(0105,bank,00,00)" # return 20 sysEX
+  - "READ_SOUND_BLOCK_BANK_NIBBLE(bank)  : ---   : READ_BANK(0106,bank,00,00)" # return 68 sysEX
+  - "READ_SETUP_BANK_NIBBLE(bank)        : ---   : READ_BANK(0107,bank,00,00)" # return 1 sysEx
+  - "READ_STUDIO_BANK_NIBBLE(bank)       : ---   : READ_BANK(010C,bank,00,00)" #  return 100 SysEx
 
   - "READ_PROGRAM_BANKS_NIBBLE()         : ---   : READ_PROGRAM_BANK_NIBBLE(7F)"
   - "READ_KEYMAP_BANKS_NIBBLE()          : ---   : READ_KEYMAP_BANK_NIBBLE(7F)"

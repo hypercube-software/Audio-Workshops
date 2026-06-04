@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.file
 
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.masterparameter.KFMasterParameterDeserializer; // Added import
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.program.KFProgramDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.studio.KFStudioDeserializer;
@@ -19,6 +20,7 @@ public class KFObjectDeserializer extends KFDeserializer {
     private KFSoundBlockDeserializer kfSoundBlockDeserializer = new KFSoundBlockDeserializer();
     private KFKeyMapDeserializer kfKeyMapDeserializer = new KFKeyMapDeserializer();
     private KFStudioDeserializer kfStudioDeserializer = new KFStudioDeserializer();
+    private KFMasterParameterDeserializer kfMasterParameterDeserializer = new KFMasterParameterDeserializer(); // Added instance
 
     public List<KFObject> deserializeObjects(RawData data) {
         List<KFObject> objects = new ArrayList<>();
@@ -61,7 +63,8 @@ public class KFObjectDeserializer extends KFDeserializer {
                 case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId, null);
                 case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId, null);
                 case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId, null);
-                case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId);
+                case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId, null);
+                case MASTER_PARAMETER -> kfMasterParameterDeserializer.deserialize(objectContent, objectId, null);
                 default -> throw new IllegalArgumentException("Not yet supported: " + type);
             });
         }

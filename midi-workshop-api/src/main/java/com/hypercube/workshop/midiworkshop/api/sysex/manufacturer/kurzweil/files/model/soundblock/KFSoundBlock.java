@@ -36,7 +36,7 @@ public class KFSoundBlock extends KFObject {
     private int copyID;
     private int rfu;
     private List<KFSoundBlockHeader> headers;
-    private List<KFSoundBlockEnvelope> envelopes; // Re-adding envelopes field if it was intended to be separate from SFH
+    private List<KFSoundBlockEnvelope> envelopes;
 
     public KFSoundBlock(RawData data, String name, int objectId, List<KFSoundBlockHeader> headers, List<KFSoundBlockEnvelope> envelopes) {
         super(data, KObject.SOUND_BLOCK, name, objectId);
