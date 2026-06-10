@@ -33,6 +33,10 @@ public class MidiEventBuilder {
     private final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     private final State state = new State();
 
+    public static String to7Bits(int value) {
+        return "%02X".formatted(value);
+    }
+
     public static String to21Bits(int value, boolean lsbFirst) {
         int a = (value >> 0) & 0x7F;
         int b = (value >> 7) & 0x7F;

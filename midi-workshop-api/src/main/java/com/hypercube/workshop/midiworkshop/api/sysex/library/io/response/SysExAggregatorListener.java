@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 /*
 This class is designed to receive multiple SysEx and return the whole thing in a single buffer
+<p>sysExUpdateListener can be used to see the progress
  */
 @Slf4j
 @RequiredArgsConstructor

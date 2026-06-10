@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @Slf4j
@@ -81,6 +82,7 @@ public class MidiDeviceRequester {
 
     /**
      * Request a device. Optionally wait for multiple response.
+     * <p>TODO: use stream API
      *
      * @param device              device to query
      * @param midiInPort          can be null if you don't expect any response
@@ -106,8 +108,12 @@ public class MidiDeviceRequester {
                         } else {
                             log.info("Send '{}' to {} and expected a response of unknown size", r.getName(), device.getDeviceName());
                         }
-                        listener = new SysExAggregatorListener(buffer -> sysExUpdateListener.onBufferUpdate(midiInPort,
-                                new MidiRequestResponse(requestBuffer.toByteArray(), buffer, null)));
+                        final Consumer<byte[]> consumer = Optional.ofNullable(sysExUpdateListener)
+                                .map(u -> (Consumer<byte[]>) (buffer -> u.onBufferUpdate(midiInPort,
+                                        new MidiRequestResponse(requestBuffer.toByteArray(), buffer, null)))
+                                )
+                                .orElse(null);
+                        listener = new SysExAggregatorListener(consumer);
                         midiInPort.addSysExListener(listener);
                     } else {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());

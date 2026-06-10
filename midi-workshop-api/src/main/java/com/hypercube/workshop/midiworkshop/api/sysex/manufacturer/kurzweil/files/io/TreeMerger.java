@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,13 +39,10 @@ public class TreeMerger {
         Class<?> clazz = source.getClass();
         log.info("{}-> Merging class: {}", indent, clazz.getSimpleName());
 
-        // Iterate through all fields, including private ones
-        for (Field field : clazz.getDeclaredFields()) {
-            // Ignore static and final fields
-            if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
-                continue;
-            }
+        List<Field> allFields = getAllFields(clazz); // Collect all fields from class hierarchy
 
+        // Iterate through all collected fields
+        for (Field field : allFields) {
             field.setAccessible(true);
             try {
                 Object sourceValue = field.get(source);
@@ -83,6 +81,7 @@ public class TreeMerger {
                                 // Target has an item at this index -> merge recursively
                                 Object targetItem = targetList.get(i);
                                 if (sourceItem == null) {
+                                    // If source item is null, and target has an item, we keep target item.
                                     continue;
                                 }
                                 if (isPrimitiveOrBasicType(sourceItem.getClass())) {
@@ -114,6 +113,23 @@ public class TreeMerger {
                 throw new RuntimeException("Error occurred during reflection-based merge", e);
             }
         }
+    }
+
+    // New helper method to collect all fields from a class and its superclasses
+    private List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> currentClass = clazz;
+        while (currentClass != null && currentClass != Object.class) {
+            for (Field field : currentClass.getDeclaredFields()) {
+                // Ignore static and final fields during collection
+                if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+                    continue;
+                }
+                fields.add(field);
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return fields;
     }
 
     /**

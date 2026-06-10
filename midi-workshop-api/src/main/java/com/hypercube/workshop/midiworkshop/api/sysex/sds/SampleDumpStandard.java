@@ -114,7 +114,7 @@ public class SampleDumpStandard {
         }
     }
 
-    public List<DumpPacket> requestSample(int channel, int sampleId) {
+    public List<DumpPacket> requestSample(int channel, int sampleId, String filename) {
         List<DumpPacket> packets = new ArrayList<>();
         try {
             inPort.addListener(listener);
@@ -139,7 +139,7 @@ public class SampleDumpStandard {
                 log.info("loopEnd       : {}", header.loopEnd());
                 send(new DumpACK(channel, 0));
                 int totalSampleRead = 0;
-                try (FileOutputStream pcm = new FileOutputStream("received.pcm")) {
+                try (FileOutputStream pcm = new FileOutputStream(filename)) {
                     for (int i = 0; totalSampleRead < header.sampleLength(); i++) {
                         DumpPacket packet = (DumpPacket) listener.waitResponse(3)
                                 .map(r -> {

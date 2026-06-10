@@ -12,14 +12,8 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.studio.KFStudioDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.velocitymap.KFVelocityMapDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.KFObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.RawData;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.intonationtable.KFIntonationTable;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.keymap.KFKeyMap;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.pressuremap.KFPressureMap;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.program.KFProgram;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.studio.KFStudio;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.velocitymap.KFVelocityMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.ManufacturerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
@@ -40,12 +34,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class KurzweilSysExParser extends ManufacturerSysExParser {
-
     public static final int SCREEN_TEXT_SIZE = 320 + 1; // 320 chars + final 0
     public static final int PIXELS_PER_BYTE = 6;
+    private final KFProgramDeserializer programDeserializer = new KFProgramDeserializer();
+    private final KFSoundBlockDeserializer soundBlockDeserializer = new KFSoundBlockDeserializer();
+    private final KFKeyMapDeserializer keyMapDeserializer = new KFKeyMapDeserializer();
+    private final KFStudioDeserializer studioDeserializer = new KFStudioDeserializer();
+    private final KFIntonationTableDeserializer intonationTableDeserializer = new KFIntonationTableDeserializer();
+    private final KFVelocityMapDeserializer velocityMapDeserializer = new KFVelocityMapDeserializer();
+    private final KFPressureMapDeserializer pressureMapDeserializer = new KFPressureMapDeserializer();
 
     private static ObjectScreenBitmap parseLCDPixels(SysExReader reader) {
         int lcd_width = 240;
@@ -78,7 +79,8 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
         throw new MidiError("Not Implemented yet");
     }
 
-    public List<BaseObject> parse(Manufacturer manufacturer, byte[] responses) {
+    public List<BaseObject> parse(byte[] responses) {
+        Manufacturer manufacturer = Manufacturer.KURZWEIL;
         return SysExReader.splitSysEx(responses)
                 .stream()
                 .map(response ->
@@ -108,9 +110,13 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                         case SCREEN_REPLY -> parseScreenReply(command, reader);
                         case INFO -> parseINFO(command, reader);
                         case WRITE -> parseWRITE(command, reader);
+                        case DUMP -> parseDUMP(command, reader);
+                        case DACK -> parseDataACK(command, reader);
+                        case DNACK -> parseDataNACK(command, reader);
                         default -> null;
                     };
                 })
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -119,17 +125,42 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                 .toList();
     }
 
+    private DataNACK parseDataNACK(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int objectId = reader.getInt16();
+        int offset = reader.getInt21();
+        int size = reader.getInt21();
+        return new DataNACK(objectType, objectId, offset, size);
+    }
+
+    private DataACK parseDataACK(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int objectId = reader.getInt16();
+        int offset = reader.getInt21();
+        int size = reader.getInt21();
+        return new DataACK(objectType, objectId, offset, size);
+    }
+
+    private BaseObject parseDUMP(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int objectId = reader.getInt16();
+        int offset = reader.getInt21();
+        int size = reader.getInt21();
+        int formatCode = reader.getByte();
+        StreamFormat format = StreamFormat.fromCode(formatCode);
+        return null;
+    }
 
     private BaseObject parseWRITE(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
         int objectId = reader.getInt14();
-        int unpackedSize = reader.getInt24();
+        int unpackedSize = reader.getInt21();
         int mode = reader.getByte();
         String name = reader.getString();
         int formatCode = reader.getByte();
         StreamFormat format = StreamFormat.fromCode(formatCode);
         KObject kObjectType = KObject.fromType(objectType)
-                .orElseThrow(() -> new MidiError("Unexpected object type"));
+                .orElseThrow(() -> new MidiError("Unexpected object type: " + objectType));
         String objectTypeName = kObjectType.name();
         log.info("Object: {}", objectTypeName);
         log.info("Object Id: {}", objectId);
@@ -143,45 +174,21 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
         byte[] unpacked = getUnpacked(command, format, payload, checksum, objectId, objectTypeName);
         final RawData rawData = new RawData(unpacked, 0);
-        switch (kObjectType) {
-            case PROGRAM -> {
-                KFProgramDeserializer deserializer = new KFProgramDeserializer();
-                KFProgram program = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(program);
-            }
-            case SOUND_BLOCK -> {
-                KFSoundBlockDeserializer deserializer = new KFSoundBlockDeserializer();
-                KFSoundBlock soundBlock = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(soundBlock);
-            }
-            case KEYMAP -> {
-                KFKeyMapDeserializer deserializer = new KFKeyMapDeserializer();
-                KFKeyMap keyMap = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(keyMap);
-            }
-            case STUDIO_2 -> {
-                KFStudioDeserializer deserializer = new KFStudioDeserializer();
-                KFStudio keyMap = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(keyMap);
-            }
-            case INTONATION_TABLE -> {
-                KFIntonationTableDeserializer deserializer = new KFIntonationTableDeserializer();
-                KFIntonationTable intonationTable = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(intonationTable);
-            }
-            case VELOCITY_MAP -> {
-                KFVelocityMapDeserializer deserializer = new KFVelocityMapDeserializer();
-                KFVelocityMap velocityMap = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(velocityMap);
-            }
-            case PRESSURE_MAP -> {
-                KFPressureMapDeserializer deserializer = new KFPressureMapDeserializer();
-                KFPressureMap pressureMap = deserializer.deserialize(rawData, objectId, name);
-                KFDeserializer.dump(pressureMap);
-            }
-            default -> throw new IllegalArgumentException("Not yet implemented:" + kObjectType.name());
+        KFObject obj = switch (kObjectType) {
+            case PROGRAM -> programDeserializer.deserialize(rawData, objectId, name);
+            case SOUND_BLOCK -> soundBlockDeserializer.deserialize(rawData, objectId, name);
+            case KEYMAP -> keyMapDeserializer.deserialize(rawData, objectId, name);
+            case STUDIO -> studioDeserializer.deserialize(rawData, objectId, name);
+            case INTONATION_TABLE -> intonationTableDeserializer.deserialize(rawData, objectId, name);
+            case VELOCITY_MAP -> velocityMapDeserializer.deserialize(rawData, objectId, name);
+            case PRESSURE_MAP -> pressureMapDeserializer.deserialize(rawData, objectId, name);
+//            default -> throw new IllegalArgumentException("Not yet implemented:" + kObjectType.name());
+            default -> null;
+        };
+        if (obj != null) {
+            KFDeserializer.dump(obj);
         }
-        return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked);
+        return new ObjectWrite(objectType, objectId, unpackedSize, mode, name, format, unpacked, obj);
     }
 
     @Nonnull
@@ -209,7 +216,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     private ObjectInfo parseINFO(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
         int objectId = reader.getInt16();
-        int size = reader.getInt24();
+        int size = reader.getInt21();
         boolean inRam = reader.getByte() == 1;
         String name = reader.getString();
         log.info("Object Type {} Object ID {} Size: {} InRAM: {} : {}", "%04X".formatted(objectType), "%04X".formatted(objectId), "%X".formatted(size), inRam, name);
@@ -241,8 +248,8 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     private ObjectLoad parseLOAD(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
         int objectId = reader.getInt16();
-        int offset = reader.getInt24();
-        int unpackedSize = reader.getInt24();
+        int offset = reader.getInt21();
+        int unpackedSize = reader.getInt21();
         String objectTypeName = KObject.fromType(objectType)
                 .map(KObject::name)
                 .orElse("Unknown !");

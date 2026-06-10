@@ -9,6 +9,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
@@ -28,6 +29,8 @@ import lombok.Getter;
 public abstract class KFObject {
     protected final RawData data;
     protected final KObject type;
-    private final String name;
+    @Setter
+    protected String name;
+    @Setter
     protected int objectId;
 }

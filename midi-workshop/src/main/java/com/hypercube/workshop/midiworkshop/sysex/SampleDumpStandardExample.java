@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +17,7 @@ public class SampleDumpStandardExample {
     private final MidiDeviceRequester midiDeviceRequester;
     private final MidiPortsManager midiPortsManager;
 
-    public void request(String deviceName, int sampleId) {
+    public void request(String deviceName, int sampleId, String filename) {
         library.load(ConfigHelper.getApplicationFolder(this.getClass()));
         midiPortsManager.collectHardwareDevices();
         var device = library.getDevice(deviceName)
@@ -42,13 +39,7 @@ public class SampleDumpStandardExample {
 
                 SampleDumpStandard sds = new SampleDumpStandard(device, input, output);
                 try {
-                    //sds.dumpSample("SampleDumpRespones.syx");
-                    if (true) {
-                        sds.requestSample(0, sampleId);
-                    }
-                    if (false) {
-                        sds.sendSample(0, sampleId, Files.readAllBytes(Path.of("input.pcm")));
-                    }
+                    sds.requestSample(0, sampleId, filename);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

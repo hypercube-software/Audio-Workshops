@@ -1,6 +1,5 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil;
 
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +33,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -49,7 +48,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -79,7 +78,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -94,7 +93,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -109,7 +108,7 @@ public class KurzweilSysExParserTest {
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 
     @Test
@@ -125,11 +124,12 @@ public class KurzweilSysExParserTest {
         //String file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\327 - Solina Phase 2 NIBBLE.syx";
         String file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\K2600R\\200 - SoundBlock 'UNNAMED WS' pointing RAM sample.syx";
         //String file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\K2600R\\200 - SoundBlock 'Perc Voice' defaulted to ROM sample.syx";
+        file = "D:\\github-checkout\\Audio-Workshops\\Manuals\\Kurzweil\\200 - Akkordeon 1.syx";
         byte[] payload = Files.readAllBytes(Path.of(file));
 
         //
         // WHEN
         //
-        kurzweilSysExParser.parse(Manufacturer.KURZWEIL, payload);
+        kurzweilSysExParser.parse(payload);
     }
 }

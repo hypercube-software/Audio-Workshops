@@ -16,11 +16,11 @@ import java.util.List;
 
 @Slf4j
 public class KFObjectDeserializer extends KFDeserializer {
-    private KFProgramDeserializer kfProgramDeserializer = new KFProgramDeserializer();
-    private KFSoundBlockDeserializer kfSoundBlockDeserializer = new KFSoundBlockDeserializer();
-    private KFKeyMapDeserializer kfKeyMapDeserializer = new KFKeyMapDeserializer();
-    private KFStudioDeserializer kfStudioDeserializer = new KFStudioDeserializer();
-    private KFMasterParameterDeserializer kfMasterParameterDeserializer = new KFMasterParameterDeserializer(); // Added instance
+    private final KFProgramDeserializer kfProgramDeserializer = new KFProgramDeserializer();
+    private final KFSoundBlockDeserializer kfSoundBlockDeserializer = new KFSoundBlockDeserializer();
+    private final KFKeyMapDeserializer kfKeyMapDeserializer = new KFKeyMapDeserializer();
+    private final KFStudioDeserializer kfStudioDeserializer = new KFStudioDeserializer();
+    private final KFMasterParameterDeserializer kfMasterParameterDeserializer = new KFMasterParameterDeserializer(); // Added instance
 
     public List<KFObject> deserializeObjects(RawData data) {
         List<KFObject> objects = new ArrayList<>();
@@ -63,8 +63,8 @@ public class KFObjectDeserializer extends KFDeserializer {
                 case PROGRAM -> kfProgramDeserializer.deserialize(objectContent, objectId, null);
                 case SOUND_BLOCK -> kfSoundBlockDeserializer.deserialize(objectContent, objectId, null);
                 case KEYMAP -> kfKeyMapDeserializer.deserialize(objectContent, objectId, null);
-                case STUDIO_2, STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId, null);
-                case MASTER_PARAMETER -> kfMasterParameterDeserializer.deserialize(objectContent, objectId, null);
+                case STUDIO -> kfStudioDeserializer.deserialize(objectContent, objectId, null);
+                case TABLE -> kfMasterParameterDeserializer.deserialize(objectContent, objectId, null);
                 default -> throw new IllegalArgumentException("Not yet supported: " + type);
             });
         }

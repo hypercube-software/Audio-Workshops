@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.SimpleSumChecksum;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KurzweilSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.keymap.KFKeyMapDeserializer;
@@ -33,7 +32,7 @@ public class KurzweilFileConverter {
     private static void checkGeneratedSysEx(File outputFile) {
         KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
         try {
-            var r = kurzweilSysExParser.parse(Manufacturer.KURZWEIL, Files.readAllBytes(outputFile.toPath()));
+            var r = kurzweilSysExParser.parse(Files.readAllBytes(outputFile.toPath()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -73,6 +72,8 @@ public class KurzweilFileConverter {
                             if (keymap.containsSampleBlock(sample)) {
                                 byte[] samplePayload = serializeSampleBlock(sample);
                                 writeObject(out, sample, samplePayload);
+                                File sampleFile = new File(outputFolder, "%d - %s.pcm".formatted(sample.getObjectId(), sample.getName()));
+                                Files.write(sampleFile.toPath(), samplePayload);
                             }
                         }
                         byte[] keymapPayload = serializeKeymap(keymap);

@@ -42,6 +42,6 @@ public class KFMasterParameter extends KFObject {
     private int[][] sb = new int[10][18];
 
     public KFMasterParameter(RawData data, String name, int objectId) {
-        super(data, KObject.MASTER_PARAMETER, name, objectId);
+        super(data, KObject.TABLE, name, objectId);
     }
 }

@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum Product {
-    K2600(0x78);
+    K2600(0x78),
+    K2700(0x02);
 
     private final int id;
 

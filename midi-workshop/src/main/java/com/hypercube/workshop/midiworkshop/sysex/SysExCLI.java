@@ -32,7 +32,6 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
-import com.hypercube.workshop.midiworkshop.presets.kurzweil.KurzweilExplorer;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,6 @@ public class SysExCLI {
     private final MidiMonitor midiMonitor;
     private final MidiPresetCrawler midiPresetCrawler;
     private final CS1XPresetGenerator cs1XPresetGenerator;
-    private final KurzweilExplorer kurzweilExplorer;
     private final MidiDeviceLibrary library;
     private final MidiPortsManager midiPortsManager;
     private final SampleDumpStandardExample sampleDumpStandardExample;
@@ -225,19 +223,13 @@ public class SysExCLI {
         cs1XPresetGenerator.dumpCS1XVoices(deviceName);
     }
 
-    @ShellMethod("Extract Kurzweil Programs")
-    public void extractKurzweil(@ShellOption(value = "-d", help = "Device Name") String deviceName) {
-        kurzweilExplorer.listBanks(deviceName);
-    }
-
-    @ShellMethod("Extract Kurzweil sample")
-    public void getKurzweilSample(@ShellOption(value = "-d", help = "Device Name") String deviceName, @ShellOption(value = "-s", help = "Sample Id") int sampleId) {
-        kurzweilExplorer.getSample(deviceName, sampleId);
-    }
 
     @ShellMethod("Request a sample via Sample Dump Standard")
-    public void sdsRequest(@ShellOption(value = "-d", help = "Device Name") String deviceName, @ShellOption(value = "-s", help = "Sample ID") int sampleId) {
-        sampleDumpStandardExample.request(deviceName, sampleId);
+    public void sdsRequest(@ShellOption(value = "-d", help = "Device Name") String deviceName,
+                           @ShellOption(value = "-s", help = "Sample ID") int sampleId,
+                           @ShellOption(value = "-f", help = "Output PCM file") String filename
+    ) {
+        sampleDumpStandardExample.request(deviceName, sampleId, filename);
     }
 
     private void receiveBulkMemory(Device model, MidiOutPort out) {

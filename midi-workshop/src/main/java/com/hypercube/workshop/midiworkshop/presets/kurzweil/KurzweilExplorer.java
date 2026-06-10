@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.presets.kurzweil;
 
+import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
@@ -11,22 +12,33 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.response.MidiRequestResponse;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
-import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KurzweilSysExParser;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.BaseObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.ObjectInfo;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.ObjectWrite;
+import com.hypercube.workshop.midiworkshop.api.sysex.sds.SampleDumpStandard;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExReader;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +48,65 @@ public class KurzweilExplorer {
     private final MidiDeviceRequester midiDeviceRequester;
     private final MidiPortsManager midiPortsManager;
     private final KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+    BlockingQueue<Boolean> signalQueue = new ArrayBlockingQueue<>(1);
+    AtomicBoolean skip = new AtomicBoolean(false);
+
+    public void dirBank(String deviceName, int type, int bank) {
+        converseWith(deviceName, (device, input, output) -> {
+            String typeId = MidiEventBuilder.to14Bits(type, false);
+            String bankId = MidiEventBuilder.to7Bits(bank);
+            List<ObjectInfo> result = queryList(device, input, output, "DIR_BANK(%s,%s,00)".formatted(typeId, bankId));
+            result.forEach(info -> log.info("{} {}", info.getObjectId(), info.getName()));
+        });
+    }
+
+    public void loadObject(String deviceName, int type, int id) {
+        converseWith(deviceName, (device, input, output) -> {
+            String typeId = MidiEventBuilder.to14Bits(type, false);
+            String objectId = MidiEventBuilder.to14Bits(id, false);
+            ObjectWrite result = query(device, input, output, "READ(%s,%s,00)".formatted(typeId, objectId));
+            String json = KFDeserializer.toJson(result.getKfObject());
+            log.info("{} {}: {}", result.getObjectId(), result.getName(), json);
+        });
+    }
+
+    public void sendPatch(String deviceName, Path filename) {
+        KurzweilSysExParser p = new KurzweilSysExParser();
+        converseWith(deviceName, (device, input, output) -> {
+            try {
+                byte[] content = Files.readAllBytes(filename);
+                List<byte[]> sysEx = SysExReader.splitSysEx(content);
+                input.addSysExListener((inPort, event) -> {
+                    if (!skip.get()) {
+                        var m = p.parse(event.getMessage()
+                                        .getMessage())
+                                .getFirst();
+                        log.info("Received: {} {}", m.getClass()
+                                .getSimpleName(), event.getHexValues());
+                        signalQueue.add(true);
+                    }
+                });
+                for (byte[] payload : sysEx) {
+                    var r = p.parse(payload)
+                            .getFirst();
+                    if (KObject.fromType(r.getObjectType())
+                            .orElseThrow() == KObject.SOUND_BLOCK && r instanceof ObjectWrite write) {
+                        sendSample(filename, device, input, output, (KFSoundBlock) write.getKfObject());
+                    } else {
+                        log.info("Send {}", r.getClass()
+                                .getSimpleName());
+                        MidiEvent evt = new CustomMidiEvent(new SysexMessage(payload, payload.length));
+                        output.send(evt);
+                        signalQueue.take();
+                    }
+                }
+
+            } catch (IOException | InvalidMidiDataException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+    }
 
     public void sendSample(String deviceName, int objectId) {
 
@@ -123,23 +194,57 @@ public class KurzweilExplorer {
         });
     }
 
-    public void listBanks(String deviceName) {
+    public void listProgramBanks(String deviceName) {
         converseWith(deviceName, (device, input, output) -> {
             CommandCall cmd = CommandCall.parse(device, "READ_PROGRAM_BANKS_NIBBLE()")
                     .getFirst();
             MidiRequestResponse response = midiDeviceRequester.queryAndAggregate(device, input, output, cmd, null);
-            kurzweilSysExParser.parse(Manufacturer.KURZWEIL, response.response());
+            kurzweilSysExParser.parse(response.response());
         });
+    }
+
+    private void sendSample(Path sysEx, MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, KFSoundBlock soundBlock) {
+        Path f = Path.of(sysEx.getParent()
+                .toString(), "%d - %s.pcm".formatted(soundBlock.getObjectId(), soundBlock.getName()));
+        String objectId = MidiEventBuilder.to14Bits(soundBlock.getObjectId(), false);
+        skip.set(true);
+        ObjectInfo currentSample = query(device, input, output, "DIR_SOUND_BLOCK(%s)".formatted(objectId));
+        if (currentSample.getSize() == 0) {
+            log.info("{} {}: Sample not present, uploading...", currentSample.getObjectId(), currentSample.getName());
+            if (f.toFile()
+                    .exists()) {
+                try {
+                    byte[] data = Files.readAllBytes(f);
+                    SampleDumpStandard sampleDumpStandard = new SampleDumpStandard(device, input, output);
+                    sampleDumpStandard.sendSample(0, soundBlock.getObjectId(), data);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            log.info("{} {}: Sample present, not uploading again", currentSample.getObjectId(), currentSample.getName());
+        }
+        ObjectWrite sampleBlock = query(device, input, output, "READ_SOUND_BLOCK_NIBBLE(%s)".formatted(objectId));
+        if (sampleBlock.getKfObject() != null && sampleBlock.getKfObject() instanceof KFSoundBlock kfSoundBlock) {
+            log.info("SoundBlock: {}", KFDeserializer.toJson(kfSoundBlock));
+        }
+        skip.set(false);
     }
 
     private <T extends BaseObject> T query(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample) {
         return (T) midiDeviceRequester.query(device, input, output, CommandCall.parse(device, cmtDirSample)
                         .getFirst())
                 .map(response -> {
-                    return kurzweilSysExParser.parse(Manufacturer.KURZWEIL, response.response())
+                    return kurzweilSysExParser.parse(response.response())
                             .getFirst();
                 })
                 .orElseThrow();
+    }
+
+    private <T extends BaseObject> List<T> queryList(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample) {
+        var response = midiDeviceRequester.queryAndAggregate(device, input, output, CommandCall.parse(device, cmtDirSample)
+                .getFirst(), null);
+        return (List<T>) kurzweilSysExParser.parse(response.response());
     }
 
     private void converseWith(String deviceName, DeviceConversation deviceConversation) {
@@ -148,13 +253,13 @@ public class KurzweilExplorer {
         try (var output = midiPortsManager.getOutput(device.getOutputMidiDevice())
                 .orElse(null)) {
             if (output == null) {
-                log.error("Output MIDI Device not found: %s".formatted(device.getOutputMidiDevice()));
+                log.error("Output MIDI Device not found: {}", device.getOutputMidiDevice());
                 return;
             }
             try (var input = midiPortsManager.getInput(device.getInputMidiDevice())
                     .orElse(null)) {
                 if (input == null) {
-                    log.error("Input MIDI Device not found: %s".formatted(device.getInputMidiDevice()));
+                    log.error("Input MIDI Device not found: {}", device.getInputMidiDevice());
                     return;
                 }
                 output.open();

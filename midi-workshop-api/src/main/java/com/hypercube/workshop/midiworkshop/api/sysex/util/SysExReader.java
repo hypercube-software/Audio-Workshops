@@ -67,15 +67,24 @@ public class SysExReader {
         return data;
     }
 
+    /**
+     * Read 14 bit short packed into 2 Midi bytes
+     */
     public int getInt14() {
         return unpack14bitValue(buffer.getShort());
     }
 
+    /**
+     * Read unpacked short (2 bytes)
+     */
     public int getInt16() {
         return buffer.getShort();
     }
 
-    public int getInt24() {
+    /**
+     * Read 21 bits (3 * 7) integer packed into 3 MIDI bytes
+     */
+    public int getInt21() {
         int b2 = buffer.get();
         int b1 = buffer.get();
         int b0 = buffer.get();
