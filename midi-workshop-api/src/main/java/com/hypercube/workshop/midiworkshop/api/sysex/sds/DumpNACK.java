@@ -3,7 +3,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.sds;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 
-public record DumpNACK(int channel, int packedId) implements SampleDumpStandardMessage {
+public record DumpNACK(int channel, int packetId) implements SampleDumpStandardMessage {
     public static boolean matches(byte[] payload) {
         return (payload.length == 6) &&
                 ((payload[0] & 0xFF) == 0xF0) &&
@@ -17,7 +17,7 @@ public record DumpNACK(int channel, int packedId) implements SampleDumpStandardM
     }
 
     public CustomMidiEvent getRequest() {
-        return MidiEventBuilder.parse("F0 7E %02X 7E %02X F7".formatted(channel, packedId))
+        return MidiEventBuilder.parse("F0 7E %02X 7E %02X F7".formatted(channel, packetId))
                 .getFirst();
     }
 }

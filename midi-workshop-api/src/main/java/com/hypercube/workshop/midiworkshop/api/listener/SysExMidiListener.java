@@ -42,7 +42,7 @@ public class SysExMidiListener implements MidiListener {
                         String hex = HexFormat.ofDelimiter(" ")
                                 .withUpperCase()
                                 .formatHex(payload);
-                        log.info("Received: {}", hex);
+                        log.debug("Received: {}", hex);
                         bufferQueue.add(payload);
                         if (listener != null) {
                             SysexMessage sysexMessage = new SysexMessage(payload, payload.length);

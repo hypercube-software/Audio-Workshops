@@ -24,9 +24,9 @@ public class SampleDumpStandard {
             DumpPacket.class,
             DumpACK.class,
             DumpNACK.class,
-            DumpCancel.class,
+            DumpCancelPacket.class,
             DumpRequest.class,
-            DumpWait.class
+            DumpWaitPacket.class
     );
     private final MidiDeviceDefinition deviceDefinition;
     private final MidiInPort inPort;
@@ -77,11 +77,15 @@ public class SampleDumpStandard {
      */
     public void sendSample(int channel, int sampleId, byte[] data) {
         int sampleLength = data.length / 2;
+        // for some reason K2600R create the sample at sampleId+1
+        DumpHeader header = new DumpHeader(channel, sampleId - 1, 16, 44100, sampleLength, LoopType.FORWARD_ONLY, sampleLength - 1, sampleLength - 1);
+        sendSample(header, data);
+    }
+
+    public void sendSample(DumpHeader header, byte[] data) {
         int packetId = 0;
         try {
             inPort.addListener(listener);
-            // for some reason K2600R create the sample at sampleId+1
-            DumpHeader header = new DumpHeader(channel, sampleId - 1, 16, 44100, sampleLength, LoopType.FORWARD_ONLY, sampleLength - 1, sampleLength - 1);
             List<DumpPacket> packets = forgePackets(header, data);
             send(header);
             var response = listener.waitResponse(3)
@@ -94,10 +98,20 @@ public class SampleDumpStandard {
                 for (DumpPacket packet : packets) {
                     packetId = packet.packetId();
                     log.info("Packet {} Id: {}", packetNumber, packetId);
-                    send(packet);
-                    response = listener.waitResponse(3)
-                            .map(this::parseResponse)
-                            .orElseThrow();
+                    for (int retry = 0; retry < 3; retry++) {
+                        send(packet);
+                        response = listener.waitResponse(3)
+                                .map(this::parseResponse)
+                                .orElse(null);
+                        if (response != null) {
+                            break;
+                        }
+                        log.info("Retry packet {} in 3 sec...", packetNumber);
+                        Thread.sleep(3000);
+                    }
+                    if (response == null) {
+                        throw new MidiError("Sampler does not respond to packet upload");
+                    }
                     log.info("{} ", response.getClass()
                             .getSimpleName());
                     if (!(response instanceof DumpACK)) {
@@ -107,7 +121,7 @@ public class SampleDumpStandard {
                 }
             }
         } catch (Exception e) {
-            send(new DumpCancel(channel, packetId));
+            send(new DumpCancelPacket(header.channel(), packetId));
             throw new RuntimeException(e);
         } finally {
             inPort.removeListener(listener);
@@ -163,7 +177,7 @@ public class SampleDumpStandard {
                             send(new DumpACK(channel, packet.packetId()));
                         } else {
                             log.info("Checksum error");
-                            send(new DumpCancel(channel, packet.packetId()));
+                            send(new DumpCancelPacket(channel, packet.packetId()));
                             break;
                         }
                     }
@@ -173,7 +187,7 @@ public class SampleDumpStandard {
             }
         } catch (Exception e) {
             if (!packets.isEmpty()) {
-                send(new DumpCancel(channel, packets.getLast()
+                send(new DumpCancelPacket(channel, packets.getLast()
                         .packetId()));
             }
             throw new RuntimeException(e);
@@ -196,7 +210,7 @@ public class SampleDumpStandard {
             String hex = HexFormat.ofDelimiter(" ")
                     .withUpperCase()
                     .formatHex(packetBytes);
-            log.info("Packet {}: {}", packetId, hex);
+            log.debug("Packet {}: {}", packetId, hex);
             int checksum = computeChecksum(header, packetId, packetBytes);
             DumpPacket packet = new DumpPacket(header.channel(), packetId, packetBytes, checksum);
             result.add(packet);
@@ -265,7 +279,7 @@ public class SampleDumpStandard {
 
     private void send(SampleDumpStandardMessage sampleDumpStandardMessage) {
         CustomMidiEvent request = sampleDumpStandardMessage.getRequest();
-        log.info("Send {}", request.getHexValuesSpaced());
+        log.debug("Send {}", request.getHexValuesSpaced());
         outPort.send(request);
     }
 

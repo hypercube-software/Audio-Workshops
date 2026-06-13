@@ -24,10 +24,16 @@ public class KFSoundBlockHeaderDeserializer extends KFDeserializer {
         header.setEnv1(in.readShort());
         header.setEnv2(in.readShort());
         header.setSrate(in.readUnsignedInt32());
+        if (header.sampleStart() > header.sampleEnd()) {
+            throw new IllegalStateException("sampleStart after sampleEnd !");
+        }
         return header;
     }
 
     public void serialize(KFSoundBlockHeader header, BitStreamWriter out) {
+        if (header.sampleStart() > header.sampleEnd()) {
+            throw new IllegalStateException("sampleStart after sampleEnd !");
+        }
         out.writeByte(header.getRootk());
         out.writeByte(header.getFlags());
         out.writeByte(header.getAmp1());

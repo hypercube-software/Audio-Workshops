@@ -1,15 +1,26 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil;
 
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KurzweilFileConverter;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.ObjectWrite;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
+@Slf4j
 public class KurzweilSysExParserTest {
     private static Stream<Arguments> unpack() {
         return Stream.of(
@@ -109,6 +120,35 @@ public class KurzweilSysExParserTest {
         // WHEN
         //
         kurzweilSysExParser.parse(payload);
+    }
+
+    @Test
+    void parseAndRecreateSampleBlock() throws Exception {
+        //
+        // GIVEN
+        //
+        KurzweilSysExParser kurzweilSysExParser = new KurzweilSysExParser();
+        String file = "src/test/resources/SysEx/Kurzweil/K2600R/210 Sound Block NIBBLE.syx";
+        byte[] payload = Files.readAllBytes(Path.of(file));
+        ObjectWrite write = (ObjectWrite) kurzweilSysExParser.parse(payload)
+                .getFirst();
+        KFSoundBlock sBlock = (KFSoundBlock) write.getKfObject();
+        //
+        // WHEN
+        //
+        log.info("Recreate:" + KFDeserializer.toJson(sBlock));
+        KFSoundBlockDeserializer soundBlockDeserializer = new KFSoundBlockDeserializer();
+        KurzweilFileConverter converter = new KurzweilFileConverter();
+        ByteArrayOutputStream sysex = new ByteArrayOutputStream();
+        BitStreamWriter bitStreamWriter = new BitStreamWriter();
+        soundBlockDeserializer.serializeContent(sBlock, bitStreamWriter);
+        byte[] unpackedPayload = bitStreamWriter.toByteArray();
+        converter.writeObject(sysex, sBlock, unpackedPayload);
+        byte[] recreated = sysex.toByteArray();
+        //
+        // THEN
+        //
+        assertArrayEquals(payload, recreated);
     }
 
     @Test

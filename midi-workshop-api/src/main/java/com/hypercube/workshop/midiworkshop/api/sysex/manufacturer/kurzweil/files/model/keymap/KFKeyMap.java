@@ -41,6 +41,8 @@ public class KFKeyMap extends KFObject {
      * - 0x04: volume adjust
      * - 0x02: sample ID
      * - 0x01: subsample number
+     * <p>
+     * A keymap read via MIDI contains all fields, so method is 0x17 (23)
      */
     private int method;
     private Set<KeyMapMask> mask = new HashSet<>();

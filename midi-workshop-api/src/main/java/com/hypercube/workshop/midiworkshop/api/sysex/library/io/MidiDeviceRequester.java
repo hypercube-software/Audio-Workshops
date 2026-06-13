@@ -62,7 +62,7 @@ public class MidiDeviceRequester {
             for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                 List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
                 for (CustomMidiEvent evt : events) {
-                    log.info("Send {} to {}", evt.getHexValuesSpaced(), device.getDeviceName());
+                    log.info("Send macro {} {} to {}", commandCall.name(), evt.getHexValuesSpaced(), device.getDeviceName());
                     midiOutPort.send(evt);
                     requestBuffer.write(evt.getMessage()
                             .getMessage());

@@ -26,6 +26,25 @@ public class KFKeyMapDeserializer extends KFDeserializer {
         for (int l : keyMap.getLevel()) {
             out.writeShort(l);
         }
+
+        Set<KeyMapMask> mask = keyMap.getMask(); // Get the mask to determine which fields to write
+
+        for (KeyMapEntry entry : keyMap.getEntries()) {
+            if (mask.contains(KeyMapMask.TUNING_SHORT)) {
+                out.writeShort(entry.getTuning());
+            } else if (mask.contains(KeyMapMask.TUNING_BYTE)) {
+                out.writeByte(entry.getTuning());
+            }
+            if (mask.contains(KeyMapMask.VOLUME_ATTEN)) {
+                out.writeByte(entry.getAtten());
+            }
+            if (mask.contains(KeyMapMask.SAMPLE_ID)) {
+                out.writeShort(entry.getSblk());
+            }
+            if (mask.contains(KeyMapMask.SAMPLE_ROOT)) {
+                out.writeByte(entry.getRoot());
+            }
+        }
     }
 
     public KFKeyMap deserialize(RawData data, int objectId, String name) {
@@ -71,7 +90,7 @@ public class KFKeyMapDeserializer extends KFDeserializer {
             }
             keyMap.getEntries()
                     .add(entry);
-            log.info("entry {} tuning:{} sampleId: {} root: {}, atten: {}, end at pos {}", i,
+            log.debug("entry {} tuning:{} sampleId: {} root: {}, atten: {}, end at pos {}", i,
                     entry.getTuning(),
                     entry.getSblk(),
                     entry.getRoot(),

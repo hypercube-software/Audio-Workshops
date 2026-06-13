@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
@@ -83,8 +84,14 @@ public class KFSoundBlockHeader {
         return srate;
     }
 
+    @JsonGetter("sampleLength")
     public long sampleLength() {
         return sampleEnd() - sampleStart() + 1;
+    }
+
+    @JsonGetter("bitDepth")
+    public int bitDepth() {
+        return byteDepth() * 8;
     }
 
     public int byteDepth() {
@@ -93,16 +100,28 @@ public class KFSoundBlockHeader {
 
     public void setPcmData(byte[] data) {
         this.pcmData = data;
+        relativize();
+    }
+
+    @JsonGetter("sampleRate")
+    public int sampleRate() {
+        return samplePeriodNs() == 0 ? 0 : (int) Math.floor((1F / samplePeriodNs()) * 1_000_000_000L);
+    }
+
+    public void relocate(long baseMemoryAddress) {
+        relativize();
+        sos += baseMemoryAddress;
+        alt += baseMemoryAddress;
+        los += baseMemoryAddress;
+        eos += baseMemoryAddress;
+    }
+
+    private void relativize() {
         long offset = sos;
         sos = relativize(sos, offset);
         alt = relativize(alt, offset);
         los = relativize(los, offset);
         eos = relativize(eos, offset);
-
-    }
-
-    public int sampleRate() {
-        return (int) Math.floor((1F / samplePeriodNs()) * 1_000_000_000L);
     }
 
     private long relativize(long value, long startPos) {

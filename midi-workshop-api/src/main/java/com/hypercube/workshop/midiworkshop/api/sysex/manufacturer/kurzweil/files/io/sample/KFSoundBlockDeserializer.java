@@ -23,8 +23,7 @@ public class KFSoundBlockDeserializer extends KFDeserializer {
         KFSoundBlock soundBlock = new KFSoundBlock(data, name, objectId, new ArrayList<>(), new ArrayList<>());
 
         soundBlock.setBase(in.readShort());
-        int nsfh = in.readShort(); // nsfh is #of headers -1, so loop nsfh + 1 times
-        soundBlock.setNsfh(nsfh);
+        soundBlock.setNsfh(in.readShort());
         soundBlock.setOff(in.readShort());
         soundBlock.setSflags(in.readByte());
         soundBlock.setUnused(in.readByte()); // skip unused byte
@@ -33,7 +32,8 @@ public class KFSoundBlockDeserializer extends KFDeserializer {
 
         KFSoundBlockHeaderDeserializer headerDeserializer = new KFSoundBlockHeaderDeserializer();
         List<KFSoundBlockHeader> headers = new ArrayList<>();
-        for (int i = 0; i <= nsfh; i++) {
+        // nsfh is #of headers -1, so loop nsfh + 1 times
+        for (int i = 0; i <= soundBlock.getNsfh(); i++) {
             log.info("Read KFSoundBlockHeader {}", i);
             headers.add(headerDeserializer.deserialize(in));
         }

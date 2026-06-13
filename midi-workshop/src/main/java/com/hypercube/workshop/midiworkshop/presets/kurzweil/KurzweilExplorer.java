@@ -15,11 +15,17 @@ import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KObject;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.KurzweilSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KFDeserializer;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.KurzweilFileConverter;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.io.sample.KFSoundBlockDeserializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files.model.soundblock.KFSoundBlock;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.BaseObject;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.DataACK;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.ObjectInfo;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.ObjectWrite;
+import com.hypercube.workshop.midiworkshop.api.sysex.sds.DumpHeader;
+import com.hypercube.workshop.midiworkshop.api.sysex.sds.LoopType;
 import com.hypercube.workshop.midiworkshop.api.sysex.sds.SampleDumpStandard;
+import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExReader;
 import jakarta.annotation.PostConstruct;
@@ -30,6 +36,7 @@ import org.springframework.stereotype.Service;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.SysexMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -76,19 +83,26 @@ public class KurzweilExplorer {
             try {
                 byte[] content = Files.readAllBytes(filename);
                 List<byte[]> sysEx = SysExReader.splitSysEx(content);
+                List<BaseObject> objects = sysEx.stream()
+                        .map(payload -> p.parse(payload)
+                                .getFirst())
+                        .toList();
                 input.addSysExListener((inPort, event) -> {
                     if (!skip.get()) {
                         var m = p.parse(event.getMessage()
                                         .getMessage())
                                 .getFirst();
-                        log.info("Received: {} {}", m.getClass()
+                        log.info("MainListener received: {} {}", m.getClass()
                                 .getSimpleName(), event.getHexValues());
-                        signalQueue.add(true);
+                        if (m instanceof DataACK) {
+                            signalQueue.add(true);
+                        }
                     }
                 });
-                for (byte[] payload : sysEx) {
-                    var r = p.parse(payload)
-                            .getFirst();
+
+                for (int o = 0; o < objects.size(); o++) {
+                    byte[] payload = sysEx.get(o);
+                    BaseObject r = objects.get(o);
                     if (KObject.fromType(r.getObjectType())
                             .orElseThrow() == KObject.SOUND_BLOCK && r instanceof ObjectWrite write) {
                         sendSample(filename, device, input, output, (KFSoundBlock) write.getKfObject());
@@ -209,32 +223,83 @@ public class KurzweilExplorer {
         String objectId = MidiEventBuilder.to14Bits(soundBlock.getObjectId(), false);
         skip.set(true);
         ObjectInfo currentSample = query(device, input, output, "DIR_SOUND_BLOCK(%s)".formatted(objectId));
-        if (currentSample.getSize() == 0) {
-            log.info("{} {}: Sample not present, uploading...", currentSample.getObjectId(), currentSample.getName());
-            if (f.toFile()
-                    .exists()) {
-                try {
+        try {
+            if (currentSample.getSize() == 0) {
+                log.info("{} {}: Sample not present, uploading...", currentSample.getObjectId(), currentSample.getName());
+                if (f.toFile()
+                        .exists()) {
+                    var sbHeader = soundBlock.getHeaders()
+                            .getFirst();
                     byte[] data = Files.readAllBytes(f);
                     SampleDumpStandard sampleDumpStandard = new SampleDumpStandard(device, input, output);
-                    sampleDumpStandard.sendSample(0, soundBlock.getObjectId(), data);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    DumpHeader header = new DumpHeader(0,
+                            soundBlock.getObjectId() - 1,
+                            sbHeader.bitDepth(),
+                            sbHeader.sampleRate(),
+                            (int) sbHeader.sampleLength(),
+                            LoopType.FORWARD_ONLY,
+                            (int) sbHeader.sampleLoopStart(),
+                            (int) sbHeader.sampleEnd());
+                    sampleDumpStandard.sendSample(header, data);
+                    skip.set(false);
+                    updateSoundBlock(device, input, output, soundBlock, objectId);
+                }
+            } else {
+                skip.set(false);
+                if (currentSample.getName()
+                        .equals(soundBlock.getName())) {
+                    log.info("{} {}: Sample present, not uploading again", currentSample.getObjectId(), currentSample.getName());
+                    updateSoundBlock(device, input, output, soundBlock, objectId);
+                } else {
+                    log.info("{} {}: Another sample present ({}), need to relocate objectId for {}", currentSample.getObjectId(), currentSample.getName(),
+                            currentSample.getName(), soundBlock.getName());
                 }
             }
-        } else {
-            log.info("{} {}: Sample present, not uploading again", currentSample.getObjectId(), currentSample.getName());
+        } catch (IOException | InvalidMidiDataException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        ObjectWrite sampleBlock = query(device, input, output, "READ_SOUND_BLOCK_NIBBLE(%s)".formatted(objectId));
-        if (sampleBlock.getKfObject() != null && sampleBlock.getKfObject() instanceof KFSoundBlock kfSoundBlock) {
-            log.info("SoundBlock: {}", KFDeserializer.toJson(kfSoundBlock));
-        }
-        skip.set(false);
+    }
+
+    private void updateSoundBlock(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, KFSoundBlock newSoundBlock, String objectId) throws InvalidMidiDataException, InterruptedException, IOException {
+        ObjectWrite actualSampleBlock = query(device, input, output, "READ_SOUND_BLOCK_NIBBLE(%s)".formatted(objectId));
+        KFSoundBlock actualKfSoundBlock = (KFSoundBlock) actualSampleBlock.getKfObject();
+        actualKfSoundBlock.getHeaders()
+                .forEach(h -> {
+                    log.info("Actual Sound Block: {}", KFDeserializer.toJson(h));
+                });
+        long baseMemoryAddress = actualKfSoundBlock.getHeaders()
+                .getFirst()
+                .sampleStart();
+        log.info("Sound block {} located at address ${}/{}", objectId, "%X".formatted(baseMemoryAddress), baseMemoryAddress);
+        newSoundBlock.getHeaders()
+                .forEach(h -> {
+                    log.info("Before relocation: {}", KFDeserializer.toJson(h));
+                    h.relocate(baseMemoryAddress);
+                    log.info("After relocation: {}", KFDeserializer.toJson(h));
+                });
+
+        KurzweilFileConverter kurzweilFileConverter = new KurzweilFileConverter();
+        ByteArrayOutputStream sysex = new ByteArrayOutputStream();
+        BitStreamWriter out = new BitStreamWriter();
+        KFSoundBlockDeserializer soundBlockDeserializer = new KFSoundBlockDeserializer();
+        soundBlockDeserializer.serializeContent(newSoundBlock, out);
+        byte[] unpackedContent = out.toByteArray();
+        kurzweilFileConverter.writeObject(sysex, newSoundBlock, unpackedContent);
+        byte[] payload = sysex.toByteArray();
+        MidiEvent evt = new CustomMidiEvent(new SysexMessage(payload, payload.length));
+        output.send(evt);
+        signalQueue.take();
     }
 
     private <T extends BaseObject> T query(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample) {
         return (T) midiDeviceRequester.query(device, input, output, CommandCall.parse(device, cmtDirSample)
                         .getFirst())
                 .map(response -> {
+                    try {
+                        Files.write(Path.of("target/Object dump.syx"), response.response());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     return kurzweilSysExParser.parse(response.response())
                             .getFirst();
                 })

@@ -17,10 +17,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.files
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamWriter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -70,10 +67,12 @@ public class KurzweilFileConverter {
                     if (midiProgram.containsKeyMap(keymap)) {
                         for (var sample : samples) {
                             if (keymap.containsSampleBlock(sample)) {
-                                byte[] samplePayload = serializeSampleBlock(sample);
-                                writeObject(out, sample, samplePayload);
-                                File sampleFile = new File(outputFolder, "%d - %s.pcm".formatted(sample.getObjectId(), sample.getName()));
-                                Files.write(sampleFile.toPath(), samplePayload);
+                                for (var header : sample.getHeaders()) {
+                                    byte[] sampleBlockPayload = serializeSampleBlock(sample);
+                                    writeObject(out, sample, sampleBlockPayload);
+                                    File sampleFile = new File(outputFolder, "%d - %s.pcm".formatted(sample.getObjectId(), sample.getName()));
+                                    Files.write(sampleFile.toPath(), header.getPcmData());
+                                }
                             }
                         }
                         byte[] keymapPayload = serializeKeymap(keymap);
@@ -89,7 +88,32 @@ public class KurzweilFileConverter {
         }
     }
 
+    public void writeObject(OutputStream out, KFObject kObject, byte[] unpackedPayload) throws IOException {
+        out.write(0xF0);
+        out.write(0x07); // manufacturer Kurzweil
+        out.write(0x00); // device ID
+        out.write(0x78); // produce ID K2600
+        out.write(0x09); // Command ID WRITE
+        writeShort(out, kObject.getType()
+                .getType()); // object type id
+        writePacked14Bits(out, kObject.getObjectId()); // object id
+
+        byte[] packed = packNibble(unpackedPayload);
+        writePacked24Bit(out, unpackedPayload.length);
+        out.write(0x00); // override mode
+        for (byte c : kObject.getName()
+                .getBytes(StandardCharsets.US_ASCII)) {
+            out.write(c);
+        }
+        out.write(0x00); // end of string
+        writeNibblePayload(out, packed);
+        out.write(0xF7);
+    }
+
     private byte[] serializeKeymap(KFKeyMap keymap) {
+        // make sure we save all fields (required for MIDI)
+        keymap.setMethod(0x17); // [ "TUNING_SHORT", "SAMPLE_ID", "VOLUME_ATTEN", "SAMPLE_ROOT" ]
+        keymap.setEsize(6); // TUNING_SHORT (2 bytes) + SAMPLE_ID (2 bytes) + VOLUME_ATTEN (1 byte) + SAMPLE_ROOT (1 byte) = 6 bytes
         BitStreamWriter o = new BitStreamWriter();
         KFKeyMapDeserializer s = new KFKeyMapDeserializer();
         s.serializeContent(keymap, o);
@@ -110,7 +134,7 @@ public class KurzweilFileConverter {
         return o.toByteArray();
     }
 
-    private void writeNibblePayload(FileOutputStream out, byte[] packed) throws IOException {
+    private void writeNibblePayload(OutputStream out, byte[] packed) throws IOException {
         out.write(0x00); // format NIBBLE
         SimpleSumChecksum chk = new SimpleSumChecksum();
         for (int value : packed) {
@@ -118,28 +142,6 @@ public class KurzweilFileConverter {
             out.write(value);
         }
         out.write(chk.getValue());
-    }
-
-    private void writeObject(FileOutputStream out, KFObject kObject, byte[] unpackedPayload) throws IOException {
-        out.write(0xF0);
-        out.write(0x07); // manufacturer Kurzweil
-        out.write(0x00); // device ID
-        out.write(0x78); // produce ID K2600
-        out.write(0x09); // Command ID WRITE
-        writeShort(out, kObject.getType()
-                .getType()); // object type id
-        writePacked14Bits(out, kObject.getObjectId()); // object id
-
-        byte[] packed = packNibble(unpackedPayload);
-        writePacked24Bit(out, unpackedPayload.length);
-        out.write(0x00); // override mode
-        for (byte c : kObject.getName()
-                .getBytes(StandardCharsets.US_ASCII)) {
-            out.write(c);
-        }
-        out.write(0x00); // end of string
-        writeNibblePayload(out, packed);
-        out.write(0xF7);
     }
 
     private void dumpProgram(KFProgram midiProgram, File outputFolder) throws IOException {
@@ -193,14 +195,14 @@ public class KurzweilFileConverter {
         return result;
     }
 
-    private void writePacked14Bits(FileOutputStream out, int value) throws IOException {
+    private void writePacked14Bits(OutputStream out, int value) throws IOException {
         int msb = (value >> 7) & 0x7F;
         int lsb = (value >> 0) & 0x7F;
         out.write(msb);
         out.write(lsb);
     }
 
-    private void writePacked24Bit(FileOutputStream out, int value) throws IOException {
+    private void writePacked24Bit(OutputStream out, int value) throws IOException {
         int hsb = (value >> 14) & 0x7F;
         int msb = (value >> 7) & 0x7F;
         int lsb = (value >> 0) & 0x7F;
@@ -209,7 +211,7 @@ public class KurzweilFileConverter {
         out.write(lsb);
     }
 
-    private void writeShort(FileOutputStream out, int value) throws IOException {
+    private void writeShort(OutputStream out, int value) throws IOException {
         ByteBuffer bb = ByteBuffer.allocate(2);
         bb.order(ByteOrder.BIG_ENDIAN);
         bb.putShort((short) value);
