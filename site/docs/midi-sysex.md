@@ -134,6 +134,12 @@ ii: DEVICE ID, 7F = broadcast
 01: Sub Command: Identity Request (Inquiry)
 ```
 
+A typical request is:
+
+```
+F0 7E 7F 06 01 F7
+```
+
 Here a response from a **Korg NanoKey 2** controller
 
 ```
@@ -1352,6 +1358,62 @@ F0 00 01 05 21 7F 02 09 01 3C 00 56 F7
 ```
 
 
+
+# Kurzweil
+
+## Inquiry Messages
+
+Most devices respond to requests using "any device id", 7F: `F0 7E 7F 06 01 F7` 
+
+But that's not the case for K2600, where the specific device id must be used (00): `F0 7E 00 06 01 F7`
+
+Responses don't not use the same format depending on the device. Nevertheless the begining is the same: `F0 7E 7F 06 02 07`
+
+where **07** is Kurzweil manufacturer.
+
+### PC3
+
+```
+_________________             ___________
+F0 7E 7F 06 02 07 00 40 00 40 32 2E 32 31 F7
+                              2  .  2  1   
+   
+00 40 = PC3 Family
+00 40 = PC3
+```
+
+### PC3LE
+
+```
+_________________             ___________
+F0 7E 7F 06 02 07 00 40 00 0A 32 2E 31 30 F7
+                               2  .  1  0 
+00 40 = PC3 Family
+00 0A = LE
+```
+
+### ARTIS SE
+
+```
+_________________             ___________
+F0 7E 7F 06 02 07 00 40 00 17 32 2E 34 32 F7
+                               2  .  4  2
+00 40 = PC3 Family
+00 17 = ARTIS SE
+```
+
+### K2600
+
+This one does not used ASCII for the version.
+
+```
+_________________                ________
+F0 7E 00 06 02 07 78 00 03 00 00 03 01 01 F7
+    					   
+78 = K2600
+00 03 00 00 = ?
+OS V3.11 => 03 01 01
+```
 
 # Devices Library
 

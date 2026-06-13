@@ -52,4 +52,54 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.4.1</version> <!-- Use a version that is known to work for similar cases -->
+                <executions>
+                    <execution>
+                        <id>generate-uml-diagram</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/jshell</executable>
+                            <arguments>
+                                <argument>--execution=local</argument>
+                                <argument>-J-Droot.classes=com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.BaseObject</argument>
+                                <argument>-J-Dtarget.classes.dir=${project.build.outputDirectory}</argument>
+                                <argument>-J-Djshell.classpath=${project.build.outputDirectory}${path.separator}${mdep.classpath}</argument>
+                                <argument>${project.basedir}/src/main/jshell/generate_uml.jsh</argument>
+                            </arguments>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>build-classpath</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>mdep.classpath</outputProperty>
+                            <excludeTransitive>false</excludeTransitive>
+                            <includeScope>compile</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 </project>
