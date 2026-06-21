@@ -189,6 +189,8 @@ void scanJar(File jarFile, String packageName, List<Class<?>> classes) {
     if (!classesToDiagram.isEmpty()) {
         var plantUmlContent = new StringBuilder();
         plantUmlContent.append("@startuml\n");
+        plantUmlContent.append("skinparam fontSize 14\n");
+        plantUmlContent.append("skinparam classFontSize 16\n");
         plantUmlContent.append("skinparam classAttributeIconSize 0\n");
         plantUmlContent.append("skinparam classArrowColor #AAAAAA\n");
         plantUmlContent.append("skinparam classBorderColor #666666\n");
@@ -251,10 +253,11 @@ void scanJar(File jarFile, String packageName, List<Class<?>> classes) {
         for (String rel : relationships) plantUmlContent.append(rel).append("\n");
         plantUmlContent.append("@enduml\n");
 
-        var outputFile = new File("class_diagram.puml");
+        var outputFile = new File("../site/docs/assets/kurzweil-model.puml");
         try (java.io.FileWriter writer = new java.io.FileWriter(outputFile)) {
             writer.write(plantUmlContent.toString());
-            System.out.println("Generated UML diagram: " + outputFile.getAbsolutePath());
+            System.out.println("Generated UML diagram source: " + outputFile.getAbsolutePath());
+            System.out.println("Please run PlantUML on this file to generate the SVG.");
         } catch (java.io.IOException e) {
             System.err.println("Error writing UML diagram: " + e.getMessage());
             e.printStackTrace();

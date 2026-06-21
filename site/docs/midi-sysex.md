@@ -1415,6 +1415,25 @@ F0 7E 00 06 02 07 78 00 03 00 00 03 01 01 F7
 OS V3.11 => 03 01 01
 ```
 
+## V.A.S.T Model
+
+Kurzweil uses a **huge data model** to implement their synthesis engine **V.A.S.T** (Variable Architecture Synthesis Technology). It goes way beyond other manufacturers. Making this available via MIDI SysEx is just mind blowing but requires a lot of work. I spend a large amount of my time to study it and I was finally able to directly send K26 patches via MIDI without using any floppy or SCSI drive.
+
+<a href="assets/kurzweil-model.svg" target="_blank" rel="noopener noreferrer">     <img src="assets/kurzweil-model.svg" style="width:100%; cursor:pointer;"> </a>
+
+Things to know:
+
+- This data model cover **K2000** range of products, especially the **K2600**. I don't know much about more recent devices (PC2, PC3, ...)
+- Midi SysEx and K26 files share the same data model with "little" differences that make the whole thing a nightmare
+  - On Kxx files, data are compressed as much as possible, using optional fields to free space
+  - On Midi, there are no optional fields at all. Everything MUST be properly set.
+  - This is why you can't directly send a K26 file via MIDI.
+- Part of the format is available in the form of **official .H files**, but they are really hard to find today
+- Some information are still available in various PDF manuals but they are too "high level"
+- Many people have tried to reverse it and many of them just gave up because this is too huge
+
+Explaining all of this in this chapter is too much, so I will write a separate documentation for it. 
+
 # Devices Library
 
 I spent a considerable amount of my time to build this, hoping it will be helpful for those like me, who are using (vintage) hardware devices.

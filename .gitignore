@@ -56,3 +56,6 @@ midi-workshop-api/src/test/resources/devices-library/*/
 /apps/midi-preset-manager/TODO.txt
 /midi-workshop-api/src/test/resources/Kurzweil/anapads.krz
 /midi-workshop-api/src/test/resources/SysEx/Kurzweil/K2600R/READ_NIBBLE_200.syx
+/books/src/main/typst/playground/
+/books/src/main/typst/kurzweil-format.pdf
+/books/src/main/typst/tinymist.lock
