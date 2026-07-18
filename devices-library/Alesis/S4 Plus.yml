@@ -78,7 +78,7 @@ deviceModes:
   Mix:
     command: setModeMix()
     queryName: NewMixDumpRequest()
-    midiChannels: 0
+    midiChannels: 0-15
     banks:
       "User Bank":
         command: 0
@@ -92,7 +92,7 @@ deviceModes:
       "Bank 3":
         command: 3
         presetDomain: 0-99
-      "Bank 4":
+      "Bank 4 (GM)":
         command: 4
         presetDomain: 0-99
 

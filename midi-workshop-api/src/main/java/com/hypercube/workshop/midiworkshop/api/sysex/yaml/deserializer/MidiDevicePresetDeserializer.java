@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
 
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class MidiDevicePresetDeserializer extends StdDeserializer<MidiDevicePreset> {
     private final Map<String, MidiDeviceDefinition> devices;
@@ -34,7 +37,9 @@ public class MidiDevicePresetDeserializer extends StdDeserializer<MidiDevicePres
         if (jsonParser.getCurrentToken() == JsonToken.VALUE_STRING) {
             // short spec
             String value = jsonParser.getText();
-            return MidiDevicePreset.of(definitionFile, mainDeviceDefinition.getPresetFormat(), value);
+            MidiBankFormat presetFormat = Optional.ofNullable(mainDeviceDefinition.getPresetFormat())
+                    .orElseThrow(() -> new MidiConfigError(MidiBankFormat.class.getSimpleName() + " is not set for device " + mainDeviceDefinition.getDeviceName()));
+            return MidiDevicePreset.of(definitionFile, presetFormat, value);
         } else if (jsonParser.currentToken() == JsonToken.START_OBJECT) {
             // complete spec
             String command = null;

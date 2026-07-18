@@ -6,6 +6,7 @@ import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sound.midi.SysexMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.function.Consumer;
 
 /*
 This class is designed to receive multiple SysEx and return the whole thing in a single buffer
+<p>other messages are ignored
 <p>sysExUpdateListener can be used to see the progress
  */
 @Slf4j
@@ -28,11 +30,12 @@ public class SysExAggregatorListener implements MidiListener {
     @Override
     public void onEvent(MidiInPort device, CustomMidiEvent event) {
         try {
-            buffer.write(event.getMessage()
-                    .getMessage());
-            Optional.ofNullable(sysExUpdateListener)
-                    .ifPresent(l -> l.accept(buffer.toByteArray()));
-            responseReceived.arrive();
+            if (event.getMessage() instanceof SysexMessage sysexMsg) {
+                buffer.write(sysexMsg.getMessage());
+                Optional.ofNullable(sysExUpdateListener)
+                        .ifPresent(l -> l.accept(buffer.toByteArray()));
+                responseReceived.arrive();
+            }
         } catch (IOException e) {
             log.error("Unexpected error", e);
         }

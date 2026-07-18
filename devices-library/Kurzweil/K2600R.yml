@@ -80,6 +80,9 @@ macros:
   - "READ_STUDIO_NIBBLE(id)              : ---   : READ(010C, id, 00)"
 
   - "READ_BANK(type,bank,format,ramonly) : ---   : Request($0B,type bank format ramonly)"
+  - "READ_INTONATION_BANK(bank)          : ---   : READ_BANK(0067,bank,00,00)" # return 21 SysEx
+  - "READ_VELOCITY_BANK(bank)            : ---   : READ_BANK(0068,bank,00,00)" # return 10 SysEx
+  - "READ_PRESSURE_BANK(bank)            : ---   : READ_BANK(0069,bank,00,00)" # return 8 SysEx
   - "READ_PROGRAM_BANK_NIBBLE(bank)      : ---   : READ_BANK(0104,bank,00,00)" # return 87 sysEX
   - "READ_KEYMAP_BANK_NIBBLE(bank)       : ---   : READ_BANK(0105,bank,00,00)" # return 20 sysEX
   - "READ_SOUND_BLOCK_BANK_NIBBLE(bank)  : ---   : READ_BANK(0106,bank,00,00)" # return 68 sysEX

@@ -1,5 +1,6 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.library.device;
 
+import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -106,6 +107,8 @@ public final class MidiDevicePreset {
             case BANK_LSB_PRG -> pad(4, normalizedCommand);
             case BANK_MSB_LSB_PRG -> pad(6, normalizedCommand);
             case BANK_PRG_PRG -> pad(4, normalizedCommand);
+            case null ->
+                    throw new MidiConfigError("Unexpected null MidiBankFormat !, can't normalize command: " + command);
         };
     }
 

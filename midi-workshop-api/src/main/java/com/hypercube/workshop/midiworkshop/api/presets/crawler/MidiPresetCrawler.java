@@ -334,14 +334,15 @@ public class MidiPresetCrawler {
 
     private void onResponse(MidiInPort hardwareMidiInPort, CustomMidiEvent customMidiEvent) {
         try {
-            currentSysEx.write(customMidiEvent.getMessage()
-                    .getMessage());
-            /*log.info("Receive {} bytes, current total: {}", customMidiEvent.getMessage()
+            if (customMidiEvent.getMessage() instanceof SysexMessage sysexMessage) {
+                currentSysEx.write(sysexMessage.getMessage());
+            /*log.info("Receive {} bytes, current total: {}", sysexMessage
                     .getMessage().length, "0x%X".formatted(currentSysEx.size()));*/
-            if (expectedResponseSize > 0 && currentSysEx.size() == expectedResponseSize) {
-                currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysEx.toByteArray(), currentSysEx.size())));
-            } else if (expectedResponseSize == 0) {
-                currentResponse.set(customMidiEvent);
+                if (expectedResponseSize > 0 && currentSysEx.size() == expectedResponseSize) {
+                    currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysEx.toByteArray(), currentSysEx.size())));
+                } else if (expectedResponseSize == 0) {
+                    currentResponse.set(customMidiEvent);
+                }
             }
         } catch (IOException | InvalidMidiDataException e) {
             throw new MidiError(e);

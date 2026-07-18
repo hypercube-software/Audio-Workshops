@@ -94,31 +94,31 @@ deviceModes:
     banks:
       "User Bank":
         command: 0
-        presetDomain: 0-99
+        presetDomain: 0-127
       "Bank 1":
         command: 1
-        presetDomain: 0-99
+        presetDomain: 0-127
       "Bank 2":
         command: 2
-        presetDomain: 0-99
+        presetDomain: 0-127
       "Bank 3":
         command: 3
-        presetDomain: 0-99
+        presetDomain: 0-127
       "Bank 4":
         command: 4
-        presetDomain: 0-99
+        presetDomain: 0-127
       "GM":
         command: 5
-        presetDomain: 0-99
+        presetDomain: 0-127
       "Card A":
         command: 6
-        #presetDomain: 0-99
+        #presetDomain: 0-127
       "Card B":
         command: 7
-        #presetDomain: 0-99
+        #presetDomain: 0-127
       "CARD-A Hip-Hop":
         command: 5
-        presetDomain: 0-99
+        presetDomain: 0-127
 
 #
 # Mappers to extract patch names

@@ -1,5 +1,5 @@
-deviceName: TG-33
-brand: Yamaha
+deviceName: "TG-33"
+brand: "Yamaha"
 deviceModes:
   Multi:
     banks:

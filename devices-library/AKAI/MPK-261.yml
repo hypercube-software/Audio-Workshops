@@ -8,6 +8,7 @@
 #   00 25: Device ID = MPK261 (00 24 is MPK249)
 #
 deviceName: "MPK-261"
+presetFormat: BANK_MSB_LSB_PRG
 brand: "AKAI"
 macros:
   - "readBytes(size,addr1,addr2) : -- : F0470025 20 00 03 size addr1 addr2 F7"

@@ -179,3 +179,4 @@ controllers:
   - "setFilterRelease(lsb) |  VCF Release   | SYSEX | 0 | 127"
   - "setReverbDecay(lsb)   |  Reverb Time   | SYSEX | 0 | 127"
   - "setEffectSend(lsb)    |  Reverb Level  | SYSEX | 0 | 127"
+  

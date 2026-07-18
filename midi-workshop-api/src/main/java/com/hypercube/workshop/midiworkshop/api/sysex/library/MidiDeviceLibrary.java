@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetDomain;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
 public class MidiDeviceLibrary {
     public static final String DEVICES_LIBRARY_FOLDER = "/devices-library/";
     public static final String ENV_MDL_FOLDER = "MDL_FOLDER";
+    public static final String SPECIAL_MIDI_DEVICE_DAW = "DAW";
     private static final Pattern REGEXP_HEXA_NUMBER = Pattern.compile("(0x|\\$)?(?<value>[0-9A-F]+)");
     private final MidiDeviceRequester midiDeviceRequester;
     @Getter
@@ -88,7 +90,6 @@ public class MidiDeviceLibrary {
         }
     }
 
-
     public void load(File applicationFolder) {
         devices.clear();
         devicesPerNetworkId.clear();
@@ -110,16 +111,21 @@ public class MidiDeviceLibrary {
                             .reversed())
                     .map(Path::toFile)) {
                 List<File> orderedDefinitions = midiDeviceDefinitionStream.toList();
-                orderedDefinitions.forEach(file -> {
-                    MidiDeviceDefinition m = loadMidiDeviceDefinition(devices, file);
-                    var d = devices.get(m.getDeviceName());
-                    if (d != null) {
-                        d = mergeDevices(d, m);
-                    } else {
-                        d = m;
-                    }
-                    devices.put(m.getDeviceName(), d);
-                });
+                orderedDefinitions.stream()
+                        .map(file -> loadMidiDeviceDefinition(devices, file))
+                        .flatMap(Optional::stream)
+                        .filter(this::checkDefinitionFilename)
+                        .map(midiDevice -> {
+                            var d = devices.get(midiDevice.getDeviceName());
+                            if (d != null) {
+                                return mergeDevices(d, midiDevice);
+                            } else {
+                                return midiDevice;
+                            }
+                        })
+                        .map(this::sanityCheck)
+                        .flatMap(Optional::stream)
+                        .forEach(midiDevice -> devices.put(midiDevice.getDeviceName(), midiDevice));
 
             } catch (IOException e) {
                 throw new MidiConfigError("Unable to read library folder:" + libraryFolder.toString());
@@ -151,7 +157,6 @@ public class MidiDeviceLibrary {
         }
     }
 
-
     public Optional<MidiDeviceDefinition> getDevice(String deviceName) {
         checkLoaded();
         return Optional.ofNullable(devices.get(deviceName));
@@ -167,7 +172,6 @@ public class MidiDeviceLibrary {
                 .findFirst();
     }
 
-
     public MidiDeviceDefinition getDeviceByNetworkId(long networkId) {
         return devicesPerNetworkId.computeIfAbsent(networkId, key -> devices.values()
                 .stream()
@@ -176,6 +180,25 @@ public class MidiDeviceLibrary {
                 .orElseThrow(() -> new MidiConfigError("Device with network id 0x%08X not found".formatted(networkId))));
     }
 
+    private boolean checkDefinitionFilename(MidiDeviceDefinition midiDevice) {
+        if (!midiDevice.getDefinitionFile()
+                .getName()
+                .startsWith(midiDevice.getDeviceName())) {
+            log.error("{} does not start with the name of the device {}", midiDevice.getDefinitionFile()
+                    .getAbsolutePath(), midiDevice.getDeviceName());
+            return false;
+        }
+        return true;
+    }
+
+    private Optional<MidiDeviceDefinition> sanityCheck(MidiDeviceDefinition midiDevice) {
+        if (midiDevice.getPresetFormat() == null && !midiDevice.getDeviceName()
+                .equals(SPECIAL_MIDI_DEVICE_DAW)) {
+            log.error("{} is mandatory for device {}", MidiBankFormat.class.getSimpleName(), midiDevice.getDeviceName());
+            return Optional.empty();
+        }
+        return Optional.of(midiDevice);
+    }
 
     /**
      * Custom banks are subfolders of the mode folder
@@ -379,7 +402,7 @@ public class MidiDeviceLibrary {
      * @param midiDeviceFile Configuration file for the device (in YAML)
      * @return the definition including macros
      */
-    private MidiDeviceDefinition loadMidiDeviceDefinition(Map<String, MidiDeviceDefinition> devices, File midiDeviceFile) {
+    private Optional<MidiDeviceDefinition> loadMidiDeviceDefinition(Map<String, MidiDeviceDefinition> devices, File midiDeviceFile) {
         log.debug("Load {}", midiDeviceFile.toString());
         var mapper = new ObjectMapper(new YAMLFactory());
         try {
@@ -397,16 +420,17 @@ public class MidiDeviceLibrary {
             midiDeviceDefinition.setMacros(Optional.ofNullable(midiDeviceDefinition.getMacros())
                     .map(macros -> macros
                             .stream()
-                            .filter(m -> m != null)
+                            .filter(Objects::nonNull)
                             .toList())
                     .orElse(List.of()));
             setMappersName(midiDeviceDefinition);
             setModeAndBankNames(midiDeviceDefinition);
             midiDeviceDefinition.setDefinitionFile(midiDeviceFile);
             setRemoteMidiPorts(midiDeviceDefinition);
-            return midiDeviceDefinition;
-        } catch (IOException e) {
-            throw new MidiConfigError("Unable to load " + midiDeviceFile.toString(), e);
+            return Optional.of(midiDeviceDefinition);
+        } catch (Exception e) {
+            log.error("Unable to load {}", midiDeviceFile.toString(), e);
+            return Optional.empty();
         }
     }
 

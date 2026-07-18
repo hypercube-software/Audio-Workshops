@@ -145,9 +145,14 @@ public class MidiPortsManager {
                 .findFirst()
                 .orElseGet(() -> {
                     if (NetworkMidiOutPort.isRemoteAddress(name)) {
-                        NetworkMidiOutPort device = new NetworkMidiOutPort(name);
-                        outputs.add(device);
-                        return device;
+                        try {
+                            NetworkMidiOutPort device = new NetworkMidiOutPort(name);
+                            outputs.add(device);
+                            return device;
+                        } catch (Exception e) {
+                            log.error("Invalid network device definition: {}", name, e);
+                            return null;
+                        }
                     } else {
                         return null;
                     }

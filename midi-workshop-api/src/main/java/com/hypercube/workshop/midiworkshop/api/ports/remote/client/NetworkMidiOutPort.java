@@ -18,6 +18,7 @@ import java.net.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * A little experimentation to send MIDI over UDP
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NetworkMidiOutPort extends MidiOutPort {
     public static final int MAX_UDP_PACKET_SIZE = 65507;
     private static final int CONNECTION_TIMEOUT_MS = 2000;
-
+    private static final Pattern REMOTE_DEVICE_PATTERN = Pattern.compile("^([^:]+):(\\d+):(.*)$");
     /**
      * Connection host for TCP and UDP
      */
@@ -77,7 +78,11 @@ public class NetworkMidiOutPort extends MidiOutPort {
     }
 
     public static boolean isRemoteAddress(String name) {
-        return name.split(":").length == 3;
+        if (name == null) {
+            return false;
+        }
+        return REMOTE_DEVICE_PATTERN.matcher(name)
+                .matches();
     }
 
     @Override
@@ -113,21 +118,25 @@ public class NetworkMidiOutPort extends MidiOutPort {
             if (hasMidiOutConnection()) {
                 var connection = getMidiOutConnection();
                 try {
-                    connection.tcpOutputStream().close();
+                    connection.tcpOutputStream()
+                            .close();
                 } catch (IOException e) {
                     log.error("Unable to close output TCP stream for {}", definition);
                 }
                 try {
-                    connection.tcpInputStream().close();
+                    connection.tcpInputStream()
+                            .close();
                 } catch (IOException e) {
                     log.error("Unable to close input TCP stream for {}", definition);
                 }
                 try {
-                    connection.clientTCPSocket().close();
+                    connection.clientTCPSocket()
+                            .close();
                 } catch (IOException e) {
                     log.error("Unable to close TCP socket for {}", definition);
                 }
-                connection.clientUDPSocket().close();
+                connection.clientUDPSocket()
+                        .close();
                 connections.remove(definition);
             }
         }
