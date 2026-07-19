@@ -37,7 +37,7 @@ public final class CommandCall {
     /**
      * Parse a list of command definitions: A();B();C()
      *
-     * @param configFile  where those definitions comes from (can be {@link CommandMacro#UNSAVED_MACRO}
+     * @param configFile  where those definitions come from (can be {@link CommandMacro#UNSAVED_MACRO}
      * @param device      where to find the macro currently called (use null to set the macro later)
      * @param definitions the definitions to parse
      * @return parsed definition

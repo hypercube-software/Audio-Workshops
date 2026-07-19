@@ -7,6 +7,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandMacro;
+import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -30,6 +31,13 @@ import java.util.stream.Stream;
 public class MidiPresetBuilder {
     private static final Pattern COMMAND_REGEXP = Pattern.compile("\\s*([A-F0-9]{2})");
     private static final Pattern PRESET_REGEXP = Pattern.compile("(?<id1>[0-9]+)-(?<id2>[0-9]+)(-(?<id3>[0-9]+))?");
+    private static final List<MidiBankFormat> BANK_FORMAT_WITHOUT_BANK_ID = List.of(
+            MidiBankFormat.NO_BANK_PRG,
+            MidiBankFormat.SYSEX,
+            MidiBankFormat.SYSEX_PRG);
+    private static final List<MidiBankFormat> BANK_FORMAT_WITHOUT_COMMAND = List.of(
+            MidiBankFormat.NO_BANK_PRG
+    );
 
     /**
      * Used by SynthRipper and MPM. TODO: since SynthRipper don't use MidiDeviceLibrary macros, we need this method
@@ -80,42 +88,54 @@ public class MidiPresetBuilder {
         var device = ctx.getDevice();
         MidiBankFormat midiBankFormat = device.getPresetFormat();
         String bankCommand = bank.getCommand();
-        if (bankCommand != null && bankCommand
-                .contains("(")) {
-            String commandCall = bankCommand
-                    .replace("program", "$%02X".formatted(program));
-            return CommandCall.parse(device.getDefinitionFile(), device, commandCall)
-                    .stream()
-                    .flatMap(call -> {
-                        CommandMacro macro = device.getMacro(call);
-                        String cmd = macro.expand(call);
-                        return parseCommand(ctx, device.getMacros(), cmd);
-                    })
-                    .toList();
-        } else {
-            int bankId = midiBankFormat == MidiBankFormat.NO_BANK_PRG ? -1 : device.getBankId(bank.getName());
-            int zeroBasedChannel = bank.getZeroBasedChannel();
-            return switch (midiBankFormat) {
-                case NO_BANK_PRG -> forgeCommands(ctx.setIdentifiers(0, 0, program));
-                case BANK_MSB_PRG, BANK_PRG_PRG -> forgeCommands(ctx.setIdentifiers(bankId, 0, program));
-                case BANK_LSB_PRG -> forgeCommands(ctx.setIdentifiers(0, bankId, program));
-                case BANK_MSB_LSB_PRG -> {
-                    int msb = (bankId >> 8) & 0x7F;
-                    int lsb = (bankId >> 0) & 0x7F;
-                    yield forgeCommands(ctx.setIdentifiers(msb, lsb, program));
-                }
-            };
+        int bankId = BANK_FORMAT_WITHOUT_BANK_ID.contains(midiBankFormat) ? -1 : device.getBankId(bank.getName());
+        if (bankCommand == null && !BANK_FORMAT_WITHOUT_COMMAND.contains(midiBankFormat)) {
+            throw new MidiConfigError("Bank command is mandatory for preset format " + midiBankFormat);
         }
+        return switch (midiBankFormat) {
+            case SYSEX -> forgeSysexCommand(ctx, program, bankCommand, device);
+            case SYSEX_PRG ->
+                    Stream.concat(forgeSysexCommand(ctx, program, bankCommand, device).stream(), forgeCommands(ctx.setIdentifiers(0, 0, program)).stream())
+                            .toList();
+            case NO_BANK_PRG -> forgeCommands(ctx.setIdentifiers(0, 0, program));
+            case BANK_MSB_PRG, BANK_PRG_PRG -> forgeCommands(ctx.setIdentifiers(bankId, 0, program));
+            case BANK_LSB_PRG -> forgeCommands(ctx.setIdentifiers(0, bankId, program));
+            case BANK_MSB_LSB_PRG -> {
+                int msb = (bankId >> 8) & 0x7F;
+                int lsb = (bankId >> 0) & 0x7F;
+                yield forgeCommands(ctx.setIdentifiers(msb, lsb, program));
+            }
+        };
+
+    }
+
+    @Nonnull
+    private static List<MidiMessage> forgeSysexCommand(BuildContext ctx, int program, String bankCommand, MidiDeviceDefinition device) {
+        String commandCall = bankCommand
+                .replace("program", "$%02X".formatted(program));
+        return CommandCall.parse(device.getDefinitionFile(), device, commandCall)
+                .stream()
+                .flatMap(call -> {
+                    CommandMacro macro = device.getMacro(call);
+                    String cmd = macro.expand(call);
+                    return parseCommand(ctx, device.getMacros(), cmd);
+                })
+                .toList();
     }
 
     private static List<MidiMessage> forgeCommands(BuildContext ctx) {
         var ids = ctx.getIdentifiers();
-        String definition = switch (ctx.getDevice()
-                .getPresetFormat()) {
-            case NO_BANK_PRG -> "%02X".formatted(ids.getPrg());
+        MidiBankFormat presetFormat = ctx.getDevice()
+                .getPresetFormat();
+        if (presetFormat == MidiBankFormat.SYSEX) {
+            return List.of();
+        }
+        String definition = switch (presetFormat) {
+            case NO_BANK_PRG, SYSEX_PRG -> "%02X".formatted(ids.getPrg());
             case BANK_MSB_PRG, BANK_PRG_PRG -> "%02X%02X".formatted(ids.getMsb(), ids.getPrg());
             case BANK_LSB_PRG -> "%02X%02X".formatted(ids.getLsb(), ids.getPrg());
             case BANK_MSB_LSB_PRG -> "%02X%02X%02X".formatted(ids.getMsb(), ids.getLsb(), ids.getPrg());
+            default -> throw new MidiConfigError("Unexpected preset format:" + presetFormat);
         };
 
         try {
@@ -209,11 +229,12 @@ public class MidiPresetBuilder {
         if (!ids.isEmpty()) {
             try {
                 return switch (ctx.getMidiBankFormat()) {
-                    case NO_BANK_PRG -> programChangeOnly(ctx, definition, ids);
+                    case NO_BANK_PRG, SYSEX_PRG -> programChangeOnly(ctx, definition, ids);
                     case BANK_MSB_PRG -> bankMsbThenProgramChange(ctx, definition, ids);
                     case BANK_LSB_PRG -> bankLsbThenProgramChange(ctx, definition, ids);
                     case BANK_MSB_LSB_PRG -> bankMsbLsbThenProgramChange(ctx, definition, ids);
                     case BANK_PRG_PRG -> doubleProgramChange(ctx, definition, ids);
+                    case SYSEX -> throw new MidiConfigError("Unexpected preset format" + ctx.getMidiBankFormat());
                 };
             } catch (InvalidMidiDataException e) {
                 throw new MidiError(e);

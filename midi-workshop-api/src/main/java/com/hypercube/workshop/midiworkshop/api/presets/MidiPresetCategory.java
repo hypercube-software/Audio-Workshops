@@ -27,24 +27,24 @@ public class MidiPresetCategory {
                 .map(String::trim)
                 .toList() : List.of();
         MidiPresetCategoryType type = getType(aliases);
-        // For regular aliases, we include also the name as an alias
-        aliases = switch (type) {
-            case YAMAHA -> aliases;
-            case REGULAR -> Stream.of(List.of(name), aliases)
-                    .flatMap(Collection::stream)
-                    .toList();
-        };
+        // we include also the name as an alias
+        aliases = Stream.of(List.of(name), aliases)
+                .flatMap(Collection::stream)
+                .toList();
         return new MidiPresetCategory(name, type, aliases);
     }
 
     /**
-     * If all aliases are only with 2 Letters, there are Yamaha categories
+     * If first alias is only with 2 Letters, it is a Yamaha category
      */
     private static MidiPresetCategoryType getType(List<String> aliases) {
-        return aliases.size() > 0 && aliases.stream()
-                .filter(a -> a.length() != 2)
-                .findFirst()
-                .isEmpty() ? MidiPresetCategoryType.YAMAHA : MidiPresetCategoryType.REGULAR;
+        return !aliases.isEmpty()
+                && aliases.getFirst()
+                .equals(aliases.getFirst()
+                        .toUpperCase())
+                && aliases.getFirst()
+                .length() == 2
+                ? MidiPresetCategoryType.YAMAHA : MidiPresetCategoryType.REGULAR;
     }
 
     public boolean matches(String presetName) {
@@ -61,16 +61,13 @@ public class MidiPresetCategory {
 
     private boolean matchesRegular(String presetName) {
         return aliases.stream()
-                .filter(a -> presetName.toLowerCase()
-                        .contains(a.toLowerCase()))
-                .findFirst()
-                .isPresent();
+                .anyMatch(a -> presetName.toLowerCase()
+                        .contains(a.toLowerCase()));
     }
 
     private boolean matchesYamaha(String presetName) {
         return aliases.stream()
-                .filter(a -> presetName.startsWith(a))
-                .findFirst()
-                .isPresent();
+                .anyMatch(a -> (a.length() == 2 && presetName.startsWith(a)) || (a.length() > 2 && presetName.toLowerCase()
+                        .contains(a.toLowerCase())));
     }
 }

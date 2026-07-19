@@ -59,3 +59,4 @@ midi-workshop-api/src/test/resources/devices-library/*/
 /books/src/main/typst/playground/
 /books/src/main/typst/kurzweil-format.pdf
 /books/src/main/typst/tinymist.lock
+/devices-library-remote/

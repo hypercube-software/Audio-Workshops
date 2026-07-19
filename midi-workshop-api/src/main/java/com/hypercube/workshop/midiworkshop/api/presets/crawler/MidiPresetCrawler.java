@@ -227,9 +227,12 @@ public class MidiPresetCrawler {
     }
 
     private void selectPatch(MidiPreset midiPreset, MidiOutPort out) {
+        String prg = Optional.ofNullable(midiPreset.getIdentifiers())
+                .map(PresetIdentifiers::getPrg)
+                .map("%d"::formatted)
+                .orElse("NOT SET");
         log.info("Select Bank '{}' Program '{}' in mode '{}'", midiPreset.getId()
-                .bankName(), midiPreset.getIdentifiers()
-                .getPrg(), midiPreset.getId()
+                .bankName(), prg, midiPreset.getId()
                 .deviceMode());
         for (var command : midiPreset.getCommands()) {
             CustomMidiEvent cm = new CustomMidiEvent(command);

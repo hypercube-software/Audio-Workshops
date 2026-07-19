@@ -20,5 +20,13 @@ public enum MidiBankFormat {
     /**
      * Send 2 Program Changes (used by Yamaha TG-77 in 'direct mode')
      */
-    BANK_PRG_PRG
+    BANK_PRG_PRG,
+    /**
+     * Send a sysex command with "program" as parameter
+     */
+    SYSEX,
+    /**
+     * Send a sysex command, followed by a Program Change
+     */
+    SYSEX_PRG
 }

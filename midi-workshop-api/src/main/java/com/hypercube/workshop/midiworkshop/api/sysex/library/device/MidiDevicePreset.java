@@ -107,6 +107,7 @@ public final class MidiDevicePreset {
             case BANK_LSB_PRG -> pad(4, normalizedCommand);
             case BANK_MSB_LSB_PRG -> pad(6, normalizedCommand);
             case BANK_PRG_PRG -> pad(4, normalizedCommand);
+            case SYSEX_PRG, SYSEX -> normalizedCommand;
             case null ->
                     throw new MidiConfigError("Unexpected null MidiBankFormat !, can't normalize command: " + command);
         };

@@ -125,17 +125,18 @@ public final class MidiPreset {
 
     public int getBank() {
         return switch (midiBankFormat) {
-            case NO_BANK_PRG -> 0;
+            case NO_BANK_PRG, SYSEX -> 0;
             case BANK_MSB_PRG -> getBankMSB();
             case BANK_LSB_PRG -> getBankLSB();
             case BANK_MSB_LSB_PRG -> getBankMSB() << 8 | getBankLSB();
-            case BANK_PRG_PRG -> getFirstProgram();
+            case BANK_PRG_PRG, SYSEX_PRG -> getFirstProgram();
         };
     }
 
     public String getCommand() {
         return switch (midiBankFormat) {
-            case NO_BANK_PRG -> "%02X".formatted(getLastProgram());
+            case SYSEX -> "";
+            case NO_BANK_PRG, SYSEX_PRG -> "%02X".formatted(getLastProgram());
             case BANK_MSB_PRG -> "%02X%02X".formatted(getBankMSB(), getLastProgram());
             case BANK_LSB_PRG -> "%02X%02X".formatted(getBankLSB(), getLastProgram());
             case BANK_MSB_LSB_PRG -> "%02X%02X%02X".formatted(getBankMSB(), getBankLSB(), getLastProgram());
@@ -145,7 +146,7 @@ public final class MidiPreset {
 
     public String getBankCommand() {
         return switch (midiBankFormat) {
-            case NO_BANK_PRG -> "";
+            case SYSEX, SYSEX_PRG, NO_BANK_PRG -> "";
             case BANK_MSB_PRG -> "%02X".formatted(getBankMSB());
             case BANK_LSB_PRG -> "%02X".formatted(getBankLSB());
             case BANK_MSB_LSB_PRG -> "%02X%02X".formatted(getBankMSB(), getBankLSB());

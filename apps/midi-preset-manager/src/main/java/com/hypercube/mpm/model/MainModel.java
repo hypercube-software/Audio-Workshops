@@ -22,10 +22,14 @@ public class MainModel {
     @NotObservable
     private final Map<MidiDeviceDefinition, MidiDeviceMode> currentDeviceMode = new HashMap<>();
     private List<String> devices = new ArrayList<>();
+
     private List<String> midiInPorts = new ArrayList<>();
     private List<String> selectedInputPorts = new ArrayList<>();
+
     private List<String> midiThruPorts = new ArrayList<>();
     private List<String> selectedOutputPorts = new ArrayList<>();
+    private List<String> selectedEditorPorts = new ArrayList<>();
+
     private List<String> deviceModes = new ArrayList<>();
     private List<MidiPresetCategory> modeCategories = new ArrayList<>();
     private List<Integer> modeChannels = new ArrayList<>();

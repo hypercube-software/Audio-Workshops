@@ -3,6 +3,7 @@
 #
 deviceName: "TG-77"
 brand: "Yamaha"
+# See page 2 of the MIDI manual, the TG-77 does not use bank select, instead, in mode 'Direct', 2 CTRL Change messages !!
 presetFormat: BANK_PRG_PRG
 presetNaming: STANDARD
 # requests format is in table 5 (page 15) of the document "MIDI DATA FORMAT"
@@ -74,13 +75,6 @@ macros:
   # 5 = ??
   - "setProgramChangeMode(mode) : setSystemSetup($35,mode)"
   - "setProgramChangeModeDIRECT() : setProgramChangeMode(2)"
-  # See page 2 of the MIDI manual, the TG-77 does not use bank select, instead, in mode 'Direct', 2 CTRL Change messages !!
-  - "setBank(bank): C0 bank 00"
-  - "setVoice(program) : C0 program 00"
-  - "setVoiceBankPRESET1(program): setBank(124);setVoice(program)"
-  - "setVoiceBankPRESET2(program): setBank(117);setVoice(program)"
-  - "setVoiceBankINTERNAL(program): setBank(122);setVoice(program)"
-  - "setVoiceBankCARD(program): setBank(123);setVoice(program)"
   # queries
   - "Preset1VoiceName(program): Preset1 VMEM(program): YamahaVoiceMapper"
   - "Preset2VoiceName(program): Preset2 VMEM(program): YamahaVoiceMapper"
@@ -93,42 +87,42 @@ deviceModes:
     midiChannels: 0
     banks:
       "Preset 1 Voices":
-        command: setVoiceBankPRESET1(program)
+        command: $7C
         queryName: Preset1VoiceName(program)
         presetDomain: 0-63
       "Preset 2 Voices":
-        command: setVoiceBankPRESET2(program)
+        command: $75
         queryName: Preset2VoiceName(program)
         presetDomain: 0-63
       "Internal Voices":
-        command: setVoiceBankINTERNAL(program)
+        command: $7A
         queryName: InternalVoiceName(program)
         presetDomain: 0-63
-      "Bank Voices":
-        command: setVoiceBankCARD(program)
+      "Card Voices":
+        command: $7B
         queryName: InternalVoiceName(program) # you have to copy the card to Internal unfortunately
         #presetDomain: 0-63
 
     categories:
+      - "Synth Pad: SP, Pad"
+      - "Synth Lead: SL, Syn, Lead"
+      - "Synth Comp: SC"
+      - "Combination : CO"
       - "Piano: AP"
       - "Electric Piano: EP"
       - "Keyboard: KY"
-      - "Brass: BR"
+      - "Brass: BR, Brs"
       - "Wind: WN"
       - "String: ST"
-      - "Guitar: GT"
+      - "Guitar: GT, Gtr"
       - "Bass: BA"
       - "Musical Effect: ME"
       - "Organ: OR"
-      - "Plucked: PL"
+      - "Plucked: PL, Plk"
       - "Ethnic: FI"
-      - "Synth Pad: SP"
-      - "Synth Lead: SL"
-      - "Synth Comp: SC"
-      - "Combination : CO"
-      - "Choir: CH"
+      - "Choir: CH, Vox, Chor, Chrs"
       - "Chromatic Percussion: TP"
-      - "Drum: DR"
+      - "Drum: DR, Drm"
       - "Percussion: MI,PC"
       - "Sound FX: SE"
 

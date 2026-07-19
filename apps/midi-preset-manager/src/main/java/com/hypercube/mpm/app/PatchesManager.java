@@ -58,9 +58,10 @@ public class PatchesManager {
             byteValues.add(byteValue);
         }
         int expectedSize = switch (presetFormat) {
-            case NO_BANK_PRG -> 1;
+            case NO_BANK_PRG, SYSEX_PRG -> 1;
             case BANK_MSB_PRG, BANK_LSB_PRG, BANK_PRG_PRG -> 2;
             case BANK_MSB_LSB_PRG -> 3;
+            case SYSEX -> 0;
         };
         if (byteValues.size() != expectedSize) {
             throw new MidiConfigError("Unexpected command size given preset format '%s' for patch '%s', expected %d digits, got %d".formatted(presetFormat, hexString, expectedSize, byteValues.size()));
@@ -207,10 +208,13 @@ public class PatchesManager {
                 log.error("Patch file no longer exists: {}", filename.getAbsolutePath());
             }
         } else {
-            MidiPreset midiPreset = MidiPresetBuilder.parse(device, selectedPatch.getChannel(),
-                    selectedPatch.getName(),
-                    device.getMacros(),
-                    List.of(selectedPatch.getCommand()), List.of(MidiPreset.NO_CC), null);
+            final MidiPreset midiPreset;
+            var bank = device.getBank(selectedPatch.getBank())
+                    .orElseThrow();
+            var mode = device.getMode(selectedPatch.getMode())
+                    .orElseThrow();
+            var program = Integer.parseInt(selectedPatch.getCommand(), 16) & 0x7F;
+            midiPreset = MidiPresetBuilder.parse(device, mode, bank, program);
             port.sendPresetChange(midiPreset);
         }
     }
