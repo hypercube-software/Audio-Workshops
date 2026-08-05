@@ -36,9 +36,5 @@ public class Sample {
     @XmlAttribute(name = "loNote")
     private Integer lowNote;
     @XmlAttribute
-    private Integer loVel;
-    @XmlAttribute
-    private Integer hiVel;
-    @XmlAttribute
     private String tags;
 }

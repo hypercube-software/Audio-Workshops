@@ -71,10 +71,12 @@ public class SynthRipperCLI {
                         .getOutputAudioDevice())
                 .orElseThrow(() -> new SynthRipperError(DEVICE_NOT_FOUND + config.getPorts()
                         .getOutputAudioDevice()));
-        var midiOutPort = midiPortsManager.getOutput(config.getPorts()
-                        .getOutputMidiDevice())
-                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + config.getPorts()
-                        .getOutputMidiDevice()));
+        var outputMidiDevice = config.getDevice().getOutputMidiDevice();
+        if (outputMidiDevice == null) {
+            throw new MidiError("No output MIDI device configured for device: " + config.getDevice().getDeviceName());
+        }
+        var midiOutPort = midiPortsManager.getOutput(outputMidiDevice)
+                .orElseThrow(() -> new MidiError(DEVICE_NOT_FOUND + outputMidiDevice));
         try {
             synthRipper.init(config);
             synthRipper.recordSynth(audioInputDevice, audioOutputDevice, midiOutPort);

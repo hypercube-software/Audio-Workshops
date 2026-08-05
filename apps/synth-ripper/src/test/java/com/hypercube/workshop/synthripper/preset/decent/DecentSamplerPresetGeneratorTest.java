@@ -22,28 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DecentSamplerPresetGeneratorTest {
     @Test
     void canSerializeToXML() throws JAXBException, IOException {
-        // GIVEN
         DecentSampler decentSampler = new DecentSampler();
         Sample sample = new Sample();
         sample.setLowNote(10);
         sample.setHiNote(64);
-        sample.setLoVel(10);
-        sample.setHiVel(127);
         sample.setPath("/toto/titi.wav");
-
-        Groups groups = new Groups();
-        groups.setTags("Velocity");
 
         RoundRobinGroup dsGroup = new RoundRobinGroup();
         dsGroup.setTags("RoundRobin");
         dsGroup.setReleaseTimeInSec(4.5f);
+        dsGroup.setLoVel(10);
+        dsGroup.setHiVel(127);
         dsGroup.getSamples()
                 .add(sample);
-        groups.getRoundRobinGroups()
-                .add(dsGroup);
 
         decentSampler.getGroups()
-                .add(groups);
+                .add(dsGroup);
 
         MidiControlChange cc = new MidiControlChange(1, List.of(
                 new Binding("amp", "group", 0, "A", "AMP_VOLUME", "table", "0,1;64,0;128,0"),
@@ -53,7 +47,6 @@ class DecentSamplerPresetGeneratorTest {
                 .getMidiControlChangeList()
                 .add(cc);
 
-        // WHEN
         JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -62,14 +55,13 @@ class DecentSamplerPresetGeneratorTest {
             jaxbMarshaller.marshal(decentSampler, sw);
             xml = sw.toString();
         }
-        // THEN
         log.info(xml);
         assertEquals("""
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <DecentSampler>
-                    <groups tags="Velocity">
-                        <group release="4.5" tags="RoundRobin">
-                            <sample path="/toto/titi.wav" hiNote="64" loNote="10" loVel="10" hiVel="127"/>
+                    <groups>
+                        <group release="4.5" tags="RoundRobin" loVel="10" hiVel="127">
+                            <sample path="/toto/titi.wav" hiNote="64" loNote="10"/>
                         </group>
                     </groups>
                     <midi>
@@ -85,7 +77,6 @@ class DecentSamplerPresetGeneratorTest {
 
     @Test
     void canGenerateDecentSamplerModel() throws JAXBException, IOException {
-        // GIVEN
         DecentSamplerPresetGenerator decentSamplerPresetGenerator = new DecentSamplerPresetGenerator();
         SynthRipperConfiguration conf = new SynthRipperConfiguration();
         List<RecordedSynthNote> sampleBatch = List.of(
@@ -115,7 +106,6 @@ class DecentSamplerPresetGeneratorTest {
         );
         DecentSampler decentSampler = decentSamplerPresetGenerator.forgeDecentSamplerPreset(conf, new File("output/toto.dspreset"), sampleBatch);
 
-        // WHEN
         JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -124,20 +114,19 @@ class DecentSamplerPresetGeneratorTest {
             jaxbMarshaller.marshal(decentSampler, sw);
             xml = sw.toString();
         }
-        // THEN
         log.info(xml);
         assertEquals("""
                 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <DecentSampler>
-                    <groups tags="vel127">
-                        <group name="A2" release="1.25" modVolume="0.0" tags="CC001-064">
-                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45" loVel="0" hiVel="127"/>
+                    <groups>
+                        <group name="A2" release="1.25" modVolume="0.0" tags="vel127 CC001-064" loVel="0" hiVel="127">
+                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45"/>
                         </group>
-                        <group name="A2" release="1.25" modVolume="0.0" tags="CC001-127">
-                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45" loVel="0" hiVel="127"/>
+                        <group name="A2" release="1.25" modVolume="0.0" tags="vel127 CC001-127" loVel="0" hiVel="127">
+                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45"/>
                         </group>
-                        <group name="A2" release="1.25" modVolume="1.0" tags="NoCC">
-                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45" loVel="0" hiVel="127"/>
+                        <group name="A2" release="1.25" modVolume="1.0" tags="vel127 NoCC" loVel="0" hiVel="127">
+                            <sample trigger="attack" path="toto.wav" rootNote="45" hiNote="45" loNote="45"/>
                         </group>
                     </groups>
                     <midi>

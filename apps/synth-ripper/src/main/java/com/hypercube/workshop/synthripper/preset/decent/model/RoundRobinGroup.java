@@ -21,11 +21,15 @@ public class RoundRobinGroup {
     @XmlAttribute(name = "release")
     private Float releaseTimeInSec;
     @XmlAttribute
-    private Float modVolume; // undocumented field used by dave hilowitz
+    private Float modVolume;
     @XmlAttribute
     private String tags;
     @XmlAttribute
     private Integer position;
+    @XmlAttribute
+    private Integer loVel;
+    @XmlAttribute
+    private Integer hiVel;
     @XmlAnyAttribute
     private Map<QName, String> sampleControlChanges = new HashMap<>();
 

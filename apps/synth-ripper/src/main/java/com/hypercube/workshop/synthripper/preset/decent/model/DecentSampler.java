@@ -1,8 +1,6 @@
 package com.hypercube.workshop.synthripper.preset.decent.model;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +12,8 @@ import java.util.List;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DecentSampler {
-    private List<Groups> groups = new ArrayList<>();
+    @XmlElementWrapper(name = "groups")
+    @XmlElement(name = "group")
+    private List<RoundRobinGroup> groups = new ArrayList<>();
     private Midi midi = new Midi();
 }

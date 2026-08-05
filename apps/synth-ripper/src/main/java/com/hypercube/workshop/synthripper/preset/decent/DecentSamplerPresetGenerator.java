@@ -12,10 +12,7 @@ import jakarta.xml.bind.Marshaller;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -31,7 +28,8 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
         var recordsPerPresets = sampleBatch.stream()
                 .collect(groupingBy(RecordedSynthNote::getPreset));
         recordsPerPresets.forEach((preset, recordedSamples) -> {
-            File sfzFile = new File("%s/%s %s.dspreset".formatted(conf.getOutputDir(), preset.getFirstProgram(), preset.getId()
+            String presetId = preset.getShortId();
+            File sfzFile = new File("%s/%s %s.dspreset".formatted(conf.getOutputDir(), presetId, preset.getId()
                     .name()));
             DecentSampler ds = forgeDecentSamplerPreset(conf, sfzFile, recordedSamples);
             try {
@@ -51,26 +49,22 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
         var recordsPerVelocity = recordedSynthNotes.stream()
                 .collect(groupingBy(RecordedSynthNote::getVelocity));
         recordsPerVelocity.forEach((velocity, recordedSamplesPerVelocity) -> {
-            forgeVelocityGroup(presetFile, velocity, recordedSamplesPerVelocity, ds);
+            forgeVelocityGroups(presetFile, velocity, recordedSamplesPerVelocity, ds);
         });
+        ds.getGroups()
+                .sort(Comparator.comparing(RoundRobinGroup::getTags)
+                        .thenComparing(RoundRobinGroup::getName));
         return ds;
     }
 
-    private void forgeVelocityGroup(File presetFile, MidiZone velocity, List<RecordedSynthNote> recordedSamplesPerVelocity, DecentSampler ds) {
-        Groups groups = new Groups();
-        groups.setTags("vel" + velocity
-                .high());
-        ds.getGroups()
-                .add(groups);
+    private void forgeVelocityGroups(File presetFile, MidiZone velocity, List<RecordedSynthNote> recordedSamplesPerVelocity, DecentSampler ds) {
         var recordsPerCC = recordedSamplesPerVelocity.stream()
                 .collect(groupingBy(RecordedSynthNote::getControlChange));
         recordsPerCC.forEach((cc, recordedSamplesPerControlChange) -> {
             if (cc == MidiPreset.NO_CC) {
-                groups.getRoundRobinGroups()
-                        .addAll(forgeRoundRobinGroup(presetFile, cc, null, recordedSamplesPerControlChange, null));
+                forgeNoteGroups(presetFile, velocity, cc, null, recordedSamplesPerControlChange, null, ds);
             } else {
                 List<Binding> bindings = new ArrayList<>();
-                // each velocity group produces the same CC bindings, so we save only the first one we produce
                 if (!ds.getMidi()
                         .hasControlChange(cc)) {
                     MidiControlChange midiControlChange = new MidiControlChange(cc, bindings);
@@ -81,89 +75,84 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
                 var recordsPerCCValue = recordedSamplesPerControlChange.stream()
                         .collect(groupingBy(RecordedSynthNote::getCcValue));
                 recordsPerCCValue.forEach((ccValue, recordedSamplesPerControlChangeValue) -> {
-                    groups.getRoundRobinGroups()
-                            .addAll(forgeRoundRobinGroup(presetFile, cc, ccValue, recordedSamplesPerControlChangeValue, bindings));
+                    forgeNoteGroups(presetFile, velocity, cc, ccValue, recordedSamplesPerControlChangeValue, bindings, ds);
                 });
             }
         });
-        groups.getRoundRobinGroups()
-                .sort(Comparator.comparing(RoundRobinGroup::getTags));
     }
 
-    private List<RoundRobinGroup> forgeRoundRobinGroup(File presetFile, int controlChange, MidiZone controlChangeValue, List<RecordedSynthNote> recordedSamples, List<Binding> bindings) {
-        return recordedSamples.stream()
-                .map(recordedSample -> {
-                    RoundRobinGroup group = new RoundRobinGroup();
-                    group.setName(SynthRipperConfiguration.noteNameFromPitch(recordedSample.getNote()
-                            .value()));
-                    if (controlChange != MidiPreset.NO_CC) {
-                        group.setModVolume(0f);
-                        String groupTag = "CC%03d-%03d".formatted(controlChange, controlChangeValue.value());
-                        group.setTags(groupTag);
-                        if (bindings.stream()
-                                .filter(b -> b.getTags()
-                                        .equals(groupTag))
-                                .findAny()
-                                .isEmpty()) {
-                            bindings.add(forgeControlChangeBinding(groupTag, controlChange, controlChangeValue));
-                        }
-                    } else {
-                        group.setModVolume(1f);
-                        String groupTag = "NoCC";
-                        group.setTags(groupTag);
-                    }
-                    group.setReleaseTimeInSec(recordedSample.getReleaseTimeInSec());
-                    String path = presetFile.getParentFile()
-                            .toPath()
-                            .relativize(recordedSample.getFile()
-                                    .toPath())
-                            .toString()
-                            .replace("\\", "/");
+    private void forgeNoteGroups(File presetFile, MidiZone velocity, int controlChange, MidiZone controlChangeValue, List<RecordedSynthNote> recordedSamples, List<Binding> bindings, DecentSampler ds) {
+        String groupTag;
+        float modVolume;
+        if (controlChange != MidiPreset.NO_CC) {
+            groupTag = "CC%03d-%03d".formatted(controlChange, controlChangeValue.value());
+            modVolume = 0f;
+            if (bindings != null && bindings.stream()
+                    .filter(b -> b.getTags()
+                            .equals(groupTag))
+                    .findAny()
+                    .isEmpty()) {
+                bindings.add(forgeControlChangeBinding(groupTag, controlChange, controlChangeValue));
+            }
+        } else {
+            groupTag = "NoCC";
+            modVolume = 1f;
+        }
+        String velocityTag = "vel%03d".formatted(velocity.high());
 
-                    Sample sample = new Sample();
-                    sample.setTrigger(TriggerMode.ATTACK);
-                    sample.setPath(path);
-                    sample.setLowNote(recordedSample.getNote()
-                            .low());
-                    sample.setRootNote(recordedSample.getNote()
-                            .value());
-                    sample.setHiNote(recordedSample.getNote()
-                            .high());
-                    sample.setLoVel(recordedSample.getVelocity()
-                            .low());
-                    sample.setHiVel(recordedSample.getVelocity()
-                            .high());
-                    Optional.ofNullable(recordedSample.getLoopSetting())
-                            .ifPresent(l -> {
-                                sample.setLoopEnabled(true);
-                                sample.setLoopStart(l.getSampleStart());
-                                sample.setLoopEnd(l.getSampleEnd());
-                                sample.setLoopCrossfade(8000L);
-                            });
-                    group.getSamples()
-                            .add(sample);
-                    return group;
-                })
-                .toList();
+        for (RecordedSynthNote recordedSample : recordedSamples) {
+            RoundRobinGroup group = new RoundRobinGroup();
+            group.setName(SynthRipperConfiguration.noteNameFromPitch(recordedSample.getNote()
+                    .value()));
+            group.setTags("%s %s".formatted(velocityTag, groupTag));
+            group.setModVolume(modVolume);
+            group.setLoVel(velocity.low());
+            group.setHiVel(velocity.high());
+            group.setReleaseTimeInSec(recordedSample.getReleaseTimeInSec());
+
+            String path = presetFile.getParentFile()
+                    .toPath()
+                    .relativize(recordedSample.getFile()
+                            .toPath())
+                    .toString()
+                    .replace("\\", "/");
+
+            Sample sample = new Sample();
+            sample.setTrigger(TriggerMode.ATTACK);
+            sample.setPath(path);
+            sample.setLowNote(recordedSample.getNote()
+                    .low());
+            sample.setRootNote(recordedSample.getNote()
+                    .value());
+            sample.setHiNote(recordedSample.getNote()
+                    .high());
+
+            Optional.ofNullable(recordedSample.getLoopSetting())
+                    .ifPresent(l -> {
+                        sample.setLoopEnabled(true);
+                        sample.setLoopStart(l.getSampleStart());
+                        sample.setLoopEnd(l.getSampleEnd());
+                        sample.setLoopCrossfade(8000L);
+                    });
+            group.getSamples()
+                    .add(sample);
+            ds.getGroups()
+                    .add(group);
+        }
     }
 
     private Binding forgeControlChangeBinding(String groupName, int cc, MidiZone zone) {
-        StringBuilder enveloppe = new StringBuilder();
+        StringBuilder envelope = new StringBuilder();
         if (zone.low() > 0) {
-            enveloppe.append("0,0;");
+            envelope.append("0,0;");
         }
-        enveloppe.append("%d,1;".formatted(zone.low()));
+        envelope.append("%d,1;".formatted(zone.low()));
         if (zone.high() < 127) {
-            enveloppe.append("%d,1;".formatted(zone.high()));
-            enveloppe.append("128,0");
+            envelope.append("%d,1;".formatted(zone.high()));
+            envelope.append("128,0");
         } else {
-            enveloppe.append("128,1");
+            envelope.append("128,1");
         }
-        int overlap = zone.width() / 2;
-        int begin = zone.low() - overlap;
-        int middle = zone.value();
-        int end = zone.high() + overlap;
-
-        return new Binding("amp", "group", null, groupName, "AMP_VOLUME", "table", enveloppe.toString());
+        return new Binding("amp", "group", null, groupName, "AMP_VOLUME", "table", envelope.toString());
     }
 }

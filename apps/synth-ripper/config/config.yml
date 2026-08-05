@@ -3,7 +3,6 @@ device: DS-330
 ports:
   inputAudioDevice: "Microphone (Realtek High Definition Audio)"
   outputAudioDevice: "Haut-parleurs (Realtek High Definition Audio)"
-  outputMidiDevice: "4- MIDISPORT Uno Out"
 audio:
   bufferDurationMs: 250
   nbChannels: 2
@@ -17,29 +16,12 @@ midi:
   # detect looping sounds
   maxNoteDurationSec: 5
   maxNoteReleaseDurationSec: 5
-  #
-  # Select how to send bankName select messages to the device:
-  # ------------------------------------------------------
-  # NO_BANK_PRG      : Does not send bankName select, send only Program Change
-  # BANK_MSB_PRG     : Send CC "BANK Select MSB" only, then Program Change
-  # BANK_LSB_PRG     : Send CC "BANK Select LSB" only, then Program Change
-  # BANK_MSB_LSB_PRG : Send CC "BANK Select MSB" then "BANK Select LSB", then Program Change
-  #
-  presetFormat: BANK_MSB_PRG
-
-  #
-  # preset numbers can be in two forms:
-  #   <bankName number>-<program number>
-  #   <program number> only, in this case bankName will be 0
-  #
-  # NOTE: <bankName number> is automatically split in MSB and LSB (7 bits each), given the selected presetFormat
-  #
   # Default MIDI channel (from 1 to 16)
   channel: 1
-  # lowest preset included
-  lowestPreset: GM Drumkit
-  # highest preset included
-  highestPreset: GM Drumkit
+  # lowest preset included (must match a preset name in the device library)
+  lowestPreset: Piano 1
+  # highest preset included (must match a preset name in the device library)
+  highestPreset: Gun Shot
   # lowest note included
   lowestNote: C1
   # highest note included
@@ -50,194 +32,4 @@ midi:
   velocityPerNote: 2
   # how many CC layer to record per note
   ccPerNote: 2
-  #
-  # presets order is important due to lowestPreset and highestPreset
-  #
-  presets:
-    - title: GM Drumkit
-      channel: 10
-      commands:
-        - 18
-      drumkitNotes:
-        - 35 Acoustic Bass Drum
-        - 36 Bass Drum 1
-        - 37 Side Stick
-        - 38 Acoustic Snare
-        - 39 Hand Clap
-        - 40 Electric Snare
-        - 41 Low Floor Tom
-        - 42 Closed Hi-Hat
-        - 43 High Floor Tom
-        - 44 Pedal Hi-Hat
-        - 45 Low Tom
-        - 46 Open Hi-Hat
-        - 47 Low-Mid Tom
-        - 48 Hi-Mid Tom
-        - 49 Crash Cymbal 1
-        - 50 High Tom
-        - 51 Ride Cymbal 1
-        - 52 Chinese Cymbal
-        - 53 Ride Bell
-        - 54 Tambourine
-        - 55 Splash Cymbal
-        - 56 Cowbell
-        - 57 Crash Symbol 2
-        - 58 Vibraslap
-        - 59 Ride Cymbal 2
-        - 60 Hi Bongo
-        - 61 Low Bongo
-        - 62 Mute Hi Conga
-        - 63 Open Hi Conga
-        - 64 Low Conga
-        - 65 High Timbale
-        - 66 Low Timbale
-        - 67 High Agogo
-        - 68 Low Agogo
-        - 69 Cabasa
-        - 70 Maracas
-        - 71 Short Whistle
-        - 72 Long Whistle
-        - 73 Short Guiro
-        - 74 Long Guiro
-        - 75 Claves
-        - 76 Hi Wood Block
-        - 77 Low Wood Block
-        - 78 Mute Cuica
-        - 79 Open Cuica
-        - 80 Mute Triangle
-        - 81 Open Triangle
-        - 82 Shaker
-    - 1 Acoustic Grand Piano
-    - 2 Bright Acoustic Piano
-    - 3 Electric Grand Piano
-    - 4 Honky-tonk Piano
-    - 5 Electric Piano 1
-    - 6 Electric Piano 2
-    - 7 Harpsichord
-    - 8 Clavi
-    - 9 Celesta
-    - 10 Glockenspiel
-    - 11 Music Box
-    - 12 Vibraphone
-    - 13 Marimba
-    - 14 Xylophone
-    - 15 Tubular Bells
-    - 16 Dulcimer
-    - 17 Drawbar Organ
-    - 18 Percussive Organ
-    - 19 Rock Organ
-    - 20 Church Organ
-    - 21 Reed Organ
-    - 22 Accordion
-    - 23 Harmonica
-    - 24 Tango Accordion
-    - 25 Guitar (nylon)
-    - 26 Acoustic Guitar (steel)
-    - 27 Electric Guitar (jazz)
-    - 28 Electric Guitar (clean)
-    - 29 Electric Guitar (muted)
-    - 30 Overdriven Guitar
-    - 31 Distortion Guitar
-    - 32 Guitar Harmonics
-    - 33 Acoustic Bass
-    - 34 Electric Bass (finger)
-    - 35 Electric Bass (pick)
-    - 36 Fretless Bass
-    - 37 Slap Bass 1
-    - 38 Slap Bass 2
-    - 39 Synth Bass 1
-    - 40 Synth Bass 2
-    - 41 Violin
-    - 42 Viola
-    - 43 Cello
-    - 44 Contrabass
-    - 45 Tremolo Strings
-    - 46 Pizzicato Strings
-    - 47 Orchestral Harp
-    - 48 Timpani
-    - 49 String Ensemble 1
-    - 50 String Ensemble 2
-    - 51 SynthStrings 1
-    - 52 SynthStrings 2
-    - 53 Choir Aahs
-    - 54 Voice Oohs
-    - 55 Synth Voice
-    - 56 Orchestra Hit
-    - 57 Trumpet
-    - 58 Trombone
-    - 59 Tuba
-    - 60 Muted Trumpet
-    - 61 French Horn
-    - 62 Brass Section
-    - 63 SynthBrass 1
-    - 64 SynthBrass 2
-    - 65 Soprano Sax
-    - 66 Alto Sax
-    - 67 Tenor Sax
-    - 68 Baritone Sax
-    - 69 Oboe
-    - 70 English Horn
-    - 71 Bassoon
-    - 72 Clarinet
-    - 73 Piccolo
-    - 74 Flute
-    - 75 Recorder
-    - 76 Pan Flute
-    - 77 Blown Bottle
-    - 78 Shakuhachi
-    - 79 Whistle
-    - 80 Ocarina
-    - 81 Lead 1(square)
-    - 82 Lead 2 (sawtooth)
-    - 83 Lead 3 (calliope)
-    - 84 Lead 4 (chiff)
-    - 85 Lead 5 (charang)
-    - 86 Lead 6 (voice)
-    - 87 Lead 7 (fifths)
-    - 88 Lead 8 (bass+lead)
-    - 89 Pad 1 (new age)
-    - 90 Pad 2 (warm)
-    - 91 Pad 3 (polysynth)
-    - 92 Pad 4 (choir)
-    - 93 CC(1) Pad 5 (bowed)
-    - 94 Pad 6 (metallic)
-    - 95 Pad 7 (halo)
-    - 96 Pad 8 (sweep)
-    - 97 FX 1 (rain)
-    - 98 FX 2 (soundtrack)
-    - 99 FX 3 (crystal)
-    - 100 FX 4 (atmosphere)
-    - 101 FX 5 (brightness)
-    - 102 FX 6 (goblins)
-    - 103 FX 7 (echoes)
-    - 104 FX 8 (sci-fi)
-    - 105 Sitar
-    - 106 Banjo
-    - 107 Shamisen
-    - 0-108 Koto
-    - 8-108 Taisho Koto
-    - 109 Kalimba
-    - 110 Bag Pipe
-    - 111 Fiddle
-    - 112 Shanai
-    - 113 Tinkle Bell
-    - 114 Agogo
-    - 115 Steel Drums
-    - 116 Woodblock
-    - 117 Taiko Drum
-    - 118 Melodic Tom
-    - 119 Synth Drum
-    - 120 Reverse Cymbal
-    - 121 Guitar Fret Noise
-    - 122 Breath Noise
-    - 123 Seashore
-    - 124 Bird Tweet
-    - 125 Telephone Ring
-    - 126 Helicopter
-    - 127 Applause
-    - 128 Gunshot
-  #
-  # Commands used in presets (TODO)
-  #
-  commands:
-    tempo(vv): F0 43 10 4B 60 00 29 00 vv F7
+# TODO: drumkitNotes feature commented out - needs to be reimplemented using device library

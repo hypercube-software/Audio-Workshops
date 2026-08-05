@@ -8,6 +8,5 @@ import lombok.Setter;
 public class DevicesSettings {
     private String inputAudioDevice;
     private String outputAudioDevice;
-    private String outputMidiDevice;
 
 }
