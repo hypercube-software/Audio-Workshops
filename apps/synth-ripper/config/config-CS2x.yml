@@ -12,7 +12,7 @@ audio:
 midi:
   # DS: Decent Sampler
   # SFZ
-  outputFormat: DS
+  outputFormat: SFZ
   # detect looping sounds
   maxNoteDurationSec: 6
   maxNoteReleaseDurationSec: 10
@@ -20,10 +20,10 @@ midi:
   channel: 1
   # lowest preset included (must match a preset name in the device library)
   # Performance mode: Performances 1 bank (128 presets: Ministry -> FunkyHit)
-  lowestPreset: Faaaat
+  lowestPreset: Dreampad
   # highest preset included (must match a preset name in the device library)
   # Performance mode: Performances 2 bank (128 presets: Concert -> Session)
-  highestPreset: Faaaat
+  highestPreset: Dreampad
   # lowest note included
   lowestNote: C1
   # highest note included
