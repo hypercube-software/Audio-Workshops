@@ -142,8 +142,10 @@ boolean isSfxTable = bankSpans.size() == 1 && bankSpans.containsKey(0);
             banks.put(name, "%s %s".formatted(command, domain));
         }
         String yaml = buildYaml(banks, "$4000", consolidateZeroBased(sfxDomain));
-        log.info("\n" + yaml);
-        Files.write(Path.of("./target/patches/xg/CS2XDomains.yml"), yaml.getBytes());
+        log.info("\n{}", yaml);
+        Path outputPath = Path.of("./target/patches/xg/CS2XDomains.yml");
+        Files.createDirectories(outputPath.getParent());
+        Files.write(outputPath, yaml.getBytes());
     }
 
     private String buildYaml(Map<String, String> banks, String sfxCommand, String sfxDomain) {

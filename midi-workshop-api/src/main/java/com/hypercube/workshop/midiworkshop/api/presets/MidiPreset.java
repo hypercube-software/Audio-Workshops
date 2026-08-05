@@ -156,7 +156,7 @@ public final class MidiPreset {
 
     public String getShortId() {
         int bank = getBankMSB() << 8 | getBankLSB();
-        return "%01d-%03d".formatted(bank, getLastProgram());
+        return "%04X-%03d".formatted(bank, getLastProgram());
     }
 
     public int getLastProgram() {
