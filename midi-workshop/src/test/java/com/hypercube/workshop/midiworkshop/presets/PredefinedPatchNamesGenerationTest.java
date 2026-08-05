@@ -16,7 +16,8 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDeviceP
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiPresetCategorySerializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiPresetDomainSerializer;
 import com.hypercube.workshop.midiworkshop.presets.steinberg.SteinbergScriptFileParser;
-import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetsCSVParser;
+import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetsHTMLParser;
+import com.hypercube.workshop.midiworkshop.presets.yamaha.CS2XPresetsHTMLParser;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.XGSpecParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,18 @@ import java.util.List;
 
 @Slf4j
 class PredefinedPatchNamesGenerationTest {
+    private static void saveText(List<String> lines, String path) throws IOException {
+        var p = Path.of("./target/patches/" + path);
+        File file = p.toFile();
+        file
+                .getParentFile()
+                .mkdirs();
+        if (file.exists()) {
+            file.delete();
+        }
+        Files.write(p, lines, StandardOpenOption.CREATE);
+    }
+
     @Test
     void generateSoundCanvasPresets() throws IOException {
 
@@ -50,21 +63,15 @@ class PredefinedPatchNamesGenerationTest {
         saveText(lines, "sc/SoundCanvasPatches.txt");
     }
 
-    private static void saveText(List<String> lines, String path) throws IOException {
-        var p = Path.of("./target/patches/" + path);
-        File file = p.toFile();
-        file
-                .getParentFile()
-                .mkdirs();
-        if (file.exists()) {
-            file.delete();
-        }
-        Files.write(p, lines, StandardOpenOption.CREATE);
+    @Test
+    void generateCS1XGDomains() throws IOException {
+        CS1XPresetsHTMLParser parser = new CS1XPresetsHTMLParser(new File("./src/test/resources/XG/CS1x XG-voices.html"));
+        parser.parse();
     }
 
     @Test
-    void generateCS1XGDomains() throws IOException {
-        CS1XPresetsCSVParser cs1XPresetsCSVParser = new CS1XPresetsCSVParser(new File("./src/test/resources/XG/CS1xE2.csv"));
+    void generateCS2XGDomains() throws IOException {
+        CS2XPresetsHTMLParser cs1XPresetsCSVParser = new CS2XPresetsHTMLParser(new File("./src/test/resources/XG/CS2x XG-voices.html"));
         cs1XPresetsCSVParser.parse();
     }
 

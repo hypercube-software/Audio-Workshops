@@ -13,6 +13,7 @@ import com.hypercube.mpm.model.Patch;
 import com.hypercube.util.javafx.controller.DialogController;
 import com.hypercube.util.javafx.controller.DialogIcon;
 import com.hypercube.util.javafx.worker.LongWork;
+import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
@@ -378,7 +379,7 @@ public class DeviceStateManager {
         return configurationService.getProjectConfiguration()
                 .getMidiDeviceLibrary()
                 .getDevice(id.getName())
-                .orElseThrow();
+                .orElseThrow(() -> new MidiConfigError("Device %s not defined".formatted(id.getName())));
     }
 
     private void executeOnDeviceOutput(ProjectConfiguration cfg, String deviceName, Consumer<MidiOutPort> fct) {

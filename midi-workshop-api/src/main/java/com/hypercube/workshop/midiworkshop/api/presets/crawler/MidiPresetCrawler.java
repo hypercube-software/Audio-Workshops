@@ -339,12 +339,14 @@ public class MidiPresetCrawler {
         try {
             if (customMidiEvent.getMessage() instanceof SysexMessage sysexMessage) {
                 currentSysEx.write(sysexMessage.getMessage());
-            /*log.info("Receive {} bytes, current total: {}", sysexMessage
-                    .getMessage().length, "0x%X".formatted(currentSysEx.size()));*/
+
                 if (expectedResponseSize > 0 && currentSysEx.size() == expectedResponseSize) {
                     currentResponse.set(new CustomMidiEvent(new SysexMessage(currentSysEx.toByteArray(), currentSysEx.size())));
                 } else if (expectedResponseSize == 0) {
                     currentResponse.set(customMidiEvent);
+                } else {
+                    log.info("Receive {} bytes, current total: {}, expected total: {}", sysexMessage
+                            .getMessage().length, "0x%X".formatted(currentSysEx.size()), "0x%X".formatted(expectedResponseSize));
                 }
             }
         } catch (IOException | InvalidMidiDataException e) {

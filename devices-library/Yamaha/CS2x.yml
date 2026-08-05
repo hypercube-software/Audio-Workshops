@@ -9,19 +9,20 @@ presetNaming: STANDARD
 macros:
   - "XG Mode()              : -- : F0 43 11 4C 00 00 7E 00 F7"
   - "GM Mode()              : -- : F0 7E 7F 09 01 F7"
-  # Native Dump Request
+  # Native Dump Request (see table 2-1 in official manual)
   - "NativeRequest(addr)    : -- : F0432063 addr F7"
-  - "SYSTEM()               : 12 : NativeRequest( 50 00 00 )"
+  - "SYSTEM()               : 25 : NativeRequest( 50 00 00 )"
   - "Cur Perf Common()      : 3F : NativeRequest( 60 00 00 )"
-  - "Cur Perf Common FX()   : 22 : NativeRequest( 60 00 30 )"
-  - "Cur Perf Common CC()   : 14 : NativeRequest( 60 00 50 )"
-  - "Cur Perf Layer(layer)  : 34 : NativeRequest( 60 layer 00 )"
-  - "User Perf Common(perf) : 39 : NativeRequest( 70 perf 00 )"
-  - "User Perf Layer1(perf) : 34 : NativeRequest( 71 perf 00 )"
-  - "User Perf Layer2(perf) : 34 : NativeRequest( 72 perf 00 )"
-  - "User Perf Layer3(perf) : 34 : NativeRequest( 73 perf 00 )"
-  - "User Perf Layer4(perf) : 34 : NativeRequest( 74 perf 00 )"
+  - "Cur Perf Common FX()   : 22 : NativeRequest( 60 00 40 )"
+  - "Cur Perf Common CC()   : 14 : NativeRequest( 60 00 60 )"
+  # layer in [1-4] not [0-3]
+  - "Cur Perf Layer(layer)  : 38 : NativeRequest( 60 layer 00 )"
   - "Cur Perf Layers()   : Cur Perf Layer([01-04])"
+  - "User Perf Common(perf) : 3F : NativeRequest( 70 perf 00 )"
+  - "User Perf Layer1(perf) : 38 : NativeRequest( 71 perf 00 )"
+  - "User Perf Layer2(perf) : 38 : NativeRequest( 72 perf 00 )"
+  - "User Perf Layer3(perf) : 38 : NativeRequest( 73 perf 00 )"
+  - "User Perf Layer4(perf) : 38 : NativeRequest( 74 perf 00 )"
   - "User Perfs(perf) : User Perf Common(perf);User Perf Layer1(perf);User Perf Layer2(perf);User Perf Layer3(perf);User Perf Layer4(perf)"
   - "All User Perfs() : User Perfs([00-127])"
   - "NativeEverything(): SYSTEM();CurrentPerformance();All User Perfs()"
@@ -42,11 +43,13 @@ macros:
   - "XG INFORMATION()     : 1B : XGRequest( $010000 )"
   - "XG MULTI EFFECT()    : 19 : XGRequest( $020100 )"
   - "XG MULTI PART(part)  : 34 : XGRequest( 08 part 00 )"
-  - "XG DRUM Setup 1(kit) : 1B : XGRequest( 30 kit 00 )"
-  - "XG DRUM Setup 2(kit) : 1B : XGRequest( 31 kit 00 )"
   - "XG MULTI PARTS()     : XG MULTI PART([00-15])"
-  - "XG DRUM Setups 1()   : XG DRUM Setup 1([24-84])"
-  - "XG DRUM Setups 2()   : XG DRUM Setup 2([24-84])"
+  # Midi data table <1-6>
+  # Note is in [05 - 5B]
+  - "XG DRUM Setup 1(note) : 1B : XGRequest( 30 note 00 )"
+  - "XG DRUM Setup 2(note) : 1B : XGRequest( 31 note 00 )"
+  - "XG DRUM Setups 1()   : XG DRUM Setup 1([05-91])"
+  - "XG DRUM Setups 2()   : XG DRUM Setup 2([05-91])"
   - "XGEveryting(): XG SYSTEM();XG MULTI EFFECT();XG MULTI PARTS();XG DRUM Setups 1();XG DRUM Setups 2()"
   - "XG Multi Part Data(part) : XGRequest( 08 part 00 ) : XGPartMapper"
   # XG updates
