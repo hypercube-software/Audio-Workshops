@@ -8,6 +8,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.presets.AbstractPredefinedPatchesTest;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.parser.CS1XPresetsHTMLParser;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.parser.CS2XPresetsHTMLParser;
+import com.hypercube.workshop.midiworkshop.presets.yamaha.parser.XGDrumKitParser;
 import com.hypercube.workshop.midiworkshop.presets.yamaha.parser.XGSpecParser;
 import org.junit.jupiter.api.Test;
 
@@ -43,8 +44,9 @@ public class PredefinedYamahaPatchesTest extends AbstractPredefinedPatchesTest {
         device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
         XGSpecParser xgSpecParser = new XGSpecParser(device);
 
+        XGDrumKitParser drumKitParser = new XGDrumKitParser(device);
         List<MidiPreset> midiPresets = xgSpecParser.parsePresets(new File("./src/test/resources/Yamaha/XG-voices.htm"));
-        midiPresets.addAll(xgSpecParser.parseDrumKits(new File("./src/test/resources/Yamaha/XG-drums.htm")));
+        midiPresets.addAll(drumKitParser.parse(new File("./src/test/resources/Yamaha/XG-drumkits.html")));
         List<String> patches = midiPresets
                 .stream()
                 .sorted(Comparator.comparing(MidiPreset::getBankMSB)

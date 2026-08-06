@@ -1,6 +1,5 @@
 package com.hypercube.workshop.midiworkshop.presets.yamaha.parser;
 
-import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
@@ -20,19 +19,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
 public class XGSpecParser {
-    private static final Pattern SINGLE_LETTER_PATTERN = Pattern.compile("^[0-9+-]$");
-    private static final Pattern NOTE_PATTERN = Pattern.compile("^[CDEFGAB#]{1,2}(\\s[0-9-]+)?$");
     private final MidiDeviceDefinition device;
     private final MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
     private Map<String, String> bankNames = getBankNames();
-    private Map<String, String> drumKitsNames = buildKitNames();
 
     private static List<String> getAllCells(Element row) {
         return row
@@ -159,121 +154,9 @@ public class XGSpecParser {
         }
     }
 
-    public List<MidiPreset> parseDrumKits(File htmlFile) {
-        Document doc = null;
-        try {
-            doc = Jsoup.parse(Files.readString(htmlFile.toPath()));
-            Elements tables = doc.select("body>ul>li>table[border=1]");
-            log.info("Scanning " + tables.size() + " tables...");
-            return tables.stream()
-                    .flatMap(t -> parseDrumTable(t).stream())
-                    .distinct()
-                    .toList();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public String getXGBankName(int bankSelectMSB, int bankSelectLSB) {
         String key = "%d-%d".formatted(bankSelectMSB, bankSelectLSB);
         return bankNames.get(key);
-    }
-
-    private List<MidiPreset> parseDrumTable(Element table) {
-        Map<String, MidiPreset> presetMap = new HashMap<>();
-        Elements rows = table.select("tr");
-        log.info(rows.size() + " rows");
-        int start = 0;
-        List<String> msbRow = getAllCells(rows.get(start));
-        List<String> lsbRow = getAllCells(rows.get(start + 1));
-        List<String> prgRow = getAllCells(rows.get(start + 2));
-        String msb = msbRow.get(0);
-        String lsb = lsbRow.get(0);
-        String prg = prgRow.get(0);
-        log.info("{} {} {}", msb, lsb, prg);
-        if (!(prg.equals("PGM# (1-128)")) || !msb.equals("Bank Select MSB") || !lsb.equals("Bank Select LSB") || msbRow.size() != lsbRow.size() && msbRow.size() != prgRow.size()) {
-            throw new RuntimeException();
-        }
-        List<Integer> msbList = IntStream.range(1, msbRow.size())
-                .mapToObj(i -> msbRow.get(i))
-                .map(Integer::parseInt)
-                .toList();
-        List<Integer> lsbList = IntStream.range(1, lsbRow.size())
-                .mapToObj(i -> lsbRow.get(i))
-                .map(Integer::parseInt)
-                .toList();
-        List<Integer> prgList = IntStream.range(1, prgRow.size())
-                .mapToObj(i -> prgRow.get(i))
-                .map(v -> Integer.parseInt(v) - 1)
-                .toList();
-        start = -1;
-        for (int i = 0; i < rows.size(); i++) {
-            Element row = rows.get(i);
-            List<String> cells = getAllCells(row);
-            if (cells.get(0)
-                    .equals("Note#")) {
-                start = i;
-                break;
-            }
-        }
-        if (start == -1) {
-            throw new RuntimeException();
-        }
-        start++;
-        for (int i = start; i < rows.size(); i++) {
-            Element row = rows.get(i);
-            List<String> cells = getAllCells(row);
-            int note = -1;
-            int bank = 0;
-            for (int c = 0; c < cells.size(); c++) {
-                String value = cells.get(c)
-                        .trim();
-                String nextValue1 = c + 1 < cells.size() ? cells.get(c + 1) : ""
-                        .trim();
-                String nextValue2 = c + 2 < cells.size() ? cells.get(c + 2) : ""
-                        .trim();
-                if (c == 0) {
-                    note = Integer.parseInt(value) - 1;
-                }
-                if (value.length() > 3 && (SINGLE_LETTER_PATTERN.matcher(nextValue1)
-                        .matches() || SINGLE_LETTER_PATTERN.matcher(nextValue2)
-                        .matches()) && !NOTE_PATTERN.matcher(value)
-                        .matches()) {
-                    String noteName = value;
-                    if (!noteName.isEmpty()) {
-                        int bankSelectMSB = msbList.get(bank);
-                        int bankSelectLSB = lsbList.get(bank);
-                        int program = prgList.get(bank);
-                        String command = "%d-%d-%d".formatted(bankSelectMSB, bankSelectLSB, program);
-                        String name = drumKitsNames.get(command);
-                        String bankName = bankNames.get("%d-%d".formatted(bankSelectMSB, bankSelectLSB));
-                        log.info("Bank: {} Msb: {} Lsb: {} Prg: {} '{}' - {} {}", bankName,
-                                bankSelectMSB,
-                                bankSelectLSB,
-                                program,
-                                name, note, noteName);
-                        if (name == null) {
-                            throw new RuntimeException("Undeclared kit");
-                        }
-                        MidiPreset midiPreset = presetMap.get(command);
-                        if (midiPreset == null) {
-                            midiPreset = MidiPresetBuilder.parse(bankName, name, "DrumKit", device, 0,
-                                    bankSelectMSB, bankSelectLSB, program);
-                            if (midiPreset == null) {
-                                throw new RuntimeException("Unable to forge MidiPreset");
-                            }
-                            presetMap.put(command, midiPreset);
-                        }
-                        midiPreset.getDrumKitNotes()
-                                .add(new DrumKitNote(noteName, note));
-                    }
-                    bank++;
-                }
-            }
-        }
-        return presetMap.values()
-                .stream()
-                .toList();
     }
 
     private List<MidiPreset> parseVoiceTable(Element table) {
@@ -345,57 +228,4 @@ public class XGSpecParser {
         return result;
     }
 
-    private Map<String, String> buildKitNames() {
-        Map<String, String> map = new HashMap<>();
-        map.put("126-0-16", "Techno Kit K/S");
-        map.put("126-0-17", "Techno Kit Hi");
-        map.put("126-0-0", "SFX Kit 1");
-        map.put("126-0-18", "Techno Kit Lo");
-        map.put("126-0-1", "SFX Kit 2");
-        map.put("126-0-32", "Sakura Kit");
-        map.put("126-0-33", "Small Latin Kit");
-        map.put("126-0-34", "China Kit");
-        map.put("126-0-40", "Live! AfroCuban Kit");
-        map.put("126-0-41", "Live! AfroCuban Kit 2");
-        map.put("126-0-42", "Live! Brazilian Kit");
-        map.put("126-0-43", "Live! PopLatin Kit");
-        map.put("127-0-8", "Room Kit");
-        map.put("127-0-9", "Dark Room Kit");
-        map.put("127-0-16", "Rock Kit");
-        map.put("127-0-17", "Rock Kit 2");
-        map.put("127-0-0", "Standard Kit");
-        map.put("127-0-24", "Electro Kit");
-        map.put("127-0-25", "Analog Kit");
-        map.put("127-0-26", "Analog Kit 2");
-        map.put("127-0-27", "Dance Kit");
-        map.put("127-0-1", "Standard Kit 2");
-        map.put("127-0-28", "Hip Hop Kit");
-        map.put("127-0-29", "Jungle Kit");
-        map.put("127-0-30", "Apogee Kit");
-        map.put("127-0-31", "Perigee Kit");
-        map.put("127-0-32", "Jazz Kit");
-        map.put("127-0-33", "Jazz Kit 2");
-        map.put("127-0-2", "Dry Kit");
-        map.put("127-0-40", "Brush Kit");
-        map.put("127-0-41", "Brush Kit 2");
-        map.put("127-0-3", "Bright Kit");
-        map.put("127-0-48", "Symphony Kit");
-        map.put("127-0-56", "Natural Kit");
-        map.put("127-0-57", "Natural Funk Kit");
-        map.put("127-0-4", "Slim Kit");
-        map.put("127-0-64", "Tramp Kit");
-        map.put("127-0-65", "Amber Kit");
-        map.put("127-0-66", "Coffin Kit");
-        map.put("127-0-5", "Cl™ Vil Slim Kit");
-        map.put("127-0-6", "Rogue Kit");
-        map.put("127-0-80", "Live! Standard Kit");
-        map.put("127-0-81", "Live! Funk Kit");
-        map.put("127-0-82", "Live! Brush Kit");
-        map.put("127-0-83", "Live! Standard + Percussion Kit");
-        map.put("127-0-84", "Live! Funk + Percussion Kit");
-        map.put("127-0-85", "Live! Brush + Percussion Kit");
-        map.put("127-0-7", "Hob Kit");
-
-        return map;
-    }
 }
