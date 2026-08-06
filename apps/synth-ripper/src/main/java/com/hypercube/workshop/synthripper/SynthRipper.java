@@ -440,7 +440,7 @@ public class SynthRipper {
                         if (cc == MidiPreset.NO_CC) {
                             log.info("Without CC:");
                         } else {
-                            log.info("With CC " + cc + ":");
+                            log.info("With CC {}:", cc);
                         }
                         for (int ccValue = 1; ccValue < upperBoundCC; ccValue += ccIncrement) {
                             int lowestNote = getLowestNote(defaultLowestNote, preset);

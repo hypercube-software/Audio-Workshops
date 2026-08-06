@@ -254,6 +254,14 @@ deviceModes:
       "XG SFX":
         command: "$4000"
         presetDomain: 0-5,16,32-37,48-55,64-70,80-90,96-101,112-115
+      "XG SFX KITS":
+        command: "$7E00"
+        category: 16
+        presetDomain: 0-1
+      "XG DRUM KITS":
+        command: "$7F00"
+        category: 16
+        presetDomain: 0-3,8-9,16-17,24-29,32-33,40,48
     categories:
       - "Piano"
       - "Chromatic Percussion"

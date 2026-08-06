@@ -23,12 +23,18 @@ import java.util.List;
  * Using PDF to TXT/HTML tools like tabula, it is possible to parse the result and generate what we want in our configuration for the midi library
  */
 public class PredefinedYamahaPatchesTest extends AbstractPredefinedPatchesTest {
+    /**
+     * Generate domains in target/patches/xg
+     */
     @Test
     void generateCS1XGDomains() throws IOException {
         CS1XPresetsHTMLParser parser = new CS1XPresetsHTMLParser(new File("./src/test/resources/Yamaha/CS1x XG-voices.html"));
         parser.parse();
     }
 
+    /**
+     * Generate domains in target/patches/xg
+     */
     @Test
     void generateCS2XGDomains() throws IOException {
         CS2XPresetsHTMLParser cs1XPresetsCSVParser = new CS2XPresetsHTMLParser(new File("./src/test/resources/Yamaha/CS2x XG-voices.html"));
@@ -36,6 +42,9 @@ public class PredefinedYamahaPatchesTest extends AbstractPredefinedPatchesTest {
     }
 
 
+    /**
+     * Generate patches in target/patches/xg
+     */
     @Test
     void generateXGPresets() throws IOException {
 

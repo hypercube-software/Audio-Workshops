@@ -20,6 +20,10 @@ import java.util.List;
 @Slf4j
 public class PredefinedRolandPatchesTest extends AbstractPredefinedPatchesTest {
 
+    /**
+     * Generate patches in target/patches/sc
+     */
+
     @Test
     void generateSoundCanvasPresets() throws IOException {
 

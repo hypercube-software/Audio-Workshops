@@ -1,6 +1,5 @@
 package com.hypercube.workshop.midiworkshop.presets.yamaha.parser;
 
-import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
@@ -26,7 +25,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class XGSpecParser {
     private final MidiDeviceDefinition device;
-    private final MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
     private Map<String, String> bankNames = getBankNames();
 
     private static List<String> getAllCells(Element row) {

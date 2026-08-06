@@ -8,6 +8,10 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.*;
+import com.hypercube.workshop.midiworkshop.api.presets.standard.GSPresetsContainer;
+import com.hypercube.workshop.midiworkshop.api.presets.standard.StandardPresetsContainer;
+import com.hypercube.workshop.midiworkshop.api.presets.standard.XGPresetsContainer;
+import com.hypercube.workshop.midiworkshop.api.presets.standard.model.StandardPreset;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
@@ -26,12 +30,8 @@ import org.springframework.stereotype.Service;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.SysexMessage;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,8 +40,6 @@ import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 /**
@@ -69,16 +67,15 @@ public class MidiPresetCrawler {
     private final MidiDeviceLibrary library;
     private final MidiDeviceRequester midiDeviceRequester;
     private final MidiPortsManager midiPortsManager;
-    private final Pattern SOUND_CANVAS_PRESET_DEFINITION_REGEXP = Pattern.compile("\\d+-\\d+-\\d+\\s(.+)");
     private final AtomicReference<CustomMidiEvent> currentResponse = new AtomicReference<>();
-    private final List<String> xgPresets;
-    private final List<String> scPresets;
+    private final XGPresetsContainer xgPresetsContainer;
+    private final GSPresetsContainer gsPresetsContainer;
     private final ByteArrayOutputStream currentSysEx = new ByteArrayOutputStream();
     private int expectedResponseSize = 0;
 
     public MidiPresetCrawler(MidiDeviceLibrary library, MidiDeviceRequester midiDeviceRequester, MidiPortsManager midiPortsManager) {
-        xgPresets = loadXGPresets();
-        scPresets = loadSoundCanvasPreset();
+        this.xgPresetsContainer = new XGPresetsContainer();
+        this.gsPresetsContainer = new GSPresetsContainer();
         this.library = library;
         this.midiDeviceRequester = midiDeviceRequester;
         this.midiPortsManager = midiPortsManager;
@@ -173,9 +170,9 @@ public class MidiPresetCrawler {
                                                             bankRequestSequence,
                                                             bankPostRequestSequence, out);
                                             case SOUND_CANVAS ->
-                                                    getPredefinedPreset(scPresets, device, mode, program, midiPreset);
+                                                    getPredefinedPreset(gsPresetsContainer, device, mode, program, midiPreset);
                                             case YAMAHA_XG ->
-                                                    getPredefinedPreset(xgPresets, device, mode, program, midiPreset);
+                                                    getPredefinedPreset(xgPresetsContainer, device, mode, program, midiPreset);
                                         };
                                         if (midiPresetIdentity != null) {
                                             if (previousPatchIdentity != null && previousPatchIdentity.name()
@@ -272,7 +269,6 @@ public class MidiPresetCrawler {
 
     private void changeMode(MidiDeviceMode mode, MidiDeviceDefinition device, MidiOutPort out) {
         log.info("Set mode {}", mode.getName());
-        // no command mean the device switch automatically to the right mode (Like Yamaha TG-500)
         if (mode.getCommand() != null) {
             MidiRequestSequence setModeRequestSequence = forgeRequestSequence(device, mode.getCommand());
             send(setModeRequestSequence, out);
@@ -280,47 +276,13 @@ public class MidiPresetCrawler {
         }
     }
 
-    private List<String> loadSoundCanvasPreset() {
-        return loadAllText("sc/SoundCanvasPatches.txt");
-    }
-
-    private List<String> loadXGPresets() {
-        return loadAllText("xg/XGPatches.txt");
-    }
-
-    private List<String> loadAllText(String resourcePath) {
-        URL resource = this.getClass()
-                .getClassLoader()
-                .getResource(resourcePath);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
-            return reader.lines()
-                    .toList();
-        } catch (Exception e) {
-            throw new MidiConfigError("Unable to open " + resource, e);
-        }
-    }
-
     private void populateDrumKitMap(MidiPresetNaming presetNaming, MidiPreset midiPreset) {
-        String prefix = "%d-%d-%d".formatted(midiPreset.getBankMSB(), midiPreset.getBankLSB(), midiPreset.getLastProgram());
         if (presetNaming == MidiPresetNaming.YAMAHA_XG) {
-            boolean inPreset = false;
-            for (String preset : xgPresets) {
-                if (preset.startsWith(" ") && inPreset) {
-                    Pattern drumMapEntry = Pattern.compile("\\s+([0-9]+)\\s(.+)");
-                    Matcher m = drumMapEntry.matcher(preset);
-                    if (m.matches()) {
-                        int note = Integer.parseInt(m.group(1));
-                        String title = m.group(2);
+            xgPresetsContainer.lookup(midiPreset)
+                    .ifPresent(stdPreset -> {
                         midiPreset.getDrumKitNotes()
-                                .add(new DrumKitNote(title, note));
-                    }
-                }
-                if (!preset.startsWith(" ") && preset.startsWith(prefix)) {
-                    inPreset = true;
-                } else if (!preset.startsWith(" ")) {
-                    inPreset = false;
-                }
-            }
+                                .addAll(stdPreset.drumMap());
+                    });
         }
     }
 
@@ -386,11 +348,13 @@ public class MidiPresetCrawler {
         }
     }
 
-    private MidiPresetIdentity getPredefinedPreset(List<String> presets, MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
+    private MidiPresetIdentity getPredefinedPreset(StandardPresetsContainer container, MidiDeviceDefinition device, MidiDeviceMode mode, int program, MidiPreset midiPreset) {
         String bankCommand = midiPreset.getBankCommand();
         MidiDeviceBank bank = device.getBankByCommand(bankCommand)
                 .orElseThrow(() -> new MidiConfigError("Bank command %s not declared in presetBank section of device '%s'".formatted(bankCommand, device.getDeviceName())));
-        String presetName = getPredefinedPresetName(presets, midiPreset.getBankMSB(), midiPreset.getBankLSB(), program).orElse("Unknown");
+        String presetName = container.lookup(midiPreset)
+                .map(StandardPreset::name)
+                .orElse("Unknown");
         MidiPresetCategory category = getCategoryFromProgram(device, mode, bank, program);
         return new MidiPresetIdentity(mode.getName(), bank.getName(), presetName, category.name());
     }
@@ -433,7 +397,6 @@ public class MidiPresetCrawler {
                         log.warn("No response after {} seconds, Retry...", timeout.getTimeoutInSec());
                     }
                 }
-                // extract fields from the response
                 if (request.getMapper() != null && midiResponse != null && midiResponse.getMessage() != null) {
                     request.getMapper()
                             .extract(mode, response, midiResponse);
@@ -506,24 +469,6 @@ public class MidiPresetCrawler {
     private MidiPresetCategory getCategoryFromProgram(MidiDeviceDefinition device, MidiDeviceMode mode, MidiDeviceBank bank, int program) {
         int categoryIndex = bank.getCategory() != null ? bank.getCategory() : program / 8;
         return device.getCategory(mode, categoryIndex);
-    }
-
-    private Optional<String> getPredefinedPresetName(List<String> presets, int bankMSB, int bankLSB, int program) {
-        String prefix = "%d-%d-%d ".formatted(bankMSB, bankLSB, program);
-        return presets
-                .stream()
-                .filter(l -> l.startsWith(prefix))
-                .map(this::parseEntry)
-                .flatMap(Optional::stream)
-                .findFirst();
-    }
-
-    private Optional<String> parseEntry(String soundCanvasPresetDefinition) {
-        var m = SOUND_CANVAS_PRESET_DEFINITION_REGEXP.matcher(soundCanvasPresetDefinition);
-        if (m.matches()) {
-            return Optional.of(m.group(1));
-        }
-        return Optional.empty();
     }
 
     private void wait(Supplier<Boolean> predicate) {
