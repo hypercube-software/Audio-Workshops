@@ -2,6 +2,7 @@ package com.hypercube.workshop.synthripper.batch;
 
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.presets.standard.XGPresetsContainer;
 import com.hypercube.workshop.synthripper.AbstractSynthRipperTest;
 import com.hypercube.workshop.synthripper.SynthRipper;
 import com.hypercube.workshop.synthripper.model.MidiZone;
@@ -81,4 +82,27 @@ class SynthRipperBatchTest extends AbstractSynthRipperTest {
         assertTrue(batch.stream()
                 .allMatch(rs -> rs.getControlChange() == MidiPreset.NO_CC));
     }
+
+    @Test
+    void generateBatchForDrumkit() throws IOException {
+        // GIVEN
+        SynthRipper synthRipper = forgeSynthRipper("src/test/resources/config/config-CS2x-kit.yml");
+        XGPresetsContainer xgPresetsContainer = new XGPresetsContainer();
+        var expectedPreset = xgPresetsContainer.getPresets()
+                .stream()
+                .filter(p -> p.name()
+                        .equals(synthRipper.getConf()
+                                .getMidi()
+                                .getLowestPreset()))
+                .findFirst()
+                .orElseThrow();
+        int expectedBatchSize = expectedPreset.drumMap()
+                .size() * 2; // 2 velocity layers
+        // WHEN
+        var batch = synthRipper.generateBatch();
+
+        // THEN the batch is generated from the presets and notes declared in the config
+        assertEquals(expectedBatchSize, batch.size());
+    }
+
 }

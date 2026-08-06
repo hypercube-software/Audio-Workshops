@@ -2,6 +2,7 @@ package com.hypercube.workshop.synthripper.model.config;
 
 import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
+import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetIdentity;
@@ -100,6 +101,9 @@ public class MidiSettings {
                 int program = extractProgram(fp.devicePreset);
                 MidiPreset midiPreset = MidiPresetBuilder.parse(device, fp.mode, fp.bank, program);
                 midiPreset.setId(new MidiPresetIdentity(fp.mode.getName(), fp.bank.getName(), fp.devicePreset.name(), fp.devicePreset.category()));
+                fp.devicePreset.drumMap()
+                        .forEach(entry -> midiPreset.getDrumKitNotes()
+                                .add(parseDrumKitNote(entry)));
                 selectedPresets.add(midiPreset);
             }
         }
@@ -125,6 +129,21 @@ public class MidiSettings {
             return 0;
         }
         return Integer.parseInt(cmd.substring(cmd.length() - 2), 16);
+    }
+
+    /**
+     * Copy a drumMap entry of the device library (formatted like "1B | Insects")
+     * into a {@link DrumKitNote}. The note is given as a hexadecimal MIDI note and
+     * it is of the network drum kit.
+     */
+    private DrumKitNote parseDrumKitNote(String entry) {
+        String[] parts = entry.split("\\|", 2);
+        if (parts.length != 2) {
+            throw new MidiError("Invalid drumMap entry: " + entry);
+        }
+        int note = Integer.parseInt(parts[0].trim(), 16);
+        String title = parts[1].trim();
+        return new DrumKitNote(title, note);
     }
 
     public int getZeroBasedChannel() {

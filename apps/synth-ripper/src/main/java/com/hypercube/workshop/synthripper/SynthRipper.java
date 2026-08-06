@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -118,11 +119,29 @@ public class SynthRipper {
                         } else {
                             log.info("With CC {}:", cc);
                         }
+                        // For a drum kit the note list may have holes, so we sample exactly the kit notes
+                        // from the preset: notesPerOctave, lowestNote and highestNote are ignored in that case
+                        int lowestNote = getLowestNote(defaultLowestNote, preset);
+                        int highestNote = getHighestNote(defaultHighestNote, preset);
+                        int noteIncrement = getNoteIncrement(defaultNoteIncrement, preset);
+                        boolean drumKit = isDrumKit(preset);
+                        List<Integer> notes = drumKit
+                                ? preset.getDrumKitNotes()
+                                .stream()
+                                .map(DrumKitNote::note)
+                                .distinct()
+                                .sorted()
+                                .toList()
+                                : rangeNotes(lowestNote, highestNote, noteIncrement);
+
+                        log.info("Sampling {} notes: {}",
+                                drumKit ? "drum kit" : "preset"
+                                , notes.stream()
+                                        .map(String::valueOf)
+                                        .collect(Collectors.joining(", ")));
+
                         for (int ccValue = 1; ccValue < upperBoundCC; ccValue += ccIncrement) {
-                            int lowestNote = getLowestNote(defaultLowestNote, preset);
-                            int highestNote = getHighestNote(defaultHighestNote, preset);
-                            int noteIncrement = getNoteIncrement(defaultNoteIncrement, preset);
-                            for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
+                            for (int note : notes) {
                                 for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
                                     RecordedSynthNote rs = new RecordedSynthNote();
                                     rs.setChannel(preset.getZeroBasedChannel());
@@ -189,6 +208,19 @@ public class SynthRipper {
     private int getNoteIncrement(int defaultNoteIncrement, MidiPreset preset) {
         return preset.getDrumKitNotes()
                 .isEmpty() ? defaultNoteIncrement : 1;
+    }
+
+    private boolean isDrumKit(MidiPreset preset) {
+        return !preset.getDrumKitNotes()
+                .isEmpty();
+    }
+
+    private List<Integer> rangeNotes(int lowestNote, int highestNote, int noteIncrement) {
+        List<Integer> notes = new ArrayList<>();
+        for (int note = lowestNote; note <= highestNote; note += noteIncrement) {
+            notes.add(note);
+        }
+        return notes;
     }
 
     private int getHighestNote(int defaultHighestNote, MidiPreset preset) {
@@ -409,12 +441,10 @@ public class SynthRipper {
                 .value();
         int velocity = recordedSynthNote.getVelocity()
                 .value();
-        var midiNote = MidiNote.fromValue(note);
-
         StringBuffer sb = new StringBuffer();
         sb.append("%s/%s %s/".formatted(conf.getOutputDir(), preset.getFirstProgram(), preset.getId()
                 .name()));
-        sb.append("%s - Velo %03d".formatted(recordedSynthNote.getName(), Math.min(127, velocity)));
+        sb.append("%s - Velo %03d".formatted(getNoteName(preset, note), Math.min(127, velocity)));
         if (recordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
             sb.append(" CC%d[%d]".formatted(recordedSynthNote.getControlChange(), recordedSynthNote.getCcValue()
                     .value()));

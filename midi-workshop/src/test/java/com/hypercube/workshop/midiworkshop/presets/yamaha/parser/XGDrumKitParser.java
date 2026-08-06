@@ -118,7 +118,7 @@ public class XGDrumKitParser {
             if (firstCell.isEmpty()) {
                 continue;
             }
-            int midiNote = Integer.parseInt(firstCell.split(" ")[0]) - 1;
+            int midiNote = Integer.parseInt(firstCell.split(" ")[0]);
 
             for (int k = 0; k < kitNames.size(); k++) {
                 int pos = namePositions.get(k);

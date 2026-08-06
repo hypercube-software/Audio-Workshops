@@ -1089,2640 +1089,2640 @@
 64-0-115 Firework
 64-0-116 Fireball
 126-0-0 SFX Kit 1
-    27 Insects
-    28 Bacteria
-    35 Cutting Noise
-    36 Cutting Noise 2
-    37 Distorted Cutting Noise
-    38 String Slap
-    39 Bass Slide
-    40 Pick Scrape
-    51 Flute Key Click
-    67 Shower
-    68 Thunder
-    69 Wind
-    70 Stream
-    71 Bubble
-    72 Feed
-    73 Cave
-    83 Dog
-    84 Horse
-    85 Bird Tweet 2
-    86 Kitty
-    87 Growl
-    88 Haunted
-    89 Ghost
-    90 Maou
+    28 Insects
+    29 Bacteria
+    36 Cutting Noise
+    37 Cutting Noise 2
+    38 Distorted Cutting Noise
+    39 String Slap
+    40 Bass Slide
+    41 Pick Scrape
+    52 Flute Key Click
+    68 Shower
+    69 Thunder
+    70 Wind
+    71 Stream
+    72 Bubble
+    73 Feed
+    74 Cave
+    84 Dog
+    85 Horse
+    86 Bird Tweet 2
+    87 Kitty
+    88 Growl
+    89 Haunted
+    90 Ghost
+    91 Maou
 126-0-1 SFX Kit 2
-    35 Phone Call
-    36 Door Squeak
-    37 Door Slam
-    38 Scratch Cut
-    39 Scratch H 3
-    40 Wind Chime
-    41 Telephone Ring 2
-    42 Another Scratch
-    43 Turn Table
-    51 Car Engine Ignition
-    52 Car Tires Squeal
-    53 Car Passing
-    54 Car Crash
-    55 Siren
-    56 Train
-    57 Jet Plane
-    58 Starship
-    59 Burst
-    60 Roller Coaster
-    61 Submarine
-    62 Connectivity
-    63 Mystery
-    64 Charging
-    67 Laugh
-    68 Scream
-    69 Punch
-    70 Heart Beat
-    71 Foot Steps
-    72 Applause 2
-    83 Machine Gun
-    84 Laser Gun
-    85 Explosion
-    86 Firework
-    87 Fireball
+    36 Phone Call
+    37 Door Squeak
+    38 Door Slam
+    39 Scratch Cut
+    40 Scratch H 3
+    41 Wind Chime
+    42 Telephone Ring 2
+    43 Another Scratch
+    44 Turn Table
+    52 Car Engine Ignition
+    53 Car Tires Squeal
+    54 Car Passing
+    55 Car Crash
+    56 Siren
+    57 Train
+    58 Jet Plane
+    59 Starship
+    60 Burst
+    61 Roller Coaster
+    62 Submarine
+    63 Connectivity
+    64 Mystery
+    65 Charging
+    68 Laugh
+    69 Scream
+    70 Punch
+    71 Heart Beat
+    72 Foot Steps
+    73 Applause 2
+    84 Machine Gun
+    85 Laser Gun
+    86 Explosion
+    87 Firework
+    88 Fireball
 126-0-16 Techno Kit K/S
-    35 Heavy Techno Kick 1
-    36 Heavy Techno Kick 2
-    37 Psychedelic Kick
-    38 Gate Tekno Kick
-    39 Rap Kick
-    40 Heavy Techno Kick 3
-    41 Heavy Techno Kick 4
-    42 Future Kick
-    43 Asian Kick
-    44 Imbalance Kick
-    45 Justice Kick
-    46 Minimal Kick
-    51 Radio Snare
-    52 Cold Dry Snare 1
-    53 Slap Snare
-    54 Cold Dry Snare 2
-    55 Cold Dry Snare 3
-    56 Lo-Fi Metal Snare
-    67 Hi Pitch Slap H
-    68 Hi Pitch Slap L
+    36 Heavy Techno Kick 1
+    37 Heavy Techno Kick 2
+    38 Psychedelic Kick
+    39 Gate Tekno Kick
+    40 Rap Kick
+    41 Heavy Techno Kick 3
+    42 Heavy Techno Kick 4
+    43 Future Kick
+    44 Asian Kick
+    45 Imbalance Kick
+    46 Justice Kick
+    47 Minimal Kick
+    52 Radio Snare
+    53 Cold Dry Snare 1
+    54 Slap Snare
+    55 Cold Dry Snare 2
+    56 Cold Dry Snare 3
+    57 Lo-Fi Metal Snare
+    68 Hi Pitch Slap H
+    69 Hi Pitch Slap L
 126-0-17 Techno Kit Hi
-    35 Hyper Tom H 1
-    36 Asian Tom H
-    37 Lo-Fi Tom H
-    38 Hyper Tom H 2
-    39 Flanged Tom H
-    40 Minimal Tom H
-    41 Vox Drum H
-    42 Android Walk 1 H
-    43 Android Walk 2 H
-    44 Electro Blip H
-    45 Wood Percussions H
-    46 Wood Door Open H
-    47 Reso Noise Burst H
-    48 LFO Metal Attack H
-    49 Steel Conga H
-    50 Rate Down Snare H
-    51 Pop Ambient H
-    52 Tunnel Ambient H
-    53 Vibraslap H
-    54 Gun Shot Slap H
-    55 Punch Snare H
-    56 Bomb Snare H
-    57 Space Tambourine H
-    58 Ambient Cow Bell H
-    59 Chink Hat H
-    60 Coal Mine 1 H
-    61 Coal Mine 2 H
-    62 Hammer Hit 1 H
-    63 Hammer Hit 2 H
-    64 Hammer Hit 3 H
-    65 Insensible Hah H
-    66 Robot 1 H
-    67 Insensible Fuh H
-    68 Robot 2 H
-    69 Rude Loop Cymbal H
-    70 Noise Burst H
-    71 Fizzer H
-    72 Lo-Fi Shaker H
-    73 Temple Gong H
+    36 Hyper Tom H 1
+    37 Asian Tom H
+    38 Lo-Fi Tom H
+    39 Hyper Tom H 2
+    40 Flanged Tom H
+    41 Minimal Tom H
+    42 Vox Drum H
+    43 Android Walk 1 H
+    44 Android Walk 2 H
+    45 Electro Blip H
+    46 Wood Percussions H
+    47 Wood Door Open H
+    48 Reso Noise Burst H
+    49 LFO Metal Attack H
+    50 Steel Conga H
+    51 Rate Down Snare H
+    52 Pop Ambient H
+    53 Tunnel Ambient H
+    54 Vibraslap H
+    55 Gun Shot Slap H
+    56 Punch Snare H
+    57 Bomb Snare H
+    58 Space Tambourine H
+    59 Ambient Cow Bell H
+    60 Chink Hat H
+    61 Coal Mine 1 H
+    62 Coal Mine 2 H
+    63 Hammer Hit 1 H
+    64 Hammer Hit 2 H
+    65 Hammer Hit 3 H
+    66 Insensible Hah H
+    67 Robot 1 H
+    68 Insensible Fuh H
+    69 Robot 2 H
+    70 Rude Loop Cymbal H
+    71 Noise Burst H
+    72 Fizzer H
+    73 Lo-Fi Shaker H
+    74 Temple Gong H
 126-0-18 Techno Kit Lo
-    35 Hyper Tom L 1
-    36 Asian Tom L
-    37 Lo-Fi Tom L
-    38 Hyper Tom L 2
-    39 Flanged Tom L
-    40 Minimal Tom L
-    41 Vox Drum L
-    42 Android Walk 1 L
-    43 Android Walk 2 L
-    44 Electro Blip L
-    45 Wood Percussions L
-    46 Wood Door Open L
-    47 Reso Noise Burst L
-    48 LFO Metal Attack L
-    49 Steel Conga L
-    50 Rate Down Snare L
-    51 Pop Ambient L
-    52 Tunnel Ambient L
-    53 Vibraslap L
-    54 Gun Shot Slap L
-    55 Punch Snare L
-    56 Bomb Snare L
-    57 Space Tambourine L
-    58 Ambient Cow Bell L
-    59 Chink Hat L
-    60 Coal Mine 1 L
-    61 Coal Mine 2 L
-    62 Hammer Hit 1 L
-    63 Hammer Hit 2 L
-    64 Hammer Hit 3 L
-    65 Insensible Hah L
-    66 Robot 1 L
-    67 Insensible Fuh L
-    68 Robot 2 L
-    69 Rude Loop Cymbal L
-    70 Noise Burst L
-    71 Fizzer L
-    72 Lo-Fi Shaker L
-    73 Temple Gong L
+    36 Hyper Tom L 1
+    37 Asian Tom L
+    38 Lo-Fi Tom L
+    39 Hyper Tom L 2
+    40 Flanged Tom L
+    41 Minimal Tom L
+    42 Vox Drum L
+    43 Android Walk 1 L
+    44 Android Walk 2 L
+    45 Electro Blip L
+    46 Wood Percussions L
+    47 Wood Door Open L
+    48 Reso Noise Burst L
+    49 LFO Metal Attack L
+    50 Steel Conga L
+    51 Rate Down Snare L
+    52 Pop Ambient L
+    53 Tunnel Ambient L
+    54 Vibraslap L
+    55 Gun Shot Slap L
+    56 Punch Snare L
+    57 Bomb Snare L
+    58 Space Tambourine L
+    59 Ambient Cow Bell L
+    60 Chink Hat L
+    61 Coal Mine 1 L
+    62 Coal Mine 2 L
+    63 Hammer Hit 1 L
+    64 Hammer Hit 2 L
+    65 Hammer Hit 3 L
+    66 Insensible Hah L
+    67 Robot 1 L
+    68 Insensible Fuh L
+    69 Robot 2 L
+    70 Rude Loop Cymbal L
+    71 Noise Burst L
+    72 Fizzer L
+    73 Lo-Fi Shaker L
+    74 Temple Gong L
 126-0-32 Sakura Kit
-    35 Dora
-    36 Tsuzumi Pon
-    37 Tsuzumi Pu
-    38 Tsuzumi Ta
-    39 Tsuzumi Chon
-    40 Tsuzumi Tsu
-    41 Shimetaiko Ten
-    42 Shimetaiko Tsu
-    43 Yagura Open
-    44 Ohdaiko Rim
-    45 Oriental Tambourine
-    46 Oriental Drum 1
-    47 Oriental Drum 2
-    48 Oriental Drum 3
-    49 Oriental Rim 1
-    50 Oriental Rim 2
-    51 Oriental Rim 3
-    52 Oriental Rim 4
-    53 Oriental Metal Rim 1
-    54 Oriental Metal Rim 2
-    55 Oriental Metal Rim 3
-    56 Oriental Metal Rim 4
-    57 Oriental Metal Rim 5
+    36 Dora
+    37 Tsuzumi Pon
+    38 Tsuzumi Pu
+    39 Tsuzumi Ta
+    40 Tsuzumi Chon
+    41 Tsuzumi Tsu
+    42 Shimetaiko Ten
+    43 Shimetaiko Tsu
+    44 Yagura Open
+    45 Ohdaiko Rim
+    46 Oriental Tambourine
+    47 Oriental Drum 1
+    48 Oriental Drum 2
+    49 Oriental Drum 3
+    50 Oriental Rim 1
+    51 Oriental Rim 2
+    52 Oriental Rim 3
+    53 Oriental Rim 4
+    54 Oriental Metal Rim 1
+    55 Oriental Metal Rim 2
+    56 Oriental Metal Rim 3
+    57 Oriental Metal Rim 4
+    58 Oriental Metal Rim 5
 126-0-33 Small Latin Kit
-    35 Latin Cymbal Short
-    36 Claves SL 1
-    37 Claves SL 2
-    38 Claves SL 3
-    39 Claves SL 4
-    40 Claves SL 5
-    41 Muted Percussion SL 1
-    42 Muted Percussion SL 2
-    43 Muted Percussion SL 3
-    44 Muted Percussion SL 4
-    45 Pandiero
-    46 Surdo Mute SL 1
-    47 Surdo Mute SL 2
-    48 Surdo Open SL
-    49 Surdo Rim SL
-    50 Tamborim Mute
-    51 Tamborim Open
-    52 TimbaleL Drum
-    53 TimbaleH Drum
-    54 TimbaleL Rim
-    55 TimbaleH Rim
-    56 Timbale Paila 1
-    57 Timbale Paila 2
+    36 Latin Cymbal Short
+    37 Claves SL 1
+    38 Claves SL 2
+    39 Claves SL 3
+    40 Claves SL 4
+    41 Claves SL 5
+    42 Muted Percussion SL 1
+    43 Muted Percussion SL 2
+    44 Muted Percussion SL 3
+    45 Muted Percussion SL 4
+    46 Pandiero
+    47 Surdo Mute SL 1
+    48 Surdo Mute SL 2
+    49 Surdo Open SL
+    50 Surdo Rim SL
+    51 Tamborim Mute
+    52 Tamborim Open
+    53 TimbaleL Drum
+    54 TimbaleH Drum
+    55 TimbaleL Rim
+    56 TimbaleH Rim
+    57 Timbale Paila 1
+    58 Timbale Paila 2
 126-0-34 China Kit
-    35 Bangu
-    36 Dagu Mute
-    37 Dagu Heavy
-    38 Paigu High
-    39 Paigu Middle
-    40 Paigu Low
-    51 Zhongcha Mute
-    52 Zhongcha Open
-    53 Zhongluo Mute
-    54 Zhongluo Open
-    55 Xiaoluo Open
-    56 Xiaocha Mute
-    57 Xiaocha Open
-    67 Bangzi
-    68 Muyu High
-    69 Muyu Mid-High
-    70 Muyu Mid
-    71 Muyu Mid-Low
-    72 Muyu Low
+    36 Bangu
+    37 Dagu Mute
+    38 Dagu Heavy
+    39 Paigu High
+    40 Paigu Middle
+    41 Paigu Low
+    52 Zhongcha Mute
+    53 Zhongcha Open
+    54 Zhongluo Mute
+    55 Zhongluo Open
+    56 Xiaoluo Open
+    57 Xiaocha Mute
+    58 Xiaocha Open
+    68 Bangzi
+    69 Muyu High
+    70 Muyu Mid-High
+    71 Muyu Mid
+    72 Muyu Mid-Low
+    73 Muyu Low
 127-0-0 Standard Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Snare Soft
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Tight
-    35 Kick
-    36 Side Stick
-    37 Snare
-    38 Hand Clap
-    39 Snare Tight
-    40 Floor Tom L
-    41 Hi-Hat Closed
-    42 Floor Tom H
-    43 Hi-Hat Pedal
-    44 Low Tom
-    45 Hi-Hat Open
-    46 Mid Tom L
-    47 Mid Tom H
-    48 Crash Cymbal 1
-    49 High Tom
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Snare Soft
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Tight
+    36 Kick
+    37 Side Stick
+    38 Snare
+    39 Hand Clap
+    40 Snare Tight
+    41 Floor Tom L
+    42 Hi-Hat Closed
+    43 Floor Tom H
+    44 Hi-Hat Pedal
+    45 Low Tom
+    46 Hi-Hat Open
+    47 Mid Tom L
+    48 Mid Tom H
+    49 Crash Cymbal 1
+    50 High Tom
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-4 Skim Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet Sk
-    30 Snare Dry Q
-    31 Sticks
-    32 Kick Dry Soft HPF
-    33 Open Rim Shot Dry HPF
-    34 Kick Dry Tight Q
-    35 Kick Dry Mute HPF
-    36 Side Stick Dry Q
-    37 Snare Dry H
-    38 Hand Clap Sk
-    39 Snare Dry Mute Q
-    40 Floor Tom L Short Sk
-    41 Hi-Hat Closed H
-    42 Floor Tom H Short Sk
-    43 Hi-Hat Pedal H
-    44 Low Tom Short Sk
-    45 Hi-Hat Open H
-    46 Mid Tom L Short Sk
-    47 Mid Tom H Short Sk
-    48 Crash Cymbal 1 Q
-    49 High Tom Short Sk
-    50 Ride Cymbal 1 Sk
-    51 Chinese Cymbal HPF
-    52 Ride Cup Q
-    53 Tambourine Q
-    54 Splash Cymbal H
-    55 Cowbell HPF
-    56 Crash Cymbal 2 Dark
-    57 Vibraslap
-    58 Ride Cymbal 2 Q
-    59 Bongo H HPF
-    60 Bongo L HPF
-    61 Conga H Mute HPF
-    62 Conga H Open HPF
-    63 Conga L HPF
-    64 Timbale H HPF
-    65 Timbale L HPF
-    66 Agogo H HPF
-    67 Agogo L HPF
-    68 Cabasa BPF
-    69 Maracas L
-    70 Samba Whistle H BPF
-    71 Samba Whistle L BPF
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet Sk
+    31 Snare Dry Q
+    32 Sticks
+    33 Kick Dry Soft HPF
+    34 Open Rim Shot Dry HPF
+    35 Kick Dry Tight Q
+    36 Kick Dry Mute HPF
+    37 Side Stick Dry Q
+    38 Snare Dry H
+    39 Hand Clap Sk
+    40 Snare Dry Mute Q
+    41 Floor Tom L Short Sk
+    42 Hi-Hat Closed H
+    43 Floor Tom H Short Sk
+    44 Hi-Hat Pedal H
+    45 Low Tom Short Sk
+    46 Hi-Hat Open H
+    47 Mid Tom L Short Sk
+    48 Mid Tom H Short Sk
+    49 Crash Cymbal 1 Q
+    50 High Tom Short Sk
+    51 Ride Cymbal 1 Sk
+    52 Chinese Cymbal HPF
+    53 Ride Cup Q
+    54 Tambourine Q
+    55 Splash Cymbal H
+    56 Cowbell HPF
+    57 Crash Cymbal 2 Dark
+    58 Vibraslap
+    59 Ride Cymbal 2 Q
+    60 Bongo H HPF
+    61 Bongo L HPF
+    62 Conga H Mute HPF
+    63 Conga H Open HPF
+    64 Conga L HPF
+    65 Timbale H HPF
+    66 Timbale L HPF
+    67 Agogo H HPF
+    68 Agogo L HPF
+    69 Cabasa BPF
+    70 Maracas L
+    71 Samba Whistle H BPF
+    72 Samba Whistle L BPF
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-5 Slim Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet H
-    30 Snare Rough Q
-    31 Sticks Q
-    32 Kick Soft Dark
-    33 Open Rim Shot Sl
-    34 Kick Tight Short L
-    35 Kick Short Dark
-    36 Side Stick Q
-    37 Snare Short HPF
-    38 Hand Clap Dark
-    39 Snare Tight Mute
-    40 Floor Tom L Tight
-    41 Hi-Hat Closed L Q
-    42 Floor Tom H Tight
-    43 Hi-Hat Pedal Q
-    44 Low Tom Tight
-    45 Hi-Hat Open Q
-    46 Mid Tom L Tight
-    47 Mid Tom H Tight
-    48 Crash Cymbal 1 L
-    49 High Tom Tight
-    50 Ride Cymbal 1 L
-    51 Chinese Cymbal L
-    52 Ride Cymbal Cup L
-    53 Tambourine
-    54 Splash Cymbal L Short
-    55 Cowbell Dark
-    56 Crash Cymbal 2 L
-    57 Vibraslap
-    58 Ride Cymbal 2 L
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L H
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet H
+    31 Snare Rough Q
+    32 Sticks Q
+    33 Kick Soft Dark
+    34 Open Rim Shot Sl
+    35 Kick Tight Short L
+    36 Kick Short Dark
+    37 Side Stick Q
+    38 Snare Short HPF
+    39 Hand Clap Dark
+    40 Snare Tight Mute
+    41 Floor Tom L Tight
+    42 Hi-Hat Closed L Q
+    43 Floor Tom H Tight
+    44 Hi-Hat Pedal Q
+    45 Low Tom Tight
+    46 Hi-Hat Open Q
+    47 Mid Tom L Tight
+    48 Mid Tom H Tight
+    49 Crash Cymbal 1 L
+    50 High Tom Tight
+    51 Ride Cymbal 1 L
+    52 Chinese Cymbal L
+    53 Ride Cymbal Cup L
+    54 Tambourine
+    55 Splash Cymbal L Short
+    56 Cowbell Dark
+    57 Crash Cymbal 2 L
+    58 Vibraslap
+    59 Ride Cymbal 2 L
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L H
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-6 Rogue Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet H
-    30 Snare Brass Soft
-    31 Sticks
-    32 Kick Soft 2
-    33 Open Rim Shot 2
-    34 Kick Dark 2
-    35 Kick Tight 4
-    36 Side Stick Tight
-    37 Snare Snappy Short
-    38 Hand Clap
-    39 Snare Brass Hard
-    40 Floor Tom L Tight
-    41 Hi-Hat Closed 3
-    42 Floor Tom H Tight
-    43 Hi-Hat Pedal 3
-    44 Low Tom Tight
-    45 Hi-Hat Open 3
-    46 Mid Tom L Tight
-    47 Mid Tom H Tight
-    48 Crash Cymbal 3
-    49 High Tom Tight
-    50 Ride Cymbal 3
-    51 Chinese Cymbal 2
-    52 Ride Cymbal Cup 2
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell Mid
-    56 Crash Cymbal 4
-    57 Vibraslap
-    58 Ride Cymbal 4 Q
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute 2
-    62 Conga H Open 2
-    63 Conga L 2
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet H
+    31 Snare Brass Soft
+    32 Sticks
+    33 Kick Soft 2
+    34 Open Rim Shot 2
+    35 Kick Dark 2
+    36 Kick Tight 4
+    37 Side Stick Tight
+    38 Snare Snappy Short
+    39 Hand Clap
+    40 Snare Brass Hard
+    41 Floor Tom L Tight
+    42 Hi-Hat Closed 3
+    43 Floor Tom H Tight
+    44 Hi-Hat Pedal 3
+    45 Low Tom Tight
+    46 Hi-Hat Open 3
+    47 Mid Tom L Tight
+    48 Mid Tom H Tight
+    49 Crash Cymbal 3
+    50 High Tom Tight
+    51 Ride Cymbal 3
+    52 Chinese Cymbal 2
+    53 Ride Cymbal Cup 2
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell Mid
+    57 Crash Cymbal 4
+    58 Vibraslap
+    59 Ride Cymbal 4 Q
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute 2
+    63 Conga H Open 2
+    64 Conga L 2
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-7 Hob Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet H
-    30 Snare Brass Soft H
-    31 Sticks
-    32 Kick Soft 2 H
-    33 Open Rim Shot H Short 2
-    34 Kick Dark 2 H
-    35 Kick Tight 4 H
-    36 Side Stick Tight H
-    37 Snare Snappy Short H
-    38 Hand Clap
-    39 Snare Brass Hard H
-    40 Floor Tom L Tight H
-    41 Hi-Hat Closed 3 H
-    42 Floor Tom H Tight H
-    43 Hi-Hat Pedal 3 H
-    44 Low Tom Tight H
-    45 Hi-Hat Open 3 H
-    46 Mid Tom L Tight H
-    47 Mid Tom H Tight H
-    48 Crash Cymbal 3 H
-    49 High Tom Tight H
-    50 Ride Cymbal 3 H
-    51 Chinese Cymbal 2 H
-    52 Ride Cymbal Cup 2 H
-    53 Tambourine H
-    54 Splash Cymbal H
-    55 Cowbell H
-    56 Crash Cymbal 4 H
-    57 Vibraslap
-    58 Ride Cymbal 4
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute 2 H
-    62 Conga H Open 2 H
-    63 Conga L 2 H
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet H
+    31 Snare Brass Soft H
+    32 Sticks
+    33 Kick Soft 2 H
+    34 Open Rim Shot H Short 2
+    35 Kick Dark 2 H
+    36 Kick Tight 4 H
+    37 Side Stick Tight H
+    38 Snare Snappy Short H
+    39 Hand Clap
+    40 Snare Brass Hard H
+    41 Floor Tom L Tight H
+    42 Hi-Hat Closed 3 H
+    43 Floor Tom H Tight H
+    44 Hi-Hat Pedal 3 H
+    45 Low Tom Tight H
+    46 Hi-Hat Open 3 H
+    47 Mid Tom L Tight H
+    48 Mid Tom H Tight H
+    49 Crash Cymbal 3 H
+    50 High Tom Tight H
+    51 Ride Cymbal 3 H
+    52 Chinese Cymbal 2 H
+    53 Ride Cymbal Cup 2 H
+    54 Tambourine H
+    55 Splash Cymbal H
+    56 Cowbell H
+    57 Crash Cymbal 4 H
+    58 Vibraslap
+    59 Ride Cymbal 4
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute 2 H
+    63 Conga H Open 2 H
+    64 Conga L 2 H
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-8 Room Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Snare Soft
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Tight
-    35 Kick Room
-    36 Side Stick
-    37 Snare Snappy
-    38 Hand Clap
-    39 Snare Tight Snappy
-    40 Tom Room 1
-    41 Hi-Hat Closed
-    42 Tom Room 2
-    43 Hi-Hat Pedal
-    44 Tom Room 3
-    45 Hi-Hat Open
-    46 Tom Room 4
-    47 Tom Room 5
-    48 Crash Cymbal 1
-    49 Tom Room 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Snare Soft
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Tight
+    36 Kick Room
+    37 Side Stick
+    38 Snare Snappy
+    39 Hand Clap
+    40 Snare Tight Snappy
+    41 Tom Room 1
+    42 Hi-Hat Closed
+    43 Tom Room 2
+    44 Hi-Hat Pedal
+    45 Tom Room 3
+    46 Hi-Hat Open
+    47 Tom Room 4
+    48 Tom Room 5
+    49 Crash Cymbal 1
+    50 Tom Room 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-9 Dark Room Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl V
-    28 Snare Roll V
-    29 Castanet
-    30 Snare Soft
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Dark
-    35 Kick Room Gate
-    36 Side Stick
-    37 Snare Snappy 2
-    38 Hand Clap
-    39 Snare Tight Snappy 2
-    40 Tom Room 1 Q
-    41 Hi-Hat Closed Q
-    42 Room Tom 2 Q
-    43 Hi-Hat Pedal Q
-    44 Room Tom 3 Q
-    45 Hi-Hat Open L
-    46 Tom Room 4 Dark
-    47 Tom Room 5 L Dark
-    48 Crash Cymbal 1
-    49 Tom Room 6 L Dark
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L V
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute V
-    78 Cuica Open V
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl V
+    29 Snare Roll V
+    30 Castanet
+    31 Snare Soft
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Dark
+    36 Kick Room Gate
+    37 Side Stick
+    38 Snare Snappy 2
+    39 Hand Clap
+    40 Snare Tight Snappy 2
+    41 Tom Room 1 Q
+    42 Hi-Hat Closed Q
+    43 Room Tom 2 Q
+    44 Hi-Hat Pedal Q
+    45 Room Tom 3 Q
+    46 Hi-Hat Open L
+    47 Tom Room 4 Dark
+    48 Tom Room 5 L Dark
+    49 Crash Cymbal 1
+    50 Tom Room 6 L Dark
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L V
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute V
+    79 Cuica Open V
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-16 Rock Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Snare Noisy
-    31 Sticks
-    32 Kick Tight 2
-    33 Open Rim Shot
-    34 Kick 2
-    35 Kick Gate
-    36 Side Stick
-    37 Snare Rock
-    38 Hand Clap
-    39 Snare Rock Rim
-    40 Tom Rock 1
-    41 Hi-Hat Closed
-    42 Tom Rock 2
-    43 Hi-Hat Pedal
-    44 Tom Rock 3
-    45 Hi-Hat Open
-    46 Tom Rock 4
-    47 Tom Rock 5
-    48 Crash Cymbal 1
-    49 Tom Rock 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Snare Noisy
+    32 Sticks
+    33 Kick Tight 2
+    34 Open Rim Shot
+    35 Kick 2
+    36 Kick Gate
+    37 Side Stick
+    38 Snare Rock
+    39 Hand Clap
+    40 Snare Rock Rim
+    41 Tom Rock 1
+    42 Hi-Hat Closed
+    43 Tom Rock 2
+    44 Hi-Hat Pedal
+    45 Tom Rock 3
+    46 Hi-Hat Open
+    47 Tom Rock 4
+    48 Tom Rock 5
+    49 Crash Cymbal 1
+    50 Tom Rock 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-17 Rock Kit 2
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl V
-    28 Snare Roll V
-    29 Castanet
-    30 Snare Noisy 5
-    31 Sticks
-    32 Kick Tight 3
-    33 Open Rim Shot
-    34 Kick 4
-    35 Kick Gate 2
-    36 Side Stick
-    37 Snare Rock 2
-    38 Hand Clap
-    39 Snare Rock Rim Q
-    40 Tom Rock 1 H
-    41 Hi-Hat Closed 2
-    42 Tom Rock 2 H
-    43 Hi-Hat Pedal 2
-    44 Tom Rock 3 L Short
-    45 Hi-Hat Open 2
-    46 Tom Rock 4 L Short
-    47 Tom Rock 5 L Short
-    48 Crash Cymbal 1
-    49 Tom Rock 6 L Short
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L V
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute V
-    78 Cuica Open V
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl V
+    29 Snare Roll V
+    30 Castanet
+    31 Snare Noisy 5
+    32 Sticks
+    33 Kick Tight 3
+    34 Open Rim Shot
+    35 Kick 4
+    36 Kick Gate 2
+    37 Side Stick
+    38 Snare Rock 2
+    39 Hand Clap
+    40 Snare Rock Rim Q
+    41 Tom Rock 1 H
+    42 Hi-Hat Closed 2
+    43 Tom Rock 2 H
+    44 Hi-Hat Pedal 2
+    45 Tom Rock 3 L Short
+    46 Hi-Hat Open 2
+    47 Tom Rock 4 L Short
+    48 Tom Rock 5 L Short
+    49 Crash Cymbal 1
+    50 Tom Rock 6 L Short
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L V
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute V
+    79 Cuica Open V
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-24 Electro Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Reverse Cymbal
-    28 Snare Roll
-    29 Hi Q 2
-    30 Snare Snappy Electro
-    31 Sticks
-    32 Kick 3
-    33 Open Rim Shot
-    34 Kick Gate
-    35 Kick Gate Heavy
-    36 Side Stick
-    37 Snare Noisy 2
-    38 Hand Clap
-    39 Snare Noisy 3
-    40 Tom Electro 1
-    41 Hi-Hat Closed
-    42 Tom Electro 2
-    43 Hi-Hat Pedal
-    44 Tom Electro 3
-    45 Hi-Hat Open
-    46 Tom Electro 4
-    47 Tom Electro 5
-    48 Crash Cymbal 1
-    49 Tom Electro 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 2
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Reverse Cymbal
+    29 Snare Roll
+    30 Hi Q 2
+    31 Snare Snappy Electro
+    32 Sticks
+    33 Kick 3
+    34 Open Rim Shot
+    35 Kick Gate
+    36 Kick Gate Heavy
+    37 Side Stick
+    38 Snare Noisy 2
+    39 Hand Clap
+    40 Snare Noisy 3
+    41 Tom Electro 1
+    42 Hi-Hat Closed
+    43 Tom Electro 2
+    44 Hi-Hat Pedal
+    45 Tom Electro 3
+    46 Hi-Hat Open
+    47 Tom Electro 4
+    48 Tom Electro 5
+    49 Crash Cymbal 1
+    50 Tom Electro 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 2
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-25 Analog Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Reverse Cymbal
-    28 Snare Roll
-    29 Hi Q 2
-    30 Snare Noisy 4
-    31 Sticks
-    32 Kick Tight 2
-    33 Open Rim Shot
-    34 Kick Analog Short
-    35 Kick Analog
-    36 Side Stick Analog
-    37 Snare Analog
-    38 Hand Clap
-    39 Snare Analog 2
-    40 Tom Analog 1
-    41 Hi-Hat Closed Analog
-    42 Tom Analog 2
-    43 Hi-Hat Closed Analog 2
-    44 Tom Analog 3
-    45 Hi-Hat Open Analog
-    46 Tom Analog 4
-    47 Tom Analog 5
-    48 Crash Analog
-    49 Tom Analog 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell Analog
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga Analog H
-    62 Conga Analog M
-    63 Conga Analog L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves 2
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Reverse Cymbal
+    29 Snare Roll
+    30 Hi Q 2
+    31 Snare Noisy 4
+    32 Sticks
+    33 Kick Tight 2
+    34 Open Rim Shot
+    35 Kick Analog Short
+    36 Kick Analog
+    37 Side Stick Analog
+    38 Snare Analog
+    39 Hand Clap
+    40 Snare Analog 2
+    41 Tom Analog 1
+    42 Hi-Hat Closed Analog
+    43 Tom Analog 2
+    44 Hi-Hat Closed Analog 2
+    45 Tom Analog 3
+    46 Hi-Hat Open Analog
+    47 Tom Analog 4
+    48 Tom Analog 5
+    49 Crash Analog
+    50 Tom Analog 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell Analog
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga Analog H
+    63 Conga Analog M
+    64 Conga Analog L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves 2
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-26 Analog Kit 2
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Reverse Cymbal
-    28 Snare Roll V
-    29 Hi Q 2
-    30 Snare Analog 3
-    31 Sticks
-    32 Kick Techno Soft
-    33 Open Rim Shot Dry V
-    34 Kick Techno Tight
-    35 Kick Techno
-    36 Side Stick Analog
-    37 Snare Techno
-    38 Hand Clap
-    39 Snare Techno 2
-    40 Tom Analog 1
-    41 Hi-Hat Closed Analog
-    42 Tom Analog 2
-    43 Hi-Hat Closed Analog 2
-    44 Tom Analog 3
-    45 Hi-Hat Open Analog
-    46 Tom Analog 4
-    47 Tom Analog 5
-    48 Crash Analog
-    49 Tom Analog 6
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell Analog
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga Analog H
-    62 Conga Analog M
-    63 Conga Analog L
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves 2
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Reverse Cymbal
+    29 Snare Roll V
+    30 Hi Q 2
+    31 Snare Analog 3
+    32 Sticks
+    33 Kick Techno Soft
+    34 Open Rim Shot Dry V
+    35 Kick Techno Tight
+    36 Kick Techno
+    37 Side Stick Analog
+    38 Snare Techno
+    39 Hand Clap
+    40 Snare Techno 2
+    41 Tom Analog 1
+    42 Hi-Hat Closed Analog
+    43 Tom Analog 2
+    44 Hi-Hat Closed Analog 2
+    45 Tom Analog 3
+    46 Hi-Hat Open Analog
+    47 Tom Analog 4
+    48 Tom Analog 5
+    49 Crash Analog
+    50 Tom Analog 6
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell Analog
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga Analog H
+    63 Conga Analog M
+    64 Conga Analog L
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves 2
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-27 Dance Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Reverse Cymbal
-    28 Snare Roll
-    29 Hi Q 2
-    30 Snare Techno 3
-    31 Sticks
-    32 Kick Techno Q
-    33 Rim Gate
-    34 Kick Techno L
-    35 Kick Techno 2
-    36 Side Stick Analog
-    37 Snare Clap
-    38 Hand Clap
-    39 Snare Dry 2
-    40 Tom Analog 1
-    41 Hi-Hat Closed 3
-    42 Tom Analog 2
-    43 Hi-Hat Closed Analog 2
-    44 Tom Analog 3
-    45 Hi-Hat Open 3
-    46 Tom Analog 4
-    47 Tom Analog 5
-    48 Crash Analog
-    49 Tom Analog 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell Analog
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga Analog H
-    62 Conga Analog M
-    63 Conga Analog L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves 2
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Reverse Cymbal
+    29 Snare Roll
+    30 Hi Q 2
+    31 Snare Techno 3
+    32 Sticks
+    33 Kick Techno Q
+    34 Rim Gate
+    35 Kick Techno L
+    36 Kick Techno 2
+    37 Side Stick Analog
+    38 Snare Clap
+    39 Hand Clap
+    40 Snare Dry 2
+    41 Tom Analog 1
+    42 Hi-Hat Closed 3
+    43 Tom Analog 2
+    44 Hi-Hat Closed Analog 2
+    45 Tom Analog 3
+    46 Hi-Hat Open 3
+    47 Tom Analog 4
+    48 Tom Analog 5
+    49 Crash Analog
+    50 Tom Analog 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell Analog
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga Analog H
+    63 Conga Analog M
+    64 Conga Analog L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves 2
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-28 Hip Hop Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl V
-    28 Snare Roll V
-    29 Castanet
-    30 Open Rim Shot 2 Soft
-    31 Sticks
-    32 Kick Dry Soft 2
-    33 Open Rim Shot 2
-    34 Kick Dim
-    35 Kick Boon
-    36 Side Stick Dry
-    37 Snare Dry Mute
-    38 Hand Clap
-    39 Snare White
-    40 Floor Tom L Short
-    41 Hi-Hat Closed 2 H
-    42 Floor Tom H Short
-    43 Hi-Hat Pedal 2 H
-    44 Low Tom Short
-    45 Hi-Hat Open 2 L
-    46 Mid Tom L Short
-    47 Mid Tom H Short
-    48 Crash Cymbal 1 V
-    49 High Tom Short
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L V
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute V
-    78 Cuica Open V
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl V
+    29 Snare Roll V
+    30 Castanet
+    31 Open Rim Shot 2 Soft
+    32 Sticks
+    33 Kick Dry Soft 2
+    34 Open Rim Shot 2
+    35 Kick Dim
+    36 Kick Boon
+    37 Side Stick Dry
+    38 Snare Dry Mute
+    39 Hand Clap
+    40 Snare White
+    41 Floor Tom L Short
+    42 Hi-Hat Closed 2 H
+    43 Floor Tom H Short
+    44 Hi-Hat Pedal 2 H
+    45 Low Tom Short
+    46 Hi-Hat Open 2 L
+    47 Mid Tom L Short
+    48 Mid Tom H Short
+    49 Crash Cymbal 1 V
+    50 High Tom Short
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L V
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute V
+    79 Cuica Open V
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-29 Jungle Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl V
-    28 Snare Roll V
-    29 Castanet
-    30 Rim Gate 2
-    31 Sticks
-    32 Kick Cough
-    33 Rim Gate 3
-    34 Kick Zap
-    35 Kick Dawn
-    36 Side Stick Dry
-    37 Snare Tin
-    38 Hand Clap
-    39 Snare Can
-    40 Floor Tom L Short
-    41 Hi-Hat Closed 2 Soft
-    42 Floor Tom H Short
-    43 Hi-Hat Pedal 2 Soft
-    44 Low Tom Short
-    45 Hi-Hat Open 2 Soft
-    46 Mid Tom L Short
-    47 Mid Tom H Short
-    48 Crash Cymbal 1 V
-    49 High Tom Short
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L V
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute V
-    78 Cuica Open V
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl V
+    29 Snare Roll V
+    30 Castanet
+    31 Rim Gate 2
+    32 Sticks
+    33 Kick Cough
+    34 Rim Gate 3
+    35 Kick Zap
+    36 Kick Dawn
+    37 Side Stick Dry
+    38 Snare Tin
+    39 Hand Clap
+    40 Snare Can
+    41 Floor Tom L Short
+    42 Hi-Hat Closed 2 Soft
+    43 Floor Tom H Short
+    44 Hi-Hat Pedal 2 Soft
+    45 Low Tom Short
+    46 Hi-Hat Open 2 Soft
+    47 Mid Tom L Short
+    48 Mid Tom H Short
+    49 Crash Cymbal 1 V
+    50 High Tom Short
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L V
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute V
+    79 Cuica Open V
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-30 Apogee Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Reverse Cymbal
-    28 Snare Roll
-    29 Hi Q 2
-    30 Snare Analog 4
-    31 Sticks
-    32 Kick Techno 3
-    33 Open Rim Shot L
-    34 Kick Techno 4
-    35 Kick Techno Tight 2
-    36 Side Stick Analog 2
-    37 Snare Analog 5
-    38 Clap Ambience
-    39 Snare Analog 6
-    40 Tom Techno 1
-    41 Hi-Hat Closed Analog 3
-    42 Tom Techno 2
-    43 Hi-Hat Closed Analog 4
-    44 Tom Techno 3
-    45 Hi-Hat Open Analog 2
-    46 Tom Techno 4
-    47 Tom Techno 5
-    48 Crash Analog
-    49 Tom Techno 6
-    50 Ride Cymbal Analog 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup Q
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell Analog L
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal Analog 2
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga Analog H Long
-    62 Conga Analog M Long
-    63 Conga Analog L
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves 2
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Reverse Cymbal
+    29 Snare Roll
+    30 Hi Q 2
+    31 Snare Analog 4
+    32 Sticks
+    33 Kick Techno 3
+    34 Open Rim Shot L
+    35 Kick Techno 4
+    36 Kick Techno Tight 2
+    37 Side Stick Analog 2
+    38 Snare Analog 5
+    39 Clap Ambience
+    40 Snare Analog 6
+    41 Tom Techno 1
+    42 Hi-Hat Closed Analog 3
+    43 Tom Techno 2
+    44 Hi-Hat Closed Analog 4
+    45 Tom Techno 3
+    46 Hi-Hat Open Analog 2
+    47 Tom Techno 4
+    48 Tom Techno 5
+    49 Crash Analog
+    50 Tom Techno 6
+    51 Ride Cymbal Analog 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup Q
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell Analog L
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal Analog 2
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga Analog H Long
+    63 Conga Analog M Long
+    64 Conga Analog L
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves 2
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-31 Perigee Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Reverse Cymbal
-    28 Snare Roll
-    29 Hi Q 2
-    30 Snare Analog 4 H
-    31 Sticks
-    32 Kick Techno 3
-    33 Open Rim Shot L
-    34 Kick Techno 4 H
-    35 Kick Techno Tight 2 H
-    36 Side Stick Analog 2 H
-    37 Snare Analog 5 H
-    38 Clap Ambience H
-    39 Snare Analog 6 H
-    40 Tom Techno 1 H
-    41 Hi-Hat Closed Analog 3 H
-    42 Tom Techno 2 H
-    43 Hi-Hat Closed Analog 4 H
-    44 Tom Techno 3 H
-    45 Hi-Hat Open Analog 2 H
-    46 Tom Techno 4 H
-    47 Tom Techno 5 H
-    48 Crash Analog H
-    49 Tom Techno 6 H
-    50 Ride Cymbal Analog 1 H
-    51 Chinese Cymbal H
-    52 Ride Cymbal Cup H
-    53 Tambourine H
-    54 Splash Cymbal H
-    55 Cowbell Analog H
-    56 Crash Cymbal 2 H
-    57 Vibraslap
-    58 Ride Cymbal Analog 2 H
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga Analog H Long H
-    62 Conga Analog M Long H
-    63 Conga Analog L Long H
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves 2
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Reverse Cymbal
+    29 Snare Roll
+    30 Hi Q 2
+    31 Snare Analog 4 H
+    32 Sticks
+    33 Kick Techno 3
+    34 Open Rim Shot L
+    35 Kick Techno 4 H
+    36 Kick Techno Tight 2 H
+    37 Side Stick Analog 2 H
+    38 Snare Analog 5 H
+    39 Clap Ambience H
+    40 Snare Analog 6 H
+    41 Tom Techno 1 H
+    42 Hi-Hat Closed Analog 3 H
+    43 Tom Techno 2 H
+    44 Hi-Hat Closed Analog 4 H
+    45 Tom Techno 3 H
+    46 Hi-Hat Open Analog 2 H
+    47 Tom Techno 4 H
+    48 Tom Techno 5 H
+    49 Crash Analog H
+    50 Tom Techno 6 H
+    51 Ride Cymbal Analog 1 H
+    52 Chinese Cymbal H
+    53 Ride Cymbal Cup H
+    54 Tambourine H
+    55 Splash Cymbal H
+    56 Cowbell Analog H
+    57 Crash Cymbal 2 H
+    58 Vibraslap
+    59 Ride Cymbal Analog 2 H
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga Analog H Long H
+    63 Conga Analog M Long H
+    64 Conga Analog L Long H
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves 2
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-32 Jazz Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Snare Soft
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Tight
-    35 Kick Jazz
-    36 Side Stick
-    37 Snare
-    38 Hand Clap
-    39 Snare Tight
-    40 Tom Jazz 1
-    41 Hi-Hat Closed
-    42 Tom Jazz 2
-    43 Hi-Hat Pedal
-    44 Tom Jazz 3
-    45 Hi-Hat Open
-    46 Tom Jazz 4
-    47 Tom Jazz 5
-    48 Crash Cymbal 1
-    49 Tom Jazz 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Snare Soft
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Tight
+    36 Kick Jazz
+    37 Side Stick
+    38 Snare
+    39 Hand Clap
+    40 Snare Tight
+    41 Tom Jazz 1
+    42 Hi-Hat Closed
+    43 Tom Jazz 2
+    44 Hi-Hat Pedal
+    45 Tom Jazz 3
+    46 Hi-Hat Open
+    47 Tom Jazz 4
+    48 Tom Jazz 5
+    49 Crash Cymbal 1
+    50 Tom Jazz 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-33 Jazz Kit 2
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl V
-    28 Snare Roll V
-    29 Castanet
-    30 Snare Soft
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Tight
-    35 Kick Jazz L
-    36 Side Stick
-    37 Snare H
-    38 Hand Clap
-    39 Snare Tight L
-    40 Tom Jazz 7
-    41 Hi-Hat Closed L
-    42 Tom Jazz 8
-    43 Hi-Hat Pedal L
-    44 Tom Jazz 9
-    45 Hi-Hat Open L
-    46 Tom Jazz 10
-    47 Tom Jazz 11
-    48 Crash Cymbal 1
-    49 Tom Jazz 12
-    50 Ride Cymbal 1 V
-    51 Chinese Cymbal V
-    52 Ride Cymbal Cup L
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell
-    56 Crash Cymbal 2 V
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L V
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute V
-    78 Cuica Open V
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl V
+    29 Snare Roll V
+    30 Castanet
+    31 Snare Soft
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Tight
+    36 Kick Jazz L
+    37 Side Stick
+    38 Snare H
+    39 Hand Clap
+    40 Snare Tight L
+    41 Tom Jazz 7
+    42 Hi-Hat Closed L
+    43 Tom Jazz 8
+    44 Hi-Hat Pedal L
+    45 Tom Jazz 9
+    46 Hi-Hat Open L
+    47 Tom Jazz 10
+    48 Tom Jazz 11
+    49 Crash Cymbal 1
+    50 Tom Jazz 12
+    51 Ride Cymbal 1 V
+    52 Chinese Cymbal V
+    53 Ride Cymbal Cup L
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell
+    57 Crash Cymbal 2 V
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L V
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute V
+    79 Cuica Open V
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-40 Brush Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Brush Slap 2
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim Shot
-    34 Kick Tight
-    35 Kick Small
-    36 Side Stick
-    37 Brush Slap 3
-    38 Hand Clap
-    39 Brush Tap 2
-    40 Tom Brush 1
-    41 Hi-Hat Closed
-    42 Tom Brush 2
-    43 Hi-Hat Pedal
-    44 Tom Brush 3
-    45 Hi-Hat Open
-    46 Tom Brush 4
-    47 Tom Brush 5
-    48 Crash Cymbal 1
-    49 Tom Brush 6
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Brush Slap 2
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim Shot
+    35 Kick Tight
+    36 Kick Small
+    37 Side Stick
+    38 Brush Slap 3
+    39 Hand Clap
+    40 Brush Tap 2
+    41 Tom Brush 1
+    42 Hi-Hat Closed
+    43 Tom Brush 2
+    44 Hi-Hat Pedal
+    45 Tom Brush 3
+    46 Hi-Hat Open
+    47 Tom Brush 4
+    48 Tom Brush 5
+    49 Crash Cymbal 1
+    50 Tom Brush 6
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-41 Brush Kit 2
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet H
-    30 Snare Dry Hard
-    31 Sticks
-    32 Kick Release
-    33 Open Rim Shot Dry L
-    34 Kick Cloudy H
-    35 Kick Cloudy L
-    36 Side Stick B 2
-    37 Brush Slap 3 Q
-    38 Hand Clap
-    39 Brush Snare Loud
-    40 Tom Brush 7
-    41 Hi-Hat Closed 4
-    42 Tom Brush 8
-    43 Hi-Hat Pedal 4
-    44 Tom Brush 9
-    45 Hi-Hat Open 4
-    46 Tom Brush 10
-    47 Tom Brush 11
-    48 Crash Cymbal 4
-    49 Tom Brush 12
-    50 Ride Cymbal 1 H
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup 6
-    53 Tambourine
-    54 Splash Cymbal V
-    55 Cowbell 2
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 6
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L 2
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet H
+    31 Snare Dry Hard
+    32 Sticks
+    33 Kick Release
+    34 Open Rim Shot Dry L
+    35 Kick Cloudy H
+    36 Kick Cloudy L
+    37 Side Stick B 2
+    38 Brush Slap 3 Q
+    39 Hand Clap
+    40 Brush Snare Loud
+    41 Tom Brush 7
+    42 Hi-Hat Closed 4
+    43 Tom Brush 8
+    44 Hi-Hat Pedal 4
+    45 Tom Brush 9
+    46 Hi-Hat Open 4
+    47 Tom Brush 10
+    48 Tom Brush 11
+    49 Crash Cymbal 4
+    50 Tom Brush 12
+    51 Ride Cymbal 1 H
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup 6
+    54 Tambourine
+    55 Splash Cymbal V
+    56 Cowbell 2
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 6
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L 2
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-48 Symphony Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl
-    26 Brush Slap
-    27 Brush Tap Swirl
-    28 Snare Roll
-    29 Castanet
-    30 Brush Slap 2
-    31 Sticks
-    32 Kick Soft 2
-    33 Open Rim Shot
-    34 Gran Cassa
-    35 Gran Cassa Mute
-    36 Side Stick
-    37 Band Snare
-    38 Hand Clap
-    39 Band Snare 2
-    40 Tom Jazz 1
-    41 Hi-Hat Closed
-    42 Tom Jazz 2
-    43 Hi-Hat Pedal
-    44 Tom Jazz 3
-    45 Hi-Hat Open
-    46 Tom Jazz 4
-    47 Tom Jazz 5
-    48 Hand Cymbal
-    49 Tom Jazz 6
-    50 Hand Cymbal Short
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Hand Cymbal 2
-    57 Vibraslap
-    58 Hand Cymbal 2 Short
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl
+    27 Brush Slap
+    28 Brush Tap Swirl
+    29 Snare Roll
+    30 Castanet
+    31 Brush Slap 2
+    32 Sticks
+    33 Kick Soft 2
+    34 Open Rim Shot
+    35 Gran Cassa
+    36 Gran Cassa Mute
+    37 Side Stick
+    38 Band Snare
+    39 Hand Clap
+    40 Band Snare 2
+    41 Tom Jazz 1
+    42 Hi-Hat Closed
+    43 Tom Jazz 2
+    44 Hi-Hat Pedal
+    45 Tom Jazz 3
+    46 Hi-Hat Open
+    47 Tom Jazz 4
+    48 Tom Jazz 5
+    49 Hand Cymbal
+    50 Tom Jazz 6
+    51 Hand Cymbal Short
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Hand Cymbal 2
+    58 Vibraslap
+    59 Hand Cymbal 2 Short
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-56 Natural Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap Natural
-    25 Brush Swirl Natural L
-    26 Brush Slap Natural
-    27 Brush Swirl Natural H
-    28 Snare Roll Natural
-    29 Castanet
-    30 Snare Natural L
-    31 Sticks
-    32 Kick Soft Natural
-    33 Open Rim Natural
-    34 Kick Light Natural
-    35 Kick Std Natural
-    36 Side Stick Natural
-    37 Snare Natural M
-    38 Hand Clap
-    39 Snare Natural H
-    40 Floor Tom Natural L
-    41 Hi-Hat Closed Natural
-    42 Floor Tom Natural H
-    43 Hi-Hat Pedal Natural
-    44 Low Tom Natural
-    45 Hi-Hat Open Natural
-    46 Mid Tom Natural L
-    47 Mid Tom Natural H
-    48 Crash Cymbal Natural 1
-    49 High Tom Natural
-    50 Ride Cymbal Natural 1
-    51 Chinese Cymbal Natural
-    52 Ride Cymbal Cup Natural
-    53 Tambourine
-    54 Splash Cymbal Natural
-    55 Cowbell
-    56 Crash Cymbal Natural 2
-    57 Vibraslap
-    58 Ride Cymbal Natural 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap Natural
+    26 Brush Swirl Natural L
+    27 Brush Slap Natural
+    28 Brush Swirl Natural H
+    29 Snare Roll Natural
+    30 Castanet
+    31 Snare Natural L
+    32 Sticks
+    33 Kick Soft Natural
+    34 Open Rim Natural
+    35 Kick Light Natural
+    36 Kick Std Natural
+    37 Side Stick Natural
+    38 Snare Natural M
+    39 Hand Clap
+    40 Snare Natural H
+    41 Floor Tom Natural L
+    42 Hi-Hat Closed Natural
+    43 Floor Tom Natural H
+    44 Hi-Hat Pedal Natural
+    45 Low Tom Natural
+    46 Hi-Hat Open Natural
+    47 Mid Tom Natural L
+    48 Mid Tom Natural H
+    49 Crash Cymbal Natural 1
+    50 High Tom Natural
+    51 Ride Cymbal Natural 1
+    52 Chinese Cymbal Natural
+    53 Ride Cymbal Cup Natural
+    54 Tambourine
+    55 Splash Cymbal Natural
+    56 Cowbell
+    57 Crash Cymbal Natural 2
+    58 Vibraslap
+    59 Ride Cymbal Natural 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-57 Natural Funk Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap Natural
-    25 Brush Swirl Natural L
-    26 Brush Slap Natural
-    27 Brush Swirl Natural H
-    28 Snare Roll Natural
-    29 Castanet
-    30 Snare Natural Funk L
-    31 Sticks
-    32 Kick Soft Natural
-    33 Open Rim Natural
-    34 Kick Std Natural Funk
-    35 Kick Natural Funk
-    36 Side Stick Natural
-    37 Snare Natural Funk M
-    38 Hand Clap
-    39 Snare Natural Funk H
-    40 Floor Tom Natural L
-    41 Hi-Hat Closed Natural
-    42 Floor Tom Natural H
-    43 Hi-Hat Pedal Natural
-    44 Low Tom Natural
-    45 Hi-Hat Open Natural
-    46 Mid Tom Natural L
-    47 Mid Tom Natural H
-    48 Crash Cymbal Natural 1
-    49 High Tom Natural
-    50 Ride Cymbal Natural 1
-    51 Chinese Cymbal Natural
-    52 Ride Cymbal Cup Natural
-    53 Tambourine
-    54 Splash Cymbal Natural
-    55 Cowbell
-    56 Crash Cymbal Natural 2
-    57 Vibraslap
-    58 Ride Cymbal Natural 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap Natural
+    26 Brush Swirl Natural L
+    27 Brush Slap Natural
+    28 Brush Swirl Natural H
+    29 Snare Roll Natural
+    30 Castanet
+    31 Snare Natural Funk L
+    32 Sticks
+    33 Kick Soft Natural
+    34 Open Rim Natural
+    35 Kick Std Natural Funk
+    36 Kick Natural Funk
+    37 Side Stick Natural
+    38 Snare Natural Funk M
+    39 Hand Clap
+    40 Snare Natural Funk H
+    41 Floor Tom Natural L
+    42 Hi-Hat Closed Natural
+    43 Floor Tom Natural H
+    44 Hi-Hat Pedal Natural
+    45 Low Tom Natural
+    46 Hi-Hat Open Natural
+    47 Mid Tom Natural L
+    48 Mid Tom Natural H
+    49 Crash Cymbal Natural 1
+    50 High Tom Natural
+    51 Ride Cymbal Natural 1
+    52 Chinese Cymbal Natural
+    53 Ride Cymbal Cup Natural
+    54 Tambourine
+    55 Splash Cymbal Natural
+    56 Cowbell
+    57 Crash Cymbal Natural 2
+    58 Vibraslap
+    59 Ride Cymbal Natural 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-64 Tramp Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Reverse Cymbal
-    28 Snare Roll V
-    29 Hi Q 2
-    30 Snare Techno 3 Q
-    31 Sticks Q
-    32 Kick Techno Q 2
-    33 Rim Gate Lo-Fi
-    34 Kick Techno L Q
-    35 Kick Techno 2 Gate
-    36 Side Stick Analog Q
-    37 Snare Clap
-    38 Hand Clap Dark
-    39 Snare Dry 2 Gate
-    40 Tom Analog 7
-    41 Hi-Hat Closed 3 Dark
-    42 Tom Analog 8
-    43 Hi-Hat Closed Analog 2 L
-    44 Tom Analog 9
-    45 Hi-Hat Open 3 Dark
-    46 Tom Analog 10
-    47 Tom Analog 11
-    48 Crash Analog Dark
-    49 Tom Analog 12
-    50 Ride Cymbal 1 Dark
-    51 Chinese Cymbal L
-    52 Ride Cymbal Cup Dark
-    53 Tambourine Dark
-    54 Splash Cymbal L Q
-    55 Cowbell Analog Q
-    56 Crash Cymbal 2 Q
-    57 Vibraslap
-    58 Ride Cymbal 2 D
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga Analog H Long
-    62 Conga Analog M Long
-    63 Conga Analog L Long
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas 2
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Scratch H 2
-    78 Scratch L 3
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Reverse Cymbal
+    29 Snare Roll V
+    30 Hi Q 2
+    31 Snare Techno 3 Q
+    32 Sticks Q
+    33 Kick Techno Q 2
+    34 Rim Gate Lo-Fi
+    35 Kick Techno L Q
+    36 Kick Techno 2 Gate
+    37 Side Stick Analog Q
+    38 Snare Clap
+    39 Hand Clap Dark
+    40 Snare Dry 2 Gate
+    41 Tom Analog 7
+    42 Hi-Hat Closed 3 Dark
+    43 Tom Analog 8
+    44 Hi-Hat Closed Analog 2 L
+    45 Tom Analog 9
+    46 Hi-Hat Open 3 Dark
+    47 Tom Analog 10
+    48 Tom Analog 11
+    49 Crash Analog Dark
+    50 Tom Analog 12
+    51 Ride Cymbal 1 Dark
+    52 Chinese Cymbal L
+    53 Ride Cymbal Cup Dark
+    54 Tambourine Dark
+    55 Splash Cymbal L Q
+    56 Cowbell Analog Q
+    57 Crash Cymbal 2 Q
+    58 Vibraslap
+    59 Ride Cymbal 2 D
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga Analog H Long
+    63 Conga Analog M Long
+    64 Conga Analog L Long
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas 2
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Scratch H 2
+    79 Scratch L 3
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-65 Amber Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet
-    30 Open Rim Shot 3 Soft
-    31 Sticks Q
-    32 KickDrySoft3
-    33 Open Rim Shot Dry
-    34 Kick Comp 1 L
-    35 Kick Comp 1 H
-    36 Side Stick Dry L
-    37 Snare Dry Mute L
-    38 Hand Clap Dark
-    39 Hip Snare Long
-    40 Floor Tom Tech L
-    41 Hi-Hat Closed Tech
-    42 Floor Tom Tech H
-    43 Hi-Hat Pedal Tech
-    44 Low Tom Tech
-    45 Hi-Hat Open 3 Dark
-    46 Mid Tom Tech L
-    47 Mid Tom Tech H
-    48 Crash Cymbal Dark
-    49 High Tom Tech
-    50 Ride Cymbal 1 Dark
-    51 Chinese Cymbal H2
-    52 Ride Cymbal Cup Dark
-    53 Tambourine Dark
-    54 Splash Cymbal L Q
-    55 Cowbell Lo-Fi
-    56 Crash Cymbal 2 Q
-    57 Vibraslap
-    58 Ride Cymbal 2 V
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L 2
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet
+    31 Open Rim Shot 3 Soft
+    32 Sticks Q
+    33 KickDrySoft3
+    34 Open Rim Shot Dry
+    35 Kick Comp 1 L
+    36 Kick Comp 1 H
+    37 Side Stick Dry L
+    38 Snare Dry Mute L
+    39 Hand Clap Dark
+    40 Hip Snare Long
+    41 Floor Tom Tech L
+    42 Hi-Hat Closed Tech
+    43 Floor Tom Tech H
+    44 Hi-Hat Pedal Tech
+    45 Low Tom Tech
+    46 Hi-Hat Open 3 Dark
+    47 Mid Tom Tech L
+    48 Mid Tom Tech H
+    49 Crash Cymbal Dark
+    50 High Tom Tech
+    51 Ride Cymbal 1 Dark
+    52 Chinese Cymbal H2
+    53 Ride Cymbal Cup Dark
+    54 Tambourine Dark
+    55 Splash Cymbal L Q
+    56 Cowbell Lo-Fi
+    57 Crash Cymbal 2 Q
+    58 Vibraslap
+    59 Ride Cymbal 2 V
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L 2
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-66 Coffin Kit
-    12 Surdo Mute V
-    13 Surdo Open V
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap V
-    25 Brush Swirl V
-    26 Brush Slap V
-    27 Brush Tap Swirl L
-    28 Snare Roll V
-    29 Castanet
-    30 Rim Gate 4
-    31 Sticks Q
-    32 Kick Cough L
-    33 Rim Gate 5
-    34 Kick Comp 2 L
-    35 Kick Comp 2 H
-    36 Side Stick Dry L
-    37 Snare Tin L
-    38 Hand Clap Dark
-    39 Snare Can L
-    40 Floor Tom Tech L
-    41 Hi-Hat Closed Tech
-    42 Floor Tom Tech H
-    43 Hi-Hat Pedal Tech
-    44 Low Tom Tech
-    45 Hi-Hat Open 3 Dark
-    46 Mid Tom Tech L
-    47 Mid Tom Tech H
-    48 Crash Cymbal Dark 2
-    49 High Tom Tech
-    50 Ride Cymbal Hard 2
-    51 Chinese Cymbal Q
-    52 Ride Cymbal Cup 5
-    53 Tambourine Dark
-    54 Tech Splash Cymbal
-    55 Cowbell Lo-Fi
-    56 Crash Cymbal 2 Q
-    57 Vibraslap
-    58 Ride Cymbal 5
-    59 Bongo H V
-    60 Bongo L V
-    61 Conga H Mute V
-    62 Conga H Open V
-    63 Conga L 2
-    64 Timbale H V
-    65 Timbale L V
-    66 Agogo H V
-    67 Agogo L V
-    68 Cabasa
-    69 Maracas Q
-    70 Samba Whistle H V
-    71 Samba Whistle L V
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open H
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute V
+    14 Surdo Open V
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap V
+    26 Brush Swirl V
+    27 Brush Slap V
+    28 Brush Tap Swirl L
+    29 Snare Roll V
+    30 Castanet
+    31 Rim Gate 4
+    32 Sticks Q
+    33 Kick Cough L
+    34 Rim Gate 5
+    35 Kick Comp 2 L
+    36 Kick Comp 2 H
+    37 Side Stick Dry L
+    38 Snare Tin L
+    39 Hand Clap Dark
+    40 Snare Can L
+    41 Floor Tom Tech L
+    42 Hi-Hat Closed Tech
+    43 Floor Tom Tech H
+    44 Hi-Hat Pedal Tech
+    45 Low Tom Tech
+    46 Hi-Hat Open 3 Dark
+    47 Mid Tom Tech L
+    48 Mid Tom Tech H
+    49 Crash Cymbal Dark 2
+    50 High Tom Tech
+    51 Ride Cymbal Hard 2
+    52 Chinese Cymbal Q
+    53 Ride Cymbal Cup 5
+    54 Tambourine Dark
+    55 Tech Splash Cymbal
+    56 Cowbell Lo-Fi
+    57 Crash Cymbal 2 Q
+    58 Vibraslap
+    59 Ride Cymbal 5
+    60 Bongo H V
+    61 Bongo L V
+    62 Conga H Mute V
+    63 Conga H Open V
+    64 Conga L 2
+    65 Timbale H V
+    66 Timbale L V
+    67 Agogo H V
+    68 Agogo L V
+    69 Cabasa
+    70 Maracas Q
+    71 Samba Whistle H V
+    72 Samba Whistle L V
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open H
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-80 Live! Standard Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl L
-    26 Brush Slap
-    27 Brush Swirl H
-    28 Snare Roll
-    29 Castanet
-    30 Snare L
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim
-    34 Kick Light
-    35 Kick Std
-    36 Side Stick
-    37 Snare M
-    38 Hand Clap
-    39 Snare H
-    40 Floor Tom L
-    41 Hi-Hat Closed
-    42 Floor Tom H
-    43 Hi-Hat Pedal
-    44 Low Tom
-    45 Hi-Hat Open
-    46 Mid Tom L
-    47 Mid Tom H
-    48 Crash Cymbal 1
-    49 High Tom
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl L
+    27 Brush Slap
+    28 Brush Swirl H
+    29 Snare Roll
+    30 Castanet
+    31 Snare L
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim
+    35 Kick Light
+    36 Kick Std
+    37 Side Stick
+    38 Snare M
+    39 Hand Clap
+    40 Snare H
+    41 Floor Tom L
+    42 Hi-Hat Closed
+    43 Floor Tom H
+    44 Hi-Hat Pedal
+    45 Low Tom
+    46 Hi-Hat Open
+    47 Mid Tom L
+    48 Mid Tom H
+    49 Crash Cymbal 1
+    50 High Tom
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-81 Live! Funk Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl L
-    26 Brush Slap
-    27 Brush Swirl H
-    28 Snare Roll
-    29 Castanet
-    30 Snare Funk L
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim
-    34 Kick Std
-    35 Kick Funk
-    36 Side Stick
-    37 Snare Funk M
-    38 Hand Clap
-    39 Snare Funk H
-    40 Floor Tom L
-    41 Hi-Hat Closed
-    42 Floor Tom H
-    43 Hi-Hat Pedal
-    44 Low Tom
-    45 Hi-Hat Open
-    46 Mid Tom L
-    47 Mid Tom H
-    48 Crash Cymbal 1
-    49 High Tom
-    50 Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Crash Cymbal 2
-    57 Vibraslap
-    58 Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl L
+    27 Brush Slap
+    28 Brush Swirl H
+    29 Snare Roll
+    30 Castanet
+    31 Snare Funk L
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim
+    35 Kick Std
+    36 Kick Funk
+    37 Side Stick
+    38 Snare Funk M
+    39 Hand Clap
+    40 Snare Funk H
+    41 Floor Tom L
+    42 Hi-Hat Closed
+    43 Floor Tom H
+    44 Hi-Hat Pedal
+    45 Low Tom
+    46 Hi-Hat Open
+    47 Mid Tom L
+    48 Mid Tom H
+    49 Crash Cymbal 1
+    50 High Tom
+    51 Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Crash Cymbal 2
+    58 Vibraslap
+    59 Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-82 Live! Brush Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap
-    25 Brush Swirl L
-    26 Brush Slap
-    27 Brush Swirl H
-    28 Snare Roll
-    29 Castanet
-    30 Brush Slap 2
-    31 Sticks
-    32 Kick Soft
-    33 Open Rim
-    34 Kick Std
-    35 Kick Funk
-    36 Side Stick
-    37 Snare Brush M
-    38 Hand Clap
-    39 Snare Brush H
-    40 Brush Floor Tom L
-    41 Hi-Hat Closed
-    42 Brush Floor Tom H
-    43 Hi-Hat Pedal
-    44 Brush Low Tom
-    45 Hi-Hat Open
-    46 Brush Mid Tom L
-    47 Brush Mid Tom H
-    48 Brush Crash Cymbal 1
-    49 Brush High Tom
-    50 Brush Ride Cymbal 1
-    51 Chinese Cymbal
-    52 Brush Ride Cymbal Cup
-    53 Tambourine
-    54 Splash Cymbal
-    55 Cowbell
-    56 Brush Crash Cymbal 2
-    57 Vibraslap
-    58 Brush Ride Cymbal 2
-    59 Bongo H
-    60 Bongo L
-    61 Conga H Mute
-    62 Conga H Open
-    63 Conga L
-    64 Timbale H
-    65 Timbale L
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa
-    69 Maracas
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short
-    73 Guiro Long
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute
-    78 Cuica Open
-    79 Triangle Mute
-    80 Triangle Open
-    81 Shaker
-    82 Jingle Bells
-    83 Bell Tree
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap
+    26 Brush Swirl L
+    27 Brush Slap
+    28 Brush Swirl H
+    29 Snare Roll
+    30 Castanet
+    31 Brush Slap 2
+    32 Sticks
+    33 Kick Soft
+    34 Open Rim
+    35 Kick Std
+    36 Kick Funk
+    37 Side Stick
+    38 Snare Brush M
+    39 Hand Clap
+    40 Snare Brush H
+    41 Brush Floor Tom L
+    42 Hi-Hat Closed
+    43 Brush Floor Tom H
+    44 Hi-Hat Pedal
+    45 Brush Low Tom
+    46 Hi-Hat Open
+    47 Brush Mid Tom L
+    48 Brush Mid Tom H
+    49 Brush Crash Cymbal 1
+    50 Brush High Tom
+    51 Brush Ride Cymbal 1
+    52 Chinese Cymbal
+    53 Brush Ride Cymbal Cup
+    54 Tambourine
+    55 Splash Cymbal
+    56 Cowbell
+    57 Brush Crash Cymbal 2
+    58 Vibraslap
+    59 Brush Ride Cymbal 2
+    60 Bongo H
+    61 Bongo L
+    62 Conga H Mute
+    63 Conga H Open
+    64 Conga L
+    65 Timbale H
+    66 Timbale L
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa
+    70 Maracas
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short
+    74 Guiro Long
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute
+    79 Cuica Open
+    80 Triangle Mute
+    81 Triangle Open
+    82 Shaker
+    83 Jingle Bells
+    84 Bell Tree
 127-0-83 Live! Standard + Percussion Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap Stereo
-    25 Brush Swirl Stereo
-    26 Brush Slap Stereo
-    27 Brush Tap Swirl Stereo
-    28 Snare Roll Stereo
-    29 Castanet
-    30 Snare L Stereo
-    31 Sticks
-    32 Kick Soft Stereo
-    33 Open Rim Shot Stereo
-    34 Kick Light Stereo
-    35 Kick Std Stereo
-    36 Side Stick Stereo
-    37 Snare M Stereo
-    38 Hand Clap Stereo
-    39 Snare H Stereo
-    40 Floor Tom L Stereo
-    41 Hi-Hat Closed Stereo
-    42 Floor Tom H Stereo
-    43 Hi-Hat Pedal Stereo
-    44 Low Tom Stereo
-    45 Hi-Hat Open Stereo
-    46 Mid Tom L Stereo
-    47 Mid Tom H Stereo
-    48 Crash Cymbal 1 Stereo
-    49 High Tom Stereo
-    50 Ride Cymbal 1 Stereo
-    51 Chinese Cymbal Stereo
-    52 Ride Cymbal Cup Stereo
-    53 Tambourine Stereo
-    54 Splash Cymbal Stereo
-    55 Cowbell Stereo
-    56 Crash Cymbal 2 Stereo
-    57 Vibraslap
-    58 Ride Cymbal 2 Stereo
-    59 Bongo H Stereo
-    60 Bongo L Srereo
-    61 Conga H Mute Stereo
-    62 Conga H Open Stereo
-    63 Conga L Stereo
-    64 Timbale H Stereo
-    65 Timbale L Stereo
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa Stereo
-    69 Maracas Stereo
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short Stereo
-    73 Guiro Long Stereo
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute Stereo
-    78 Cuica Open Stereo
-    79 Triangle Mute Stereo
-    80 Triangle Open Stereo
-    81 Shaker Stereo
-    82 Jingle Bells
-    83 Wind Chime Stereo
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap Stereo
+    26 Brush Swirl Stereo
+    27 Brush Slap Stereo
+    28 Brush Tap Swirl Stereo
+    29 Snare Roll Stereo
+    30 Castanet
+    31 Snare L Stereo
+    32 Sticks
+    33 Kick Soft Stereo
+    34 Open Rim Shot Stereo
+    35 Kick Light Stereo
+    36 Kick Std Stereo
+    37 Side Stick Stereo
+    38 Snare M Stereo
+    39 Hand Clap Stereo
+    40 Snare H Stereo
+    41 Floor Tom L Stereo
+    42 Hi-Hat Closed Stereo
+    43 Floor Tom H Stereo
+    44 Hi-Hat Pedal Stereo
+    45 Low Tom Stereo
+    46 Hi-Hat Open Stereo
+    47 Mid Tom L Stereo
+    48 Mid Tom H Stereo
+    49 Crash Cymbal 1 Stereo
+    50 High Tom Stereo
+    51 Ride Cymbal 1 Stereo
+    52 Chinese Cymbal Stereo
+    53 Ride Cymbal Cup Stereo
+    54 Tambourine Stereo
+    55 Splash Cymbal Stereo
+    56 Cowbell Stereo
+    57 Crash Cymbal 2 Stereo
+    58 Vibraslap
+    59 Ride Cymbal 2 Stereo
+    60 Bongo H Stereo
+    61 Bongo L Srereo
+    62 Conga H Mute Stereo
+    63 Conga H Open Stereo
+    64 Conga L Stereo
+    65 Timbale H Stereo
+    66 Timbale L Stereo
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa Stereo
+    70 Maracas Stereo
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short Stereo
+    74 Guiro Long Stereo
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute Stereo
+    79 Cuica Open Stereo
+    80 Triangle Mute Stereo
+    81 Triangle Open Stereo
+    82 Shaker Stereo
+    83 Jingle Bells
+    84 Wind Chime Stereo
 127-0-84 Live! Funk + Percussion Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap Stereo
-    25 Brush Swirl Stereo
-    26 Brush Slap Stereo
-    27 Brush Tap Swirl Stereo
-    28 Snare Roll Stereo
-    29 Castanet
-    30 Snare L Stereo
-    31 Sticks
-    32 Kick Soft Stereo
-    33 Open Rim Shot Stereo
-    34 Kick Std Stereo
-    35 Kick Funk Stereo
-    36 Side Stick Stereo
-    37 Snare Funk M Stereo
-    38 Hand Clap Stereo
-    39 Snare Funk H Stereo
-    40 Floor Tom L Stereo
-    41 Hi-Hat Closed Stereo
-    42 Floor Tom H Stereo
-    43 Hi-Hat Pedal Stereo
-    44 Low Tom Stereo
-    45 Hi-Hat Open Stereo
-    46 Mid Tom L Stereo
-    47 Mid Tom H Stereo
-    48 Crash Cymbal 1 Stereo
-    49 High Tom Stereo
-    50 Ride Cymbal 1 Stereo
-    51 Chinese Cymbal Stereo
-    52 Ride Cymbal Cup Stereo
-    53 Tambourine Stereo
-    54 Splash Cymbal Stereo
-    55 Cowbell Stereo
-    56 Crash Cymbal 2 Stereo
-    57 Vibraslap
-    58 Ride Cymbal 2 Stereo
-    59 Bongo H Stereo
-    60 Bongo L Srereo
-    61 Conga H Mute Stereo
-    62 Conga H Open Stereo
-    63 Conga L Stereo
-    64 Timbale H Stereo
-    65 Timbale L Stereo
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa Stereo
-    69 Maracas Stereo
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short Stereo
-    73 Guiro Long Stereo
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute Stereo
-    78 Cuica Open Stereo
-    79 Triangle Mute Stereo
-    80 Triangle Open Stereo
-    81 Shaker Stereo
-    82 Jingle Bells
-    83 Wind Chime Stereo
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap Stereo
+    26 Brush Swirl Stereo
+    27 Brush Slap Stereo
+    28 Brush Tap Swirl Stereo
+    29 Snare Roll Stereo
+    30 Castanet
+    31 Snare L Stereo
+    32 Sticks
+    33 Kick Soft Stereo
+    34 Open Rim Shot Stereo
+    35 Kick Std Stereo
+    36 Kick Funk Stereo
+    37 Side Stick Stereo
+    38 Snare Funk M Stereo
+    39 Hand Clap Stereo
+    40 Snare Funk H Stereo
+    41 Floor Tom L Stereo
+    42 Hi-Hat Closed Stereo
+    43 Floor Tom H Stereo
+    44 Hi-Hat Pedal Stereo
+    45 Low Tom Stereo
+    46 Hi-Hat Open Stereo
+    47 Mid Tom L Stereo
+    48 Mid Tom H Stereo
+    49 Crash Cymbal 1 Stereo
+    50 High Tom Stereo
+    51 Ride Cymbal 1 Stereo
+    52 Chinese Cymbal Stereo
+    53 Ride Cymbal Cup Stereo
+    54 Tambourine Stereo
+    55 Splash Cymbal Stereo
+    56 Cowbell Stereo
+    57 Crash Cymbal 2 Stereo
+    58 Vibraslap
+    59 Ride Cymbal 2 Stereo
+    60 Bongo H Stereo
+    61 Bongo L Srereo
+    62 Conga H Mute Stereo
+    63 Conga H Open Stereo
+    64 Conga L Stereo
+    65 Timbale H Stereo
+    66 Timbale L Stereo
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa Stereo
+    70 Maracas Stereo
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short Stereo
+    74 Guiro Long Stereo
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute Stereo
+    79 Cuica Open Stereo
+    80 Triangle Mute Stereo
+    81 Triangle Open Stereo
+    82 Shaker Stereo
+    83 Jingle Bells
+    84 Wind Chime Stereo
 127-0-85 Live! Brush + Percussion Kit
-    12 Surdo Mute
-    13 Surdo Open
-    14 Hi Q
-    15 Whip Slap
-    16 Scratch H
-    17 Scratch L
-    18 Finger Snap
-    19 Click Noise
-    20 Metronome Click
-    21 Metronome Bell
-    22 Seq Click L
-    23 Seq Click H
-    24 Brush Tap Stereo
-    25 Brush Swirl Stereo
-    26 Brush Slap Stereo
-    27 Brush Tap Swirl Stereo
-    28 Snare Roll Stereo
-    29 Castanet
-    30 Brush Slap 2 Stereo
-    31 Sticks
-    32 Kick Soft Stereo
-    33 Open Rim Shot Stereo
-    34 Kick Std Stereo
-    35 Kick Funk Stereo
-    36 Side Stick Stereo
-    37 Snare Brush M Stereo
-    38 Hand Clap Stereo
-    39 Snare Brush H Stereo
-    40 Brush Floor Tom L Stereo
-    41 Hi-Hat Closed Stereo
-    42 Brush Floor Tom H Stereo
-    43 Hi-Hat Pedal Stereo
-    44 Brush Low Tom Stereo
-    45 Hi-Hat Open Stereo
-    46 Brush Mid Tom L Stereo
-    47 Brush Mid Tom H Stereo
-    48 Brush Crash Cymbal 1 Stereo
-    49 Brush High Tom Stereo
-    50 Brush Ride Cymbal 1 Stereo
-    51 Chinese Cymbal Stereo
-    52 Brush Ride Cymbal Cup Stereo
-    53 Tambourine Stereo
-    54 Splash Cymbal Stereo
-    55 Cowbell Stereo
-    56 Brush Crash Cymbal 2 Stereo
-    57 Vibraslap
-    58 Brush Ride Cymbal 2 Stereo
-    59 Bongo H Stereo
-    60 Bongo L Srereo
-    61 Conga H Mute Stereo
-    62 Conga H Open Stereo
-    63 Conga L Stereo
-    64 Timbale H Stereo
-    65 Timbale L Stereo
-    66 Agogo H
-    67 Agogo L
-    68 Cabasa Stereo
-    69 Maracas Stereo
-    70 Samba Whistle H
-    71 Samba Whistle L
-    72 Guiro Short Stereo
-    73 Guiro Long Stereo
-    74 Claves
-    75 Wood Block H
-    76 Wood Block L
-    77 Cuica Mute Stereo
-    78 Cuica Open Stereo
-    79 Triangle Mute Stereo
-    80 Triangle Open Stereo
-    81 Shaker Stereo
-    82 Jingle Bells
-    83 Wind Chime Stereo
+    13 Surdo Mute
+    14 Surdo Open
+    15 Hi Q
+    16 Whip Slap
+    17 Scratch H
+    18 Scratch L
+    19 Finger Snap
+    20 Click Noise
+    21 Metronome Click
+    22 Metronome Bell
+    23 Seq Click L
+    24 Seq Click H
+    25 Brush Tap Stereo
+    26 Brush Swirl Stereo
+    27 Brush Slap Stereo
+    28 Brush Tap Swirl Stereo
+    29 Snare Roll Stereo
+    30 Castanet
+    31 Brush Slap 2 Stereo
+    32 Sticks
+    33 Kick Soft Stereo
+    34 Open Rim Shot Stereo
+    35 Kick Std Stereo
+    36 Kick Funk Stereo
+    37 Side Stick Stereo
+    38 Snare Brush M Stereo
+    39 Hand Clap Stereo
+    40 Snare Brush H Stereo
+    41 Brush Floor Tom L Stereo
+    42 Hi-Hat Closed Stereo
+    43 Brush Floor Tom H Stereo
+    44 Hi-Hat Pedal Stereo
+    45 Brush Low Tom Stereo
+    46 Hi-Hat Open Stereo
+    47 Brush Mid Tom L Stereo
+    48 Brush Mid Tom H Stereo
+    49 Brush Crash Cymbal 1 Stereo
+    50 Brush High Tom Stereo
+    51 Brush Ride Cymbal 1 Stereo
+    52 Chinese Cymbal Stereo
+    53 Brush Ride Cymbal Cup Stereo
+    54 Tambourine Stereo
+    55 Splash Cymbal Stereo
+    56 Cowbell Stereo
+    57 Brush Crash Cymbal 2 Stereo
+    58 Vibraslap
+    59 Brush Ride Cymbal 2 Stereo
+    60 Bongo H Stereo
+    61 Bongo L Srereo
+    62 Conga H Mute Stereo
+    63 Conga H Open Stereo
+    64 Conga L Stereo
+    65 Timbale H Stereo
+    66 Timbale L Stereo
+    67 Agogo H
+    68 Agogo L
+    69 Cabasa Stereo
+    70 Maracas Stereo
+    71 Samba Whistle H
+    72 Samba Whistle L
+    73 Guiro Short Stereo
+    74 Guiro Long Stereo
+    75 Claves
+    76 Wood Block H
+    77 Wood Block L
+    78 Cuica Mute Stereo
+    79 Cuica Open Stereo
+    80 Triangle Mute Stereo
+    81 Triangle Open Stereo
+    82 Shaker Stereo
+    83 Jingle Bells
+    84 Wind Chime Stereo
