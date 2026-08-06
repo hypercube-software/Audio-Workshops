@@ -1,6 +1,5 @@
-package com.hypercube.workshop.midiworkshop.sysex;
+package com.hypercube.workshop.midiworkshop.sysex.kurzweil;
 
-import com.hypercube.workshop.midiworkshop.presets.kurzweil.KurzweilExplorer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellCommandGroup;

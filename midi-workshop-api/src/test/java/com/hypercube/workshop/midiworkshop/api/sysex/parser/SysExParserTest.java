@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.sysex.parser;
+package com.hypercube.workshop.midiworkshop.api.sysex.parser;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
@@ -6,7 +6,6 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
-import com.hypercube.workshop.midiworkshop.api.sysex.parser.SysExParser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

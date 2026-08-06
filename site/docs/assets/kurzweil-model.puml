@@ -20,6 +20,18 @@ class KFZoneSegment {
   - int[] ctls
 }
 
+class KFSoundBlock {
+  - int base
+  - int nsfh
+  - int off
+  - int sflags
+  - int unused
+  - int copyID
+  - int rfu
+  - List headers
+  - List envelopes
+}
+
 class KFHobbesSegment {
   - int subTag
   - int coarse
@@ -36,18 +48,6 @@ class KFHobbesSegment {
   - int moreTscr
   - int bitfields2
   - int bitfields3
-}
-
-class KFSoundBlock {
-  - int base
-  - int nsfh
-  - int off
-  - int sflags
-  - int unused
-  - int copyID
-  - int rfu
-  - List headers
-  - List envelopes
 }
 
 class KFLayerSegment {
@@ -106,10 +106,6 @@ class KFLfoSegment {
   - int rfu2
 }
 
-class DataNACK {
-  - int offset
-}
-
 enum KeyMapMask {
   TUNING_SHORT
   TUNING_BYTE
@@ -119,9 +115,31 @@ enum KeyMapMask {
   - int mask
 }
 
+class DataNACK {
+  - int offset
+}
+
 class KFEnvSegment {
   - int flags
   - int[][] segs
+}
+
+class KFProgramCommon {
+  - int fmt
+  - int numLayers
+  - int modeFlags
+  - int bendRange
+  - int portSlope
+  - int mixControl
+  - int mixRange
+  - int coarse1
+  - int control1
+  - int range1
+  - int dest1
+  - int coarse2
+  - int control2
+  - int range2
+  - int dest2
 }
 
 class KFHammSegment1 {
@@ -150,39 +168,6 @@ class KFHammSegment1 {
   - int noizvol
 }
 
-class KFProgramCommon {
-  - int fmt
-  - int numLayers
-  - int modeFlags
-  - int bendRange
-  - int portSlope
-  - int mixControl
-  - int mixRange
-  - int coarse1
-  - int control1
-  - int range1
-  - int dest1
-  - int coarse2
-  - int control2
-  - int range2
-  - int dest2
-}
-
-class KFProgram {
-  - int segmentsStart
-  - KFProgramCommon pgm
-  - KFAsrSegment asr
-  - KFFcnSegment fcn1
-  - KFLfoSegment lfo
-  - KFFcnSegment fcn2
-  - KFEfxSegment efx
-  - KFFXRootTableSegment fxrt
-  - KFHammSegment1 hammseg1
-  - KFHammSegment2 hammseg2
-  - KFHammSegment3 hammseg3
-  - List layers
-}
-
 class KFHammSegment2 {
   - int noizpitch
   - int noizlevel
@@ -205,17 +190,19 @@ class KFHammSegment2 {
   - int rfu3
 }
 
-class KFHammSegment3 {
-  - int[] drawbars
-  - int rfu6
-  - int rfu7
-  - int keyclick
-  - int relclick
-  - int noizran
-  - int rfu4
-  - int loTune
-  - int rcvMap
-  - int[] rfu5
+class KFProgram {
+  - int segmentsStart
+  - KFProgramCommon pgm
+  - KFAsrSegment asr
+  - KFFcnSegment fcn1
+  - KFLfoSegment lfo
+  - KFFcnSegment fcn2
+  - KFEfxSegment efx
+  - KFFXRootTableSegment fxrt
+  - KFHammSegment1 hammseg1
+  - KFHammSegment2 hammseg2
+  - KFHammSegment3 hammseg3
+  - List layers
 }
 
 class KFArpSegment {
@@ -239,6 +226,19 @@ class KFArpSegment {
   - int rfu1
   - int rfu2
   - int rfu3
+}
+
+class KFHammSegment3 {
+  - int[] drawbars
+  - int rfu6
+  - int rfu7
+  - int keyclick
+  - int relclick
+  - int noizran
+  - int rfu4
+  - int loTune
+  - int rcvMap
+  - int[] rfu5
 }
 
 class KFMasterSegment {
@@ -493,6 +493,10 @@ class KFFXPartSegment {
   - int rfu
 }
 
+class KFIntonationTable {
+  - int[] itblTbl
+}
+
 class FXBus {
   - int version
   - int busID
@@ -510,10 +514,6 @@ class FXBus {
   - int mixSend
   - int rfu
   - int[] rfu2
-}
-
-class KFIntonationTable {
-  - int[] itblTbl
 }
 
 class KFLayer {
@@ -692,14 +692,14 @@ class RawData {
   - BitStreamReader bitStreamReader
 }
 
+class DataACK {
+  - int offset
+}
+
 class BaseObject {
   - int objectType
   - int objectId
   - int size
-}
-
-class DataACK {
-  - int offset
 }
 
 class ObjectLoad {
@@ -708,39 +708,39 @@ class ObjectLoad {
   - byte[] payload
 }
 
-BaseObject <|-- ObjectScreenText
-KFProgramSegment <|-- KFHammSegment1
-KFProgramSegment <|-- KFChannelSegment
-KFObject <|-- KFStudio
-KFProgramSegment <|-- KFHobbesSegment
-KFObject <|-- KFSoundBlock
-KFProgramSegment <|-- KFFcnSegment
-BaseObject <|-- ObjectScreenBitmap
-KFProgramSegment <|-- KFHammSegment3
-BaseObject <|-- DataACK
-KFObject <|-- KFKeyMap
-KFProgramSegment <|-- KFLfoSegment
+KFProgramSegment <|-- KFMasterSegment
 KFProgramSegment <|-- KFCalvinSegment
-KFProgramSegment <|-- KFFXPartSegment
-BaseObject <|-- ObjectWrite
-KFProgramSegment <|-- KFAsrSegment
-BaseObject <|-- DataNACK
-KFProgramSegment <|-- KFEfxSegment
 KFObject <|-- KFVelocityMap
-KFProgramSegment <|-- KFProgramCommon
-KFObject <|-- KFProgram
-KFProgramSegment <|-- KFArpSegment
-KFObject <|-- KFIntonationTable
-KFObject <|-- KFPressureMap
+BaseObject <|-- DataACK
+KFProgramSegment <|-- KFFcnSegment
+BaseObject <|-- ObjectWrite
 KFProgramSegment <|-- KFHammSegment2
 BaseObject <|-- ObjectLoad
-KFProgramSegment <|-- KFLayerSegment
-BaseObject <|-- ObjectInfo
-KFProgramSegment <|-- KFEncSegment
-KFObject <|-- KFMasterParameter
-KFProgramSegment <|-- KFZoneSegment
+KFProgramSegment <|-- KFFXPartSegment
+KFObject <|-- KFIntonationTable
+KFObject <|-- KFStudio
+KFProgramSegment <|-- KFProgramCommon
+KFProgramSegment <|-- KFLfoSegment
+KFProgramSegment <|-- KFAsrSegment
+KFObject <|-- KFSoundBlock
+KFProgramSegment <|-- KFHammSegment1
 KFProgramSegment <|-- KFEnvSegment
-KFProgramSegment <|-- KFMasterSegment
+KFProgramSegment <|-- KFEfxSegment
+KFObject <|-- KFKeyMap
+KFObject <|-- KFPressureMap
+BaseObject <|-- ObjectScreenText
+KFProgramSegment <|-- KFLayerSegment
+KFProgramSegment <|-- KFChannelSegment
+KFProgramSegment <|-- KFHobbesSegment
+KFProgramSegment <|-- KFZoneSegment
+BaseObject <|-- ObjectInfo
+KFProgramSegment <|-- KFArpSegment
+BaseObject <|-- DataNACK
+KFProgramSegment <|-- KFEncSegment
+BaseObject <|-- ObjectScreenBitmap
+KFProgramSegment <|-- KFHammSegment3
+KFObject <|-- KFProgram
+KFObject <|-- KFMasterParameter
 KFProgramSegment <|-- KFFXRootTableSegment
 KFProgram o-- KFHammSegment1 : hammseg1
 ObjectLoad o-- StreamFormat : format
@@ -750,24 +750,24 @@ KFFXRootTableSegment o-- KFFcnSegment : fcn3
 KFFXRootTableSegment o-- KFFcnSegment : fcn4
 KFFXRootTableSegment o-- KFFcnSegment : fcn1
 KFFXRootTableSegment o-- KFFcnSegment : fcn2
-KFSoundBlock o-- "0..*" KFSoundBlockHeader : headers
 KFLayer o-- "0..*" KFLfoSegment : lfo
+KFSoundBlock o-- "0..*" KFSoundBlockHeader : headers
 ObjectWrite o-- StreamFormat : format
 KFProgram o-- "0..*" KFLayer : layers
 KFLayer o-- "0..*" KFFcnSegment : fcn1
-KFProgram o-- KFHammSegment2 : hammseg2
 KFObject o-- KObject : type
-KFLayer o-- "0..*" KFFcnSegment : fcn2
+KFProgram o-- KFHammSegment2 : hammseg2
 KFProgramSegment o-- ProgramSegmentIdentifier : id
+KFLayer o-- "0..*" KFFcnSegment : fcn2
 KFFXRootTableSegment o-- KFLfoSegment : lfo2
 KFFXRootTableSegment o-- KFLfoSegment : lfo1
 ProgramSegmentIdentifier o-- ProgramSegmentType : type
 KFLayer o-- KFLayerSegment : lyr
 KFProgram o-- KFFcnSegment : fcn2
+KFProgramSegment o-- RawData : segmentContent
 KFSoundBlock o-- "0..*" KFSoundBlockEnvelope : envelopes
 KFProgram o-- KFFcnSegment : fcn1
 KFProgram o-- KFFXRootTableSegment : fxrt
-KFProgramSegment o-- RawData : segmentContent
 KFFXRootTableSegment o-- "0..*" KFFXPartSegment : patch
 KFProgram o-- KFEfxSegment : efx
 KFStudio o-- "0..*" FXBus : theBusses

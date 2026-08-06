@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.sysex;
+package com.hypercube.workshop.midiworkshop.sysex.samplers;
 
 import com.hypercube.workshop.midiworkshop.api.MidiPortsManager;
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;

@@ -32,7 +32,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitor;
 import com.hypercube.workshop.midiworkshop.monitor.MidiMonitorEventListener;
-import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetGenerator;
+import com.hypercube.workshop.midiworkshop.sysex.samplers.SampleDumpStandardExample;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellCommandGroup;
@@ -67,7 +67,6 @@ public class SysExCLI {
     private final SysExParser sysExParser;
     private final MidiMonitor midiMonitor;
     private final MidiPresetCrawler midiPresetCrawler;
-    private final CS1XPresetGenerator cs1XPresetGenerator;
     private final MidiDeviceLibrary library;
     private final MidiPortsManager midiPortsManager;
     private final SampleDumpStandardExample sampleDumpStandardExample;
@@ -217,12 +216,6 @@ public class SysExCLI {
             mapper.writeValue(out, devicePresets);
         }
     }
-
-    @ShellMethod("Generate CS1X voices SysEx")
-    public void dumpCS1XVoices(@ShellOption(value = "-d", help = "Device Name") String deviceName) throws InterruptedException, IOException {
-        cs1XPresetGenerator.dumpCS1XVoices(deviceName);
-    }
-
 
     @ShellMethod("Request a sample via Sample Dump Standard")
     public void sdsRequest(@ShellOption(value = "-d", help = "Device Name") String deviceName,

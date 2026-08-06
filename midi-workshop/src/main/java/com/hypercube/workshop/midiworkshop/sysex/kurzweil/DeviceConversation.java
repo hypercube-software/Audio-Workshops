@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.kurzweil;
+package com.hypercube.workshop.midiworkshop.sysex.kurzweil;
 
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;

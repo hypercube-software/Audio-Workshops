@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.kurzweil;
+package com.hypercube.workshop.midiworkshop.sysex.kurzweil;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.MidiNote;

@@ -1,7 +1,6 @@
-package com.hypercube.workshop.midiworkshop.presets.steinberg;
+package com.hypercube.workshop.midiworkshop.presets.roland;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
-import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetBuilder;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
@@ -22,7 +21,6 @@ public class SteinbergScriptFileParser {
     private final MidiDeviceDefinition device;
     private final File scriptFile;
     private final Pattern ENTRY_REGEXP = Pattern.compile("^\\s*\\[([^]]+)\\]?(.+)$");
-    private MidiBankFormat midiBankFormat = MidiBankFormat.BANK_MSB_LSB_PRG;
 
     public List<MidiPreset> parse() {
         try {

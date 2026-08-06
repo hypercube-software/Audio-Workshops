@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.yamaha;
+package com.hypercube.workshop.midiworkshop.sysex.yamaha.cs1x;
 
 import com.hypercube.workshop.midiworkshop.api.config.ConfigHelper;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
@@ -10,6 +10,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDe
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -21,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * A little experiment to see if we can generate SYSEX to listen all performances voices
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CS1XPresetGenerator {
@@ -113,8 +118,7 @@ public class CS1XPresetGenerator {
         List<String> lines = readResourceLines("Yamaha-voices/CS1X.txt");
         List<String> bankNames = new ArrayList<>();
         Map<String, List<String>> banks = new HashMap<>();
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
+        for (String line : lines) {
             if (line.isBlank())
                 break;
             banks.put(line, new ArrayList<>());
@@ -130,31 +134,35 @@ public class CS1XPresetGenerator {
                 if (!m.matches()) {
                     throw new MidiConfigError("Invalid voice definition at line %d: %s".formatted(l + 1, line));
                 }
-                int bank = device.getBankId(bankName);
-                int program = Integer.parseInt(m.group(1)) - 1;
-                String title = m.group(2)
-                        .trim();
-                if (title.equals("--")) {
-                    continue;
-                }
-                int categoryIndex = searchCategory(device, mode, bankName, program, categories, title);
-                System.out.println("%s \"%d-%d\" : \"%s\"".formatted(bankName, bank, program, title));
-                String cleanTitle = title.replace("\"", "'")
-                        .replace("/", "-")
-                        .replace("*", "-");
-                MidiPresetCategory category = device.getCategory(mode, categoryIndex);
-                String filePath = "%s/%s/PerformanceMode/%s/%4X-%03d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, category.name(), cleanTitle);
-                File file = new File("devices-library/" + filePath);
-                file.getParentFile()
-                        .mkdirs();
-                // CS1X Native Bulk Dump
-                try (OutputStream out = new FileOutputStream(file)) {
-                    out.write(generatePerformance(title, categoryIndex));
-                    for (int layer = 0; layer < 4; layer++) {
-                        out.write(generateLayer(layer, bank, program));
+                try {
+                    int bank = device.getBankId(bankName);
+                    int program = Integer.parseInt(m.group(1)) - 1;
+                    String title = m.group(2)
+                            .trim();
+                    if (title.equals("--")) {
+                        continue;
                     }
-                } catch (IOException e) {
-                    throw new MidiError(e);
+                    int categoryIndex = searchCategory(device, mode, bankName, program, categories, title);
+                    log.info("%s \"%d-%d\" : \"%s\"".formatted(bankName, bank, program, title));
+                    String cleanTitle = title.replace("\"", "'")
+                            .replace("/", "-")
+                            .replace("*", "-");
+                    MidiPresetCategory category = device.getCategory(mode, categoryIndex);
+                    String filePath = "%s/%s/PerformanceMode/%s/%4X-%03d [%s] %s.syx".formatted(device.getBrand(), device.getDeviceName(), bankName, bank, program, category.name(), cleanTitle);
+                    File file = new File("devices-library/" + filePath);
+                    file.getParentFile()
+                            .mkdirs();
+                    // CS1X Native Bulk Dump
+                    try (OutputStream out = new FileOutputStream(file)) {
+                        out.write(generatePerformance(title, categoryIndex));
+                        for (int layer = 0; layer < 4; layer++) {
+                            out.write(generateLayer(layer, bank, program));
+                        }
+                    } catch (IOException e) {
+                        throw new MidiError(e);
+                    }
+                } catch (MidiConfigError e) {
+                    continue;
                 }
             }
         }
@@ -201,7 +209,7 @@ public class CS1XPresetGenerator {
     }
 
     private int searchCategory(MidiDeviceDefinition device, MidiDeviceMode mode, String bankName, int program, String categories, String title) {
-        String category = bankName.startsWith("XG") ? categoriesXG.get(program / 8) : searchCategoryCode(device, categories, title);
+        String category = bankName.startsWith("Yamaha") ? categoriesXG.get(program / 8) : searchCategoryCode(device, categories, title);
         if (category == null & title.charAt(title.length() - 2) == ' ') {
             String shortName = title.substring(0, title.length() - 2) + title.substring(title.length() - 1);
             category = searchCategoryCode(device, categories, shortName);

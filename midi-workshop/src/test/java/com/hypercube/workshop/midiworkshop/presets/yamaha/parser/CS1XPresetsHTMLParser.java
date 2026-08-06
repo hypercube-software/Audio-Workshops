@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.yamaha;
+package com.hypercube.workshop.midiworkshop.presets.yamaha.parser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +22,13 @@ public class CS1XPresetsHTMLParser {
     private static final Pattern PGM_PATTERN = Pattern.compile("^Pgm$", Pattern.CASE_INSENSITIVE);
 
     private final File htmlFile;
+
+    private static String xgBankName(int bankNum) {
+        String key = "0-%d".formatted(bankNum);
+        String name = XGSpecParser.getBankNames()
+                .get(key);
+        return name != null ? name : "XG %03d".formatted(bankNum);
+    }
 
     public void parse() throws IOException {
         Document doc = Jsoup.parse(Files.readString(htmlFile.toPath()));
@@ -50,7 +52,8 @@ public class CS1XPresetsHTMLParser {
             Elements tds = tr.select("td");
             List<String> row = new ArrayList<>();
             for (Element td : tds) {
-                row.add(td.text().trim());
+                row.add(td.text()
+                        .trim());
             }
             grid.add(row);
         }
@@ -62,7 +65,8 @@ public class CS1XPresetsHTMLParser {
         int bankHeaderRowIdx = -1;
         for (int i = 0; i < grid.size(); i++) {
             for (String cell : grid.get(i)) {
-                if (BANK_PATTERN.matcher(cell).matches()) {
+                if (BANK_PATTERN.matcher(cell)
+                        .matches()) {
                     bankHeaderRowIdx = i;
                     break;
                 }
@@ -97,7 +101,8 @@ public class CS1XPresetsHTMLParser {
         for (int i = 0; i <= bankHeaderRowIdx; i++) {
             List<String> row = grid.get(i);
             for (int c = 0; c < row.size(); c++) {
-                if (PGM_PATTERN.matcher(row.get(c)).matches()) {
+                if (PGM_PATTERN.matcher(row.get(c))
+                        .matches()) {
                     pgmCol = c;
                     break;
                 }
@@ -156,7 +161,8 @@ public class CS1XPresetsHTMLParser {
             }
             for (Map.Entry<Integer, Integer> e : bankCols.entrySet()) {
                 int col = e.getKey();
-                boolean present = col < row.size() && !row.get(col).isEmpty();
+                boolean present = col < row.size() && !row.get(col)
+                        .isEmpty();
                 if (present) {
                     int bankNum = e.getValue();
                     if (bankNum == 102) {
@@ -168,12 +174,6 @@ public class CS1XPresetsHTMLParser {
                 }
             }
         }
-    }
-
-    private static String xgBankName(int bankNum) {
-        String key = "0-%d".formatted(bankNum);
-        String name = XGSpecParser.getBankNames().get(key);
-        return name != null ? name : "XG %03d".formatted(bankNum);
     }
 
     private void writeYaml(Map<Integer, TreeSet<Integer>> domains, TreeSet<Integer> sfxDomain) throws IOException {

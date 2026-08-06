@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.yamaha;
+package com.hypercube.workshop.midiworkshop.presets.yamaha.parser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,13 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +61,7 @@ public class CS2XPresetsHTMLParser {
             Matcher m = BANK_PATTERN.matcher(td.text()
                     .trim());
             if (m.matches()) {
-                bankSpans.put(Integer.parseInt(m.group(1)), new int[] { cellStart, cellStart + colspan - 1 });
+                bankSpans.put(Integer.parseInt(m.group(1)), new int[]{cellStart, cellStart + colspan - 1});
             }
             cellStart += colspan;
         }
@@ -76,7 +70,7 @@ public class CS2XPresetsHTMLParser {
         }
         // The SFX table is the only one holding a single "Bank 0" (spanned by
 // colspan), distinct from the normal voice tables which list several banks.
-boolean isSfxTable = bankSpans.size() == 1 && bankSpans.containsKey(0);
+        boolean isSfxTable = bankSpans.size() == 1 && bankSpans.containsKey(0);
         int pgmHeaderRowIdx = -1;
         int pgmCol = -1;
         for (int i = bankHeaderRowIdx + 1; i < grid.size() && pgmCol == -1; i++) {

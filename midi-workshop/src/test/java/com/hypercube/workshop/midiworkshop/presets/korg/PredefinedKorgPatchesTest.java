@@ -1,10 +1,12 @@
-package com.hypercube.workshop.midiworkshop.presets;
+package com.hypercube.workshop.midiworkshop.presets.korg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.hypercube.workshop.midiworkshop.api.presets.*;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
+import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetDomain;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
@@ -15,10 +17,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.yaml.mixin.MidiDeviceModeMi
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiDevicePresetSerializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiPresetCategorySerializer;
 import com.hypercube.workshop.midiworkshop.api.sysex.yaml.serializer.MidiPresetDomainSerializer;
-import com.hypercube.workshop.midiworkshop.presets.steinberg.SteinbergScriptFileParser;
-import com.hypercube.workshop.midiworkshop.presets.yamaha.CS1XPresetsHTMLParser;
-import com.hypercube.workshop.midiworkshop.presets.yamaha.CS2XPresetsHTMLParser;
-import com.hypercube.workshop.midiworkshop.presets.yamaha.XGSpecParser;
+import com.hypercube.workshop.midiworkshop.presets.AbstractPredefinedPatchesTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -26,55 +25,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+/**
+ * This is not a test class, we use JUNIT to run quick experimentations...
+ * Another experiment to see if we can extract patches names from the VST GUI using AutoIt
+ */
 @Slf4j
-class PredefinedPatchNamesGenerationTest {
-    private static void saveText(List<String> lines, String path) throws IOException {
-        var p = Path.of("./target/patches/" + path);
-        File file = p.toFile();
-        file
-                .getParentFile()
-                .mkdirs();
-        if (file.exists()) {
-            file.delete();
-        }
-        Files.write(p, lines, StandardOpenOption.CREATE);
-    }
-
-    @Test
-    void generateSoundCanvasPresets() throws IOException {
-
-        MidiDeviceDefinition device = new MidiDeviceDefinition();
-        device.setPresetNaming(MidiPresetNaming.SOUND_CANVAS);
-        device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
-        SteinbergScriptFileParser steinbergScriptFileParser = new SteinbergScriptFileParser(device, new File("./src/test/resources/steinberg-scripts/SC-88.txt"));
-        List<String> lines = steinbergScriptFileParser.parse()
-                .stream()
-                .sorted(Comparator.comparing(MidiPreset::getBankMSB)
-                        .thenComparing(MidiPreset::getBankLSB)
-                        .thenComparing(MidiPreset::getLastProgram))
-                .map(p -> "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getLastProgram(), p.getId()
-                        .name()))
-                .toList();
-        saveText(lines, "sc/SoundCanvasPatches.txt");
-    }
-
-    @Test
-    void generateCS1XGDomains() throws IOException {
-        CS1XPresetsHTMLParser parser = new CS1XPresetsHTMLParser(new File("./src/test/resources/XG/CS1x XG-voices.html"));
-        parser.parse();
-    }
-
-    @Test
-    void generateCS2XGDomains() throws IOException {
-        CS2XPresetsHTMLParser cs1XPresetsCSVParser = new CS2XPresetsHTMLParser(new File("./src/test/resources/XG/CS2x XG-voices.html"));
-        cs1XPresetsCSVParser.parse();
-    }
-
+public class PredefinedKorgPatchesTest extends AbstractPredefinedPatchesTest {
     @Test
     void generateKorgM1Banks() throws IOException {
         List<String> content = Files.readAllLines(Path.of("./src/test/resources/Korg/Korg M1 VST Programs.txt"))
@@ -167,44 +126,5 @@ class PredefinedPatchNamesGenerationTest {
         module.addSerializer(MidiPresetCategory.class, new MidiPresetCategorySerializer());
         mapper.registerModule(module);
         mapper.writeValue(new File("M1 VST.yml"), device);
-    }
-
-    @Test
-    void generateXGPresets() throws IOException {
-
-        MidiDeviceDefinition device = new MidiDeviceDefinition();
-        device.setPresetNaming(MidiPresetNaming.YAMAHA_XG);
-        device.setPresetFormat(MidiBankFormat.BANK_MSB_LSB_PRG);
-        XGSpecParser xgSpecParser = new XGSpecParser(device);
-
-        List<MidiPreset> midiPresets = xgSpecParser.parsePresets(new File("./src/test/resources/XG/XG-voices.htm"));
-        midiPresets.addAll(xgSpecParser.parseDrumKits(new File("./src/test/resources/XG/XG-drums.htm")));
-        List<String> patches = midiPresets
-                .stream()
-                .sorted(Comparator.comparing(MidiPreset::getBankMSB)
-                        .thenComparing(MidiPreset::getBankLSB)
-                        .thenComparing(MidiPreset::getLastProgram))
-                .flatMap(p -> {
-                            String command = "%d-%d-%d %s".formatted(p.getBankMSB(), p.getBankLSB(), p.getLastProgram(), p.getId()
-                                    .name());
-                            List<String> result = new ArrayList<>();
-                            result.add(command);
-                            result.addAll(p.getDrumKitNotes()
-                                    .stream()
-                                    .map(n -> "    %d %s".formatted(n.note(), n.title()))
-                                    .toList());
-                            return result.stream();
-                        }
-                )
-                .toList();
-        saveText(patches, "xg/XGPatches.txt");
-        var banks = xgSpecParser.parseBanks()
-                .stream()
-                .sorted(Comparator.comparing(MidiDeviceBank::getMSB)
-                        .thenComparing(MidiDeviceBank::getLSB)
-                        .thenComparing(MidiDeviceBank::getName))
-                .map(b -> b.getCommand() + " " + b.getName())
-                .toList();
-        saveText(banks, "xg/XGBanks.txt");
     }
 }

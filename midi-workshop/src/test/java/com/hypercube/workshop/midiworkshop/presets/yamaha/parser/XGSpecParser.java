@@ -1,4 +1,4 @@
-package com.hypercube.workshop.midiworkshop.presets.yamaha;
+package com.hypercube.workshop.midiworkshop.presets.yamaha.parser;
 
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
@@ -42,6 +42,92 @@ public class XGSpecParser {
                 .collect(Collectors.toList());
     }
 
+    public static Map<String, String> getBankNames() {
+        return buildBankNames();
+    }
+
+    private static Map<String, String> buildBankNames() {
+        Map<String, String> map = new HashMap<>();
+        map.put("0-0", "XG 000");
+        map.put("0-1", "XG 001 (KSP)");
+        map.put("0-3", "XG 003 (Stereo)");
+        map.put("0-6", "XG 006 (Single)");
+        map.put("0-8", "XG 008 (Slow)");
+        map.put("0-12", "XG 012 (Fast Decay)");
+        map.put("0-14", "XG 014 (Double Attack)");
+        map.put("0-16", "XG 016 (Bright 1)");
+        map.put("0-17", "XG 017 (Bright 2)");
+        map.put("0-18", "XG 018 (Dark 1)");
+        map.put("0-19", "XG 019 (Dark 2)");
+        map.put("0-20", "XG 020 (Resonant)");
+        map.put("0-21", "XG 021 (LFO Cutoff Freq)");
+        map.put("0-22", "XG 021 (Velo Cutoff Freq)");
+        map.put("0-24", "XG 024 (Attack)");
+        map.put("0-25", "XG 025 (Release)");
+        map.put("0-26", "XG 026 (Sweep)");
+        map.put("0-27", "XG 027 (Resonant Sweep)");
+        map.put("0-28", "XG 028 (Muted)");
+        map.put("0-29", "XG 029 (Complex FEG)");
+        map.put("0-32", "XG 032 (Detune 1)");
+        map.put("0-33", "XG 033 (Detune 2)");
+        map.put("0-34", "XG 034 (Detune 3)");
+        map.put("0-35", "XG 035 (Octave 1)");
+        map.put("0-36", "XG 036 (Octave 2)");
+        map.put("0-37", "XG 037 (5th 1)");
+        map.put("0-38", "XG 038 (5th 2)");
+        map.put("0-39", "XG 039 (Bend)");
+        map.put("0-40", "XG 040 (Tutti 1)");
+        map.put("0-41", "XG 041 (Tutti 2)");
+        map.put("0-42", "XG 042 (Tutti 3)");
+        map.put("0-43", "XG 043 (Velo-Switch)");
+        map.put("0-45", "XG 045 (Velo-Xfade)");
+        map.put("0-48", "XG 048 (Detune 4)");
+        map.put("0-52", "XG 052 (Tutti 4)");
+        map.put("0-53", "XG 053 (Tutti 5)");
+        map.put("0-54", "XG 054 (Tutti 6)");
+        map.put("0-64", "XG 064 (Other waves 1)");
+        map.put("0-65", "XG 065 (Other waves 2)");
+        map.put("0-66", "XG 066 (Other waves 3)");
+        map.put("0-67", "XG 067 (Other waves 4)");
+        map.put("0-68", "XG 068 (Other waves 5)");
+        map.put("0-69", "XG 069 (Other waves 6)");
+        map.put("0-70", "XG 070 (Other waves 7)");
+        map.put("0-71", "XG 071 (Other waves 8)");
+        map.put("0-72", "XG 072 (Other waves 9)");
+        map.put("0-73", "XG 073 (Other waves 10)");
+        map.put("0-74", "XG 074 (Other waves 11)");
+        map.put("0-75", "XG 075 (Other waves 12)");
+        map.put("0-76", "XG 076 (Other waves 13)");
+        map.put("0-77", "XG 077 (Other waves 14)");
+        map.put("0-78", "XG 078 (Other waves 15)");
+        map.put("0-79", "XG 079 (Other waves 16)");
+        map.put("0-80", "XG 080 (Other waves 17)");
+        map.put("0-81", "XG 081 (Other waves 18)");
+        map.put("0-82", "XG 082 (Other waves 19)");
+        map.put("0-83", "XG 083 (Other waves 20)");
+        map.put("0-84", "XG 084 (Other waves 21)");
+        map.put("0-85", "XG 085 (Other waves 22)");
+        map.put("0-86", "XG 086 (Other waves 23)");
+        map.put("0-87", "XG 087 (Other waves 24)");
+        map.put("0-88", "XG 088 (Other waves 25)");
+        map.put("0-89", "XG 089 (Other waves 26)");
+        map.put("0-90", "XG 090 (Other waves 27)");
+        map.put("0-91", "XG 091 (Other waves 28)");
+        map.put("0-92", "XG 092 (Other waves 29)");
+        map.put("0-93", "XG 093 (Other waves 30)");
+        map.put("0-94", "XG 094 (Other waves 31)");
+        map.put("0-96", "XG 096 (Other instr 1)");
+        map.put("0-97", "XG 097 (Other instr 2)");
+        map.put("0-98", "XG 098 (Other instr 3)");
+        map.put("0-99", "XG 099 (Other instr 4)");
+        map.put("0-100", "XG 100 (Other instr 5)");
+        map.put("0-101", "XG 101 (Other instr 6)");
+        map.put("64-0", "XG SFX");
+        map.put("126-0", "XG SFX KITS");
+        map.put("127-0", "XG DRUM KITS");
+        return map;
+    }
+
     public List<MidiDeviceBank> parseBanks() {
         return bankNames.keySet()
                 .stream()
@@ -79,11 +165,10 @@ public class XGSpecParser {
             doc = Jsoup.parse(Files.readString(htmlFile.toPath()));
             Elements tables = doc.select("body>ul>li>table[border=1]");
             log.info("Scanning " + tables.size() + " tables...");
-            var result = tables.stream()
+            return tables.stream()
                     .flatMap(t -> parseDrumTable(t).stream())
                     .distinct()
                     .toList();
-            return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -311,92 +396,6 @@ public class XGSpecParser {
         map.put("127-0-85", "Live! Brush + Percussion Kit");
         map.put("127-0-7", "Hob Kit");
 
-        return map;
-    }
-
-    public static Map<String, String> getBankNames() {
-        return buildBankNames();
-    }
-
-    private static Map<String, String> buildBankNames() {
-        Map<String, String> map = new HashMap<>();
-        map.put("0-0", "XG 000");
-        map.put("0-1", "XG 001 (KSP)");
-        map.put("0-3", "XG 003 (Stereo)");
-        map.put("0-6", "XG 006 (Single)");
-        map.put("0-8", "XG 008 (Slow)");
-        map.put("0-12", "XG 012 (Fast Decay)");
-        map.put("0-14", "XG 014 (Double Attack)");
-        map.put("0-16", "XG 016 (Bright 1)");
-        map.put("0-17", "XG 017 (Bright 2)");
-        map.put("0-18", "XG 018 (Dark 1)");
-        map.put("0-19", "XG 019 (Dark 2)");
-        map.put("0-20", "XG 020 (Resonant)");
-        map.put("0-21", "XG 021 (LFO Cutoff Freq)");
-        map.put("0-22", "XG 021 (Velo Cutoff Freq)");
-        map.put("0-24", "XG 024 (Attack)");
-        map.put("0-25", "XG 025 (Release)");
-        map.put("0-26", "XG 026 (Sweep)");
-        map.put("0-27", "XG 027 (Resonant Sweep)");
-        map.put("0-28", "XG 028 (Muted)");
-        map.put("0-29", "XG 029 (Complex FEG)");
-        map.put("0-32", "XG 032 (Detune 1)");
-        map.put("0-33", "XG 033 (Detune 2)");
-        map.put("0-34", "XG 034 (Detune 3)");
-        map.put("0-35", "XG 035 (Octave 1)");
-        map.put("0-36", "XG 036 (Octave 2)");
-        map.put("0-37", "XG 037 (5th 1)");
-        map.put("0-38", "XG 038 (5th 2)");
-        map.put("0-39", "XG 039 (Bend)");
-        map.put("0-40", "XG 040 (Tutti 1)");
-        map.put("0-41", "XG 041 (Tutti 2)");
-        map.put("0-42", "XG 042 (Tutti 3)");
-        map.put("0-43", "XG 043 (Velo-Switch)");
-        map.put("0-45", "XG 045 (Velo-Xfade)");
-        map.put("0-48", "XG 048 (Detune 4)");
-        map.put("0-52", "XG 052 (Tutti 4)");
-        map.put("0-53", "XG 053 (Tutti 5)");
-        map.put("0-54", "XG 054 (Tutti 6)");
-        map.put("0-64", "XG 064 (Other waves 1)");
-        map.put("0-65", "XG 065 (Other waves 2)");
-        map.put("0-66", "XG 066 (Other waves 3)");
-        map.put("0-67", "XG 067 (Other waves 4)");
-        map.put("0-68", "XG 068 (Other waves 5)");
-        map.put("0-69", "XG 069 (Other waves 6)");
-        map.put("0-70", "XG 070 (Other waves 7)");
-        map.put("0-71", "XG 071 (Other waves 8)");
-        map.put("0-72", "XG 072 (Other waves 9)");
-        map.put("0-73", "XG 073 (Other waves 10)");
-        map.put("0-74", "XG 074 (Other waves 11)");
-        map.put("0-75", "XG 075 (Other waves 12)");
-        map.put("0-76", "XG 076 (Other waves 13)");
-        map.put("0-77", "XG 077 (Other waves 14)");
-        map.put("0-78", "XG 078 (Other waves 15)");
-        map.put("0-79", "XG 079 (Other waves 16)");
-        map.put("0-80", "XG 080 (Other waves 17)");
-        map.put("0-81", "XG 081 (Other waves 18)");
-        map.put("0-82", "XG 082 (Other waves 19)");
-        map.put("0-83", "XG 083 (Other waves 20)");
-        map.put("0-84", "XG 084 (Other waves 21)");
-        map.put("0-85", "XG 085 (Other waves 22)");
-        map.put("0-86", "XG 086 (Other waves 23)");
-        map.put("0-87", "XG 087 (Other waves 24)");
-        map.put("0-88", "XG 088 (Other waves 25)");
-        map.put("0-89", "XG 089 (Other waves 26)");
-        map.put("0-90", "XG 090 (Other waves 27)");
-        map.put("0-91", "XG 091 (Other waves 28)");
-        map.put("0-92", "XG 092 (Other waves 29)");
-        map.put("0-93", "XG 093 (Other waves 30)");
-        map.put("0-94", "XG 094 (Other waves 31)");
-        map.put("0-96", "XG 096 (Other instr 1)");
-        map.put("0-97", "XG 097 (Other instr 2)");
-        map.put("0-98", "XG 098 (Other instr 3)");
-        map.put("0-99", "XG 099 (Other instr 4)");
-        map.put("0-100", "XG 100 (Other instr 5)");
-        map.put("0-101", "XG 101 (Other instr 6)");
-        map.put("64-0", "XG SFX");
-        map.put("126-0", "XG SFX KITS");
-        map.put("127-0", "XG DRUM KITS");
         return map;
     }
 }

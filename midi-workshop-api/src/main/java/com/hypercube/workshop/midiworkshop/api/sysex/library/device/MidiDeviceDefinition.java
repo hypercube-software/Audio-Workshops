@@ -171,7 +171,7 @@ public class MidiDeviceDefinition {
 
     public int getBankId(String bankName) {
         String bankNumber = getBank(bankName).map(MidiDeviceBank::getCommand)
-                .orElse(bankName);
+                .orElseThrow(() -> new MidiConfigError("Bank name '%s' not defined in presetBanks section for device '%s'".formatted(bankName, deviceName)));
         return parseBankNumber(bankNumber);
     }
 
@@ -225,17 +225,17 @@ public class MidiDeviceDefinition {
         }
     }
 
-    private int parseBankNumber(String bankNameOrId) {
+    private int parseBankNumber(String bankNumber) {
         try {
-            if (bankNameOrId.startsWith("$")) {
-                return Integer.parseInt(bankNameOrId.substring(1), 16);
-            } else if (bankNameOrId.startsWith("0x")) {
-                return Integer.parseInt(bankNameOrId.substring(2), 16);
+            if (bankNumber.startsWith("$")) {
+                return Integer.parseInt(bankNumber.substring(1), 16);
+            } else if (bankNumber.startsWith("0x")) {
+                return Integer.parseInt(bankNumber.substring(2), 16);
             } else {
-                return Integer.parseInt(bankNameOrId, 10);
+                return Integer.parseInt(bankNumber, 10);
             }
         } catch (NumberFormatException e) {
-            throw new MidiConfigError("Bank name '%s' not defined in presetBanks section for device '%s'".formatted(bankNameOrId, deviceName));
+            throw new MidiConfigError("Bank name '%s' not defined in presetBanks section for device '%s'".formatted(bankNumber, deviceName));
         }
     }
 }
