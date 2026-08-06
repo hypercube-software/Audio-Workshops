@@ -1,0 +1,36 @@
+projectName: "Boss-DS-330"
+device: DS-330
+ports:
+  inputAudioDevice: InputAudioDevice
+  outputAudioDevice: OutputAudioDevice
+audio:
+  bufferDurationMs: 250
+  nbChannels: 2
+  channelMapping: "0:0 1:1"
+  bitDepth: 16
+  sampleRate: 44100
+midi:
+  # DS: Decent Sampler
+  # SFZ
+  outputFormat: SFZ
+  # detect looping sounds
+  maxNoteDurationSec: 6
+  maxNoteReleaseDurationSec: 10
+  # Default MIDI channel (from 1 to 16)
+  channel: 1
+  # lowest preset included (must match a preset name in the device library)
+  # Performance mode: Performances 1 bank (128 presets: Ministry -> FunkyHit)
+  lowestPreset: Gt.FretNoise
+  # highest preset included (must match a preset name in the device library)
+  # Performance mode: Performances 2 bank (128 presets: Concert -> Session)
+  highestPreset: Gun Shot
+  # lowest note included
+  lowestNote: C1
+  # highest note included
+  highestNote: C2
+  # how many note to record per octave
+  notesPerOctave: 1
+  # how many velocity layer to record per note
+  velocityPerNote: 2
+  # how many CC layer to record per note
+  ccPerNote: 1

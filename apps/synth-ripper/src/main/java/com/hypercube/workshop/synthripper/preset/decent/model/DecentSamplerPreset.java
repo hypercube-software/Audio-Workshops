@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DecentSampler {
+public class DecentSamplerPreset {
     @XmlElementWrapper(name = "groups")
     @XmlElement(name = "group")
     private List<RoundRobinGroup> groups = new ArrayList<>();

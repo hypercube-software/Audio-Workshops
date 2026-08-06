@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DecentSamplerPresetGeneratorTest {
     @Test
     void canSerializeToXML() throws JAXBException, IOException {
-        DecentSampler decentSampler = new DecentSampler();
+        DecentSamplerPreset decentSamplerPreset = new DecentSamplerPreset();
         Sample sample = new Sample();
         sample.setLowNote(10);
         sample.setHiNote(64);
@@ -36,23 +36,23 @@ class DecentSamplerPresetGeneratorTest {
         dsGroup.getSamples()
                 .add(sample);
 
-        decentSampler.getGroups()
+        decentSamplerPreset.getGroups()
                 .add(dsGroup);
 
         MidiControlChange cc = new MidiControlChange(1, List.of(
                 new Binding("amp", "group", 0, "A", "AMP_VOLUME", "table", "0,1;64,0;128,0"),
                 new Binding("amp", "group", 0, "B", "AMP_VOLUME", "table", "0,0;64,1;128,0"),
                 new Binding("amp", "group", 0, "C", "AMP_VOLUME", "table", "0,0;64,0;128,1")));
-        decentSampler.getMidi()
+        decentSamplerPreset.getMidi()
                 .getMidiControlChangeList()
                 .add(cc);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(DecentSamplerPreset.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         String xml;
         try (StringWriter sw = new StringWriter()) {
-            jaxbMarshaller.marshal(decentSampler, sw);
+            jaxbMarshaller.marshal(decentSamplerPreset, sw);
             xml = sw.toString();
         }
         log.info(xml);
@@ -104,14 +104,14 @@ class DecentSamplerPresetGeneratorTest {
                         .file(new File("output/toto.wav"))
                         .build()
         );
-        DecentSampler decentSampler = decentSamplerPresetGenerator.forgeDecentSamplerPreset(conf, new File("output/toto.dspreset"), sampleBatch);
+        DecentSamplerPreset decentSamplerPreset = decentSamplerPresetGenerator.forgeDecentSamplerPreset(new File("output/toto.dspreset"), sampleBatch);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(DecentSamplerPreset.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         String xml;
         try (StringWriter sw = new StringWriter()) {
-            jaxbMarshaller.marshal(decentSampler, sw);
+            jaxbMarshaller.marshal(decentSamplerPreset, sw);
             xml = sw.toString();
         }
         log.info(xml);

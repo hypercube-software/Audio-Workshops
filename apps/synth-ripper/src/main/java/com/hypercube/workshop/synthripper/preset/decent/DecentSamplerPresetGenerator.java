@@ -12,7 +12,10 @@ import jakarta.xml.bind.Marshaller;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -31,9 +34,9 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
             String presetId = preset.getShortId();
             File sfzFile = new File("%s/%s %s.dspreset".formatted(conf.getOutputDir(), presetId, preset.getId()
                     .name()));
-            DecentSampler ds = forgeDecentSamplerPreset(conf, sfzFile, recordedSamples);
+            DecentSamplerPreset ds = forgeDecentSamplerPreset(sfzFile, recordedSamples);
             try {
-                JAXBContext jaxbContext = JAXBContext.newInstance(DecentSampler.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(DecentSamplerPreset.class);
                 Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
                 jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 jaxbMarshaller.marshal(ds, sfzFile);
@@ -44,8 +47,8 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
 
     }
 
-    public DecentSampler forgeDecentSamplerPreset(SynthRipperConfiguration conf, File presetFile, List<RecordedSynthNote> recordedSynthNotes) {
-        DecentSampler ds = new DecentSampler();
+    public DecentSamplerPreset forgeDecentSamplerPreset(File presetFile, List<RecordedSynthNote> recordedSynthNotes) {
+        DecentSamplerPreset ds = new DecentSamplerPreset();
         var recordsPerVelocity = recordedSynthNotes.stream()
                 .collect(groupingBy(RecordedSynthNote::getVelocity));
         recordsPerVelocity.forEach((velocity, recordedSamplesPerVelocity) -> {
@@ -57,7 +60,7 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
         return ds;
     }
 
-    private void forgeVelocityGroups(File presetFile, MidiZone velocity, List<RecordedSynthNote> recordedSamplesPerVelocity, DecentSampler ds) {
+    private void forgeVelocityGroups(File presetFile, MidiZone velocity, List<RecordedSynthNote> recordedSamplesPerVelocity, DecentSamplerPreset ds) {
         var recordsPerCC = recordedSamplesPerVelocity.stream()
                 .collect(groupingBy(RecordedSynthNote::getControlChange));
         recordsPerCC.forEach((cc, recordedSamplesPerControlChange) -> {
@@ -81,7 +84,7 @@ public class DecentSamplerPresetGenerator implements PresetGenerator {
         });
     }
 
-    private void forgeNoteGroups(File presetFile, MidiZone velocity, int controlChange, MidiZone controlChangeValue, List<RecordedSynthNote> recordedSamples, List<Binding> bindings, DecentSampler ds) {
+    private void forgeNoteGroups(File presetFile, MidiZone velocity, int controlChange, MidiZone controlChangeValue, List<RecordedSynthNote> recordedSamples, List<Binding> bindings, DecentSamplerPreset ds) {
         String groupTag;
         float modVolume;
         if (controlChange != MidiPreset.NO_CC) {
