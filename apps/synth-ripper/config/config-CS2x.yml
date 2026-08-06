@@ -20,10 +20,10 @@ midi:
   channel: 1
   # lowest preset included (must match a preset name in the device library)
   # Performance mode: Performances 1 bank (128 presets: Ministry -> FunkyHit)
-  lowestPreset: Dreampad
+  lowestPreset: SFX Kit 1
   # highest preset included (must match a preset name in the device library)
   # Performance mode: Performances 2 bank (128 presets: Concert -> Session)
-  highestPreset: Dreampad
+  highestPreset: SFX Kit 1
   # lowest note included
   lowestNote: C1
   # highest note included
