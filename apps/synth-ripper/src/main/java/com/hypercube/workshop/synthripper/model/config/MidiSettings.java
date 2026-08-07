@@ -23,9 +23,9 @@ public class MidiSettings {
     public static final int DEFAULT_MIDI_CHANNEL = 1;
     public static final int USE_DEFAULT_MIDI_CHANNEL = -1;
     /**
-     * Output format for presets, should match {@link PresetGenerator#getAlias()}
+     * Output formats for presets, should match {@link PresetGenerator#getAlias()}
      */
-    private String outputFormat;
+    private List<String> outputFormats;
     /**
      * Max Duration of NoteOn message before sending Note Off
      */

@@ -7848,3 +7848,75 @@ favorites:
   filename: null
   channel: 0
   score: 5
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 2"
+  name: "Katarsis"
+  category: "Sequence"
+  command: "3F4266"
+  filename: null
+  channel: 0
+  score: 5
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 2"
+  name: "N.Y. 99"
+  category: "Sequence"
+  command: "3F425E"
+  filename: null
+  channel: 0
+  score: 5
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 2"
+  name: "Nexxus"
+  category: "Sequence"
+  command: "3F4265"
+  filename: null
+  channel: 0
+  score: 2
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 1"
+  name: "Walrus"
+  category: "Sequence"
+  command: "3F4006"
+  filename: null
+  channel: 0
+  score: 4
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 2"
+  name: "X2-Sweep"
+  category: "Sequence"
+  command: "3F4258"
+  filename: null
+  channel: 0
+  score: 4
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 1"
+  name: "Bitcomp"
+  category: "Synth Comping"
+  command: "3F404B"
+  filename: null
+  channel: 0
+  score: 5
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 1"
+  name: "M25"
+  category: "Synth Comping"
+  command: "3F404D"
+  filename: null
+  channel: 0
+  score: 5
+- device: "CS2x"
+  mode: "Performance"
+  bank: "Performances 1"
+  name: "Pop Comp"
+  category: "Synth Comping"
+  command: "3F4040"
+  filename: null
+  channel: 0
+  score: 4

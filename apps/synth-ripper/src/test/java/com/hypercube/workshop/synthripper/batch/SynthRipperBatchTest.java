@@ -103,6 +103,18 @@ class SynthRipperBatchTest extends AbstractSynthRipperTest {
 
         // THEN the batch is generated from the presets and notes declared in the config
         assertEquals(expectedBatchSize, batch.size());
+
+        // AND the drum kit note zones are exactly one note wide (low == high == value),
+        // they must not stretch to 0 / 127 like melodic presets
+        assertTrue(batch.stream()
+                .allMatch(rs -> {
+                    MidiZone zone = rs.getNote();
+                    return zone.low() == zone.value() && zone.high() == zone.value();
+                }));
+        assertTrue(batch.stream()
+                .noneMatch(rs -> rs.getNote()
+                        .low() == 0 || rs.getNote()
+                        .high() == 127));
     }
 
 }

@@ -13,7 +13,9 @@ audio:
 midi:
   # DS: Decent Sampler
   # SFZ
-  outputFormat: DS
+  outputFormats:
+    - DS
+    - SFZ
   # detect looping sounds
   maxNoteDurationSec: 5
   maxNoteReleaseDurationSec: 5

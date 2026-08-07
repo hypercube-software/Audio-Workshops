@@ -12,7 +12,9 @@ audio:
 midi:
   # DS: Decent Sampler
   # SFZ
-  outputFormat: SFZ
+  outputFormats:
+    - DS
+    - SFZ
   # detect looping sounds
   maxNoteDurationSec: 6
   maxNoteReleaseDurationSec: 10
@@ -34,4 +36,3 @@ midi:
   velocityPerNote: 2
   # how many CC layer to record per note
   ccPerNote: 1
-# TODO: drumkitNotes feature commented out - needs to be reimplemented using device library

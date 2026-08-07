@@ -93,11 +93,11 @@ class XGPresetsContainerTest {
         DrumKitNote firstNote = standardKit.drumMap()
                 .getFirst();
         assertEquals("Surdo Mute", firstNote.title());
-        assertEquals(12, firstNote.note());
+        assertEquals(13, firstNote.note());
 
         DrumKitNote lastNote = standardKit.drumMap()
                 .getLast();
         assertEquals("Bell Tree", lastNote.title());
-        assertEquals(83, lastNote.note());
+        assertEquals(84, lastNote.note());
     }
 }

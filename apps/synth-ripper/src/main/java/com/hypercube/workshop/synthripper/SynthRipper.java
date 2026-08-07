@@ -145,7 +145,7 @@ public class SynthRipper {
                                 for (int velocity = veloIncrement; velocity < upperBoundVelocity; velocity += veloIncrement) {
                                     RecordedSynthNote rs = new RecordedSynthNote();
                                     rs.setChannel(preset.getZeroBasedChannel());
-                                    rs.setNote(computeNoteMidiZone(lowestNote, highestNote, noteIncrement, note));
+                                    rs.setNote(computeNoteMidiZone(drumKit, lowestNote, highestNote, noteIncrement, note));
 
                                     rs.setVelocity(computeVelocityMidiZone(velocity, veloIncrement));
 
@@ -250,7 +250,10 @@ public class SynthRipper {
         return new MidiZone(boundValue(velocity - veloIncrement + 1), boundValue(velocity), boundValue(velocity));
     }
 
-    private MidiZone computeNoteMidiZone(int lowestNote, int highestNote, int noteIncrement, int note) {
+    private MidiZone computeNoteMidiZone(boolean drumKit, int lowestNote, int highestNote, int noteIncrement, int note) {
+        if (drumKit) {
+            return new MidiZone(boundValue(note), boundValue(note), boundValue(note));
+        }
         Supplier<Integer> low = () -> {
             if (note == lowestNote) {
                 return 0;
@@ -501,16 +504,20 @@ public class SynthRipper {
     }
 
     private void savePresets() {
-        String outputFormat = conf.getMidi()
-                .getOutputFormat();
-        presetGenerators.stream()
+        List<String> outputFormats = conf.getMidi()
+                .getOutputFormats();
+        if (outputFormats == null || outputFormats.isEmpty()) {
+            log.error("No output format configured, use 'outputFormats' in the config");
+            return;
+        }
+        outputFormats.forEach(outputFormat -> presetGenerators.stream()
                 .filter(pg -> pg.getAlias()
                         .equals(outputFormat))
                 .findFirst()
                 .ifPresentOrElse(pg ->
                 {
                     pg.generate(conf, state.sampleBatch);
-                }, () -> log.error("Unknown output format: {}", outputFormat));
+                }, () -> log.error("Unknown output format: {}", outputFormat)));
     }
 
     private boolean finished() {
