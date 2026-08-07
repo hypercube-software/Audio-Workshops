@@ -32,6 +32,12 @@ public class MidiSettings {
      */
     private LoopDetectorType loopDetector = LoopDetectorType.HARD_CUT;
     /**
+     * Device mode to activate before the rip (e.g. "Performance" or "XG" on a
+     * CS2x). If set, the matching SysEx defined in the device library is sent to
+     * the synth when the rip starts.
+     */
+    private String deviceMode;
+    /**
      * Max Duration of NoteOn message before sending Note Off
      */
     private float maxNoteDurationSec;

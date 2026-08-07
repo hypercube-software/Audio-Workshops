@@ -13,8 +13,12 @@ import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
+import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
+import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
 import com.hypercube.workshop.synthripper.loop.LoopDetectionContext;
 import com.hypercube.workshop.synthripper.loop.LoopDetector;
+import com.hypercube.workshop.synthripper.loop.WavLoopMarkersWriter;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
 import com.hypercube.workshop.synthripper.model.*;
 import com.hypercube.workshop.synthripper.model.config.MidiSettings;
@@ -51,11 +55,13 @@ public class SynthRipper {
     private MidiOutPort hardwareMidiOutPort;
     private WavRecorder wavRecorder;
     private LoopDetector loopDetector;
+    private final MidiDeviceRequester midiDeviceRequester;
 
 
-    public SynthRipper(List<PresetGenerator> presetGenerators) {
+    public SynthRipper(List<PresetGenerator> presetGenerators, MidiDeviceRequester midiDeviceRequester) {
         this.threadLogger = new ThreadLogger();
         this.presetGenerators = presetGenerators;
+        this.midiDeviceRequester = midiDeviceRequester;
     }
 
     public void init(SynthRipperConfiguration config) {
@@ -70,6 +76,44 @@ public class SynthRipper {
         initState();
     }
 
+    /**
+     * If a device mode is configured (e.g. "Performance" or "XG" on a CS2x), send
+     * the corresponding SysEx from the device library so the synth runs in the
+     * right mode before the rip. This mirrors what {@code MidiPresetManager} does
+     * when the user changes mode.
+     */
+    private void activateDeviceMode(MidiOutPort midiOutPort) {
+        if (conf.getDevice() == null) {
+            return;
+        }
+        String modeName = conf.getMidi()
+                .getDeviceMode();
+        if (modeName == null || modeName.isBlank()) {
+            return;
+        }
+        MidiDeviceMode mode = conf.getDevice()
+                .getDeviceModes()
+                .get(modeName);
+        if (mode == null) {
+            throw new SynthRipperError("Mode '%s' is not defined for device '%s'. Available: %s".formatted(
+                    modeName, conf.getDevice()
+                            .getDeviceName(),
+                    conf.getDevice()
+                            .getDeviceModes()
+                            .keySet()));
+        }
+        String command = mode.getCommand();
+        if (command == null || command.isBlank()) {
+            log.warn("Mode '{}' has no command defined, nothing to send", modeName);
+            return;
+        }
+        log.info("Activating device mode '{}'", modeName);
+        midiDeviceRequester.updateDevice(conf.getDevice(), null, midiOutPort,
+                CommandCall.parse(conf.getDevice(), command));
+        midiOutPort.sleep(conf.getDevice()
+                .getModeLoadTimeMs());
+    }
+
     public void recordSynth(AudioInputDevice audioInputDevice, AudioOutputDevice audioOutputDevice, MidiOutPort midiOutPort) throws IOException {
         createOutputDir();
         state.nbChannels = format.getNbChannels();
@@ -79,6 +123,7 @@ public class SynthRipper {
                 .getMaxNoteDurationSec();
         this.hardwareMidiOutPort = midiOutPort;
         this.hardwareMidiOutPort.open();
+        activateDeviceMode(midiOutPort);
         try (FFTCalculator fftCalculator = new FFTCalculator(format, new BlackmanHarris())) {
             try (FFTCalculator shortTermFFTCalculator = new FFTCalculator(format.withDuration(1), new BlackmanHarris())) {
                 try (AudioInputLine inputLine = new AudioInputLine(audioInputDevice, format)) {
@@ -98,6 +143,9 @@ public class SynthRipper {
             midiOutPort.sendAllOff();
             midiOutPort.close();
         }
+        // All wavs are recorded and closed now: run the (potentially slow) loop
+        // analysis on every looping note without blocking the real time audio thread.
+        detectLoopsAfterRecording();
         savePresets();
     }
 
@@ -419,12 +467,32 @@ public class SynthRipper {
     }
 
     private void onNoteRecordTerminated() throws IOException {
-        wavRecorder.endWrite();
-        wavRecorder.writeMarkers(List.of(PCMMarker.of("Release", state.noteOffSampleMarker)));
-        wavRecorder.close();
-        wavRecorder = null;
-        detectLoopForCurrentNote();
+        RecordedSynthNote recordedSynthNote = state.getCurrentRecordedSynthNote();
+        if (wavRecorder != null) {
+            wavRecorder.endWrite();
+            wavRecorder.writeMarkers(List.of(PCMMarker.of("Release", state.noteOffSampleMarker)));
+            wavRecorder.close();
+            wavRecorder = null;
+        }
+        // Remember where the sustain ends (note-off): the loop detection runs
+        // offline, once every wav has been recorded, so it must not rely on the
+        // current state anymore.
+        if (recordedSynthNote != null) {
+            recordedSynthNote.setNoteOffSampleMarker(state.noteOffSampleMarker);
+        }
         state.nextRecordedSynthNote();
+    }
+
+    /**
+     * Defensively close any {@link WavRecorder} left open outside the normal
+     * termination path, so the wav is never locked when later reopened.
+     */
+    private void closeWavRecorderIfNeeded() throws IOException {
+        if (wavRecorder != null) {
+            log.warn("Closing an unexpected pending WavRecorder before opening a new one");
+            wavRecorder.close();
+            wavRecorder = null;
+        }
     }
 
     private void sendNoteOff() throws InvalidMidiDataException {
@@ -441,29 +509,46 @@ public class SynthRipper {
     }
 
     /**
-     * Offline loop detection: run the configured {@link LoopDetector} on the note which has
-     * just been fully recorded (its wav file is finalized and {@code state.noteOffSampleMarker}
-     * still designates this note's note-off position).
+     * Offline loop detection: run the configured {@link LoopDetector} on every
+     * recorded note whose wav is finalized. This is deliberately called <b>after</b>
+     * the whole recording session, once all wavs have been written and closed, so
+     * the (potentially slow) analysis and the wav re-write never block the real
+     * time audio buffer callback.
      */
-    private void detectLoopForCurrentNote() {
-        RecordedSynthNote recordedSynthNote = state.getCurrentRecordedSynthNote();
-        if (recordedSynthNote == null || !recordedSynthNote.isLooping() || loopDetector == null) {
+    private void detectLoopsAfterRecording() {
+        if (loopDetector == null) {
             return;
         }
-        try {
-            LoopDetectionContext context = LoopDetectionContext.builder()
-                    .sampleRate(format.getSampleRate())
-                    .nbChannels(format.getNbChannels())
-                    .wavFile(recordedSynthNote.getFile())
-                    .noteOffSampleMarker(state.noteOffSampleMarker)
-                    .build();
-            LoopSetting loopSetting = loopDetector.detectLoop(context);
-            if (loopSetting != null) {
-                recordedSynthNote.setLoopSetting(loopSetting);
-            }
-        } catch (Exception e) {
-            throw new SynthRipperError("Loop detection failed for note: " + recordedSynthNote.getFile(), e);
-        }
+        state.sampleBatch.stream()
+                .filter(RecordedSynthNote::isLooping)
+                .filter(recordedSynthNote -> recordedSynthNote.getNoteOffSampleMarker() != null)
+                .forEach(recordedSynthNote -> {
+                    try {
+                        long noteOffSampleMarker = recordedSynthNote.getNoteOffSampleMarker();
+                        LoopDetectionContext context = LoopDetectionContext.builder()
+                                .sampleRate(format.getSampleRate())
+                                .nbChannels(format.getNbChannels())
+                                .wavFile(recordedSynthNote.getFile())
+                                .noteOffSampleMarker(noteOffSampleMarker)
+                                .build();
+                        LoopSetting loopSetting = loopDetector.detectLoop(context);
+                        if (loopSetting != null) {
+                            recordedSynthNote.setLoopSetting(loopSetting);
+                            // Rewrite the recorded wav so the loop markers are embedded in the final
+                            // file: the "Release" marker was written during recording, the loop
+                            // start/end are known only now.
+                            File wav = recordedSynthNote.getFile();
+                            WavLoopMarkersWriter.copyWavWithLoopMarkers(wav, wav,
+                                    new PCMMarker("loopStart", loopSetting.getSampleStart()),
+                                    new PCMMarker("loopEnd", loopSetting.getSampleEnd()));
+                        }
+                    } catch (Exception e) {
+                        // A single locked / unreadable wav must not abort the whole
+                        // batch (e.g. on Windows when the file is transiently held by
+                        // another process). Log and move on to the next looping note.
+                        log.error("Loop detection failed for note {}: {}", recordedSynthNote.getFile(), e.toString());
+                    }
+                });
     }
 
     private File getOutputFile(RecordedSynthNote recordedSynthNote) {
@@ -503,6 +588,10 @@ public class SynthRipper {
         File outputFile = getOutputFile(currentRecordedSynthNote);
         threadLogger.log("Record %s".formatted(outputFile.getParentFile()
                 .getName() + "/" + outputFile.getName()));
+        // Defensive: never open a second WavRecorder if the previous one was not
+        // closed through the normal termination path. On Windows, an open writer
+        // keeps the wav locked ("used by another process").
+        closeWavRecorderIfNeeded();
         wavRecorder = new WavRecorder(outputFile, wavFormat, threadLogger);
         if (currentRecordedSynthNote.getControlChange() != MidiPreset.NO_CC) {
             MidiEvent controlChangeEvent = new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, currentRecordedSynthNote.getChannel(), currentRecordedSynthNote.getControlChange(), currentRecordedSynthNote.getCcValue()

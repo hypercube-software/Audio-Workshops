@@ -22,7 +22,7 @@ public class AbstractSynthRipperTest {
     protected SynthRipper forgeSynthRipper(String config) throws IOException {
         SynthRipperConfiguration conf = loadConfig(new File(config));
         conf.setMidiDeviceLibrary(midiDeviceLibrary);
-        SynthRipper synthRipper = new SynthRipper(List.of(new DecentSamplerPresetGenerator()));
+        SynthRipper synthRipper = new SynthRipper(List.of(new DecentSamplerPresetGenerator()), new MidiDeviceRequester());
         synthRipper.init(conf);
         return synthRipper;
     }

@@ -14,9 +14,12 @@ public class HardCutLoopDetector implements LoopDetector {
 
     @Override
     public LoopSetting detectLoop(LoopDetectionContext context) {
+        long sampleStart = context.getNoteOffSampleMarker() - (long) (LOOP_DURATION_IN_SEC * context.getSampleRate());
+        long sampleEnd = context.getNoteOffSampleMarker();
         LoopSetting loopSetting = new LoopSetting();
-        loopSetting.setSampleStart(context.getNoteOffSampleMarker() - (long) (LOOP_DURATION_IN_SEC * context.getSampleRate()));
-        loopSetting.setSampleEnd(context.getNoteOffSampleMarker());
+        loopSetting.setSampleStart(sampleStart);
+        loopSetting.setSampleEnd(sampleEnd);
+        loopSetting.setLoopLength(sampleEnd - sampleStart);
         return loopSetting;
     }
 }

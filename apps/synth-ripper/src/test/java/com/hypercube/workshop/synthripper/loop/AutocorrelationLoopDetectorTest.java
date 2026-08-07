@@ -4,17 +4,15 @@ import com.hypercube.workshop.audioworkshop.api.format.PCMFormat;
 import com.hypercube.workshop.audioworkshop.api.pcm.PCMMarker;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffFileInfo;
 import com.hypercube.workshop.audioworkshop.files.riff.RiffReader;
-import com.hypercube.workshop.audioworkshop.files.riff.RiffWriter;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.Chunks;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.adtl.RiffAdtlLabelChunk;
 import com.hypercube.workshop.audioworkshop.files.riff.chunks.markers.cue.RiffCueChunk;
-import com.hypercube.workshop.audioworkshop.files.riff.insights.RiffInspector;
 import com.hypercube.workshop.synthripper.model.LoopSetting;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,62 +50,14 @@ class AutocorrelationLoopDetectorTest {
     }
 
     private void copyWavWithLoopMarkers(File source, File target, LoopSetting loop) throws Exception {
-        PCMFormat format;
-        try (RiffReader riffReader = new RiffReader(source, false)) {
-            RiffFileInfo info = riffReader.parse();
-            format = info.getAudioInfo()
-                    .toPCMFormat();
-            try (RiffWriter writer = new RiffWriter(target)) {
-                writer.writeFmtChunk(format);
-                writer.beginChunk(Chunks.DATA);
-                RiffInspector inspector = new RiffInspector(riffReader, info);
-                inspector.inspect(buffer -> {
-                    try {
-                        for (int s = 0; s < buffer.nbSamples(); s++) {
-                            for (int ch = 0; ch < buffer.nbChannels(); ch++) {
-                                short sample = (short) Math.clamp(buffer.sample(ch, s) * Short.MAX_VALUE, -32768, 32767);
-                                writer.writeShortLE(sample);
-                            }
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                writer.endChunk();
-                List<PCMMarker> markers = new ArrayList<>(readAllMarkers(info));
-                markers.add(new PCMMarker("loopStart", loop.getSampleStart()));
-                markers.add(new PCMMarker("loopEnd", loop.getSampleEnd()));
-                writer.writeMarkers(markers);
-            }
-        }
+        WavLoopMarkersWriter.copyWavWithLoopMarkers(source, target,
+                new PCMMarker("loopStart", loop.getSampleStart()),
+                new PCMMarker("loopEnd", loop.getSampleEnd()));
     }
 
-    /**
-     * Reconstruct all markers (CUE + ADTL labels) of the source wav so they are
-     * preserved when copying the samples.
-     */
-    private List<PCMMarker> readAllMarkers(RiffFileInfo info) {
-        List<RiffCueChunk> cueChunks = info.collectChunks(Chunks.CUE);
-        List<RiffAdtlLabelChunk> labels = info.collectChunks(Chunks.ADTL_LABEL);
-        List<PCMMarker> markers = new ArrayList<>();
-        for (RiffAdtlLabelChunk labelChunk : labels) {
-            int identifier = labelChunk.getCuePointLabel()
-                    .dwIdentifier();
-            String label = labelChunk.getCuePointLabel()
-                    .label();
-            cueChunks.stream()
-                    .flatMap(cue -> cue.getCuePoints()
-                            .stream())
-                    .filter(cuePoint -> cuePoint.identifier() == identifier)
-                    .map(cuePoint -> new PCMMarker(label, cuePoint.sampleOffset()))
-                    .findFirst()
-                    .ifPresent(markers::add);
-        }
-        return markers;
-    }
-
-    @Test
-    void detectLoopOnRealWav() throws Exception {
+    @ParameterizedTest
+    @EnumSource(LoopDetectorType.class)
+    void detectLoopOnRealWav(LoopDetectorType type) throws Exception {
         // GIVEN the recorded note wav with a "Release" marker
         File wav = new File(TEST_WAV);
         assertTrue(wav.exists(), "Missing test wav: " + TEST_WAV);
@@ -136,26 +86,26 @@ class AutocorrelationLoopDetectorTest {
                 .wavFile(wav)
                 .noteOffSampleMarker(releasePosition)
                 .build();
-        LoopSetting loop = new AutocorrelationLoopDetector().detectLoop(context);
+
+        LoopSetting loop = type.create(true)
+                .detectLoop(context);
 
         // THEN a loop within the sustain is found and written for observation
-        assertNotNull(loop, "A loop should have been detected on the sustained note");
-        assertTrue(loop.getSampleStart() >= 0, "Loop start must be within the sustain");
-        assertTrue(loop.getSampleEnd() <= releasePosition, "Loop end must not exceed the release marker");
-        assertTrue(loop.getSampleStart() < loop.getSampleEnd(), "Loop must be at least one period long");
+        assertNotNull(loop, type + ": a loop should have been detected on the sustained note");
+        assertTrue(loop.getSampleStart() >= 0, type + ": loop start must be within the sustain");
+        assertTrue(loop.getSampleEnd() <= releasePosition, type + ": loop end must not exceed the release marker");
+        assertTrue(loop.getSampleStart() < loop.getSampleEnd(), type + ": loop must be at least one period long");
 
-        // WARN: the loop must normally be found before the release. If it ends at the
-        // release marker, the detection probably failed to find the period.
-        if (loop.getSampleEnd() == releasePosition) {
-            log.warn("Loop end equals the release marker: loop likely not found before the release");
-        }
+        log.info("{}: loop start={} end={} ({} samples)", type, loop.getSampleStart(), loop.getSampleEnd(),
+                loop.getSampleEnd() - loop.getSampleStart());
 
-        // Save the wav with loop markers so the result can be inspected in a WAV editor
-        File output = new File(OUTPUT_DIR, "loop-detected.wav");
+        // Save the wav with loop markers so the result can be inspected in a WAV editor.
+        // One file per detector so several algorithms can be compared side by side.
+        String baseName = wav.getName().replaceAll("(?i)\\.wav$", "");
+        File output = new File(OUTPUT_DIR, baseName + "-" + type + ".wav");
         output.getParentFile()
                 .mkdirs();
         copyWavWithLoopMarkers(wav, output, loop);
-        log.info("Loop detected: start={} end={} ({} samples)", loop.getSampleStart(), loop.getSampleEnd(), loop.getSampleEnd() - loop.getSampleStart());
         log.info("Written for inspection: {}", output.getAbsolutePath());
     }
 }

@@ -28,6 +28,14 @@ public class Sample {
     @XmlAttribute
     private Long loopCrossfade;
     @XmlAttribute
+    private Float attack;
+    @XmlAttribute
+    private Float decay;
+    @XmlAttribute
+    private Float sustain;
+    @XmlAttribute
+    private Float release;
+    @XmlAttribute
     private String path;
     @XmlAttribute
     private Integer rootNote;

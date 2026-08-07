@@ -2,6 +2,12 @@ package com.hypercube.workshop.synthripper.loop;
 
 import com.hypercube.workshop.synthripper.model.LoopSetting;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+
 /**
  * Loop detector based on autocorrelation of the sustain region.
  *
@@ -19,6 +25,7 @@ import com.hypercube.workshop.synthripper.model.LoopSetting;
  * </ol>
  */
 public class AutocorrelationLoopDetector implements LoopDetector {
+
     /**
      * Minimal loop duration, in seconds
      */
@@ -29,34 +36,41 @@ public class AutocorrelationLoopDetector implements LoopDetector {
      */
     public static final float ANALYSIS_WINDOW_IN_SEC = 8.0f;
 
+    private final boolean writeCsv;
+
+    /**
+     * @param writeCsv if {@code true}, dump the autocorrelation scores to a CSV file
+     *                 next to the wav (debug/test purpose only, default {@code false})
+     */
+    public AutocorrelationLoopDetector(boolean writeCsv) {
+        this.writeCsv = writeCsv;
+    }
+
+    public AutocorrelationLoopDetector() {
+        this(false);
+    }
+
     @Override
     public LoopSetting detectLoop(LoopDetectionContext context) {
         float[] samples = WavSampleReader.readMonoSamples(context.getWavFile());
         int sampleRate = context.getSampleRate();
         long loopEnd = context.getNoteOffSampleMarker();
-        int period = detectPeriod(samples, sampleRate, (int) loopEnd);
+        int period = detectPeriod(samples, sampleRate, (int) loopEnd, context.getWavFile());
         if (period <= 0) {
             return null;
         }
-        long loopStart = loopEnd - period;
-        if (loopStart < 0) {
-            return null;
-        }
-        LoopSetting loopSetting = new LoopSetting();
-        loopSetting.setSampleStart(loopStart);
-        loopSetting.setSampleEnd(loopEnd);
-        return loopSetting;
+        return LoopSeamPlacer.findLoop(samples, period, loopEnd, sampleRate);
     }
 
     /**
-     * Estimate the fundamental period of the sustain region ending at {@code loopEnd}.
+     * Estimate the period of the sustain region ending at {@code loopEnd}.
      *
      * @param samples    mono samples of the whole note
      * @param sampleRate sample rate in Hz
      * @param loopEnd    end of the sustain, in samples
      * @return the estimated period in samples, or {@code -1} if it cannot be found
      */
-    private int detectPeriod(float[] samples, int sampleRate, int loopEnd) {
+    private int detectPeriod(float[] samples, int sampleRate, int loopEnd, File wavFile) {
         int minPeriod = Math.max(1, (int) (sampleRate * MIN_LOOP_DURATION_IN_SEC));
         int maxPeriod = (int) (sampleRate * ANALYSIS_WINDOW_IN_SEC);
         int windowLength = Math.min(loopEnd, (int) (sampleRate * ANALYSIS_WINDOW_IN_SEC));
@@ -67,12 +81,18 @@ public class AutocorrelationLoopDetector implements LoopDetector {
         }
         double bestScore = -1;
         int bestPeriod = -1;
-        for (int period = minPeriod; period <= Math.min(maxPeriod, nbSamples / 2); period++) {
+        int maxPeriodToScan = Math.min(maxPeriod, nbSamples / 2);
+        double[] scores = new double[maxPeriodToScan - minPeriod + 1];
+        for (int period = minPeriod; period <= maxPeriodToScan; period++) {
             double score = autocorrelation(samples, windowStart, period, nbSamples - period);
+            scores[period - minPeriod] = score;
             if (score > bestScore) {
                 bestScore = score;
                 bestPeriod = period;
             }
+        }
+        if (writeCsv) {
+            writeScoresCsv(wavFile, minPeriod, scores);
         }
         return bestPeriod;
     }
@@ -97,5 +117,27 @@ public class AutocorrelationLoopDetector implements LoopDetector {
         }
         double denom = Math.sqrt(energyWin * energyShifted);
         return denom == 0 ? -1 : dot / denom;
+    }
+
+    /**
+     * Debug helper: write the autocorrelation scores (one row per period) as a CSV
+     * file next to the wav, so peaks can be inspected externally (e.g. in Excel).
+     *
+     * @param wavFile    source wav (used to derive the output file name)
+     * @param minPeriod  period of the first score
+     * @param scores     scores indexed by {@code period - minPeriod}
+     */
+    private void writeScoresCsv(File wavFile, int minPeriod, double[] scores) {
+        File csvFile = new File(wavFile.getParentFile(),
+                wavFile.getName().replaceAll("(?i)\\.wav$", "") + "-autocorrelation.csv");
+        try (PrintWriter writer = new PrintWriter(csvFile, StandardCharsets.UTF_8)) {
+            writer.println("period;sampleStartFromLoopEnd;score");
+            for (int i = 0; i < scores.length; i++) {
+                int period = minPeriod + i;
+                writer.printf(Locale.US, "%d;%d;%.6f%n", period, period - minPeriod, scores[i]);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot write autocorrelation CSV " + csvFile, e);
+        }
     }
 }

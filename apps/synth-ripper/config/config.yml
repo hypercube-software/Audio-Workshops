@@ -15,8 +15,10 @@ midi:
   outputFormats:
     - DS
     - SFZ
-  # HARD_CUT (naive, durable fixed) or AUTOCORRELATION
-  loopDetector: HARD_CUT
+  # Loop detector: HARD_CUT (naive, fixed duration), AUTOCORRELATION (time domain) or FREQUENCY_DOMAIN (spectral seam)
+  loopDetector: AUTOCORRELATION
+  # Device mode to activate before the rip (SysEx sent from the device library), e.g. "Performance" or "XG" on a CS2x
+  # deviceMode: XG
   # detect looping sounds
   maxNoteDurationSec: 5
   maxNoteReleaseDurationSec: 5
