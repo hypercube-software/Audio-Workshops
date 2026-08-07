@@ -13,6 +13,8 @@ import com.hypercube.workshop.midiworkshop.api.MidiNote;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.DrumKitNote;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
+import com.hypercube.workshop.synthripper.loop.LoopDetectionContext;
+import com.hypercube.workshop.synthripper.loop.LoopDetector;
 import com.hypercube.workshop.synthripper.log.ThreadLogger;
 import com.hypercube.workshop.synthripper.model.*;
 import com.hypercube.workshop.synthripper.model.config.MidiSettings;
@@ -48,6 +50,7 @@ public class SynthRipper {
     private PCMBufferFormat wavFormat;
     private MidiOutPort hardwareMidiOutPort;
     private WavRecorder wavRecorder;
+    private LoopDetector loopDetector;
 
 
     public SynthRipper(List<PresetGenerator> presetGenerators) {
@@ -61,6 +64,9 @@ public class SynthRipper {
                 .getAudioFormat();
         this.wavFormat = config.getAudio()
                 .getWavFormat();
+        this.loopDetector = config.getMidi()
+                .getLoopDetector()
+                .create();
         initState();
     }
 
@@ -417,6 +423,7 @@ public class SynthRipper {
         wavRecorder.writeMarkers(List.of(PCMMarker.of("Release", state.noteOffSampleMarker)));
         wavRecorder.close();
         wavRecorder = null;
+        detectLoopForCurrentNote();
         state.nextRecordedSynthNote();
     }
 
@@ -429,12 +436,33 @@ public class SynthRipper {
 
         if (!state.isSilentBuffer()) {
             threadLogger.log("Looping sound detected");
-            LoopSetting loopSetting = new LoopSetting();
-            // TODO: detect loop start instead of nsec before end
-            loopSetting.setSampleStart(state.noteOffSampleMarker - (long) (3.0f * format.getSampleRate()));
-            loopSetting.setSampleEnd(state.noteOffSampleMarker);
-            currentRecordedSynthNote
-                    .setLoopSetting(loopSetting);
+            currentRecordedSynthNote.setLooping(true);
+        }
+    }
+
+    /**
+     * Offline loop detection: run the configured {@link LoopDetector} on the note which has
+     * just been fully recorded (its wav file is finalized and {@code state.noteOffSampleMarker}
+     * still designates this note's note-off position).
+     */
+    private void detectLoopForCurrentNote() {
+        RecordedSynthNote recordedSynthNote = state.getCurrentRecordedSynthNote();
+        if (recordedSynthNote == null || !recordedSynthNote.isLooping() || loopDetector == null) {
+            return;
+        }
+        try {
+            LoopDetectionContext context = LoopDetectionContext.builder()
+                    .sampleRate(format.getSampleRate())
+                    .nbChannels(format.getNbChannels())
+                    .wavFile(recordedSynthNote.getFile())
+                    .noteOffSampleMarker(state.noteOffSampleMarker)
+                    .build();
+            LoopSetting loopSetting = loopDetector.detectLoop(context);
+            if (loopSetting != null) {
+                recordedSynthNote.setLoopSetting(loopSetting);
+            }
+        } catch (Exception e) {
+            throw new SynthRipperError("Loop detection failed for note: " + recordedSynthNote.getFile(), e);
         }
     }
 

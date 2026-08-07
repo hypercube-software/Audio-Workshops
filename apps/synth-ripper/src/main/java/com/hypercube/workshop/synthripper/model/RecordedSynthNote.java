@@ -22,4 +22,9 @@ public class RecordedSynthNote {
     private float releaseTimeInSec;
     private MidiPreset preset;
     private File file;
+    /**
+     * True when the note has a sustain loop (marked during recording)
+     */
+    @Builder.Default
+    private boolean looping = false;
 }

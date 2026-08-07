@@ -9,6 +9,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetIdentity;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDevicePreset;
+import com.hypercube.workshop.synthripper.loop.LoopDetectorType;
 import com.hypercube.workshop.synthripper.preset.PresetGenerator;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,10 @@ public class MidiSettings {
      * Output formats for presets, should match {@link PresetGenerator#getAlias()}
      */
     private List<String> outputFormats;
+    /**
+     * Which loop detector to use to find the sustain loop of looping samples
+     */
+    private LoopDetectorType loopDetector = LoopDetectorType.HARD_CUT;
     /**
      * Max Duration of NoteOn message before sending Note Off
      */
