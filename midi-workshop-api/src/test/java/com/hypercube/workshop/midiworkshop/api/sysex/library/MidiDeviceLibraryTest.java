@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,8 +33,44 @@ class MidiDeviceLibraryTest {
     void init() {
         MidiDeviceRequester midiDeviceRequester = new MidiDeviceRequester();
         midiDeviceLibrary = new MidiDeviceLibrary(midiDeviceRequester);
-        midiDeviceLibrary.load(new File("./src/test/resources"));
+        // The library is loaded from a fresh copy in target/ so that imports never pollute
+        // the source tree: a 'mvn clean' guarantees us to restart from a clean slate.
+        File sourceLibrary = new File("./src/test/resources/devices-library");
+        File targetLibrary = new File("./target/test-library/devices-library");
+        try {
+            deleteRecursively(new File("./target/test-library"));
+            copyYamlFiles(sourceLibrary, targetLibrary);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to copy test library to " + targetLibrary, e);
+        }
+        File applicationFolder = new File("./target/test-library");
+        midiDeviceLibrary.load(applicationFolder);
         patchImporter = new PatchImporter(midiDeviceLibrary, midiDeviceRequester);
+    }
+
+    private void copyYamlFiles(File source, File target) throws IOException {
+        Files.createDirectories(target.toPath());
+        File[] children = source.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                String name = child.getName();
+                if (name.endsWith(".yml") || name.endsWith(".yaml")) {
+                    Files.copy(child.toPath(), new File(target, name).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        }
+    }
+
+    private void deleteRecursively(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        File[] children = file.listFiles();
+        if (children != null) {
+            Arrays.stream(children)
+                    .forEach(this::deleteRecursively);
+        }
+        file.delete();
     }
 
     @Test
@@ -82,7 +122,7 @@ class MidiDeviceLibraryTest {
         // WHEN
         patchImporter.importSysExFile(device, "SingleMode", new File("./src/test/resources/SysEx/Novation/Mininova/SN Patches II.syx"));
         // THEN
-        File dest = new File("./src/test/resources/devices-library/Mininova/SingleMode/SN Patches II");
+        File dest = new File("./target/test-library/devices-library/Mininova/SingleMode/SN Patches II");
         assertTrue(dest.exists());
         assertEquals(128, Objects.requireNonNull(dest.listFiles()).length);
     }
@@ -144,10 +184,10 @@ class MidiDeviceLibraryTest {
         // WHEN
         patchImporter.importSysExFile(device, "VoiceMode", new File("src/test/resources/SysEx/Yamaha/TG-500/super.mid"));
         // THEN
-        File dest = new File("src/test/resources/devices-library/TG-500/VoiceMode/Super");
+        File dest = new File("target/test-library/devices-library/TG-500/VoiceMode/Super");
         assertTrue(dest.exists());
         assertEquals(257, Objects.requireNonNull(dest.listFiles()).length);
-        dest = new File("src/test/resources/devices-library/TG-500/PerformanceMode/Super");
+        dest = new File("target/test-library/devices-library/TG-500/PerformanceMode/Super");
         assertTrue(dest.exists());
         assertEquals(128, Objects.requireNonNull(dest.listFiles()).length);
     }
@@ -160,12 +200,12 @@ class MidiDeviceLibraryTest {
         // WHEN
         patchImporter.importSysExFile(device, "VoiceMode", new File("./src/test/resources/SysEx/Yamaha/TG-500/top40.mid"));
         // THEN
-        File dest = new File("./src/test/resources/devices-library/TG-500/VoiceMode/Top40");
+        File dest = new File("./target/test-library/devices-library/TG-500/VoiceMode/Top40");
         assertTrue(dest.exists());
         File[] files = dest.listFiles();
-        assertEquals(258, files.length);
-        dest = new File("./src/test/resources/devices-library/TG-500/PerformanceMode/Top40");
+        assertEquals(257, files.length);
+        dest = new File("./target/test-library/devices-library/TG-500/PerformanceMode/Top40");
         assertTrue(dest.exists());
-        assertEquals(258, files.length);
+        assertEquals(128, Objects.requireNonNull(dest.listFiles()).length);
     }
 }
