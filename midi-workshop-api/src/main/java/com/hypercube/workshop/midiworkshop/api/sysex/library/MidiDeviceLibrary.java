@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
+import com.hypercube.workshop.midiworkshop.api.ports.remote.client.NetworkMidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiBankFormat;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategory;
 import com.hypercube.workshop.midiworkshop.api.presets.MidiPresetCategoryType;
@@ -435,17 +436,16 @@ public class MidiDeviceLibrary {
     }
 
     /**
-     * Complete remote midi ports with the name of the device
+     * Complete remote midi ports with the name of the device.
+     * <p>Only a genuine {@code host:port} remote endpoint (numeric port) is completed with the device name.
+     * A hardware MIDI port name containing a colon (ex: {@code debug: port 1}) is left untouched.</p>
      */
     private void setRemoteMidiPorts(MidiDeviceDefinition midiDeviceDefinition) {
         String outputMidiDevice = midiDeviceDefinition.getOutputMidiDevice();
-        if (outputMidiDevice != null) {
-            var count = outputMidiDevice.split(":", -1).length - 1;
-            if (count == 1) {
-                outputMidiDevice = "%s:%s".formatted(outputMidiDevice, midiDeviceDefinition.getDeviceName());
-                midiDeviceDefinition.setOutputMidiDevice(outputMidiDevice);
-                midiDeviceDefinition.setInputMidiDevice(outputMidiDevice);
-            }
+        if (outputMidiDevice != null && NetworkMidiOutPort.isRemoteHostPort(outputMidiDevice)) {
+            outputMidiDevice = "%s:%s".formatted(outputMidiDevice, midiDeviceDefinition.getDeviceName());
+            midiDeviceDefinition.setOutputMidiDevice(outputMidiDevice);
+            midiDeviceDefinition.setInputMidiDevice(outputMidiDevice);
         }
     }
 

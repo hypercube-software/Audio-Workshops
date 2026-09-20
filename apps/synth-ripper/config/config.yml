@@ -15,8 +15,8 @@ midi:
   outputFormats:
     - DS
     - SFZ
-  # Loop detector: HARD_CUT (naive, fixed duration), AUTOCORRELATION (time domain) or FREQUENCY_DOMAIN (spectral seam)
-  loopDetector: AUTOCORRELATION
+  # Loop detector: HARD_CUT (naive, fixed duration), FREQUENCY_DOMAIN (spectral seam) or ADSR (envelope based)
+  loopDetector: ADSR
   # Device mode to activate before the rip (SysEx sent from the device library), e.g. "Performance" or "XG" on a CS2x
   # deviceMode: XG
   # detect looping sounds

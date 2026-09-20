@@ -16,7 +16,7 @@ midi:
   outputFormats:
     - DS
     - SFZ
-  # Loop detector: HARD_CUT (naive, fixed duration), AUTOCORRELATION (time domain) or FREQUENCY_DOMAIN (spectral seam)
+  # Loop detector: HARD_CUT (naive, fixed duration), FREQUENCY_DOMAIN (spectral seam) or ADSR (envelope based)
   loopDetector: HARD_CUT
   # detect looping sounds
   maxNoteDurationSec: 5

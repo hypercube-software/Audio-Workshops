@@ -9,10 +9,6 @@ public enum LoopDetectorType {
      */
     HARD_CUT,
     /**
-     * Detector based on autocorrelation of the sustain region.
-     */
-    AUTOCORRELATION,
-    /**
      * Detector based on spectral (frequency domain) similarity at the loop seam.
      */
     FREQUENCY_DOMAIN,
@@ -29,7 +25,6 @@ public enum LoopDetectorType {
     public LoopDetector create(boolean writeCsv) {
         return switch (this) {
             case HARD_CUT -> new HardCutLoopDetector();
-            case AUTOCORRELATION -> new AutocorrelationLoopDetector(writeCsv);
             case FREQUENCY_DOMAIN -> new FrequencyDomainLoopDetector(writeCsv);
             case ADSR -> new AdsrLoopDetector(writeCsv);
         };

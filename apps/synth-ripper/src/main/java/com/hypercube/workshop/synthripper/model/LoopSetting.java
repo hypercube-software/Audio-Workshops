@@ -20,4 +20,14 @@ public class LoopSetting {
      * periods when it has been extended by {@code loopLength} multiples.
      */
     private long loopLength;
+    /**
+     * Position (in samples) of the attack peak, i.e. the start of the Decay phase.
+     * Only set by the ADSR detector; used to embed ADSR analysis markers in the wav.
+     */
+    private Long attackPeakSample;
+    /**
+     * Position (in samples) of the start of the Sustain phase, i.e. the end of the
+     * Decay. Only set by the ADSR detector; used to embed ADSR markers in the wav.
+     */
+    private Long sustainStartSample;
 }

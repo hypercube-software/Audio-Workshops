@@ -16,6 +16,7 @@ import com.hypercube.workshop.midiworkshop.api.presets.MidiPreset;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceMode;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.io.MidiDeviceRequester;
 import com.hypercube.workshop.midiworkshop.api.sysex.macro.CommandCall;
+import com.hypercube.workshop.synthripper.loop.AdsrLoopDetector;
 import com.hypercube.workshop.synthripper.loop.LoopDetectionContext;
 import com.hypercube.workshop.synthripper.loop.LoopDetector;
 import com.hypercube.workshop.synthripper.loop.WavLoopMarkersWriter;
@@ -534,13 +535,11 @@ public class SynthRipper {
                         LoopSetting loopSetting = loopDetector.detectLoop(context);
                         if (loopSetting != null) {
                             recordedSynthNote.setLoopSetting(loopSetting);
-                            // Rewrite the recorded wav so the loop markers are embedded in the final
-                            // file: the "Release" marker was written during recording, the loop
-                            // start/end are known only now.
+                            // Rewrite the recorded wav so the markers are embedded in the final file:
+                            // the "Release" marker was written during recording, the analysis markers
+                            // are known only now.
                             File wav = recordedSynthNote.getFile();
-                            WavLoopMarkersWriter.copyWavWithLoopMarkers(wav, wav,
-                                    new PCMMarker("loopStart", loopSetting.getSampleStart()),
-                                    new PCMMarker("loopEnd", loopSetting.getSampleEnd()));
+                            WavLoopMarkersWriter.copyWavWithLoopMarkers(wav, wav, adsrOrLoopMarkers(loopDetector, loopSetting));
                         }
                     } catch (Exception e) {
                         // A single locked / unreadable wav must not abort the whole
@@ -549,6 +548,37 @@ public class SynthRipper {
                         log.error("Loop detection failed for note {}: {}", recordedSynthNote.getFile(), e.toString());
                     }
                 });
+    }
+
+    /**
+     * Markers to embed in the wav after loop detection.
+     *
+     * <p>In ADSR mode the analysis identifies the phases of the note, so the
+     * {@code Attack}/{@code Sustain} boundary markers are written instead of the
+     * {@code loopStart}/{@code loopEnd} ones. For every other detector the loop
+     * markers are written as before.
+     */
+    private PCMMarker[] adsrOrLoopMarkers(LoopDetector loopDetector, LoopSetting loopSetting) {
+        if (loopDetector instanceof AdsrLoopDetector) {
+            List<PCMMarker> markers = new ArrayList<>();
+            // The four ADSR phases, located along the sample:
+            //  - Attack: the very first sample of the note
+            //  - Decay:  the attack peak (start of Decay)
+            //  - Sustain: start of the Sustain plateau
+            //  - Release: the note-off marker (already written during recording)
+            markers.add(PCMMarker.of("Attack", 0));
+            if (loopSetting.getAttackPeakSample() != null) {
+                markers.add(PCMMarker.of("Decay", loopSetting.getAttackPeakSample()));
+            }
+            if (loopSetting.getSustainStartSample() != null) {
+                markers.add(PCMMarker.of("Sustain", loopSetting.getSustainStartSample()));
+            }
+            return markers.toArray(new PCMMarker[0]);
+        }
+        return new PCMMarker[]{
+                PCMMarker.of("loopStart", loopSetting.getSampleStart()),
+                PCMMarker.of("loopEnd", loopSetting.getSampleEnd())
+        };
     }
 
     private File getOutputFile(RecordedSynthNote recordedSynthNote) {

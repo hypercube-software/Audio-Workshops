@@ -27,7 +27,16 @@ import java.util.regex.Pattern;
 public class NetworkMidiOutPort extends MidiOutPort {
     public static final int MAX_UDP_PACKET_SIZE = 65507;
     private static final int CONNECTION_TIMEOUT_MS = 2000;
-    private static final Pattern REMOTE_DEVICE_PATTERN = Pattern.compile("^([^:]+):(\\d+):(.*)$");
+    /**
+     * A full remote device definition looks like {@code host:port:deviceName}, ex: {@code hypercube.serverpit.com:10192:DS-330}
+     * <p>A hardware MIDI port name is never of this shape: it has no numeric port in the middle segment.</p>
+     */
+    private static final Pattern REMOTE_DEVICE_PATTERN = Pattern.compile("^([^:]+):(\\d+):(\\S.*)$");
+    /**
+     * A partial remote device definition looks like {@code host:port}, the device name is appended later
+     * <p>This avoids confusing a hardware MIDI port name containing a colon (ex: {@code debug: port 1}) with a remote endpoint.</p>
+     */
+    private static final Pattern REMOTE_HOST_PORT_PATTERN = Pattern.compile("^([^:]+):(\\d+)$");
     /**
      * Connection host for TCP and UDP
      */
@@ -82,6 +91,18 @@ public class NetworkMidiOutPort extends MidiOutPort {
             return false;
         }
         return REMOTE_DEVICE_PATTERN.matcher(name)
+                .matches();
+    }
+
+    /**
+     * True when the given value looks like a partial remote endpoint {@code host:port} (numeric port).
+     * <p>A hardware MIDI port name containing a colon (ex: {@code debug: port 1}) is NOT considered remote.</p>
+     */
+    public static boolean isRemoteHostPort(String name) {
+        if (name == null) {
+            return false;
+        }
+        return REMOTE_HOST_PORT_PATTERN.matcher(name)
                 .matches();
     }
 

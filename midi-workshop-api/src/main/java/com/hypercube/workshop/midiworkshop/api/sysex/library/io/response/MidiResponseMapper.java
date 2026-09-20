@@ -96,21 +96,27 @@ public class MidiResponseMapper {
     }
 
     private void extractString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
-        String value = "";
+        StringBuilder value = new StringBuilder();
         for (int i = field.getOffset(); value.length() < field.getSize(); i++) {
             if (i >= payload.length) {
-                value += "❌";
-            } else if (payload[i] >= 32 && payload[i] <= 127) {
-                value += (char) payload[i];
-            } else if (payload[i] == 0) {
-                value += " "; // happen in Motif Rack XS for instance
+                value.append("❌");
             } else {
-                value += "❌";
+                byte signedValue = payload[i]; /* in the range [-128 , 127] */
+                if (signedValue >= 32) {
+                    value.append((char) signedValue);
+                } else if (signedValue == 0 || signedValue == -1) {
+                    value.append(" ");
+                } else {
+                    value.append("❌");
+                }
             }
         }
-        value = value.replace("|nitial", "Initial"); // Weird case from Mininova
-        value = value.replace("|", " ");// we use this character to store presets, so it is reserved
-        currentResponse.setField(field.getName(), value.trim());
+        value = new StringBuilder(value.toString()
+                .replace("|nitial", "Initial")); // Weird case from Mininova
+        value = new StringBuilder(value.toString()
+                .replace("|", " "));// we use this character to store presets, so it is reserved
+        currentResponse.setField(field.getName(), value.toString()
+                .trim());
     }
 
     private void extractKurzweilString(ExtractedFields currentResponse, byte[] payload, MidiResponseField field) {
