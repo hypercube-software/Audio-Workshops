@@ -1,5 +1,5 @@
 #import "settings.typ": *
-#part("Archeology") 
+#part("Archaeology") 
 
 #chapter("History", image: image("./assets/hd3-2481-500.svg"))
 #index("Sectioning")
@@ -9,9 +9,9 @@
 
 === The bad news
 
-This FTP server is now closed to anonymous access. Nevertheless its content is "hidden" in the official HTTP site. On old links, you may find various host names like `younchang.com`, `kurzweilmusicsystem.com` or `kurzweil.com`.
+This FTP server is now closed to anonymous access. Nevertheless, its content is still "hidden" in the official HTTP site. In old links, you may find various host names such as `youngchang.com`, `kurzweilmusicsystem.com` or `kurzweil.com`.
 
-You may ask, "how can I browse the content ?" Well ... you can't ! Fortunately you can use *WayBack Machine* to the rescue:
+You may ask, "How can I browse the content?" Well... you can't! Fortunately, you can use the *Wayback Machine* to the rescue:
 
 ```
 https://web.archive.org/web/20210312202644/http://kurzweil.com/content/migration/downloads/pub/Kurzweil/Pro_Products/K2600/
@@ -21,26 +21,26 @@ Old links like:
 ```
 http://www.youngchang.com/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Samples/ElectricPianos
 ```
-Need to be changed in :
+They need to be changed to:
 ```
 http://kurzweil.com/content/migration/downloads/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Samples/ElectricPianos/
 ```
-=== Offical specification
+=== Official specification
 
-The most important .H files on earth are still here:
+The most important .H files are still available here:
 
 ```
 http://kurzweil.com/content/migration/downloads/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Information/K2KSYSEX.ZIP
 http://kurzweil.com/content/migration/downloads/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Information/K25SYSEX.ZIP
 ```
-They are released by Kurzweil but *not officially supported by them*.
+They were released by Kurzweil but are *not officially supported* by them.
 
 = The K2000 Programmer corner
 
 == About
-The Sysex Project was a joint effort of K2000 owners to develop a better understanding of their instruments. The owners pool what they have learned about K2000 sysex commands into a central location, which can be freely accessed by all. This eliminates the need for individuals to uncover all of the K2000 sysex commands independently and creates an information database that can be used for deeper explorations.
+The SysEx Project was a joint effort of K2000 owners to develop a better understanding of their instruments. The owners pooled what they had learned about K2000 SysEx commands into a central location, which anyone can freely access. This eliminates the need for individuals to uncover all of the K2000 SysEx commands independently and creates an information database that can be used for deeper exploration.
 
-This site contains many insights about the format. Chris Martin (aka. Frank, from university of Central Florida) was a major contributor, providing a kind of "K2000 Sysex Manual"
+This site contains many insights about the format. Chris Martin (aka Frank, from the University of Central Florida) was a major contributor, providing a kind of "K2000 SysEx Manual".
 
 #v(20pt)
 
@@ -60,7 +60,7 @@ This site contains many insights about the format. Chris Martin (aka. Frank, fro
 ```
 Keymaps are an integral part of every layer of a program.  Each
 keymap contains a set of parameters determining which sample(s)
-the k2000 will play when you trigger a note.... Each layer has at
+the K2000 will play when you trigger a note.... Each layer has at
 least one keymap, but it can have two keymaps when you're working
 with stereo samples.... Each keymap consists of a set of key
 ranges. The entire span of each keymap is 128 keys, from C0 to
@@ -71,7 +71,7 @@ down to play on each of the range's keys. You may assign as many
 key ranges to a keymap as you like, even creating a key range for
 each key. You may also create multi-velocity keymaps, which will
 play different samples depending on how hard you strike the keys.
-(Excerpts From K2000 User Manual)
+(Excerpts from K2000 User Manual)
 
 
 The Keymap Parameters are as follows:
@@ -82,7 +82,7 @@ The Keymap Parameters are as follows:
         SAMPLE                  Sample Root List
         COARSE TUNE             -120 to 60 semitones
         FINE TUNE               -49 to 50 cents
-        VOLUME ADJUST           +/- 48 db
+        VOLUME ADJUST           +/- 48 dB
         VELOCITY CROSSOVER      none, ppp to fff
 
 BANKS- Keymaps may be stored in:
@@ -146,16 +146,16 @@ LineNo.
 
 
   ----==RANGE VALUES==----
-  Each set of 6 line numbers starting at Line# 28, correspond to a 
-  key on the keyboard. Line #'s 28-33 are a sets of values that 
+  Each set of 6 line numbers starting at Line# 28, corresponds to a 
+  key on the keyboard. Line #'s 28-33 are sets of values that 
   correspond to C0.  Line #'s 34-39 correspond to the C#0 key. 
   And so on. Each set of six, starting from 28 and the last ending at 
-  795, match up to each key starting at C0 all the way up to G9 (128 keys).
+  795, matches up to each key starting at C0 all the way up to G9 (128 keys).
 
   *If the keymap is Multi-Velocity, Line #'s 28-795 correspond to the
    Lower Velocity Range Values, while the Higher Velocity's Range Values
    start at 796 and end at line number 1563... Six sets of values
-   corresponding to the 128 keys as in the explanation above.. It's 
+   corresponding to the 128 keys as in the explanation above. It's 
    just the additional layer that is added for a Multi-Velocity Keymap.
 
 
@@ -898,7 +898,7 @@ Both of these Maps hold eight values, which correspond to the
 eight dynamic levels of standard musical notation.  These values
 determine the MIDI attack velocity value or the Mono pressure
 value that must be generated to achieve the dynamic level for
-that parameter .
+that parameter.
 
 
 BANKS- Velocity/Pressure Maps may be stored in:
@@ -1041,11 +1041,11 @@ PITCH BEND             11-off
 ```
 In Quick Access Mode, the user can select PROGRAMS and SETUPS
 with the single press of an alphanumeric button (or with the
-other data entry methods).... Each bank contains ten momory
+other data entry methods).... Each bank contains ten memory
 slots, or entries, where you can store programs or setups in any
 combination.  Any program or setup in the currently selected bank
 can be selected with the numeric buttons 0 through 9.....(Excerpt
-from K2000 Users Manual)
+from K2000 User Manual)
 
    1 2 3
    4 5 6
@@ -1053,7 +1053,7 @@ from K2000 Users Manual)
      0
 
 
-Quick Access Banks May be Stored in:
+Quick Access Banks may be stored in:
 	ROM:	  1-75
 	RAM:	100-119
 		200-219
@@ -1160,7 +1160,7 @@ Hi Value:= (RealValue MOD 256)
 Lo Value:=   ***remainder***
 ```
 
-= Robert Fries work (1993)
+= Robert Fries's work (1993)
 
 ```
 Reply-To:     K2000 user's group <K2000@JHUVM.HCF.JHU.EDU>
@@ -1206,8 +1206,7 @@ In the following list, offsets marked UNCHANGED seemed to be
 constants for all K2000 programs. In all of the approx. 300
 programs I scanned, values at these offsets never changed. The
 UPPERCASE word at the start of each line below is the edit screen
-where this parameter is the name of the edit screen where the
-parameter is found.
+where this parameter is found.
 
 Offsets which have neither UNCHANGED nor any explanation have not
 yet been decoded. This is the 'incomplete' part. Items with an
@@ -1571,7 +1570,7 @@ X-To:         K2000@jhuvm.hcf.jhu.edu
 To:           Multiple recipients of list K2000
 
 So then I took Robert's work (God bless him) and took a few days
-off and hacked and hacked and hacked.  I verified/and altered his
+off and hacked and hacked and hacked.  I verified and altered his
 work and added a lot of detail.  There is enough stuff in the
 manual to work with in terms of sending and receiving SYSEX.  I'm
 a total weenie though because after all this damn work 1) I
@@ -1579,7 +1578,7 @@ haven't used any of it, 2) haven't tried to send SYSEX while the
 K2K was playing, so I don't know if the output changes Michael
 wants to make work in real time.
 
-My hack session was a lot of work, I would appreciate discretion.
+My hack session was a lot of work. I would appreciate your discretion.
 I don't really want to see this shit all over USENET tomorrow.
 It's not that complete and still needs a lot of work.
 
@@ -1601,9 +1600,9 @@ Subject:      SYSEX II:listing (long)
 X-To:         K2000@jhuvm.hcf.jhu.edu
 To:           Multiple recipients of list K2000
 
-Sorry for the message break,  I had to convert it from WordPerfect.
+Sorry for the message break, I had to convert it from WordPerfect.
 ```
-== Offets
+== Offsets
 ```
 OBJECT: Program
 
@@ -2301,7 +2300,7 @@ Download his work from https://web.archive.org/web/19990422025731/http://ourworl
 = Tools
 
 == KurzFiler
-One of the best. Open source. Java compiled with ...make.
+One of the best. Open source. Written in Java and built with ...make.
 
 #figure(
   image("assets/KurzFiler.png", width: 50%),
@@ -2319,7 +2318,7 @@ One of the best. Open source. Java compiled with ...make.
 
 == VAST programmer
 
-VP is a Java program developed by Michael Warpenburg that allows users to interactively develop Setups, Programs & other types of objects on Kurzweil VAST machines. Users interact with the machine(s) in real-time using VP, and as such can also use it as a general control user interface in a performance setting.
+VP is a Java program developed by Michael Warpenburg that lets users interactively develop Setups, Programs and other types of objects on Kurzweil VAST machines. Users interact with the machine(s) in real time using VP, so it can also be used as a general control interface in a live performance setting.
 
 
 #figure(
@@ -2336,10 +2335,10 @@ VP is a Java program developed by Michael Warpenburg that allows users to intera
 [#text(fill: rgb("#bbbebf"))[#underline[https://web.archive.org/web/20160506220003if_/http://www.tangentcats.com/]]],
 )
 == Analysis
-This software was written in Vijeo Designer. A Schneider Electric IDE based on Java which is still available. Since it relies only on LCD Screenshots via MIDI, it was not really insightfull. It is also closed source.
+This software was written in Vijeo Designer, a Schneider Electric IDE based on Java, which is still available. Since it relies only on LCD screenshots received via MIDI, it was not really insightful. It is also closed source.
 
 == wav2krz
-Python cli to collect WAV files into Kurzweil soundfile format (.krz, .k25, .k26, and .for) with automatic keymap and program creation.
+A Python CLI to collect WAV files into the Kurzweil sound file format (.krz, .k25, .k26 and .for), with automatic keymap and program creation.
 
 #v(20pt)
 
@@ -2353,7 +2352,7 @@ Python cli to collect WAV files into Kurzweil soundfile format (.krz, .k25, .k26
 )
 
 == K2x00 Remote
-K2x00 Remote is a remote control application and plugin to replicate the screen of Kurzweil K-series instruments, including K2000, K2500, K2600, K2661 and KSP8. This software is under active development by Sjoerd W. Bijleveld and Godlike Productions
+K2x00 Remote is a remote control application and plugin that replicates the screen of Kurzweil K-series instruments, including the K2000, K2500, K2600, K2661 and KSP8. The software is under active development by Sjoerd W. Bijleveld and Godlike Productions.
 
 #figure(
   image("assets/K2000Remote.png", width: 50%),
@@ -2372,11 +2371,11 @@ K2x00 Remote is a remote control application and plugin to replicate the screen 
 ]
 
 == KCDRead
-The Kurzweil samplers of the K2x00 series are on the market for a long time now, proving that quality persists.
+The Kurzweil samplers of the K2x00 series have been on the market for a long time, which proves that their quality lasts.
 
-As time has gone by, the hardware environment changed. Hard disks became larger and CD Roms faster. Unfortunately, the K doesn't really know how to work with new drives.
+Over time, the hardware environment changed. Hard disks became larger and CD-ROM drives faster. Unfortunately, the K doesn't really know how to work with new drives.
 
-This Project is intended for solving this gap. The Kurzweil's filesystem is quite near to the old MSDOS FAT16 standard. It's not too hard to decode it.
+This project is intended to fill this gap. The Kurzweil filesystem is quite similar to the old MS-DOS FAT16 standard, so it is not too hard to decode.
 #v(20pt)
 #table(
   columns: 2,
@@ -2388,7 +2387,7 @@ This Project is intended for solving this gap. The Kurzweil's filesystem is quit
 )
 
 == Kurzweil Creator
-Kurzweil Creator™ is a powerful Program, Setup, Keymap, and Sample creator/editor for Kurzweil workstations, including the K2000, K2500, K2600, K2661, PC3K, and Forte.
+Kurzweil Creator™ is a powerful program, setup, keymap and sample creator/editor for Kurzweil workstations, including the K2000, K2500, K2600, K2661, PC3K and Forte.
 #figure(
   image("assets/KurzweilCreator.png", width: 50%),
   caption: [Kurzweil Creator],
@@ -2427,7 +2426,7 @@ Kurzweil Creator™ is a powerful Program, Setup, Keymap, and Sample creator/edi
 
 == K2500 OS hack
 
-Peter Sobot is that kind of guy who try to run a K2500 OS inside... MAME.
+Peter Sobot is the kind of person who tries to run a K2500 OS inside... MAME.
 
 #table(
   columns: 2,
