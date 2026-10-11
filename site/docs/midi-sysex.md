@@ -1432,7 +1432,10 @@ Things to know:
 - Some information are still available in various PDF manuals but they are too "high level"
 - Many people have tried to reverse it and many of them just gave up because this is too huge
 
+## Kurzweil Format
+
 Explaining all of this in this chapter is too much, so I will write a separate documentation for it. 
+The PDF is <a href="kurzweil-format.pdf" target="_blank">here</a>.
 
 # Devices Library
 
@@ -2137,4 +2140,3 @@ If it is a Sound Canvas (The **Boss DS-330** is a Sound Canvas) you need to do t
 ```
 java -DFORCE_DEVICE=DS-330 -jar target\midi-workshop-0.0.1-SNAPSHOT.jar parse -i "sysex/Roland/DS-330/Boss-DS-330-All.syx" -o "target/DS-330.dump.txt"
 ```
-
