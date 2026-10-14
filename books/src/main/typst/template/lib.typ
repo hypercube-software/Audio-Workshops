@@ -41,6 +41,8 @@
 #let outline-small-width-state = state("outline-small-width-state", none)
 #let appendix-state = state("appendix-state", none)
 #let appendix-state-hide-parent = state("appendix-state-hide-parent", none)
+// Draft mode: typst compile --input draft=true (skips chapter images and running headers)
+#let draft = sys.inputs.at("draft", default: "false") == "true"
 #let heading-image = state("heading-image", none)
 #let supplement-part-state = state("supplement_part", none)
 #let part-style-state = state("part-style", 0)
@@ -121,7 +123,7 @@
 }
 
 #let chapter(title, image: none, l: none) = {
-  heading-image.update(x => image)
+  heading-image.update(x => if draft { none } else { image })
   if l != none [
     #heading(level: 1, title) #label(l)
   ] else [
@@ -411,6 +413,7 @@
     margin: margin,
     header: context {
       set text(size: title5)
+      if draft { return }
       let page_number = counter(page).at(here()).first()
       let odd_page = calc.odd(page_number)
       let part_change = part-change.at(here())

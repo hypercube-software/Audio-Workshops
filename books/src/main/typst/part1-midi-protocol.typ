@@ -1,4 +1,8 @@
 #import "settings.typ": *
+#let hx(b, c) = box(fill: c, inset: (x: 2.5pt, y: 2pt), radius: 2pt, raw(b))
+#let hexline(..c) = block(c.pos().join(h(2pt)))
+
+#import "@preview/rivet:0.3.1": schema
 
 #chapter("MIDI protocol", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
 #index("Sectioning")
@@ -46,7 +50,7 @@ several bytes, most significant group first. In our case, the *type* is always s
 
 For instance, the value `0x84` (132) is the type of a program, and it is the only thing the type field carries:
 - *Type* `0x84` (`1000 0100`) is split into `0000001` and `0000100`, sent as `01 04`
-- `$0104` is called "Type's ID" in the documentation !
+- Guess what ? `$0104` is called "Type's ID" in the documentation !
 - *ID* `1` is sent as `00 01`. Is the ID of an object of a given type.
 
 == Commands
@@ -119,14 +123,320 @@ Two points from the Musician's Reference change how a program must be read or wr
 
 The examples below illustrate the format.
 
-- `DUMP` for program 1, offset 0, size 394 (`00 03 0A`), nibble format:
-  `F0 07 00 78 00 01 04 00 01 00 00 00 00 03 0A 00 F7`.
-- `DIR` for program 1: `F0 07 00 78 04 01 04 00 01 F7`.
-- `READ` of program 1 in packed format: `F0 07 00 78 0A 01 04 00 01 01 F7`. A program in packed format is 0F9A bytes,
-  against 184C bytes in nibble format.
-- `DIRBANK` for all programs of all banks: `F0 07 00 78 0C 01 04 7F 00 F7`.
-- `PANEL` for a mode key and a cursor move: each key is a 3-byte event (`08` up, `09` down, `0A` repeat, `0D` Alpha
-  Wheel, then the key code, then the repeat count or `00`).
+==== DUMP
+
+`DUMP` for program type (01 04) id 1 (00 01), offset 0 (00 00 00), size 394 (`00 03 0A`), nibble format (`00`):
+
+#hexline(
+  hx("F0", gray.lighten(60%)),
+  hx("07", gray.lighten(60%)),
+  hx("00", blue.lighten(60%)),
+  hx("78", gray.lighten(60%)),
+  hx("00", orange.lighten(50%)),
+  hx("01", green.lighten(50%)),
+  hx("04", green.lighten(50%)),
+  hx("00", green.lighten(60%)),
+  hx("01", green.lighten(60%)),
+  hx("00", purple.lighten(60%)),
+  hx("00", purple.lighten(60%)),
+  hx("00", purple.lighten(60%)),
+  hx("00", purple.lighten(60%)),
+  hx("03", purple.lighten(60%)),
+  hx("0A", purple.lighten(60%)),
+  hx("00", purple.lighten(60%)),
+  hx("F7", gray.lighten(60%)),
+)
+
+#figure(
+  stack(
+    dir: ttb,
+    spacing: 0pt,
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [0],
+        8,
+        [1],
+        16,
+        [2],
+        24,
+        [3],
+        32,
+        [4],
+        40,
+        [5],
+        48,
+        [6],
+        56,
+        [7],
+        64,
+        [8],
+        72,
+        [9],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F0`],
+      bytes(1, fill: gray.lighten(60%))[`07`],
+      bytes(1, fill: blue.lighten(60%))[device],
+      bytes(1, fill: gray.lighten(60%))[`78`],
+      bytes(1, fill: orange.lighten(50%))[`00`],
+      bytes(2, fill: green.lighten(50%))[type],
+      bytes(2, fill: green.lighten(60%))[ID],
+      bytes(1, fill: purple.lighten(60%))[`00`],
+    ),
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [10],
+        8,
+        [11],
+        16,
+        [12],
+        24,
+        [13],
+        32,
+        [14],
+        40,
+        [15],
+        48,
+        [16],
+      ),
+      bytes(3, fill: purple.lighten(60%))[offset],
+      bytes(3, fill: purple.lighten(60%))[size],
+      bytes(1, fill: gray.lighten(60%))[`F7`],
+      bytes(3, fill: white)[],
+    ),
+  ),
+  caption: [`DUMP` for program 1, nibble format (17 bytes)],
+)
+==== DIR
+
+`DIR` for program type (01 04) id 1 (00 01):
+
+#hexline(
+  hx("F0", gray.lighten(60%)), hx("07", gray.lighten(60%)), hx("00", blue.lighten(60%)), hx("78", gray.lighten(60%)),
+  hx("04", orange.lighten(50%)), hx("01", green.lighten(50%)), hx("04", green.lighten(50%)),
+  hx("00", green.lighten(60%)), hx("01", green.lighten(60%)), hx("F7", gray.lighten(60%)),
+)
+
+#figure(
+  bytefield(
+    bpr: 80,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [0],
+      8,
+      [1],
+      16,
+      [2],
+      24,
+      [3],
+      32,
+      [4],
+      40,
+      [5],
+      48,
+      [6],
+      56,
+      [7],
+      64,
+      [8],
+      72,
+      [9],
+    ),
+    bytes(1, fill: gray.lighten(60%))[`F0`],
+    bytes(1, fill: gray.lighten(60%))[`07`],
+    bytes(1, fill: blue.lighten(60%))[device],
+    bytes(1, fill: gray.lighten(60%))[`78`],
+    bytes(1, fill: orange.lighten(50%))[`04`],
+    bytes(2, fill: green.lighten(50%))[type],
+    bytes(2, fill: green.lighten(60%))[ID],
+    bytes(1, fill: gray.lighten(60%))[`F7`],
+  ),
+  caption: [`DIR` for program 1 (10 bytes)],
+)
+
+==== READ
+
+`READ` of program type (01 04) id 1 (00 01) in packed format:
+
+#hexline(
+  hx("F0", gray.lighten(60%)), hx("07", gray.lighten(60%)), hx("00", blue.lighten(60%)), hx("78", gray.lighten(60%)),
+  hx("0A", orange.lighten(50%)), hx("01", green.lighten(50%)), hx("04", green.lighten(50%)),
+  hx("00", green.lighten(60%)), hx("01", green.lighten(60%)), hx("01", purple.lighten(60%)), hx("F7", gray.lighten(60%)),
+)
+
+A program in packed format is `0F9A` bytes vs `184C` bytes in nibble format.
+
+#figure(
+  stack(
+    dir: ttb,
+    spacing: 0pt,
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [0],
+        8,
+        [1],
+        16,
+        [2],
+        24,
+        [3],
+        32,
+        [4],
+        40,
+        [5],
+        48,
+        [6],
+        56,
+        [7],
+        64,
+        [8],
+        72,
+        [9],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F0`],
+      bytes(1, fill: gray.lighten(60%))[`07`],
+      bytes(1, fill: blue.lighten(60%))[device],
+      bytes(1, fill: gray.lighten(60%))[`78`],
+      bytes(1, fill: orange.lighten(50%))[`0A`],
+      bytes(2, fill: green.lighten(50%))[type],
+      bytes(2, fill: green.lighten(60%))[ID],
+      bytes(1, fill: purple.lighten(60%))[format],
+    ),
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [10],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F7`],
+      bytes(9, fill: white)[],
+    ),
+  ),
+  caption: [`READ` of program 1 in packed format (11 bytes)],
+)
+
+==== DIRBANK
+
+`DIRBANK` for all programs (01 04) of all banks (7F):
+
+#hexline(
+  hx("F0", gray.lighten(60%)), hx("07", gray.lighten(60%)), hx("00", blue.lighten(60%)), hx("78", gray.lighten(60%)),
+  hx("0C", orange.lighten(50%)), hx("01", green.lighten(50%)), hx("04", green.lighten(50%)),
+  hx("7F", purple.lighten(60%)), hx("00", purple.lighten(40%)), hx("F7", gray.lighten(60%)),
+)
+
+#figure(
+  bytefield(
+    bpr: 80,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [0],
+      8,
+      [1],
+      16,
+      [2],
+      24,
+      [3],
+      32,
+      [4],
+      40,
+      [5],
+      48,
+      [6],
+      56,
+      [7],
+      64,
+      [8],
+      72,
+      [9],
+    ),
+    bytes(1, fill: gray.lighten(60%))[`F0`],
+    bytes(1, fill: gray.lighten(60%))[`07`],
+    bytes(1, fill: blue.lighten(60%))[device],
+    bytes(1, fill: gray.lighten(60%))[`78`],
+    bytes(1, fill: orange.lighten(50%))[`0C`],
+    bytes(2, fill: green.lighten(50%))[type],
+    bytes(1, fill: purple.lighten(60%))[bank],
+    bytes(1, fill: purple.lighten(40%))[ramonly],
+    bytes(1, fill: gray.lighten(60%))[`F7`],
+  ),
+  caption: [`DIRBANK` for all programs of all banks (10 bytes)],
+)
+
+==== PANEL
+
+`PANEL` simulate buttons of the front panel. Each event is made of 3 bytes:
+- Event type: `08` up, `09` down, `0A` repeat, `0D` Alpha Wheel
+- Button number
+- Repeat count for Alpha wheel
+
+#figure(
+  stack(
+    dir: ttb,
+    spacing: 0pt,
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [0],
+        8,
+        [1],
+        16,
+        [2],
+        24,
+        [3],
+        32,
+        [4],
+        40,
+        [5],
+        48,
+        [6],
+        56,
+        [7],
+        64,
+        [8],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F0`],
+      bytes(1, fill: gray.lighten(60%))[`07`],
+      bytes(1, fill: blue.lighten(60%))[device],
+      bytes(1, fill: gray.lighten(60%))[`78`],
+      bytes(1, fill: orange.lighten(50%))[`14`],
+      bytes(1, fill: green.lighten(50%))[action],
+      bytes(1, fill: purple.lighten(60%))[key],
+      bytes(1, fill: purple.lighten(40%))[repeat],
+      bytes(1, fill: gray.lighten(60%))[`F7`],
+      bytes(1, fill: white)[],
+    ),
+  ),
+  caption: [`PANEL` with one key event: each key is a 3-byte event],
+)
+
+
 
 === Answers and errors
 
@@ -155,10 +465,10 @@ whether an object exists before writing it.
 
 === Principle
 
-The unit does not store samples through any command. A sample is first pushed with the MIDI Sample Dump Standard (SDS),
-a standard MIDI protocol that is independent of Kurzweil. Only after that is the sample referenced by a *sound block*
-(object type 134), which is written with a normal `WRITE` SysEx. The sound block describes the sample: the sample rate,
-the loop points, and the address of the PCM data in the sample RAM.
+The unit does not read or write samples through any Kurzweil commands. Instead, a sample is first pushed with the MIDI
+*Sample Dump Standard* (SDS), a standard MIDI protocol that is independent of Kurzweil. When a sample is received via
+SDS, the unit automtically create a *sound block* (object type 134) for us. The sound block describes the sample: the
+sample rate, the loop points, and the address of the PCM data in the sample RAM.
 
 In practice, a sample upload is therefore a conversation with the unit:
 
@@ -169,6 +479,8 @@ In practice, a sample upload is therefore a conversation with the unit:
 + Then SysEx can create a program using this sound block
 
 === Messages
+
+==== Overview
 
 SDS uses the following messages, all starting with `F0 7E channel`, where channel is the SDS channel (it can be
 different from the SysEx device ID):
@@ -188,33 +500,235 @@ different from the SysEx device ID):
     [Dump request], [`03`], [Asks the unit to send a sample],
     [ACK], [`7F`], [Packet or header accepted],
     [NAK], [`7E`], [Packet or header refused, the sender must send it again],
-    [Cancel], [`7D`], [Aborts the dump],
-    [Wait], [`7C`], [The receiver needs more time],
+    [CANCEL], [`7D`], [Aborts the dump],
+    [WAIT], [`7C`], [The receiver needs more time],
   ),
   caption: [Sample Dump Standard messages used by the unit],
 )
 
-The header fields are all packed in 7-bit bytes, least significant group first (this is how `DumpHeader` encodes them):
+Many SDS values are in 21 bits. They need to be encoded for MIDI properly. For instance, the sample period of a 44100 Hz
+sample is 22675 ns. Its binary value is 0000001 0110001 0010011. This is sent in MIDI inside 3 bytes in LSB first:
 
-- sample number: 14 bits (two bytes),
-- bit depth: one byte (`16` for the K2600),
-- sample period in nanoseconds: 21 bits. A 44100 Hz sample has a period of 22675 ns,
-- sample length in samples: 21 bits,
-- loop start and loop end in samples: 21 bits each,
-- loop type: `00` forward only, `01` backward and forward.
+#figure(
+  schema.render(
+    schema.load((
+      structures: (
+        main: (
+          bits: 24,
+          ranges: (
+            "23": (name: "23", description: "always 0"),
+            "22-16": (name: "0010011", description: "First byte sent"),
+            "15": (name: "15", description: "always 0"),
+            "14-8": (name: "0110001", description: "Second byte sent"),
+            "7": (name: "7", description: "always 0"),
+            "6-0": (name: "0000001", description: "Last byte sent"),
+          ),
+        ),
+      ),
+    )),
+    width: 90%,
+  ),
+  caption: [How Sample period 22675 ns is encoded in MIDI],
+)
 
-A data packet carries 120 MIDI bytes, which is 40 samples at 3 bytes each. Each 16-bit signed sample is converted to:
+==== Dump header
 
-+ an unsigned 16-bit value, by adding 32768,
-+ a 21-bit value, by shifting it left by 5 (left justified),
-+ three 7-bit bytes, most significant first.
+#figure(
+  stack(
+    dir: ttb,
+    spacing: 0pt,
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [0],
+        8,
+        [1],
+        16,
+        [2],
+        24,
+        [3],
+        32,
+        [4],
+        40,
+        [5],
+        48,
+        [6],
+        56,
+        [7],
+        64,
+        [8],
+        72,
+        [9],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F0`],
+      bytes(1, fill: gray.lighten(60%))[`7E`],
+      bytes(1, fill: blue.lighten(60%))[channel],
+      bytes(1, fill: gray.lighten(60%))[`01`],
+      bytes(2, fill: orange.lighten(50%))[sample number],
+      bytes(1, fill: blue.lighten(60%))[bit depth],
+      bytes(3, fill: green.lighten(50%))[sample period],
+    ),
+    bytefield(
+      bpr: 80,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [10],
+        8,
+        [11],
+        16,
+        [12],
+        24,
+        [13],
+        32,
+        [14],
+        40,
+        [15],
+        48,
+        [16],
+        56,
+        [17],
+        64,
+        [18],
+        72,
+        [19],
+      ),
+      bytes(3, fill: purple.lighten(60%))[sample length],
+      bytes(3, fill: yellow.lighten(40%))[loop start],
+      bytes(3, fill: yellow.lighten(60%))[loop end],
+      bytes(1, fill: blue.lighten(60%))[loop type],
+    ),
+    bytefield(
+      bpr: 80,
+      bitheader(marker: false, angle: 0deg, numbers: none, 0, [20]),
+      bytes(1, fill: gray.lighten(60%))[`F7`],
+      bytes(
+        9,
+        fill: white,
+      )[],
+    ),
+  ),
+  caption: [SDS sample dump header: 21 MIDI bytes],
+) <sds-header>
 
-Silence is therefore `40 00 00`. The checksum of a packet is the XOR of `7E`, the channel, `02`, the packet number and
-all the data bytes, masked to 7 bits. `DumpPacket.check()` computes it the same way.
+The header fields are:
 
-The protocol is synchronous: the sender waits for an ACK after the header, then after each packet. A NAK means the
-packet is sent again, and after repeated failures the sender sends a cancel. The `SampleDumpStandard` class implements
-this: `sendSample` sends the header, waits for the ACK, then sends each packet with up to three retries.
+#figure(
+  table(
+    align: left,
+    columns: (auto, auto, auto, 1fr),
+    fill: (x, y) => if y == 0 { luma(230) },
+    stroke: 0.5pt,
+    table.header([*Field*], [*Native size*], [*MIDI size*], [*Description*]),
+    [Sample number], [14 bits], [2 bytes], [Sample number which is `sound block id - 1`],
+    [Bit depth], [7 bits], [1 byte], [`16` for the K2600],
+    [Sample period], [21 bits], [3 bytes], [Period in nanoseconds],
+    [Sample length], [21 bits], [3 bytes], [Length in samples],
+    [Loop start], [21 bits], [3 bytes], [Loop start in samples],
+    [Loop end], [21 bits], [3 bytes], [Loop end in samples],
+    [Loop type], [7 bits], [1 byte], [`00` forward only, `01` backward and forward],
+  ),
+  caption: [Fields of the SDS dump header],
+)
+
+==== Data Packet
+
+A data packet has the structure below. It carries 40 samples. The checksum is an XOR from byte 1 to byte 124
+
+#figure(
+  stack(
+    dir: ttb,
+    spacing: 0pt,
+    bytefield(
+      bpr: 40,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [0],
+        8,
+        [1],
+        16,
+        [2],
+        24,
+        [3],
+        32,
+        [4],
+      ),
+      bytes(1, fill: gray.lighten(60%))[`F0`],
+      bytes(1, fill: gray.lighten(60%))[`7E`],
+      bytes(1, fill: blue.lighten(60%))[channel],
+      bytes(1, fill: gray.lighten(60%))[`02`],
+      bytes(1, fill: orange.lighten(50%))[packet number],
+    ),
+    bytefield(
+      bpr: 72,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [5],
+        24,
+        [8],
+        48,
+        [11],
+      ),
+      bytes(3, fill: green.lighten(60%))[sample 1],
+      bytes(3, fill: green.lighten(60%))[sample 2],
+      bytes(3, fill: green.lighten(60%))[...],
+    ),
+    bytefield(
+      bpr: 72,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [116],
+        24,
+        [119],
+        48,
+        [122],
+      ),
+      bytes(3, fill: green.lighten(60%))[...],
+      bytes(3, fill: green.lighten(60%))[sample 39],
+      bytes(3, fill: green.lighten(60%))[sample 40],
+    ),
+    bytefield(
+      bpr: 72,
+      bitheader(
+        marker: false,
+        angle: 0deg,
+        numbers: none,
+        0,
+        [125],
+        8,
+        [126],
+      ),
+      bytes(1, fill: orange.lighten(50%))[CHK],
+      bytes(1, fill: gray.lighten(60%))[`F7`],
+      bytes(7, fill: white)[``],
+    ),
+  ),
+  caption: [SDS data packet: 127 MIDI bytes],
+)
+
+The size of each MIDI sample depends on the bitdepth. Here we focus on 16 bit samples (the bidepth of the K2600) so,
+each sample is converted to 3 MIDI bytes (LSB first as usual).
+
+==== Retries
+
+The protocol is *synchronous*: the sender waits for an ACK after each message. If we have a NACK or a timeout, we send
+the same packet again. The `SampleDumpStandard` class implements this behaviour: `sendSample` sends the header, waits
+for the ACK, then sends each packet with up to three retries.
 
 == Conversation with the K2600
 
@@ -230,12 +744,12 @@ This section describes the sequence used by `KurzweilExplorer` to load a patch w
     stroke: 0.5pt,
     table.header([*Step*], [*Sent*], [*Expected answer*]),
     [1],
-    [`DIR` of the sound block, type `0106`, ID `id` (`DIR_SOUND_BLOCK`)],
+    [`DIR` of the sound block, type `01 06`],
     [`INFO`: size zero if the sample is not on the unit, otherwise the sample name is returned],
 
-    [2], [If the size is zero, SDS header with sample number `id - 1` is sent], [`ACK` (`7F`)],
+    [2], [If the size is zero, SDS header with sample block `id - 1` is sent], [`ACK` (`7F`)],
     [3], [SDS data packets, numbered from 0], [`ACK` for each packet, or `NAK` and a resend],
-    [4], [`READ` of the sound block], [`WRITE` with the sound block as stored now],
+    [4], [`READ` of the sound block], [`WRITE` of the current sound block state],
 
     [5],
     [`WRITE` of the updated sound block, with its headers relocated to the address found in step 4],
@@ -272,5 +786,5 @@ this order: sample blocks, keymaps, then the program (see the converter chapter)
   the sequence.
 - `DNAK` with code 1 means the object is being edited on the front panel. Exit the editor on the unit first.
 - A missing `ACK` after the header, or a `NAK` that does not clear after retries, aborts the dump. The code sends a
-  cancel and raises an exception. The sound block is then never written, so the program that uses it will not find its
+  CANCEL and raises an exception. The sound block is then never written, so the program that uses it will not find its
   sample.

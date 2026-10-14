@@ -78,40 +78,37 @@ the bit 8 is always 0.
 #figure(
   table(
     align: left,
-    columns: (auto, auto, 1fr),
+    columns: (auto, auto, auto, auto, 1fr),
     fill: (x, y) => if y == 0 { luma(230) },
     stroke: 0.5pt,
-    table.header([*Enum value*], [*ID*], [*Meaning*]),
-    [`INDEX`], [97], [Index type],
-    [`X_CODE`], [98], [Executable code],
-    [`TABLE`], [100], [Miscellaneous table (master parameters)],
-    [`ALG_DESC`], [102], [C and H wiring diagram],
-    [`INTONATION_TABLE`], [103], [Intonation table],
-    [`VELOCITY_MAP`], [104], [Velocity map],
-    [`PRESSURE_MAP`], [105], [Pressure map],
-    [`EDIT`], [106], [Editor table],
-    [`EDIT_MENU`], [107], [Edit menu],
-    [`MENU_GROUP`], [108], [Edit menu group],
-    [`MENU_ENTRY_LIST`], [109], [Menu entry list],
-    [`P_LIST`], [110], [PList],
-    [`B_LIST`], [111], [BList],
-    [`SONG`], [112], [Song],
-    [`EFFECT`], [113], [Effect],
-    [`SHAPE`], [114], [LFO shape function],
-    [`F_PROC`], [115], [Function procedure],
-    [`PROGRAM`], [132], [Program],
-    [`KEYMAP`], [133], [Keymap],
-    [`SOUND_BLOCK`], [134], [Sound block (sample)],
-    [`SETUP`], [135], [Setup],
-    [`MARGE`], [136], [Merge type],
-    [`STUDIO`], [140], [Studio (KDFX configuration)],
-    [`UNKNOWN`], [0], [Fallback when the type is not recognized],
+    table.header([*Enum value*], [*ID*], [*Hexa ID*], [*Type (MIDI encoding)*], [*Meaning*]),
+    [`INDEX`], [97], [`$61`], [`00 61`], [Index type],
+    [`X_CODE`], [98], [`$62`], [`00 62`], [Executable code],
+    [`TABLE`], [100], [`$64`], [`00 64`], [Miscellaneous table (master parameters)],
+    [`ALG_DESC`], [102], [`$66`], [`00 66`], [C and H wiring diagram],
+    [`INTONATION_TABLE`], [103], [`$67`], [`00 67`], [Intonation table],
+    [`VELOCITY_MAP`], [104], [`$68`], [`00 68`], [Velocity map],
+    [`PRESSURE_MAP`], [105], [`$69`], [`00 69`], [Pressure map],
+    [`EDIT`], [106], [`$6A`], [`00 6A`], [Editor table],
+    [`EDIT_MENU`], [107], [`$6B`], [`00 6B`], [Edit menu],
+    [`MENU_GROUP`], [108], [`$6C`], [`00 6C`], [Edit menu group],
+    [`MENU_ENTRY_LIST`], [109], [`$6D`], [`00 6D`], [Menu entry list],
+    [`P_LIST`], [110], [`$6E`], [`00 6E`], [PList],
+    [`B_LIST`], [111], [`$6F`], [`00 6F`], [BList],
+    [`SONG`], [112], [`$70`], [`00 70`], [Song],
+    [`EFFECT`], [113], [`$71`], [`00 71`], [Effect],
+    [`SHAPE`], [114], [`$72`], [`00 72`], [LFO shape function],
+    [`F_PROC`], [115], [`$73`], [`00 73`], [Function procedure],
+    [`PROGRAM`], [132], [`$84`], [`01 04`], [Program],
+    [`KEYMAP`], [133], [`$85`], [`01 05`], [Keymap],
+    [`SOUND_BLOCK`], [134], [`$86`], [`01 06`], [Sound block (sample)],
+    [`SETUP`], [135], [`$87`], [`01 07`], [Setup],
+    [`MARGE`], [136], [`$88`], [`01 08`], [Merge type],
+    [`STUDIO`], [140], [`$8C`], [`01 0C`], [Studio (KDFX configuration)],
+    [`UNKNOWN`], [0], [`$00`], [`00 00`], [Fallback when the type is not recognized],
   ),
   caption: [Object types declared in `KObject`],
 )
-
-The packed form is obtained by splitting the ID into two 7-bit groups: the upper group becomes the high byte and the
-lower group the low byte. For instance, `PROGRAM` (ID `0x84`) has packed type `0x0104`.
 
 == Objects (`KFObject`)
 
@@ -276,8 +273,7 @@ For `WRITE` and `LOAD`, the payload is decoded according to its format:
   caption: [Stream formats],
 )
 
-The checksum is a simple sum of the payload bytes (`SimpleSumChecksum`). The decoded bytes are also written to
-`target/` (`Packed ...syx` and `Unpacked ....dat`) for analysis.
+The checksum is a simple sum of the payload bytes (`SimpleSumChecksum`).
 
 #chapter("Converter", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
 #index("Sectioning")
