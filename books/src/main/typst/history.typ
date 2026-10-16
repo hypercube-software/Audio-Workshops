@@ -2359,7 +2359,7 @@ K2x00 Remote is a remote control application and plugin that replicates the scre
   caption: [K2x00 Remote],
 ) <figure>
 
-#block(breakable: false)[
+#kblock[
 #table(
   columns: 2,
   align: left + horizon,  

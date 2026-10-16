@@ -50,8 +50,8 @@ jobs:
       - name: Build midi-preset-manager for all macOS archs
         if: ${{ runner.os == 'macOS' }}
         run: |
-          mvn -Posx-intel -Djavafx.platform=mac --file midi-preset-manager/pom.xml -DskipTests package
-          mvn -Posx-arm -Djavafx.platform=mac-aarch64 --file midi-preset-manager/pom.xml -DskipTests package
+          mvn -Posx-intel --file midi-preset-manager/pom.xml -DskipTests package
+          mvn -Posx-arm --file midi-preset-manager/pom.xml -DskipTests package
 
       # ------------------------------------------------------------------------------------------------------------
       # Midi Device Library

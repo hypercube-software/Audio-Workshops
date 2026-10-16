@@ -8,6 +8,20 @@
   part, problem, proposition, remark, scr, theorem, update-heading-image, vocabulary,
 )
 
+// Light colours for bytefield cells. One shade per hue.
+#let l_gray = gray.lighten(55%)
+#let l_blue = blue.lighten(55%)
+#let l_orange = orange.lighten(55%)
+#let l_green = green.lighten(55%)
+#let l_purple = purple.lighten(55%)
+#let l_red = red.lighten(55%)
+
+// Block that keeps the next paragraph indented (Typst only indents paragraphs that follow a paragraph).
+#let kblock(body) = {
+  block(breakable: false, above: 1.2em, below: 1.2em, body)
+  box(width: 0pt)
+}
+
 #let init(doc) = {
   show: codly-init.with()
   codly(
@@ -39,11 +53,9 @@
     supplement-part: "Part",
     part-style: 0,
     copyright: [
-      Copyright © 2023 Flavio Barisi
+      Copyright © 2026 Hypercube Software
 
-      PUBLISHED BY PUBLISHER
-
-      #link("https://github.com/flavio20002/typst-orange-template", "TEMPLATE-WEBSITE")
+      #link("https://github.com/hypercube-software", "HYPERCUBE-SOFTWARE")
 
       Licensed under the Apache 2.0 License (the “License”).
       You may not use this file except in compliance with the License. You may obtain a copy of
@@ -52,12 +64,12 @@
       “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
       See the License for the specific language governing permissions and limitations under the License.
 
-      _First printing, July 2023_
+      _First printing, July 2026_
     ],
     lowercase-references: false,
   )
 
-  // Forcez le pied de page APRES l'initialisation du template :
+  // Force footer init afeter template init
   set page(
     footer: context {
       if here().page() > 1 {

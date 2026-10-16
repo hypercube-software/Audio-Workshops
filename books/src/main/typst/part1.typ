@@ -120,15 +120,37 @@ Kurzweil uses an object-oriented architecture in its devices, so things will be 
 - They have objects, which are instances of a given type
 - An object has a unique identifier inside a given type
 
-So do not think for a second that an identifier *200* points to a unique object. You need the type identifier to know
+So do not think for a second that an identifier *200* points to a unique object. You need the *type identifier* to know
 what you are pointing to. This is why type identifiers and object identifiers work together.
 
-#block(breakable: false)[
+#kblock[
   The official specification *`objtypes.h`* states that the number of possible objects depends on the type:
   - Types from 96 to 115 use 8-bit object identifiers, so you can have 256 objects
   - Types from 132 to 159 use 10-bit object identifiers, so you can have 1024 objects
   - Some type identifiers are simply not used
 ]
+
+Since types identifier goes beyond 7 bits, they need to be encoded in MIDI in two bytes where bit 7 is always 0 and never used. For instance 132/0x84 (10000100) is converted in MIDI to 0x0104 (00000001 00000100):
+
+#figure(
+  schema.render(
+    schema.load((
+      structures: (
+        main: (
+          bits: 16,
+          ranges: (
+            "15": (name: "15", description: "always 0"),
+            "14-8": (name: "0000001", description: "$01"),
+            "7": (name: "7", description: "always 0"),
+            "6-0": (name: "0001100", description: "$04"),
+          ),
+        ),
+      ),
+    )),
+    width: 90%,
+  ),
+  caption: [How object type 132 (PROGRAM) is encoded in MIDI],
+)
 
 Each type corresponds to various .H files provided by Kurzweil. Unfortunately, some parts are not clear. We are going to
 dig into that in the next chapters...
@@ -136,36 +158,36 @@ dig into that in the next chapters...
 #figure(
   table(
     align: left,
-    columns: (auto, auto, 1fr),
+    columns: (auto, auto, auto, auto, 1fr),
     fill: (x, y) => if y == 0 { luma(68.49%) } else if y >= 19 { rgb("#ccd9ee") } else { rgb("#cceee1") },
     stroke: 0.5pt,
 
-    table.header([*Type*], [*Enum*], [*Description*]),
+    table.header([*Type*], [*Hexa*], [*MIDI encoding*], [*Enum*], [*Description*]),
 
-    [97], [INDEX], [Index type],
-    [98], [X_CODE], [Executable code type],
-    [100], [TABLE], [Miscellaneous table type],
-    [101], [LFO_SHAPE], [LFO shape table (unused)],
-    [102], [ALG_DESC], [C&H wiring diagram type],
-    [103], [INTONATION_TABLE], [Intonation table type],
-    [104], [VELOCITY_MAP], [Velocity map type],
-    [105], [PRESSURE_MAP], [Pressure map type],
-    [106], [EDIT], [Editor table type],
-    [107], [EDIT_MENU], [Edit menu type],
-    [108], [MENU_GROUP], [Edit menu group type],
-    [109], [MENU_ENTRY_LIST], [Menu entry list type],
-    [110], [P_LIST], [PList type],
-    [111], [B_LIST], [BList type],
-    [112], [SONG], [Song type],
-    [113], [EFFECT], [Effect type],
-    [114], [SHAPE], [New LFO shape function type],
-    [115], [F_PROC], [Function proc type],
-    [132], [PROGRAM], [Program type],
-    [133], [KEYMAP], [Keymap type],
-    [134], [SOUND_BLOCK], [Sound block type],
-    [135], [SETUP], [Setup type],
-    [136], [MARGE], [Marge type],
-    [140], [STUDIO], [Studio type ⚠️Not explicitly defined in objtypes.h],
+    [97], [`$61`], [`00 61`], [INDEX], [Index type],
+    [98], [`$62`], [`00 62`], [X_CODE], [Executable code type],
+    [100], [`$64`], [`00 64`], [TABLE], [Miscellaneous table type],
+    [101], [`$65`], [`00 65`], [LFO_SHAPE], [LFO shape table (unused)],
+    [102], [`$66`], [`00 66`], [ALG_DESC], [C&H wiring diagram type],
+    [103], [`$67`], [`00 67`], [INTONATION_TABLE], [Intonation table type],
+    [104], [`$68`], [`00 68`], [VELOCITY_MAP], [Velocity map type],
+    [105], [`$69`], [`00 69`], [PRESSURE_MAP], [Pressure map type],
+    [106], [`$6A`], [`00 6A`], [EDIT], [Editor table type],
+    [107], [`$6B`], [`00 6B`], [EDIT_MENU], [Edit menu type],
+    [108], [`$6C`], [`00 6C`], [MENU_GROUP], [Edit menu group type],
+    [109], [`$6D`], [`00 6D`], [MENU_ENTRY_LIST], [Menu entry list type],
+    [110], [`$6E`], [`00 6E`], [P_LIST], [PList type],
+    [111], [`$6F`], [`00 6F`], [B_LIST], [BList type],
+    [112], [`$70`], [`00 70`], [SONG], [Song type],
+    [113], [`$71`], [`00 71`], [EFFECT], [Effect type],
+    [114], [`$72`], [`00 72`], [SHAPE], [New LFO shape function type],
+    [115], [`$73`], [`00 73`], [F_PROC], [Function proc type],
+    [132], [`$84`], [`01 04`], [PROGRAM], [Program type],
+    [133], [`$85`], [`01 05`], [KEYMAP], [Keymap type],
+    [134], [`$86`], [`01 06`], [SOUND_BLOCK], [Sound block type],
+    [135], [`$87`], [`01 07`], [SETUP], [Setup type],
+    [136], [`$88`], [`01 08`], [MARGE], [Marge type],
+    [140], [`$8C`], [`01 0C`], [STUDIO], [Studio type ⚠️Not explicitly defined in objtypes.h],
   ),
   caption: [List of well known object types],
 )
@@ -174,33 +196,33 @@ dig into that in the next chapters...
 
 === PRAM Objects
 
-The object identifiers used in PRAM files are made of two fields packed in 16 bits:
+The object identifiers used in PRAM files are made of two fields packed into 16 bits:
 - The *Object Type*. Its unpacked size should be 8 bits
 - The *Object ID*.
 
-#block(breakable: false)[
+#kblock[
   *When the highest bit is 1*:
   - The Object Type is unpacked from 5 bits to 8 bits. Its highest bit is 1
   - The Object ID is made of 10 bits
 
   #bytefield(
     bpr: 16,
-    bits(1, fill: red.lighten(30%))[1],
-    bits(5, fill: red.lighten(30%))[5 bits Type],
-    bits(10, fill: blue.lighten(30%))[10 bits Object ID],
+    bits(1, fill: l_red)[1],
+    bits(5, fill: l_red)[5 bits Type],
+    bits(10, fill: l_blue)[10 bits Object ID],
   )
 ]
 
-#block(breakable: false)[
+#kblock[
   *When the highest bit is 0*:
   - The Object Type is unpacked from 7 bits to 8 bits. Its highest bit is 0
   - The Object ID is made of 8 bits
 
   #bytefield(
     bpr: 16,
-    bits(1, fill: red.lighten(30%))[0],
-    bits(7, fill: red.lighten(30%))[7 bits Type],
-    bits(8, fill: blue.lighten(30%))[8 bits Object ID],
+    bits(1, fill: l_red)[0],
+    bits(7, fill: l_red)[7 bits Type],
+    bits(8, fill: l_blue)[8 bits Object ID],
   )
 ]
 
@@ -237,7 +259,7 @@ The footer contains 16-bit PCM samples (in Big Endian, as usual). The sample rat
 
 == Intonation tables
 
-They are defined in *`itbl.h`*. Each one is simply an array of 12 words of 16 bits. Intonation tables are not really
+The type INTONATION_TABLE (103) is defined in *`itbl.h`*. Each one is simply an array of 12 words of 16 bits. Intonation tables are not really
 interesting per se, but some of them provide very useful information. The intonation tables 18 to 22 indicate which
 versions of the objects are installed.
 
@@ -265,8 +287,7 @@ versions of the objects are installed.
 
 == Velocity Maps
 
-A velocity map (type `VELOCITY_MAP`, 104) defines how the incoming key velocity is converted into dynamics. Its content
-is an array of 8 bytes.
+A velocity map (type `VELOCITY_MAP`, 104) defines how the incoming key velocity is converted into dynamics. Its content is an array of 8 bytes. It is defined in *`vmap.h`*
 
 #figure(
   table(
@@ -282,8 +303,7 @@ is an array of 8 bytes.
 
 == Pressure Maps
 
-A pressure map (type `PRESSURE_MAP`, 105) defines how the incoming channel pressure (aftertouch) is converted into
-dynamics. Its content is an array of 8 bytes.
+A pressure map (type `PRESSURE_MAP`, 105) defines how the incoming channel pressure (aftertouch) is converted into dynamics. Its content is an array of 8 bytes. It is defined in *`pmap.h`*
 
 #figure(
   table(
@@ -301,8 +321,9 @@ dynamics. Its content is an array of 8 bytes.
 
 === Overview
 
-A key map (type `KEYMAP`, 133) associates each key of the keyboard with a sound block and its tuning and volume
+A key map, also called pitch map (type `KEYMAP`, 133) associates each key of the keyboard with a sound block and its tuning and volume
 information. It is made of a header followed by a variable number of entries.
+It is defined in *`kmap.h`*, not *`keymap.h`*
 
 #figure(
   table(
@@ -324,16 +345,42 @@ information. It is made of a header followed by a variable number of entries.
   caption: [Key map structure (`KFKeyMap`)],
 )
 
-The `method` field is a set of bits describing which fields are present in each entry:
-- `0x10`: 2-byte tuning
-- `0x08`: 1-byte tuning
-- `0x04`: volume adjust
-- `0x02`: sample ID
-- `0x01`: subsample number
+==== Field 'method'
 
-A key map read via MIDI contains all fields, so the method is `0x17` (23).
+The *`method`* field is a set of bits describing which fields are present in each entry. A key map read via MIDI contains all fields, therefore the field is always `0x17` (00010111).
 
-=== KeyMapEntry Structure
+ The 2 bits tuning type can be:
+ - 00: none
+ - 01: 8 bit tuning
+ - 10: 16 bit tuning
+
+#figure(
+  bytefield(
+    bpr: 16,
+    bitheader(
+      marker: true,
+      angle: -30deg,
+      numbers: none,
+      11,
+      [#box[`tuning`]],
+      13,
+      [#box[`volume`]],
+      14,
+      [#box[`sample`]],
+      15,
+      [#box[`subsample`]],
+    ),
+    bits(11, fill: l_gray)[0],
+    bits(1, fill: l_red)[1],
+    bits(1, fill: l_red)[0],
+    bits(1, fill: l_blue)[1],
+    bits(1, fill: l_blue)[1],
+    bits(1, fill: l_blue)[1],
+  ),
+  caption: [Method field (0x17) used in MIDI],
+) <keymap-method>
+
+==== KeyMapEntry Structure
 
 The fields of an entry depend on the bits of the `method` field:
 
@@ -353,10 +400,14 @@ The fields of an entry depend on the bits of the `method` field:
   caption: [Key map entry structure (`KeyMapEntry`)],
 )
 
-== Tables
+== Master block
 
-The master parameter block (`KFMasterParameter`) stores the global settings of the unit. It is made of four blocks: the
-master parameter block (MDB), the keyboard zone block (ZDB), the MIDI channel blocks (CDB) and the search buffers.
+The master parameter block (type `TABLE`, 100 defined in *`mastb.h`*) stores the global settings of the unit. 
+It is made of four blocks: 
+- the master parameter block (MDB)
+- the keyboard zone block (ZDB)
+- the MIDI channel blocks (CDB)
+- the search buffers.
 
 #figure(
   table(
@@ -368,12 +419,14 @@ master parameter block (MDB), the keyboard zone block (ZDB), the MIDI channel bl
     [`m`], [71], [Master Parameter Block (MDB) structure],
     [`z`], [16], [Keyboard Zone Parameter Block (ZDB) structure],
     [`c`], [256], [Array of 16 MIDI Channel Parameter Block (CDB) structures, 16 bytes each],
-    [`sb`], [180], [Search buffers (10 x 18 ubytes)],
+    [`sb`], [180], [Search buffers (10 x 18 ubytes array)],
   ),
   caption: [Master parameter structure (`KFMasterParameter`)],
 )
 
-=== MDB Structure (Master Parameter Block)
+==== Master Parameter Block
+
+It is defined in *`mdb.h`*
 
 #figure(
   table(
@@ -446,7 +499,262 @@ master parameter block (MDB), the keyboard zone block (ZDB), the MIDI channel bl
   caption: [Master parameter block (MDB)],
 )
 
-=== ZDB Structure (Keyboard Zone Parameter Block)
+The `rmode_rpchg_rANO_displayLink_seqTempoLock_packed` meaning:
+- *sTL*: sequencer Tempo Lock
+- *dL*: display link
+- *rANO*: receive all note off (hard/soft/off)
+- *rpchg*: receive program change (short/extended)
+- *rmode*: pressure reroute mode (monopress/polypress/normal)
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(1, fill: l_purple)[sTL],
+    bits(1, fill: l_purple)[dL],
+    bits(2, fill: l_blue)[rANO],
+    bits(2, fill: l_green)[rpchg],
+    bits(2, fill: l_orange)[rmode],
+  ),
+  caption: [MDB bitfield sequence Tempo Lock and others],
+) <mdb-bitfield>
+
+The  `macroState_rfu3_packed` meaning:
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(2, fill: l_red)[macroState],
+    bits(6, fill: l_purple)[reserved],
+  ),
+  caption: [MDB bitfield `macroState`],
+) <mdb-bitfield>
+
+The `seqRecDub_seqRecMode_seqLoop_seqSync_packed` meaning:
+
+- `seqRecDub`: sequencer merge or erase when recording,
+- `seqRecMode`: sequencer  record mode,
+- `seqLoop`: sequencer playback mode,
+- `seqSync`: sequencer internal or external clock, with room for a sync method.
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(1, fill: l_purple)[recDub],
+    bits(3, fill: l_orange)[recMode],
+    bits(2, fill: l_green)[loop],
+    bits(2, fill: l_blue)[sync],
+  ),
+  caption: [MDB bitfield `seqRecDub_seqRecMode_seqLoop_seqSync_packed`],
+) <mdb-seq-bitfield>
+
+The `seqCountOff_seqClickMode_seqClickChan_packed` meaning:
+
+- `seqCountOff`: sequencer count off
+- `seqClickMode`: sequencer click mode,
+- `seqClickChan`: sequencer click channel
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(2, fill: l_purple)[countOff],
+    bits(2, fill: l_orange)[clickMode],
+    bits(4, fill: l_green)[clickChan],
+  ),
+  caption: [MDB bitfield `seqCountOff_seqClickMode_seqClickChan_packed`],
+) <mdb-click-bitfield>
+
+The `seqClock_seqClickKey_packed` meaning:
+
+- `seqClickKey`: sequencer click key
+- `seqClock`: sequencer clock
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(7, fill: l_purple)[clickKey],
+    bits(1, fill: l_orange)[clock],
+  ),
+  caption: [MDB bitfield `seqClock_seqClickKey_packed`],
+) <mdb-clock-bitfield>
+
+The `seqKeyWait_seqClickVel_packed` meaning:
+
+- `seqClickVel`: sequence click velocity
+- `seqKeyWait`: sequencer key wait on/off
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(7, fill: l_purple)[clickVel],
+    bits(1, fill: l_orange)[wait],
+  ),
+  caption: [MDB bitfield `seqKeyWait_seqClickVel_packed` (`wait` is `seqKeyWait`)],
+) <mdb-keywait-bitfield>
+
+The `bootDisk_defaultDisk_packed` meaning:
+
+- `bootDisk` (4 bits),
+- `defaultDisk` (4 bits).
+
+#figure(
+  bytefield(
+    bpr: 8,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [7],
+      1,
+      [6],
+      2,
+      [5],
+      3,
+      [4],
+      4,
+      [3],
+      5,
+      [2],
+      6,
+      [1],
+      7,
+      [0],
+    ),
+    bits(4, fill: l_purple)[bootDisk],
+    bits(4, fill: l_orange)[defaultDisk],
+  ),
+  caption: [MDB bitfield `bootDisk_defaultDisk_packed`],
+) <mdb-disk-bitfield>
+
+
+==== ZDB Structure (Keyboard Zone Parameter Block)
+
+It is defined in *`zdb.h`*
 
 #figure(
   table(
@@ -468,6 +776,8 @@ master parameter block (MDB), the keyboard zone block (ZDB), the MIDI channel bl
 )
 
 === CDB Structure (MIDI Channel Parameter Block)
+
+It is defined in *`cdb.h`*
 
 #figure(
   table(

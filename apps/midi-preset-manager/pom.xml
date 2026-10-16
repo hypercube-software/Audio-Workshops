@@ -16,6 +16,10 @@
         <javafx.version>21</javafx.version>
         <jackson.version.core>2.15.4</jackson.version.core>
         <spring-shell.version>3.3.4</spring-shell.version>
+        <!-- JavaFX native classifier: win (default), mac (osx-intel), mac-aarch64 (osx-arm).
+             Do NOT use the property name javafx.platform: the org.openjfx parent POM has a
+             self-referencing profile on it which breaks Maven 3.9 resolution. -->
+        <javafx.classifier>win</javafx.classifier>
     </properties>
 
     <dependencies>
@@ -42,13 +46,27 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.classifier}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.classifier}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.classifier}</classifier>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -238,20 +256,16 @@
                 <finalName>mpm-osx-intel</finalName>
             </build>
             <properties>
-                <!-- This does not work and must be set in command line -->
-                <!-- Because we build on windows so the JavaFX pom override what we try to do here -->
-                <javafx.platform>mac</javafx.platform>
+                <javafx.classifier>mac</javafx.classifier>
             </properties>
         </profile>
         <profile>
             <id>osx-arm</id>
             <build>
-                <!-- This does not work and must be set in command line -->
-                <!-- Because we build on windows so the JavaFX pom override what we try to do here -->
                 <finalName>mpm-osx-arm</finalName>
             </build>
             <properties>
-                <javafx.platform>mac-aarch64</javafx.platform>
+                <javafx.classifier>mac-aarch64</javafx.classifier>
             </properties>
         </profile>
     </profiles>
