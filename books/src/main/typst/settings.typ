@@ -52,6 +52,7 @@
     supplement-chapter: "Chapter",
     supplement-part: "Part",
     part-style: 0,
+    outline-depth: 4,
     copyright: [
       Copyright © 2026 Hypercube Software
 

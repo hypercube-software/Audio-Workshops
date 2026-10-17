@@ -325,6 +325,8 @@ A key map, also called pitch map (type `KEYMAP`, 133) associates each key of the
 information. It is made of a header followed by a variable number of entries.
 It is defined in *`kmap.h`*, not *`keymap.h`*
 
+#figure(image("assets/image-19.png"),caption: [KEYMAP page])
+
 #figure(
   table(
     align: left,
@@ -345,7 +347,7 @@ It is defined in *`kmap.h`*, not *`keymap.h`*
   caption: [Key map structure (`KFKeyMap`)],
 )
 
-==== Field 'method'
+=== Field 'method'
 
 The *`method`* field is a set of bits describing which fields are present in each entry. A key map read via MIDI contains all fields, therefore the field is always `0x17` (00010111).
 
@@ -380,7 +382,7 @@ The *`method`* field is a set of bits describing which fields are present in eac
   caption: [Method field (0x17) used in MIDI],
 ) <keymap-method>
 
-==== KeyMapEntry Structure
+=== KeyMapEntry Structure
 
 The fields of an entry depend on the bits of the `method` field:
 
@@ -424,9 +426,18 @@ It is made of four blocks:
   caption: [Master parameter structure (`KFMasterParameter`)],
 )
 
-==== Master Parameter Block
+=== Master Parameter Block
 
-It is defined in *`mdb.h`*
+It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
+- How the unit receive MIDI messages
+- Which maps are used (Velocity, Pressure)
+- How the sequencer is used (Song mode)
+
+#figure(image("assets/image-17.png"),caption: [RECEIVE page])
+
+#figure(image("assets/image.png"),caption: [The Master mode page])
+
+#figure(image("assets/image-1.png"),caption: [The song page])
 
 #figure(
   table(
@@ -718,8 +729,8 @@ The `seqKeyWait_seqClickVel_packed` meaning:
 
 The `bootDisk_defaultDisk_packed` meaning:
 
-- `bootDisk` (4 bits),
-- `defaultDisk` (4 bits).
+- `bootDisk`: boot Disk
+- `defaultDisk`: default disk
 
 #figure(
   bytefield(
@@ -752,9 +763,11 @@ The `bootDisk_defaultDisk_packed` meaning:
 ) <mdb-disk-bitfield>
 
 
-==== ZDB Structure (Keyboard Zone Parameter Block)
+=== Keyboard Zone Parameter Block
 
-It is defined in *`zdb.h`*
+It is defined in *`zdb.h`* This is related to the TRASMIT page:
+
+#figure(image("assets/image-16.png"),caption: [TRANSMIT page])
 
 #figure(
   table(
@@ -775,9 +788,16 @@ It is defined in *`zdb.h`*
   caption: [Keyboard zone parameter block (ZDB)],
 )
 
-=== CDB Structure (MIDI Channel Parameter Block)
+=== MIDI Channel Parameter Block
 
-It is defined in *`cdb.h`*
+It is defined in *`cdb.h`*. This object is used in multichannel mode. 
+- Which program is used on a specific MIDI channel
+- Which program parameter is overriden for this MIDI channel, especially output pair towards KDFX-A,KDFX-B,KDFX-C,KDFX-D.
+
+It is related to the following page:
+
+#figure(image("assets/image-18.png"),caption: [CHANNELS page])
+
 
 #figure(
   table(
@@ -871,6 +891,10 @@ This segment contains the same parameters as the ZDB structure of the master par
 
 === ARP segment
 
+This is related to the arpeggiator.
+
+#figure(image("assets/image-15.png"),caption: [ARPEG page])
+
 _Global size: 26 bytes_
 
 #figure(
@@ -907,6 +931,14 @@ _Global size: 26 bytes_
 
 === ASR segment
 
+ASRs are three-section unipolar envelopes (attack, sustain, and release).
+- they can be triggered by a programmable control source
+- they can be delayed
+
+It will appear multiple times inside a program. You have typically 1 ASR for the program, and multiple ones in each program layers.
+
+#figure(image("assets/image-23.png"),caption:[ASR page])
+
 _Global size: 8 bytes_
 
 #figure(
@@ -929,6 +961,17 @@ _Global size: 8 bytes_
 )
 
 === Calvin segment
+
+This setup the core V.A.S.T engine, more espetially the algorithm.
+
+#image("assets/image-14.png")
+
+*PITCH* and *AMP* are fixed whereas things vary in the middle depending of the chosen algorithm. The Calvin segment is related to the following pages:
+
+#figure(image("assets/image-13.png"),caption: [PITCH page])
+
+#figure(image("assets/image-12.png"),caption: [F4 AMP page])
+
 
 _Global size: 32 bytes_
 
@@ -974,9 +1017,15 @@ _Global size: 32 bytes_
 
 === Channel segment
 
-_Global size: 16 bytes_
+This segment contains the same parameters as the CDB structure of the master parameter block. It sounds like "Common Data Block", but the `.h` use "Channel segment" as title. It is related to the following page:
 
-This segment contains the same parameters as the CDB structure of the master parameter block.
+#figure(
+  image("assets/image-2.png")
+,
+  caption: [Program Common page],
+)
+
+_Global size: 16 bytes_
 
 #figure(
   table(
@@ -1006,6 +1055,10 @@ This segment contains the same parameters as the CDB structure of the master par
 
 === EFX segment
 
+This segment allow some overrides upon a Studio object used in a program.
+
+#figure(image("assets/image-20.png"),caption:[KDFX page])
+
 _Global size: 8 bytes_
 
 #figure(
@@ -1027,12 +1080,20 @@ _Global size: 8 bytes_
   caption: [Effect segment (EFXSEGTAG)],
 )
 
-=== ENC segment
+=== ENC/ATK segment
+
+The ENC segment (`ENCSEGTAG`) and the ATK segment (`ATKSEGTAG`) share the same structure. The tag value tells them apart: `0x20` for ENC, `0x27` for ATK. Both appear in each layer.
+
+- ENV stands for "Enveloppe control"
+- ATK stands for "Impact/attack control" which is not avaiable in K2000 units
+
+They are related to the following pages:
+
+#figure(image("assets/image-24.png"),caption:[AMPENV page 1])
+
+#figure(image("assets/image-26.png"),caption:[ENVCTL page])
 
 _Global size: 16 bytes_
-
-The ENC segment (`ENCSEGTAG`) and the ATK segment (`ATKSEGTAG`) share the same structure. The tag value tells them
-apart: `0x20` for ENC, `0x27` for ATK.
 
 #figure(
   table(
@@ -1063,6 +1124,12 @@ apart: `0x20` for ENC, `0x27` for ATK.
 
 === ENV segment
 
+We typically found 3 of them inside a layer. They certainly match the 3 enveloppes called AMPENV, ENV2 and ENV3:
+
+#figure(image("assets/image-21.png"),caption:[AMPENV page 2])
+
+#figure(image("assets/image-25.png"),caption:[ENV2 page])
+
 _Global size: 16 bytes_
 
 #figure(
@@ -1080,6 +1147,12 @@ _Global size: 16 bytes_
 )
 
 === FCN segment
+
+This segment is related to the FUN page. You can have 4 of them.
+- Which FUN is used
+- Which input parameter is used to call it
+
+#figure(image("assets/image-22.png"),caption:[FUN page])
 
 _Global size: 4 bytes_
 
@@ -1099,6 +1172,13 @@ _Global size: 4 bytes_
 )
 
 === LFO segment
+
+Can be found in LFO Page
+
+#figure(
+  image("assets/image-3.png"),
+caption: [LFO page],
+)
 
 _Global size: 8 bytes_
 
@@ -1126,6 +1206,18 @@ _Global size: 8 bytes_
 _Global size: 72 bytes_
 
 This segment contains the same parameters as the MDB structure of the master parameter block.
+
+#figure(
+  image("assets/image.png")
+,
+  caption: [The Master mode page],
+)
+
+#figure(
+  image("assets/image-1.png")
+,
+  caption: [The song page],
+)
 
 #figure(
   table(
@@ -1190,6 +1282,10 @@ This segment contains the same parameters as the MDB structure of the master par
 
 === FX Root segment
 
+Defined in *`frtb.h`*, this segment assign a specific Studio to the program. It is related to the KDFX page.
+
+#figure(image("assets/image-20.png"),caption:[KDFX page])
+
 _Global size: 8 bytes_
 
 #figure(
@@ -1208,6 +1304,13 @@ _Global size: 8 bytes_
 )
 
 === FX Part segment
+
+Also called "FX Patch". This segment is defined in *`frtb.h`*. The goal here, is to control some Studio parameters with a specific modulation source. You can typically found 18 of them in a single program.
+
+It is related to the following pages:
+
+#figure(image("assets/image-27.png"),caption:[KDFX params page])
+#figure(image("assets/image-28.png"),caption:[KDFX MOD2,3,4 pages])
 
 _Global size: 8 bytes_
 
@@ -1231,6 +1334,10 @@ _Global size: 8 bytes_
 )
 
 === Hobbes segment
+
+This is related to PITCH page
+
+#figure(image("assets/image-4.png"),caption: [Pitch page])
 
 _Global size: 16 bytes_
 
@@ -1263,6 +1370,10 @@ _Global size: 16 bytes_
 
 === Layer segment
 
+Related to the layer page:
+
+#figure(image("assets/image-5.png"),caption: [LAYER page])
+
 _Global size: 16 bytes_
 
 #figure(
@@ -1292,7 +1403,12 @@ _Global size: 16 bytes_
   caption: [Layer segment (LYRSEGTAG)],
 )
 
-=== Hamm segment 1
+=== KB3 Hammond segment 1
+
+Related to TONEWL page:
+
+#figure(image("assets/image-6.png"),caption:[Tone Wheel page])
+
 
 _Global size: 32 bytes_
 
@@ -1331,7 +1447,17 @@ _Global size: 32 bytes_
   caption: [Hammond segment 1 (HAMSEG1TAG)],
 )
 
-=== Hamm segment 2
+=== KB3 Hammond segment 2
+
+Related to the following pages:
+
+#figure(image("assets/image-9.png"),caption: [PERC page])
+
+#figure(image("assets/image-10.png"),caption: [PERC2 page])
+
+#figure(image("assets/image-7.png"),caption: [MISC page])
+
+#figure(image("assets/image-11.png"),caption: [KEYCLK page])
 
 _Global size: 32 bytes_
 
@@ -1366,7 +1492,12 @@ _Global size: 32 bytes_
   caption: [Hammond segment 2 (HAMSEG2TAG)],
 )
 
-=== Hamm segment 3
+=== KB3 Hammond segment 3
+
+Related to DRAWBR page:
+
+#figure(image("assets/image-8.png"),caption: [DRAWBR page])
+
 
 _Global size: 32 bytes_
 
