@@ -11,7 +11,7 @@ Musician's Reference and on the behaviour observed with the unit, unless stated 
 
 == Message structure
 
-Every Kurzweil SysEx message has the same header:
+Every Kurzweil SysEx message has the following format:
 
 #figure(
   table(
@@ -19,37 +19,38 @@ Every Kurzweil SysEx message has the same header:
     columns: (auto, auto, 1fr),
     fill: (x, y) => if y == 0 { luma(230) },
     stroke: 0.5pt,
-    table.header([*Bytes*], [*Value*], [*Meaning*]),
-    [`F0`], [`F0`], [Start of SysEx],
-    [`07`], [`07`], [Kurzweil manufacturer ID],
-    [dev-id], [`00`-`7F`], [Device ID, set by the SysEx ID parameter (MIDI mode, RECEIVE page). `7F` accepts any value],
-    [product], [`78`], [K2600 and later (`78` = 120)],
-    [command], [`00`-`19`], [Message type, see the command table below],
-    [payload], [variable], [Command arguments],
-    [`F7`], [`F7`], [End of SysEx],
+    table.header([*Bytes*], [*field*], [*Meaning*]),
+    [`F0`], [], [Start of SysEx],
+    [`07`], [`manufacturer`], [Kurzweil manufacturer ID],
+    [`00`], [dev-id], [Device ID, set by the SysEx ID parameter. `7F` accepts any value],
+    [`78`], [unit-id], [K2600],
+    [`00`-`19`], [command-id], [Message type, see the command table below],
+    [...], [payload], [Command body],
+    [`F7`], [], [End of SysEx],
   ),
-  caption: [Header of a Kurzweil SysEx message],
+  caption: [Kurzweil SysEx message structure],
 )
-
-The payload is made only of MIDI data bytes, so every value is split into groups of 7 bits, most significant group
-first. A 14-bit value is two bytes, a 21-bit value is three bytes.
 
 == Objects: Type and ID
 
 Each object is identified by a *type* and an *ID*. Therefore, Program 1 is "type program, ID 1".
-- The *type* says what kind of object it is (program, keymap, sound block...).
+- The *Type* says what kind of object it is (program, keymap, sound block...).
 - The *ID* is an instance of that type: which program, which keymap.
 
 The Musician's Reference describes those fields as `type(2)` and `idno(2)`. Sounds simple, right? Unfortunately, they
-start to explain that a type in itself has an ID! This is very confusing. Instead, they should simply explain that, what
-they call "type's ID", is nothing more than the encoding of the type in MIDI. It is a packed version of a 7-bit value
-into 2 MIDI bytes. On MIDI, a data byte only holds 7 bits. A field that needs 8 or more bits is therefore sent as
-several bytes, most significant group first. In our case, the *type* is always sent as 14 bits (two bytes)
+start to explain that a type in itself has an ID! This is very confusing. So there is 3 concepts here:
+- A type: appear only in the documentation, not in the real MIDI payload
+- A type ID: this is what documentation calls `type(2)`
+- An object ID: this is `idno(2)`
+
+Instead, they should simply explain that, what they call "type ID", is nothing more than the encoding of the type in
+MIDI. It is a packed version of a 14-bit value into 2 MIDI bytes. On MIDI, a data byte only holds 7 bits. A field that
+needs 8 or more bits is therefore sent as several bytes, most significant byte first.
 
 For instance, the value `0x84` (132) is the type of a program, and it is the only thing the type field carries:
 - *Type* `0x84` (`1000 0100`) is split into `0000001` and `0000100`, sent as `01 04`
 - Guess what ? `$0104` is called "Type's ID" in the documentation !
-- *ID* `1` is sent as `00 01`. Is the ID of an object of a given type.
+- *Object ID* `1` is sent as `00 01`. Is the ID of an object of a given type.
 
 == Commands
 
@@ -219,9 +220,16 @@ The examples below illustrate the format.
 `DIR` for program type (01 04) id 1 (00 01):
 
 #hexline(
-  hx("F0", l_gray), hx("07", l_gray), hx("00", l_blue), hx("78", l_gray),
-  hx("04", l_orange), hx("01", l_green), hx("04", l_green),
-  hx("00", l_green), hx("01", l_green), hx("F7", l_gray),
+  hx("F0", l_gray),
+  hx("07", l_gray),
+  hx("00", l_blue),
+  hx("78", l_gray),
+  hx("04", l_orange),
+  hx("01", l_green),
+  hx("04", l_green),
+  hx("00", l_green),
+  hx("01", l_green),
+  hx("F7", l_gray),
 )
 
 #figure(
@@ -269,9 +277,17 @@ The examples below illustrate the format.
 `READ` of program type (01 04) id 1 (00 01) in packed format:
 
 #hexline(
-  hx("F0", l_gray), hx("07", l_gray), hx("00", l_blue), hx("78", l_gray),
-  hx("0A", l_orange), hx("01", l_green), hx("04", l_green),
-  hx("00", l_green), hx("01", l_green), hx("01", l_purple), hx("F7", l_gray),
+  hx("F0", l_gray),
+  hx("07", l_gray),
+  hx("00", l_blue),
+  hx("78", l_gray),
+  hx("0A", l_orange),
+  hx("01", l_green),
+  hx("04", l_green),
+  hx("00", l_green),
+  hx("01", l_green),
+  hx("01", l_purple),
+  hx("F7", l_gray),
 )
 
 A program in packed format is `0F9A` bytes vs `184C` bytes in nibble format.
@@ -337,9 +353,16 @@ A program in packed format is `0F9A` bytes vs `184C` bytes in nibble format.
 `DIRBANK` for all programs (01 04) of all banks (7F):
 
 #hexline(
-  hx("F0", l_gray), hx("07", l_gray), hx("00", l_blue), hx("78", l_gray),
-  hx("0C", l_orange), hx("01", l_green), hx("04", l_green),
-  hx("7F", l_purple), hx("00", l_purple), hx("F7", l_gray),
+  hx("F0", l_gray),
+  hx("07", l_gray),
+  hx("00", l_blue),
+  hx("78", l_gray),
+  hx("0C", l_orange),
+  hx("01", l_green),
+  hx("04", l_green),
+  hx("7F", l_purple),
+  hx("00", l_purple),
+  hx("F7", l_gray),
 )
 
 #figure(

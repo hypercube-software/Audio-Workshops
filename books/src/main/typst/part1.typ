@@ -57,63 +57,7 @@ the worst case damage the hardware. The author accepts no responsibility for dat
 device resulting from the use of the information contained in this document or in the associated software. Always back
 up your data before sending anything to your instrument, and test on a non-essential patch first.
 
-== PRAM format
-
-== Endianness
-
-The PRAM format is Big Endian.
-
-=== Header
-
-The `samples offset` points to the footer. The precise sample position in the file is given by *samples offset + (sample
-start \* 2)*, since the bit depth is always 16 bits and the sample start is expressed in samples instead of bytes.
-
-#stack(
-  dir: ttb,
-  spacing: 2pt,
-
-  binary_block("Magic: 'PRAM'", "4 bytes", rgb("#e1f5fe")),
-  binary_block("samples offset", "4 bytes", rgb("#fcb3b3")),
-)
-
-== Block content
-
-The PRAM file content is made of multiple blocks. For some unknown reason, the block size is *NEGATIVE* and includes
-itself. So to get the block size from \$FFFFFFA4, you have to compute Abs(\$FFFFFFA4)-4 = Abs(-92)-4 = 88
-
-#stack(
-  dir: ttb,
-  spacing: 2pt,
-
-  binary_block("block 1 size", "4 bytes", rgb("#b3fcb9")),
-  binary_block("block 1 content", "... bytes", rgb("#61be69")),
-  binary_block("block 2 size", "4 bytes", rgb("#b3fcb9")),
-  binary_block("block 2 content", "... bytes", rgb("#61be69")),
-  binary_spacer("...", rgb("#ffffff")),
-)
-
-Each block contains multiple Kurzweil objects.
-
-#stack(
-  dir: ttb,
-  spacing: 2pt,
-
-  grid(
-    columns: (50%, 50%),
-    binary_block("Object 1 identifier (compacted)", "2 bytes", rgb("#ffffff")),
-    binary_block("Object 1 size", "2 bytes", rgb("#ffffff")),
-  ),
-  binary_block("Object 1 content", "... bytes", rgb("#8cddd0")),
-  grid(
-    columns: (50%, 50%),
-    binary_block("Object 2 identifier (compacted)", "2 bytes", rgb("#ffffff")),
-    binary_block("Object 2 size", "2 bytes", rgb("#ffffff")),
-  ),
-  binary_block("Object 2 content", "... bytes", rgb("#8cddd0")),
-  binary_spacer("...", rgb("#ffffff")),
-)
-
-=== Object types
+== Object types
 
 Kurzweil uses an object-oriented architecture in its devices, so things will be very familiar to any OOP developer:
 - They have types
@@ -125,12 +69,13 @@ what you are pointing to. This is why type identifiers and object identifiers wo
 
 #kblock[
   The official specification *`objtypes.h`* states that the number of possible objects depends on the type:
-  - Types from 96 to 115 use 8-bit object identifiers, so you can have 256 objects
-  - Types from 132 to 159 use 10-bit object identifiers, so you can have 1024 objects
+  - Types from 96 to 115 use *8-bit object identifiers*, so you can have 256 objects
+  - Types from 132 to 159 use *10-bit object identifiers*, so you can have 1024 objects
   - Some type identifiers are simply not used
 ]
 
-Since types identifier goes beyond 7 bits, they need to be encoded in MIDI in two bytes where bit 7 is always 0 and never used. For instance 132/0x84 (10000100) is converted in MIDI to 0x0104 (00000001 00000100):
+Since types identifier goes beyond 7 bits, they need to be encoded in MIDI in two bytes where bit 7 is always 0 and
+never used. For instance 132/0x84 (10000100) is converted in MIDI to 0x0104 (00000001 00000100):
 
 #figure(
   schema.render(
@@ -139,9 +84,9 @@ Since types identifier goes beyond 7 bits, they need to be encoded in MIDI in tw
         main: (
           bits: 16,
           ranges: (
-            "15": (name: "15", description: "always 0"),
+            "15": (name: "0", description: "unused"),
             "14-8": (name: "0000001", description: "$01"),
-            "7": (name: "7", description: "always 0"),
+            "7": (name: "0", description: "unused"),
             "6-0": (name: "0001100", description: "$04"),
           ),
         ),
@@ -194,11 +139,110 @@ dig into that in the next chapters...
 
 ⚠️ The K2600R Musician's reference states that type *113* is a studio: this is wrong, it is *140* (chapter 7-7).
 
-=== PRAM Objects
+== PRAM format
+
+This is the format used in K26 files. It contains both settings and samples for the unit.
+
+=== Endianness
+
+The PRAM format is Big Endian.
+
+=== Header
+
+The `samples offset` points to the footer. The precise sample position in the file is given by *samples offset + (sample
+start \* 2)*, since the bit depth is always 16 bits and the sample start is expressed in samples instead of bytes.
+
+#stack(
+  dir: ttb,
+  spacing: 2pt,
+
+  binary_block("Magic: 'PRAM'", "4 bytes", rgb("#e1f5fe")),
+  binary_block("samples offset", "4 bytes", rgb("#fcb3b3")),
+)
+=== Body
+
+The PRAM file content is made of multiple blocks. For some unknown reason, the block size is *NEGATIVE* and includes
+itself. So to get the block size from \$FFFFFFA4, you have to compute Abs(\$FFFFFFA4)-4 = Abs(-92)-4 = 88
+
+#stack(
+  dir: ttb,
+  spacing: 2pt,
+
+  binary_block("block 1 size", "4 bytes", rgb("#b3fcb9")),
+  binary_block("block 1 content", "... bytes", rgb("#61be69")),
+  binary_block("block 2 size", "4 bytes", rgb("#b3fcb9")),
+  binary_block("block 2 content", "... bytes", rgb("#61be69")),
+  binary_spacer("...", rgb("#ffffff")),
+)
+
+=== Block content
+
+==== Overview
+
+Each block contains multiple Kurzweil objects.
+
+#stack(
+  dir: ttb,
+  spacing: 2pt,
+
+  binary_block("Object 1", "... bytes", rgb("#8cddd0")),
+  binary_block("Object 2 ", "... bytes", rgb("#8cddd0")),
+  binary_block("Object 3", "... bytes", rgb("#8cddd0")),
+  binary_spacer("...", rgb("#ffffff")),
+)
+
+==== Generic object structure
+
+Every object has the same header, followed by its data. The header is common to all object types. The data part is
+specific to each type.
+- `type/ID` is described in @pram-identifiers[chapter]
+- `size` include the header itself
+- `offset to data` include its size
+- `name` is described in @object-names[chapter]
+
+#figure(
+  bytefield(
+    bpr: 80,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [0],
+      8,
+      [1],
+      16,
+      [2],
+      24,
+      [3],
+      32,
+      [4],
+      40,
+      [5],
+      48,
+      [6],
+      56,
+      [7],
+      64,
+      [8],
+      72,
+      [9],
+    ),
+    bytes(2, fill: l_gray)[type/ID],
+    bytes(2, fill: l_orange)[size],
+    bytes(2, fill: l_blue)[offset to data],
+    bytes(4, fill: l_green)[name (variable, see below)],
+    bytes(10, fill: l_purple)[object data (variable)],
+  ),
+  caption: [Generic object structure: header, then data],
+) <generic-object>
+
+==== Identifiers <pram-identifiers>
 
 The object identifiers used in PRAM files are made of two fields packed into 16 bits:
 - The *Object Type*. Its unpacked size should be 8 bits
 - The *Object ID*.
+This is very common in PRAM files: they try to compact as much as possible, because the main target was floppy disks
 
 #kblock[
   *When the highest bit is 1*:
@@ -240,9 +284,50 @@ bit 7 to get the unpacked value 10000110.
   caption: [Examples of packed identifiers],
 ) <figure>
 
+==== Object Names <object-names>
 
+The name is a null-terminated C string, padded to an even number of bytes (the word pad):
+- maximum 18 bytes: 16 characters, the null terminator and one pad byte,
+- minimum 2 bytes: one character and the null terminator.
 
-== Footer
+The pad byte is only added when the characters and the null make an odd count. The name `Bass` has four characters, a
+null and one pad byte, so it takes 6 bytes:
+
+#figure(
+  bytefield(
+    bpr: 48,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0,
+      [0],
+      8,
+      [1],
+      16,
+      [2],
+      24,
+      [3],
+      32,
+      [4],
+      40,
+      [5],
+    ),
+    bytes(1, fill: l_green)[char 1],
+    bytes(1, fill: l_green)[char 2],
+    bytes(1, fill: l_green)[char 3],
+    bytes(1, fill: l_green)[char 4],
+    bytes(1, fill: l_gray)[null],
+    bytes(1, fill: white)[pad],
+  ),
+  caption: [Name `Bass` on the word pad: 6 bytes],
+) <name-word-pad>
+
+The field `offset to data` is the length of the name + null terminating byte + pad size + 2 (its own size).
+- For `Bass` it is 4 + 2 + 2 = 8 (1 byte of pad).
+- For `Synth` it is 5 + 1 + 2 = 8 (no pad).
+
+=== Footer
 
 The footer contains 16-bit PCM samples (in Big Endian, as usual). The sample rate may vary.
 
@@ -253,15 +338,29 @@ The footer contains 16-bit PCM samples (in Big Endian, as usual). The sample rat
   binary_block("PCM samples", "... bytes", rgb("#44a8fa")),
 )
 
+== MIDI format
+
+If you load a K26 file in the unit, you can perfectly retreive the very same content via MIDI, using various commands.
+We will get into the details of those MIDI SysEx commands later on, in this document.
+
+The only difference is that:
+- Nothing is compacted, because the target is no longer a floppy disk
+- On the contrary, everything is "expanded". Objects are complete and heavier
+
+Still remain the limitation of MIDI: everything must be packed into 7 bits
+- bit 7 is always 0 and unused.
+- bit 0 to 6 contain the data
+
+The next chapter will describe the format of objects that can be found in both MIDI and PRAM formats.
 
 #chapter("Objects", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
 #index("Sectioning")
 
 == Intonation tables
 
-The type INTONATION_TABLE (103) is defined in *`itbl.h`*. Each one is simply an array of 12 words of 16 bits. Intonation tables are not really
-interesting per se, but some of them provide very useful information. The intonation tables 18 to 22 indicate which
-versions of the objects are installed.
+The type INTONATION_TABLE (103) is defined in *`itbl.h`*. Each one is simply an array of 12 words of 16 bits. Intonation
+tables are not really interesting per se, but some of them provide very useful information. The intonation tables 18 to
+22 indicate which versions of the objects are installed.
 
 #figure(
   table(
@@ -287,7 +386,8 @@ versions of the objects are installed.
 
 == Velocity Maps
 
-A velocity map (type `VELOCITY_MAP`, 104) defines how the incoming key velocity is converted into dynamics. Its content is an array of 8 bytes. It is defined in *`vmap.h`*
+A velocity map (type `VELOCITY_MAP`, 104) defines how the incoming key velocity is converted into dynamics. Its content
+is an array of 8 bytes. It is defined in *`vmap.h`*
 
 #figure(
   table(
@@ -303,7 +403,8 @@ A velocity map (type `VELOCITY_MAP`, 104) defines how the incoming key velocity 
 
 == Pressure Maps
 
-A pressure map (type `PRESSURE_MAP`, 105) defines how the incoming channel pressure (aftertouch) is converted into dynamics. Its content is an array of 8 bytes. It is defined in *`pmap.h`*
+A pressure map (type `PRESSURE_MAP`, 105) defines how the incoming channel pressure (aftertouch) is converted into
+dynamics. Its content is an array of 8 bytes. It is defined in *`pmap.h`*
 
 #figure(
   table(
@@ -321,11 +422,11 @@ A pressure map (type `PRESSURE_MAP`, 105) defines how the incoming channel press
 
 === Overview
 
-A key map, also called pitch map (type `KEYMAP`, 133) associates each key of the keyboard with a sound block and its tuning and volume
-information. It is made of a header followed by a variable number of entries.
-It is defined in *`kmap.h`*, not *`keymap.h`*
+A key map, also called pitch map (type `KEYMAP`, 133) associates each key of the keyboard with a sound block and its
+tuning and volume information. It is made of a header followed by a variable number of entries. It is defined in
+*`kmap.h`*, not *`keymap.h`*
 
-#figure(image("assets/image-19.png"),caption: [KEYMAP page])
+#figure(image("assets/image-19.png"), caption: [KEYMAP page])
 
 #figure(
   table(
@@ -349,12 +450,13 @@ It is defined in *`kmap.h`*, not *`keymap.h`*
 
 === Field 'method'
 
-The *`method`* field is a set of bits describing which fields are present in each entry. A key map read via MIDI contains all fields, therefore the field is always `0x17` (00010111).
+The *`method`* field is a set of bits describing which fields are present in each entry. A key map read via MIDI
+contains all fields, therefore the field is always `0x17` (00010111).
 
- The 2 bits tuning type can be:
- - 00: none
- - 01: 8 bit tuning
- - 10: 16 bit tuning
+The 2 bits tuning type can be:
+- 00: none
+- 01: 8 bit tuning
+- 10: 16 bit tuning
 
 #figure(
   bytefield(
@@ -404,8 +506,8 @@ The fields of an entry depend on the bits of the `method` field:
 
 == Master block
 
-The master parameter block (type `TABLE`, 100 defined in *`mastb.h`*) stores the global settings of the unit. 
-It is made of four blocks: 
+The master parameter block (type `TABLE`, 100 defined in *`mastb.h`*) stores the global settings of the unit. It is made
+of four blocks:
 - the master parameter block (MDB)
 - the keyboard zone block (ZDB)
 - the MIDI channel blocks (CDB)
@@ -433,11 +535,11 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
 - Which maps are used (Velocity, Pressure)
 - How the sequencer is used (Song mode)
 
-#figure(image("assets/image-17.png"),caption: [RECEIVE page])
+#figure(image("assets/image-17.png"), caption: [RECEIVE page])
 
-#figure(image("assets/image.png"),caption: [The Master mode page])
+#figure(image("assets/image.png"), caption: [The Master mode page])
 
-#figure(image("assets/image-1.png"),caption: [The song page])
+#figure(image("assets/image-1.png"), caption: [The song page])
 
 #figure(
   table(
@@ -549,7 +651,7 @@ The `rmode_rpchg_rANO_displayLink_seqTempoLock_packed` meaning:
   caption: [MDB bitfield sequence Tempo Lock and others],
 ) <mdb-bitfield>
 
-The  `macroState_rfu3_packed` meaning:
+The `macroState_rfu3_packed` meaning:
 
 #figure(
   bytefield(
@@ -584,7 +686,7 @@ The  `macroState_rfu3_packed` meaning:
 The `seqRecDub_seqRecMode_seqLoop_seqSync_packed` meaning:
 
 - `seqRecDub`: sequencer merge or erase when recording,
-- `seqRecMode`: sequencer  record mode,
+- `seqRecMode`: sequencer record mode,
 - `seqLoop`: sequencer playback mode,
 - `seqSync`: sequencer internal or external clock, with room for a sync method.
 
@@ -767,7 +869,7 @@ The `bootDisk_defaultDisk_packed` meaning:
 
 It is defined in *`zdb.h`* This is related to the TRASMIT page:
 
-#figure(image("assets/image-16.png"),caption: [TRANSMIT page])
+#figure(image("assets/image-16.png"), caption: [TRANSMIT page])
 
 #figure(
   table(
@@ -790,13 +892,14 @@ It is defined in *`zdb.h`* This is related to the TRASMIT page:
 
 === MIDI Channel Parameter Block
 
-It is defined in *`cdb.h`*. This object is used in multichannel mode. 
+It is defined in *`cdb.h`*. This object is used in multichannel mode.
 - Which program is used on a specific MIDI channel
-- Which program parameter is overriden for this MIDI channel, especially output pair towards KDFX-A,KDFX-B,KDFX-C,KDFX-D.
+- Which program parameter is overriden for this MIDI channel, especially output pair towards
+  KDFX-A,KDFX-B,KDFX-C,KDFX-D.
 
 It is related to the following page:
 
-#figure(image("assets/image-18.png"),caption: [CHANNELS page])
+#figure(image("assets/image-18.png"), caption: [CHANNELS page])
 
 
 #figure(
@@ -893,7 +996,7 @@ This segment contains the same parameters as the ZDB structure of the master par
 
 This is related to the arpeggiator.
 
-#figure(image("assets/image-15.png"),caption: [ARPEG page])
+#figure(image("assets/image-15.png"), caption: [ARPEG page])
 
 _Global size: 26 bytes_
 
@@ -935,9 +1038,10 @@ ASRs are three-section unipolar envelopes (attack, sustain, and release).
 - they can be triggered by a programmable control source
 - they can be delayed
 
-It will appear multiple times inside a program. You have typically 1 ASR for the program, and multiple ones in each program layers.
+It will appear multiple times inside a program. You have typically 1 ASR for the program, and multiple ones in each
+program layers.
 
-#figure(image("assets/image-23.png"),caption:[ASR page])
+#figure(image("assets/image-23.png"), caption: [ASR page])
 
 _Global size: 8 bytes_
 
@@ -966,11 +1070,12 @@ This setup the core V.A.S.T engine, more espetially the algorithm.
 
 #image("assets/image-14.png")
 
-*PITCH* and *AMP* are fixed whereas things vary in the middle depending of the chosen algorithm. The Calvin segment is related to the following pages:
+*PITCH* and *AMP* are fixed whereas things vary in the middle depending of the chosen algorithm. The Calvin segment is
+related to the following pages:
 
-#figure(image("assets/image-13.png"),caption: [PITCH page])
+#figure(image("assets/image-13.png"), caption: [PITCH page])
 
-#figure(image("assets/image-12.png"),caption: [F4 AMP page])
+#figure(image("assets/image-12.png"), caption: [F4 AMP page])
 
 
 _Global size: 32 bytes_
@@ -1017,11 +1122,11 @@ _Global size: 32 bytes_
 
 === Channel segment
 
-This segment contains the same parameters as the CDB structure of the master parameter block. It sounds like "Common Data Block", but the `.h` use "Channel segment" as title. It is related to the following page:
+This segment contains the same parameters as the CDB structure of the master parameter block. It sounds like "Common
+Data Block", but the `.h` use "Channel segment" as title. It is related to the following page:
 
 #figure(
-  image("assets/image-2.png")
-,
+  image("assets/image-2.png"),
   caption: [Program Common page],
 )
 
@@ -1057,7 +1162,7 @@ _Global size: 16 bytes_
 
 This segment allow some overrides upon a Studio object used in a program.
 
-#figure(image("assets/image-20.png"),caption:[KDFX page])
+#figure(image("assets/image-20.png"), caption: [KDFX page])
 
 _Global size: 8 bytes_
 
@@ -1082,16 +1187,17 @@ _Global size: 8 bytes_
 
 === ENC/ATK segment
 
-The ENC segment (`ENCSEGTAG`) and the ATK segment (`ATKSEGTAG`) share the same structure. The tag value tells them apart: `0x20` for ENC, `0x27` for ATK. Both appear in each layer.
+The ENC segment (`ENCSEGTAG`) and the ATK segment (`ATKSEGTAG`) share the same structure. The tag value tells them
+apart: `0x20` for ENC, `0x27` for ATK. Both appear in each layer.
 
 - ENV stands for "Enveloppe control"
 - ATK stands for "Impact/attack control" which is not avaiable in K2000 units
 
 They are related to the following pages:
 
-#figure(image("assets/image-24.png"),caption:[AMPENV page 1])
+#figure(image("assets/image-24.png"), caption: [AMPENV page 1])
 
-#figure(image("assets/image-26.png"),caption:[ENVCTL page])
+#figure(image("assets/image-26.png"), caption: [ENVCTL page])
 
 _Global size: 16 bytes_
 
@@ -1126,9 +1232,9 @@ _Global size: 16 bytes_
 
 We typically found 3 of them inside a layer. They certainly match the 3 enveloppes called AMPENV, ENV2 and ENV3:
 
-#figure(image("assets/image-21.png"),caption:[AMPENV page 2])
+#figure(image("assets/image-21.png"), caption: [AMPENV page 2])
 
-#figure(image("assets/image-25.png"),caption:[ENV2 page])
+#figure(image("assets/image-25.png"), caption: [ENV2 page])
 
 _Global size: 16 bytes_
 
@@ -1152,7 +1258,7 @@ This segment is related to the FUN page. You can have 4 of them.
 - Which FUN is used
 - Which input parameter is used to call it
 
-#figure(image("assets/image-22.png"),caption:[FUN page])
+#figure(image("assets/image-22.png"), caption: [FUN page])
 
 _Global size: 4 bytes_
 
@@ -1177,7 +1283,7 @@ Can be found in LFO Page
 
 #figure(
   image("assets/image-3.png"),
-caption: [LFO page],
+  caption: [LFO page],
 )
 
 _Global size: 8 bytes_
@@ -1208,14 +1314,12 @@ _Global size: 72 bytes_
 This segment contains the same parameters as the MDB structure of the master parameter block.
 
 #figure(
-  image("assets/image.png")
-,
+  image("assets/image.png"),
   caption: [The Master mode page],
 )
 
 #figure(
-  image("assets/image-1.png")
-,
+  image("assets/image-1.png"),
   caption: [The song page],
 )
 
@@ -1284,7 +1388,7 @@ This segment contains the same parameters as the MDB structure of the master par
 
 Defined in *`frtb.h`*, this segment assign a specific Studio to the program. It is related to the KDFX page.
 
-#figure(image("assets/image-20.png"),caption:[KDFX page])
+#figure(image("assets/image-20.png"), caption: [KDFX page])
 
 _Global size: 8 bytes_
 
@@ -1305,12 +1409,13 @@ _Global size: 8 bytes_
 
 === FX Part segment
 
-Also called "FX Patch". This segment is defined in *`frtb.h`*. The goal here, is to control some Studio parameters with a specific modulation source. You can typically found 18 of them in a single program.
+Also called "FX Patch". This segment is defined in *`frtb.h`*. The goal here, is to control some Studio parameters with
+a specific modulation source. You can typically found 18 of them in a single program.
 
 It is related to the following pages:
 
-#figure(image("assets/image-27.png"),caption:[KDFX params page])
-#figure(image("assets/image-28.png"),caption:[KDFX MOD2,3,4 pages])
+#figure(image("assets/image-27.png"), caption: [KDFX params page])
+#figure(image("assets/image-28.png"), caption: [KDFX MOD2,3,4 pages])
 
 _Global size: 8 bytes_
 
@@ -1337,7 +1442,7 @@ _Global size: 8 bytes_
 
 This is related to PITCH page
 
-#figure(image("assets/image-4.png"),caption: [Pitch page])
+#figure(image("assets/image-4.png"), caption: [Pitch page])
 
 _Global size: 16 bytes_
 
@@ -1372,7 +1477,7 @@ _Global size: 16 bytes_
 
 Related to the layer page:
 
-#figure(image("assets/image-5.png"),caption: [LAYER page])
+#figure(image("assets/image-5.png"), caption: [LAYER page])
 
 _Global size: 16 bytes_
 
@@ -1407,7 +1512,7 @@ _Global size: 16 bytes_
 
 Related to TONEWL page:
 
-#figure(image("assets/image-6.png"),caption:[Tone Wheel page])
+#figure(image("assets/image-6.png"), caption: [Tone Wheel page])
 
 
 _Global size: 32 bytes_
@@ -1451,13 +1556,13 @@ _Global size: 32 bytes_
 
 Related to the following pages:
 
-#figure(image("assets/image-9.png"),caption: [PERC page])
+#figure(image("assets/image-9.png"), caption: [PERC page])
 
-#figure(image("assets/image-10.png"),caption: [PERC2 page])
+#figure(image("assets/image-10.png"), caption: [PERC2 page])
 
-#figure(image("assets/image-7.png"),caption: [MISC page])
+#figure(image("assets/image-7.png"), caption: [MISC page])
 
-#figure(image("assets/image-11.png"),caption: [KEYCLK page])
+#figure(image("assets/image-11.png"), caption: [KEYCLK page])
 
 _Global size: 32 bytes_
 
@@ -1496,7 +1601,7 @@ _Global size: 32 bytes_
 
 Related to DRAWBR page:
 
-#figure(image("assets/image-8.png"),caption: [DRAWBR page])
+#figure(image("assets/image-8.png"), caption: [DRAWBR page])
 
 
 _Global size: 32 bytes_

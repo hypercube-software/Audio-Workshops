@@ -54,8 +54,6 @@
     part-style: 0,
     outline-depth: 4,
     copyright: [
-      Copyright © 2026 Hypercube Software
-
       #link("https://github.com/hypercube-software", "HYPERCUBE-SOFTWARE")
 
       Licensed under the Apache 2.0 License (the “License”).

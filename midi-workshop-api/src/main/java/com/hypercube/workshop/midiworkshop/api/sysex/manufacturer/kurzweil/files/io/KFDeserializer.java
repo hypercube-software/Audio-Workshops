@@ -83,22 +83,25 @@ public abstract class KFDeserializer {
     }
 
     protected String readName(BitStreamReader in) {
-        // see official readme.txt where they talk about "offset to data"
-        // offset to jump over name include its own size
-        int ofs = in.readShort() - 2;
-        int beforeName = in.getBytePos();
-        byte[] chars = in.readBytes(ofs);
-        StringBuilder name = new StringBuilder();
-        for (int i = 0; i < ofs; i++) {
-            int ch = chars[i];
-            if (ch != 0) {
-                name.append((char) ch);
-            } else {
-                break;
-            }
+        // "offset to data" counts its own 2 bytes, so the name area (null terminator + optional pad included)
+        // is offsetToData - 2 bytes long.
+        int nameAreaLength = in.readShort() - 2;
+        byte[] area = in.readBytes(nameAreaLength);
+
+        // The name ends at the first null terminator. Anything after it, up to the end of the area, is the pad.
+        int terminator = 0;
+        while (terminator < area.length && area[terminator] != 0) {
+            terminator++;
         }
-        int afterName = in.getBytePos();
-        assert (ofs == afterName - beforeName);
-        return name.toString();
+        if (terminator == area.length) {
+            throw new IllegalStateException("Object name is not null-terminated inside its %d byte area".formatted(area.length));
+        }
+        int padLength = area.length - (terminator + 1);
+        String name = new String(area, 0, terminator, StandardCharsets.US_ASCII);
+
+        if (padLength > 1) {
+            log.debug("Object name {} area has {} bytes of padding after the terminator, expected at most 1", name, padLength);
+        }
+        return name;
     }
 }
