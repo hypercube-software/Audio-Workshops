@@ -2,8 +2,16 @@
 #let hx(b, c) = box(fill: c, inset: (x: 2.5pt, y: 2pt), radius: 2pt, raw(b))
 #let hexline(..c) = block(c.pos().join(h(2pt)))
 
-#chapter("MIDI protocol", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("MIDI Format", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
 #index("Sectioning")
+
+If you load a K26 file in the unit, you can perfectly retreive the very same content via MIDI, using various commands. The only difference is that:
+- Nothing is compacted, because the target is no longer a floppy disk
+- On the contrary, everything is "expanded". Objects are complete and heavier
+
+Still remain the limitation of MIDI: everything must be packed into 7 bits
+- bit 7 is always 0 and unused.
+- bit 0 to 6 contain the data
 
 The Musician's Reference (chapter 7) describes the SysEx protocol used to read and write objects in the unit's memory.
 This chapter explains the messages, their format, and how they are used by `KurzweilExplorer`. It is based on the
@@ -39,15 +47,15 @@ Each object is identified by a *type* and an *ID*. Therefore, Program 1 is "type
 
 The Musician's Reference describes those fields as `type(2)` and `idno(2)`. Sounds simple, right? Unfortunately, they
 start to explain that a type in itself has an ID! This is very confusing. So there is 3 concepts here:
-- A type: appear only in the documentation, not in the real MIDI payload
-- A type ID: this is what documentation calls `type(2)`
-- An object ID: this is `idno(2)`
+- A *type*: appears only in the documentation, not in the real MIDI payload
+- A *type ID*: this is what documentation calls `type(2)`
+- An *object ID*: this is `idno(2)`
 
 Instead, they should simply explain that, what they call "type ID", is nothing more than the encoding of the type in
 MIDI. It is a packed version of a 14-bit value into 2 MIDI bytes. On MIDI, a data byte only holds 7 bits. A field that
 needs 8 or more bits is therefore sent as several bytes, most significant byte first.
 
-For instance, the value `0x84` (132) is the type of a program, and it is the only thing the type field carries:
+For instance, the value `0x84` (132) is the type of a *Program*, and it is the only thing the type field carries:
 - *Type* `0x84` (`1000 0100`) is split into `0000001` and `0000100`, sent as `01 04`
 - Guess what ? `$0104` is called "Type's ID" in the documentation !
 - *Object ID* `1` is sent as `00 01`. Is the ID of an object of a given type.
@@ -95,9 +103,9 @@ The amount of messages handled by a Kurzweil is a little bit intimidating.
 
 Object data is sent in one of two formats, given by the `form` field:
 
-- `00`: nibble format. Each byte of the object becomes two MIDI bytes, the high nibble first. `4F D8 01 29` becomes
+- `00`: *nibble format*. Each byte of the object becomes two MIDI bytes, the high nibble first. `4F D8 01 29` becomes
   `04 0F 0D 08 00 01 02 09`. This is simple to read and to write, but it doubles the size.
-- `01`: bit-stream format. The bits of the object are concatenated and cut in groups of 7 bits, the last group being
+- `01`: *bit-stream format*. The bits of the object are concatenated and cut in groups of 7 bits, the last group being
   padded with zeros. `4F D8 01 29` becomes `27 76 00 12 48`.
 
 Sizes and offsets are always expressed in unpacked bytes, whatever the format used on the wire.
@@ -482,7 +490,7 @@ A program in packed format is `0F9A` bytes vs `184C` bytes in nibble format.
 A `DIR` on an unknown object returns an `INFO` with a size of zero and an empty name. That is the normal way to check
 whether an object exists before writing it.
 
-== Sample Dump Standard
+== Sample Dump Standard <sds>
 
 === Principle
 
@@ -498,6 +506,12 @@ In practice, a sample upload is therefore a conversation with the unit:
 + Then The unit create a sound block for it without any name
 + Then SysEx can update the sound block that points to this sample if needed
 + Then SysEx can create a program using this sound block
+
+=== Indexes
+
+Be warned that indexes in SDS are *not aligned* with those in the kurzweil.
+- The sound block object id is 200
+- Therefore the SDS sample id is ... 199 !
 
 === Messages
 
@@ -753,9 +767,11 @@ for the ACK, then sends each packet with up to three retries.
 
 == Conversation with the K2600
 
-This section describes the sequence used by `KurzweilExplorer` to load a patch with samples.
+This section describes the sequence used by `KurzweilExplorer` to load a patch with samples given a SysEx file and a PCM file.
 
 === Sequence for one sound block
+
+When the sysex contains a SOUND_BLOCK, multiple commands needs to be executed:
 
 #figure(
   table(
@@ -768,12 +784,12 @@ This section describes the sequence used by `KurzweilExplorer` to load a patch w
     [`DIR` of the sound block, type `01 06`],
     [`INFO`: size zero if the sample is not on the unit, otherwise the sample name is returned],
 
-    [2], [If the size is zero, SDS header with sample block `id - 1` is sent], [`ACK` (`7F`)],
-    [3], [SDS data packets, numbered from 0], [`ACK` for each packet, or `NAK` and a resend],
-    [4], [`READ` of the sound block], [`WRITE` of the current sound block state],
+    [2], [If the size is zero, We send the PCM file using SDS, starting with the SDS header], [SDS `ACK` (`7F`)],
+    [3], [SDS data packets, numbered from 0], [SDS `ACK` for each packet, or SDS `NAK` and a resend],
+    [4], [`READ` of the unit sound block], [`WRITE` of the current sound block. contains the memory address],
 
     [5],
-    [`WRITE` of the updated sound block, with its headers relocated to the address found in step 4],
+    [`WRITE` of the sysex sound block, with its headers relocated to the address found in step 4],
     [`DACK`, or `DNAK` with an error code],
   ),
   caption: [Uploading one sample and its sound block],
@@ -781,13 +797,10 @@ This section describes the sequence used by `KurzweilExplorer` to load a patch w
 
 Some details of the implementation:
 
-- The sample number sent in step 2 is `id - 1`. The K2600R stores the sample one number above the one in the header.
-  Some PC sample editors show the same off-by-one: the sample is stored at the requested number, but a `DIR` or a `READ`
-  must use the number minus one. The conversion is applied in both directions in `KurzweilExplorer` and
-  `SampleDumpStandard.requestSample`. Check this on your unit before relying on it for other tools.
+- The sample number sent in step 2 is `id - 1`. The K2600R stores the sample at index `id`.
 - The base address is not chosen by us. After the dump, the unit places the sample at an address in sample RAM. The
-  first header of the sound block that the unit returns in step 4 holds that address (`sampleStart`).
-- If the sample is already on the unit with the same name, steps 2 and 3 are skipped.
+  sound block returned in step 4 holds that address (`sampleStart`).
+- If the sample is already in the unit with the same name, steps 2 and 3 are skipped.
 - If the sample is on the unit with another name, the ID is already used.
 
 === Sequence for a patch

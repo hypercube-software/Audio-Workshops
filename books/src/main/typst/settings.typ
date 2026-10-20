@@ -98,3 +98,22 @@
 
   doc
 }
+
+#let binary_block(title, size, fill_color) = {
+  rect(
+    width: 100%,
+    height: 40pt,
+    fill: fill_color,
+    stroke: 1pt + black,
+    align(center + horizon)[*#title* \ #size],
+  )
+}
+#let binary_spacer(title, fill_color) = {
+  rect(
+    width: 100%,
+    height: 70pt,
+    fill: fill_color,
+    stroke: 1pt + black,
+    align(center + horizon)[*#title*],
+  )
+}
