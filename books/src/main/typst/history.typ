@@ -5,6 +5,14 @@
 #index("Sectioning")
 #codly(number-format: none)
 
+== The official Kurzweil Books
+
+Can be found on their site, for K2600 you have the following on the page `https://kurzweil.com/k2600/`
+
+- *K2600 Musicial Guide*, 598 pages: this is the user manual. There is nothing about SysEx here
+- *K2600 Reference Guide* aka "Musician's Reference", 346 pages: SysEx are in this book
+- *KDFX Algorithm reference*: 180 pages
+
 == The official Kurzweil FTP
 
 === The bad news
@@ -21,7 +29,7 @@ Old links like:
 ```
 http://www.youngchang.com/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Samples/ElectricPianos
 ```
-They need to be changed to:
+... need to be changed to:
 ```
 http://kurzweil.com/content/migration/downloads/pub/Kurzweil/Pro_Products/K2000-K2vx-K2500/Samples/ElectricPianos/
 ```

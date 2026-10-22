@@ -120,6 +120,37 @@ dig into that in the next chapters...
 
 ⚠️ The K2600R Musician's reference states that type *113* is a studio: this is wrong, it is *140* (chapter 7-7).
 
+== Banks
+
+It is very important to understand a *Bank* in the Kurzweil terminology have nothing to do with a *MIDI bank*. 
+
+=== Object ID bank
+
+A bank is a numbered storage area inside the unit. The numbers go from 0 to 9, and `7F` designates all the banks. Each
+object stored in RAM (program, keymap, sound block, setup...) belongs to one bank. The bank is a way to group objects,
+not an identifier: the object ID stays the same whatever its bank. 
+
+Because objects are grouped by bank, the SysEx protocol has commands that act on a whole bank at once:
+- `READBANK` and `DIRBANK` ask for the objects of one bank, or of all banks with `7F`,
+- `DELBANK` deletes all the RAM objects of a bank,
+- `MOVEBANK` moves all the objects of a bank to another bank.
+
+The bank number is therefore part of the request, not of the object reference. The exact rules still need to be checked on the unit or in the *Musician's Reference*: whether an object can be in several banks, and what happens to the bank of an object when it is renamed or moved.
+
+Therefore do not assume the following formula is true. It is not !
+
+$ "Object ID" = ("Bank" times 100) + "(index from 0 to 99)" $
+
+=== MIDI bank
+
+On the other side, if you talk about MIDI banks, it is ONLY used to select object ID of type PROGRAM. 
+$ "Program ID" = ("Bank LSB" times 128) + "Program Change" $
+It is explained here: https://kurzweil.com/2024/04/08/k27-selecting-programs-via-midi/
+- Bank Select MSB is never used
+- Bank Select LSB select a cluster of 128 programs
+  - Banks 0 to 12 are *Factory programs*
+  - Banks 32 to 63 are *User programs*
+  - Other Banks are unspecified or unused 
 
 #include "part1-pram-format.typ"
 
