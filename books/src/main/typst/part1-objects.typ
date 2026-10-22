@@ -198,7 +198,7 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
     stroke: 0.5pt,
     table.header([*Field Name*], [*Size in Bytes*], [*Description*]),
     [`tag`], [1], [Tag / identifier],
-    [`rmode_rpchg_rANO_displayLink_seqTempoLock_packed`],
+    [`bitfield1`],
     [1],
     [Combined bitfields for rmode, rpchg, rANO, displayLink, seqTempoLock],
 
@@ -211,14 +211,14 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
     [`sysxID`], [1], [System exclusive id number],
     [`trans`], [1], [Master receive transpose semitones],
     [`dtune`], [1], [Master tune cents],
-    [`sampflags_playflags_packed`], [1], [Combined bitfields for sampflags and playflags],
+    [`bitfield2`], [1], [Combined bitfields for sampflags and playflags],
     [`rfu2`], [1], [Reserved for future use],
     [`samptime`], [1], [Time to sample for],
     [`curSetup`], [2], [Actual current setup, 0 means use master zone],
     [`oldSetup`], [2], [For setup mode, remember last current setup],
     [`curBank`], [2], [Current quick access bank],
     [`curEntry`], [1], [Current quick access entry],
-    [`fxflags_outA_outB_fxSwitch_secsamp_rackMix_V_packed`],
+    [`bitfield3`],
     [1],
     [Combined bitfields for fxMode, outA, outB, fxSwitch, secsamp, rackMix, V],
 
@@ -226,7 +226,7 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
     [`localKbdChan`], [1], [Local keyboard channel for rack],
     [`fxMix`], [1], [Effects wet/dry mix, for use with fx override],
     [`echan`], [1], [Effects channel \#; kbdchan/1/2/..16 (used when override is off)],
-    [`macroState_rfu3_packed`], [1], [Combined bitfields for macroState, rfu3],
+    [`bitfield4`], [1], [Combined bitfields for macroState, rfu3],
     [`curSong`], [1], [Current song identifier (Song ID)],
     [`tvmap`], [2], [Master touch maps, velocity and pressure],
     [`tpmap`], [2], [Master touch maps, velocity and pressure],
@@ -234,22 +234,22 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
     [`contrast`], [1], [Contrast adjust for LCD display],
     [`view`], [1], [Display mode; big name or list],
     [`confirm`], [1], [Confirmations on/off],
-    [`xflags_kbdTrans_packed`], [1], [Combined bitfields for rfumode, xmode, bmode, xbuttons, xpchg and kbdTrans],
+    [`bitfield5`], [1], [Combined bitfields for rfumode, xmode, bmode, xbuttons, xpchg and kbdTrans],
     [`xvmap`], [2], [Xmit maps, velocity and pressure],
     [`xpmap`], [2], [Xmit maps, velocity and pressure],
     [`dchan`], [1], [Drum channel],
-    [`seqRecDub_seqRecMode_seqLoop_seqSync_packed`],
+    [`bitfield6`],
     [1],
     [Combined bitfields for seqSync, seqLoop, seqRecMode, seqRecDub],
 
     [`markList`], [10], [Marker list (10 ubytes)],
-    [`seqCountOff_seqClickMode_seqClickChan_packed`],
+    [`bitfield7`],
     [1],
     [Combined bitfields for seqClickChan, seqClickMode, seqCountOff],
 
-    [`seqClock_seqClickKey_packed`], [1], [Combined bitfields for seqClock, seqClickKey],
-    [`seqKeyWait_seqClickVel_packed`], [1], [Combined bitfields for seqKeyWait, seqClickVel],
-    [`bootDisk_defaultDisk_packed`], [1], [Combined bitfields for bootDisk, defaultDisk],
+    [`bitfield8`], [1], [Combined bitfields for seqClock, seqClickKey],
+    [`bitfield9`], [1], [Combined bitfields for seqKeyWait, seqClickVel],
+    [`bitfield10`], [1], [Combined bitfields for bootDisk, defaultDisk],
     [`seqClickProg`], [2], [Program associated with the sequencer click],
     [`seqQuantGrid`], [2], [Quantization grid],
     [`seqQuantAmt`], [1], [Quantization amount],
@@ -261,7 +261,7 @@ It is defined in *`mdb.h`*. This object cover many things about kurzweil units:
   caption: [Master parameter block (MDB)],
 )
 
-The `rmode_rpchg_rANO_displayLink_seqTempoLock_packed` meaning:
+The `bitfield1` meaning:
 - *sTL*: sequencer Tempo Lock
 - *dL*: display link
 - *rANO*: receive all note off (hard/soft/off)
@@ -297,10 +297,10 @@ The `rmode_rpchg_rANO_displayLink_seqTempoLock_packed` meaning:
     bits(2, fill: l_green)[rpchg],
     bits(2, fill: l_orange)[rmode],
   ),
-  caption: [MDB bitfield sequence Tempo Lock and others],
+  caption: [MDB bitfield1 (seqTempoLock, displayLink, rANO, rpchg, rmode)],
 ) <mdb-bitfield>
 
-The `macroState_rfu3_packed` meaning:
+The `bitfield4` meaning:
 
 #figure(
   bytefield(
@@ -329,10 +329,10 @@ The `macroState_rfu3_packed` meaning:
     bits(2, fill: l_red)[macroState],
     bits(6, fill: l_purple)[reserved],
   ),
-  caption: [MDB bitfield `macroState`],
+  caption: [MDB bitfield4 (macroState, rfu3)],
 ) <mdb-bitfield>
 
-The `seqRecDub_seqRecMode_seqLoop_seqSync_packed` meaning:
+The `bitfield6` meaning:
 
 - `seqRecDub`: sequencer merge or erase when recording,
 - `seqRecMode`: sequencer record mode,
@@ -368,10 +368,10 @@ The `seqRecDub_seqRecMode_seqLoop_seqSync_packed` meaning:
     bits(2, fill: l_green)[loop],
     bits(2, fill: l_blue)[sync],
   ),
-  caption: [MDB bitfield `seqRecDub_seqRecMode_seqLoop_seqSync_packed`],
+  caption: [MDB bitfield6 (seqRecDub, seqRecMode, seqLoop, seqSync)],
 ) <mdb-seq-bitfield>
 
-The `seqCountOff_seqClickMode_seqClickChan_packed` meaning:
+The `bitfield7` meaning:
 
 - `seqCountOff`: sequencer count off
 - `seqClickMode`: sequencer click mode,
@@ -405,10 +405,10 @@ The `seqCountOff_seqClickMode_seqClickChan_packed` meaning:
     bits(2, fill: l_orange)[clickMode],
     bits(4, fill: l_green)[clickChan],
   ),
-  caption: [MDB bitfield `seqCountOff_seqClickMode_seqClickChan_packed`],
+  caption: [MDB bitfield7 (seqCountOff, seqClickMode, seqClickChan)],
 ) <mdb-click-bitfield>
 
-The `seqClock_seqClickKey_packed` meaning:
+The `bitfield8` meaning:
 
 - `seqClickKey`: sequencer click key
 - `seqClock`: sequencer clock
@@ -440,10 +440,10 @@ The `seqClock_seqClickKey_packed` meaning:
     bits(7, fill: l_purple)[clickKey],
     bits(1, fill: l_orange)[clock],
   ),
-  caption: [MDB bitfield `seqClock_seqClickKey_packed`],
+  caption: [MDB bitfield8 (seqClickKey, seqClock)],
 ) <mdb-clock-bitfield>
 
-The `seqKeyWait_seqClickVel_packed` meaning:
+The `bitfield9` meaning:
 
 - `seqClickVel`: sequence click velocity
 - `seqKeyWait`: sequencer key wait on/off
@@ -475,10 +475,10 @@ The `seqKeyWait_seqClickVel_packed` meaning:
     bits(7, fill: l_purple)[clickVel],
     bits(1, fill: l_orange)[wait],
   ),
-  caption: [MDB bitfield `seqKeyWait_seqClickVel_packed` (`wait` is `seqKeyWait`)],
+  caption: [MDB bitfield9 (seqClickVel, seqKeyWait), `wait` is `seqKeyWait`],
 ) <mdb-keywait-bitfield>
 
-The `bootDisk_defaultDisk_packed` meaning:
+The `bitfield10` meaning:
 
 - `bootDisk`: boot Disk
 - `defaultDisk`: default disk
@@ -510,7 +510,7 @@ The `bootDisk_defaultDisk_packed` meaning:
     bits(4, fill: l_purple)[bootDisk],
     bits(4, fill: l_orange)[defaultDisk],
   ),
-  caption: [MDB bitfield `bootDisk_defaultDisk_packed`],
+  caption: [MDB bitfield10 (bootDisk, defaultDisk)],
 ) <mdb-disk-bitfield>
 
 
@@ -980,7 +980,7 @@ This segment contains the same parameters as the MDB structure of the master par
     stroke: 0.5pt,
     table.header([*Field Name*], [*Size in Bytes*], [*Description*]),
     [`tag`], [1], [Identification tag (value `0x01`)],
-    [`bitfields1`], [1], [Bitfield (seqTempoLock, displayLink, rANO, rpchg, rmode)],
+    [`bitfield1`], [1], [Bitfield (seqTempoLock, displayLink, rANO, rpchg, rmode)],
     [`scsiID`], [1], [SCSI identifier],
     [`bchan`], [1], [Base channel number],
     [`rvmap`], [2], [Recv velocity map],
@@ -1003,7 +1003,7 @@ This segment contains the same parameters as the MDB structure of the master par
     [`localKbdChan`], [1], [Local keyboard channel for rack],
     [`fxMix`], [1], [Effects wet/dry mix, for use with fx override],
     [`echan`], [1], [Effects channel \#; kbdchan/1/2/..16],
-    [`bitfields2`], [1], [Bitfield (macroState, rfu3)],
+    [`bitfield2`], [1], [Bitfield (macroState, rfu3)],
     [`curSong`], [1], [Current song],
     [`tvmap`], [2], [Master touch maps, velocity and pressure],
     [`tpmap`], [2], [Master touch maps, velocity and pressure],
@@ -1016,12 +1016,12 @@ This segment contains the same parameters as the MDB structure of the master par
     [`xvmap`], [2], [Xmit maps, velocity and pressure],
     [`xpmap`], [2], [Xmit maps, velocity and pressure],
     [`dchan`], [1], [Drum channel],
-    [`bitfields3`], [1], [Bitfield (seqRecDub, seqRecMode, seqLoop, seqSync)],
+    [`bitfield3`], [1], [Bitfield (seqRecDub, seqRecMode, seqLoop, seqSync)],
     [`markList`], [10], [Mark list],
-    [`bitfields4`], [1], [Bitfield (seqCountOff, seqClickMode, seqClickChan)],
-    [`bitfields5`], [1], [Bitfield (seqClickKey, seqClock)],
-    [`bitfields6`], [1], [Bitfield (seqClickVel, seqKeyWait)],
-    [`bitfields7`], [1], [Bitfield (bootDisk, defaultDisk)],
+    [`bitfield4`], [1], [Bitfield (seqCountOff, seqClickMode, seqClickChan)],
+    [`bitfield5`], [1], [Bitfield (seqClickKey, seqClock)],
+    [`bitfield6`], [1], [Bitfield (seqClickVel, seqKeyWait)],
+    [`bitfield7`], [1], [Bitfield (bootDisk, defaultDisk)],
     [`seqClickProg`], [2], [Sequencer click program],
     [`seqQuantGrid`], [2], [Quantization grid],
     [`seqQuantAmt`], [1], [Quantization amount],
@@ -1114,10 +1114,10 @@ _Global size: 16 bytes_
     [`minDepth`], [1], [Minimum depth],
     [`maxDepth`], [1], [Maximum depth],
     [`source`], [1], [Modulation source],
-    [`bitfields1`], [1], [Bitfield (downShift, filtAlg)],
+    [`bitfield1`], [1], [Bitfield (downShift, filtAlg)],
     [`moreTscr`], [1], [Additional parameters],
-    [`bitfields2`], [1], [Bitfield (headRoom, pair, rfu2)],
-    [`bitfields3`], [1], [Bitfield (rfu, panMode, pan)],
+    [`bitfield2`], [1], [Bitfield (headRoom, pair, rfu2)],
+    [`bitfield3`], [1], [Bitfield (rfu, panMode, pan)],
   ),
   caption: [Hobbes segment (HOBSEGTAG)],
 )
@@ -1177,7 +1177,7 @@ _Global size: 32 bytes_
     [`version`], [1], [Version],
     [`basekey`], [1], [Key \# of base tone wheel],
     [`nwheels`], [1], [\# tone wheels],
-    [`bitfields1`], [1], [Bitfield (toneswap, nopreamp, perctrig, livebars, barquant, keynoise, noizmulti, noizfiltr)],
+    [`bitfield1`], [1], [Bitfield (toneswap, nopreamp, perctrig, livebars, barquant, keynoise, noizmulti, noizfiltr)],
     [`toneleak`], [1], [Tone wheel leakage level],
     [`resmap`], [1], [Keyboard resistor map \#],
     [`bartones`], [9], [Draw bar tuning (semis) (9 bytes)],
