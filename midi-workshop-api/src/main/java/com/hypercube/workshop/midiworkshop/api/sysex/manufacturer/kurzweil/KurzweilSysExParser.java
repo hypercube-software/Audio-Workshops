@@ -113,6 +113,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
                         case DUMP -> parseDUMP(command, reader);
                         case DACK -> parseDataACK(command, reader);
                         case DNACK -> parseDataNACK(command, reader);
+                        case END_OF_BANK -> parseEndOfBank(command, reader);
                         default -> null;
                     };
                 })
@@ -123,6 +124,13 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
     public List<String> splitBySize(String text, int size) {
         return Arrays.stream(text.split("(?<=\\G.{" + size + "})"))
                 .toList();
+    }
+
+    private EndOfBank parseEndOfBank(Command command, SysExReader reader) {
+        int objectType = reader.getInt16();
+        int bankId = reader.getByte();
+        log.info("End of bank: type {} bank {}", "%04X".formatted(objectType), bankId);
+        return new EndOfBank(objectType, bankId);
     }
 
     private DataNACK parseDataNACK(Command command, SysExReader reader) {

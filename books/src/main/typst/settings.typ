@@ -16,6 +16,13 @@
 #let l_purple = purple.lighten(55%)
 #let l_red = red.lighten(55%)
 
+// Code block without line numbers: #nonum[` ... `]. Resets the codly number format afterwards.
+#let nonum(body) = {
+  codly(number-format: none)
+  body
+  codly(number-format: numbering.with("1"))
+}
+
 // Block that keeps the next paragraph indented (Typst only indents paragraphs that follow a paragraph).
 #let kblock(body) = {
   block(breakable: false, above: 1.2em, below: 1.2em, body)
