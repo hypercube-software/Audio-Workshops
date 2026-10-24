@@ -135,7 +135,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
     private DataNACK parseDataNACK(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int offset = reader.getInt21();
         int size = reader.getInt21();
         return new DataNACK(objectType, objectId, offset, size);
@@ -143,7 +143,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
     private DataACK parseDataACK(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int offset = reader.getInt21();
         int size = reader.getInt21();
         return new DataACK(objectType, objectId, offset, size);
@@ -151,7 +151,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
     private BaseObject parseDUMP(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int offset = reader.getInt21();
         int size = reader.getInt21();
         int formatCode = reader.getByte();
@@ -223,7 +223,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
     private ObjectInfo parseINFO(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int size = reader.getInt21();
         boolean inRam = reader.getByte() == 1;
         String name = reader.getString();
@@ -255,7 +255,7 @@ public class KurzweilSysExParser extends ManufacturerSysExParser {
 
     private ObjectLoad parseLOAD(Command command, SysExReader reader) {
         int objectType = reader.getInt16();
-        int objectId = reader.getInt16();
+        int objectId = reader.getInt14();
         int offset = reader.getInt21();
         int unpackedSize = reader.getInt21();
         String objectTypeName = KObject.fromType(objectType)
