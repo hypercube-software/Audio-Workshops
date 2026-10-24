@@ -62,7 +62,7 @@ public class KurzweilExplorer {
         converseWith(deviceName, (device, input, output) -> {
             String typeId = MidiEventBuilder.to14Bits(type, false);
             String bankId = MidiEventBuilder.to7Bits(bank);
-            List<ObjectInfo> result = queryList(device, input, output, "DIR_BANK(%s,%s,00)".formatted(typeId, bankId));
+            List<ObjectInfo> result = queryList(device, input, output, "DIR_BANK(%s,%s,00)".formatted(typeId, bankId), ObjectInfo.class);
             result.forEach(info -> log.info("{} {}", info.getObjectId(), info.getName()));
         });
     }
@@ -306,10 +306,18 @@ public class KurzweilExplorer {
                 .orElseThrow();
     }
 
-    private <T extends BaseObject> List<T> queryList(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample) {
+    /**
+     * Query a list of objects and keep only the responses of the requested type
+     * (e.g. a DIR_BANK returns ObjectInfo followed by an EndOfBank)
+     */
+    private <T extends BaseObject> List<T> queryList(MidiDeviceDefinition device, MidiInPort input, MidiOutPort output, String cmtDirSample, Class<T> type) {
         var response = midiDeviceRequester.queryAndAggregate(device, input, output, CommandCall.parse(device, cmtDirSample)
                 .getFirst(), null);
-        return (List<T>) kurzweilSysExParser.parse(response.response());
+        return kurzweilSysExParser.parse(response.response())
+                .stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .toList();
     }
 
     private void converseWith(String deviceName, DeviceConversation deviceConversation) {

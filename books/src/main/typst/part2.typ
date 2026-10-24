@@ -82,6 +82,7 @@ the bit 8 is always 0.
     fill: (x, y) => if y == 0 { luma(230) },
     stroke: 0.5pt,
     table.header([*Enum value*], [*ID*], [*Hexa ID*], [*Type (MIDI encoding)*], [*Meaning*]),
+    [`UNKNOWN`], [0], [`$00`], [`00 00`], [Fallback when the type is not recognized],
     [`INDEX`], [97], [`$61`], [`00 61`], [Index type],
     [`X_CODE`], [98], [`$62`], [`00 62`], [Executable code],
     [`TABLE`], [100], [`$64`], [`00 64`], [Miscellaneous table (master parameters)],
@@ -104,10 +105,14 @@ the bit 8 is always 0.
     [`SOUND_BLOCK`], [134], [`$86`], [`01 06`], [Sound block (sample)],
     [`SETUP`], [135], [`$87`], [`01 07`], [Setup],
     [`MARGE`], [136], [`$88`], [`01 08`], [Merge type],
+    [`SETUP_2`], [137], [`$89`], [`01 09`], [New setup type],
     [`STUDIO`], [140], [`$8C`], [`01 0C`], [Studio (KDFX configuration)],
-    [`UNKNOWN`], [0], [`$00`], [`00 00`], [Fallback when the type is not recognized],
+    [`KDFX_PRESET`], [141], [`$8D`], [`01 0D`], [KDFX preset type],
+    [`DITHER`], [142], [`$8E`], [`01 0E`], [Dither type],
+    [`KDFX_ALG`], [143], [`$8F`], [`01 0F`], [KDFX algorithm type],
+    [`STUDIO_PARAM`], [144], [`$90`], [`01 10`], [Studio parameter type],
   ),
-  caption: [Object types declared in `KObject`],
+caption: [Object types declared in `KObject`],
 )
 
 == Objects (`KFObject`)

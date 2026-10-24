@@ -78,6 +78,7 @@ never used. For instance 132/0x84 (10000100) is converted in MIDI to 0x0104 (000
   caption: [How object type 132 (PROGRAM) is encoded in MIDI],
 )
 
+The list of types is partially provided in `objtypes.h`. We use ⚠️ in the following table to mark those who are not in the .H 
 Each type corresponds to various .H files provided by Kurzweil. Unfortunately, some parts are not clear. We are going to
 dig into that in the next chapters...
 
@@ -113,12 +114,17 @@ dig into that in the next chapters...
     [134], [`$86`], [`01 06`], [SOUND_BLOCK], [Sound block type],
     [135], [`$87`], [`01 07`], [SETUP], [Setup type],
     [136], [`$88`], [`01 08`], [MARGE], [Marge type],
-    [140], [`$8C`], [`01 0C`], [STUDIO], [Studio type ⚠️Not explicitly defined in objtypes.h],
+    [137], [`$89`], [`01 09`], [SETUP_2], [New setup type ⚠️],
+    [141], [`$8D`], [`01 0D`], [KDFX_PRESET], [KDFX preset type ⚠️],
+    [142], [`$8E`], [`01 0E`], [DITHER], [Dither type ⚠️],
+    [143], [`$8F`], [`01 0F`], [KDFX_ALG], [KDFX algorithm type ⚠️],
+    [144], [`$90`], [`01 10`], [STUDIO_PARAM], [Studio parameter type ⚠️],
+    [140], [`$8C`], [`01 0C`], [STUDIO], [Studio type ⚠️],
   ),
   caption: [List of well known object types],
 )
 
-⚠️ The K2600R Musician's reference states that type *113* is a studio: this is wrong, it is *140* (chapter 7-7).
+⚠️ The K2600R Musician's reference states that type *113* is a studio: this is wrong, it is *140* (chapter 7-7). It also seems SETUP are now *137* instead of *135*.
 
 == Banks
 

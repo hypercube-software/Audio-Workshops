@@ -115,23 +115,37 @@ public enum KObject {
      */
     MARGE(136),
     /**
+     * New Setup type.
+     * ID: 137 (0x0109), Packed Value: 0x0107
+     */
+    SETUP_2(137),
+    /**
      * Custom Studio type. Not explicitly defined in objtypes.h.
      * ID: 140 (0x8C), Packed Value: 0x010C
      */
     STUDIO(140),
+    /**
+     * KDFX Preset type. ID: 141 (0x010D)
+     */
+    KDFX_PRESET(141),
+    /**
+     * DITHER type. ID: 142 (0x010E)
+     */
+    DITHER(142),
+    /**
+     * KDFX Algorithm type. ID: 143 (0x010F)
+     */
+    KDFX_ALG(143),
+    /**
+     * Studio parameter type. ID: 144 (0x0110)
+     */
+    STUDIO_PARAM(144),
     UNKNOWN(0);
 
     private final int id;
 
     private KObject(int id) {
         this.id = id;
-    }
-
-    public int getType() {
-        int upper7BitsOfId = (id >>> 7) & 0x7F; // Get bits 7-13 of id
-        int lower7BitsOfId = id & 0x7F; // Get bits 0-6 of id
-
-        return (upper7BitsOfId << 8) | lower7BitsOfId;
     }
 
     public static Optional<KObject> fromType(int packedType) {
@@ -144,5 +158,12 @@ public enum KObject {
         return Arrays.stream(KObject.values())
                 .filter(c -> c.id == id)
                 .findFirst();
+    }
+
+    public int getType() {
+        int upper7BitsOfId = (id >>> 7) & 0x7F; // Get bits 7-13 of id
+        int lower7BitsOfId = id & 0x7F; // Get bits 0-6 of id
+
+        return (upper7BitsOfId << 8) | lower7BitsOfId;
     }
 }
