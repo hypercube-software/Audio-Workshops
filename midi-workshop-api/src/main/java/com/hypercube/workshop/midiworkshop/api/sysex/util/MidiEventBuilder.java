@@ -280,6 +280,16 @@ public class MidiEventBuilder {
         return sb.toString();
     }
 
+    public static int from14bits(int value, boolean lsbFirst) {
+        int a = (value >> 8) & 0xFF;
+        int b = value & 0xFF;
+        if (lsbFirst) {
+            return b << 7 | a;
+        } else {
+            return a << 7 | b;
+        }
+    }
+
     public static int from14Bits(byte[] payload, int pos, boolean lsbFirst) {
         int a = payload[pos++] & 0xFF;
         int b = payload[pos++] & 0xFF;

@@ -767,44 +767,7 @@ for the ACK, then sends each packet with up to three retries.
 
 == Retreiving objects
 
-=== K2600R Memory map
-
-Here the result of my investigation, trying to brute-force all the object ID and all the banks of my K2600R using DIR_BANK command.
-According to the .H, types goes from 96 to 159. Here those who are not empty (marked with ● ).
-
-#figure(
-  table(
-    align: (left, left, center, center, center, center, center, center, center, center, center, center),
-    columns: (auto, auto, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
-    fill: (x, y) => if y == 0 { luma(230) },
-    stroke: 0.5pt,
-    table.header([*Type*], [*Name*], [*Bank 0*], [*Bank 1*], [*Bank 2*], [*Bank 3*], [*Bank 4*], [*Bank 5*], [*Bank 6*], [*Bank 7*], [*Bank 8*], [*Bank 9*]),
-    [97], [`INDEX`], [], [], [●], [●], [●], [], [], [], [], [],
-    [102], [`ALG_DESC`], [●], [●], [], [], [], [], [], [], [], [],
-    [103], [`INTONATION_TABLE`], [●], [], [], [], [], [], [], [], [], [],
-    [104], [`VELOCITY_MAP`], [●], [], [], [], [], [], [], [], [], [],
-    [105], [`PRESSURE_MAP`], [●], [], [], [], [], [], [], [], [], [],
-    [106], [`EDIT`], [●], [], [], [], [], [], [], [], [], [],
-    [107], [`EDIT_MENU`], [●], [●], [●], [●], [●], [●], [●], [●], [●], [●],
-    [108], [`MENU_GROUP`], [●], [], [], [], [], [], [], [], [], [],
-    [109], [`MENU_ENTRY_LIST`], [●], [●], [●], [●], [●], [●], [●], [●], [●], [●],
-    [111], [`B_LIST`], [●], [], [], [], [], [], [], [], [●], [●],
-    [112], [`SONG`], [●], [], [], [], [], [], [], [], [], [],
-    [114], [`SHAPE`], [●], [], [], [], [], [], [], [], [], [],
-    [115], [`F_PROC`], [●], [], [], [], [], [], [], [], [], [],
-    [132], [`PROGRAM`], [●], [●], [●], [], [], [], [], [●], [●], [●],
-    [133], [`KEYMAP`], [●], [●], [●], [], [], [], [], [●], [●], [●],
-    [134], [`SOUND_BLOCK`], [●], [●], [], [], [], [], [], [●], [●], [●],
-    [135], [`SETUP`], [●], [], [], [], [], [], [], [], [], [],
-    [137], [`SETUP_2`], [●], [], [], [], [], [], [], [], [●], [●],
-    [140], [`STUDIO`], [●], [●], [], [], [], [], [], [●], [●], [],
-    [141], [`KDFX_PRESET`], [●], [●], [], [], [], [], [], [●], [●], [●],
-    [142], [`DITHER`], [●], [●], [], [], [], [], [], [], [], [],
-    [143], [`KDFX_ALG`], [●], [●], [], [], [], [], [], [●], [], [●],
-    [144], [`STUDIO_PARAM`], [●], [], [], [], [], [], [], [], [], [],
-  ),
-  caption: [Types and banks for K2600R],
-)
+#include "part1-memory_map.typ"
 
 === ALG_DESC
 

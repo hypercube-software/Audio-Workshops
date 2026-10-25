@@ -42,6 +42,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -62,8 +64,12 @@ public class KurzweilExplorer {
         converseWith(deviceName, (device, input, output) -> {
             String typeId = MidiEventBuilder.to14Bits(type, false);
             String bankId = MidiEventBuilder.to7Bits(bank);
-            List<ObjectInfo> result = queryList(device, input, output, "DIR_BANK(%s,%s,00)".formatted(typeId, bankId), ObjectInfo.class);
-            result.forEach(info -> log.info("{} {}", info.getObjectId(), info.getName()));
+            List<ObjectInfo> result = new ArrayList<>(queryList(device, input, output, "DIR_BANK(%s,%s,00)".formatted(typeId, bankId), ObjectInfo.class));
+            result.sort(
+                    Comparator.comparingInt(ObjectInfo::getObjectType)
+                            .thenComparingInt(ObjectInfo::getObjectId)
+            );
+            result.forEach(info -> log.info("{} {} {}", info.get14BitsObjectType(), info.getObjectId(), info.getName()));
         });
     }
 
