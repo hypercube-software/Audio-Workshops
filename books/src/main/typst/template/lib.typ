@@ -664,10 +664,6 @@
   // exclude figures without caption from the outline
   show figure.where(caption: none): set figure(outlined: false)
 
-  my-outline-sec(list-of-figure-title, figure.where(kind: image), outline-heading3)
-
-  my-outline-sec(list-of-table-title, figure.where(kind: table), outline-heading3)
-
   // Main body.
   set par(
     first-line-indent: 1em,
@@ -697,4 +693,11 @@
   show link: set text(fill: main-color)
 
   body
+
+  part("Indexes")
+  heading(level: 1, supplement: [], outlined: true)[List of Figures]
+  my-outline-sec(list-of-figure-title, figure.where(kind: image), outline-heading3)
+  
+  heading(level: 1, supplement: [], outlined: true)[List of Tables]
+  my-outline-sec(list-of-table-title, figure.where(kind: table), outline-heading3)
 }

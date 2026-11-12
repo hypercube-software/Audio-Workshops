@@ -118,7 +118,7 @@
     ]
   }
   outline(
-    title: list-of-figure-title,
+    title: none,
     target: target,
   )
 }
