@@ -99,22 +99,46 @@ public class BitStreamReader {
     }
 
     /**
-     * Read bits from LSB to MSB
+     * Read bits in LSB-first order: the first bit read becomes bit 0 of the value.
+     * <p>
+     * This is the natural way to read little-endian (LSB first) fields.
      *
      * @param numBits number of bits to read
      * @return the reconstructed value
      */
-    public int readInvertedBits(int numBits) {
+    public int readLsbBits(int numBits) {
         if (numBits <= 0) {
             throw new RuntimeException("Number of bits to read must be positive.");
         }
         int value = 0;
         for (int b = 0; b < numBits; b++) {
-            value = (readBit() << b) | value;
+            value = (readLsbBit() << b) | value;
         }
         return value;
     }
 
+    /**
+     * Read one bit in LSB-first order (bit 0 first, then bit 1, etc.).
+     *
+     * @return the bit value
+     */
+    public int readLsbBit() {
+        if (bitIndex == 8) {
+            bitIndex = 0;
+            byteIndex++;
+            currentByte = byteIndex < data.length ? data[byteIndex] : 0;
+        }
+        int bitValue = (currentByte >> bitIndex) & 0x1;
+        bitIndex++;
+        return bitValue;
+    }
+
+    /**
+     * Read bits from MSB to LSB: the first bit read becomes the most significant bit
+     * of the value.
+     *
+     * @return the bit value
+     */
     public int readBit() {
         if (bitIndex == 8) {
             bitIndex = 0;

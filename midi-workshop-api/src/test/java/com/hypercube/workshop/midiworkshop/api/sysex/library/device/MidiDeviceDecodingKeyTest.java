@@ -9,31 +9,31 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * In the key, B2 mean "byte 1 bit 2" not "byte 1 bit offset 2"
+ * In the key, B2 means "byte 1, bit 2" (0 = LSB/right, 7 = MSB/left).
  * So B2 goes here: 00000000 00000100
  * NOT here       : 00000000 00100000
  */
 class MidiDeviceDecodingKeyTest {
     private static Stream<Arguments> provideBitOffsets() {
-        // Since MIDI use only 7 bits, all indexes%8 are -1
-        // We read the stream bit from left to right, from bit index 0 to 16
+        // Since MIDI uses only 7 bits, all input indexes % 8 == 0 are unmapped.
+        // The input stream is read from left to right.
         return Stream.of(
                 Arguments.of(0, -1),
-                Arguments.of(1, 1), // A6 = bit index 1
-                Arguments.of(2, 2),
-                Arguments.of(3, 3),
-                Arguments.of(4, 4),
-                Arguments.of(5, 5),
-                Arguments.of(6, 6),
-                Arguments.of(7, 7), // A0 = bit index 7
+                Arguments.of(1, 6), // A6 = target bit 6
+                Arguments.of(2, 5),
+                Arguments.of(3, 4),
+                Arguments.of(4, 3),
+                Arguments.of(5, 2),
+                Arguments.of(6, 1),
+                Arguments.of(7, 0), // A0 = target bit 0
                 Arguments.of(8, -1),
-                Arguments.of(9, 10),
-                Arguments.of(10, 11),
-                Arguments.of(11, 12),
-                Arguments.of(12, 13),
-                Arguments.of(13, 14),
-                Arguments.of(14, 15),
-                Arguments.of(15, 0), // A7 = bit index 0
+                Arguments.of(9, 13),
+                Arguments.of(10, 12),
+                Arguments.of(11, 11),
+                Arguments.of(12, 10),
+                Arguments.of(13, 9),
+                Arguments.of(14, 8),
+                Arguments.of(15, 7), // A7 = target bit 7
                 Arguments.of(16, -1)
         );
     }

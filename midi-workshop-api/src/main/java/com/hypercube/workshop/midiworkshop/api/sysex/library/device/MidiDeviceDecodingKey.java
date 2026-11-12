@@ -18,10 +18,9 @@ import java.util.List;
  * The target memory is described like this:
  * byte      : AAAAAAAA BBBBBBBB CCCCCCCC ...
  * bit       : 76543210 76543210 76543210 ...
- * bit index : 01234567 89111111 11112222 ...
- * bit index :            012345 67890123
  * <p>
- * So "B2" is bit index "13". Do not mistake the bit index and the bit number
+ * Bits use the natural numbering: 7 is the MSB (leftmost), 0 is the LSB (rightmost).
+ * So "B2" is bit 2 of the third byte, i.e. the third bit from the right.
  */
 @Getter
 @Setter
@@ -45,7 +44,7 @@ public class MidiDeviceDecodingKey {
      * Given a block of 64 input MIDI bits, the mapping return the target bit index given the input bit index.
      * <ul>
      *     <li>The returned list contains always 64 entries (input bit index)</li>
-     *     <li>Each value are in the range [0-56] since we target a block of 56 unpacked bits</li>
+     *     <li>Each value is in the range [0-55] since we target a block of 56 unpacked bits</li>
      *     <li>Value -1 ({@link #UNMAPPED_BIT}) indicate the input bit is not used, this is because MIDI use only 7 bits
      * </ul>
      */
@@ -59,9 +58,8 @@ public class MidiDeviceDecodingKey {
                             return UNMAPPED_BIT;
                         } else {
                             int byteOffset = v.charAt(0) - 'A';
-                            int bit = v.charAt(1) - '0';   // bit 0 is on the right
-                            int bitOffset = (8 - bit) - 1; // bitOffset 0 is on the left
-                            return bitOffset + byteOffset * 8;
+                            int bit = v.charAt(1) - '0'; // natural bit number: 0 = LSB, 7 = MSB
+                            return bit + byteOffset * 8;
                         }
                     })
                     .toList();

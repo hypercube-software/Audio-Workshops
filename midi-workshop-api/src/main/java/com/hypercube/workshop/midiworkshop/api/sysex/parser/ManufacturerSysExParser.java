@@ -82,8 +82,8 @@ public class ManufacturerSysExParser {
                 }
                 int blockPos = targetBitIndex / 8;
                 int bitPos = targetBitIndex % 8;
-                // BEWARE: bitPos is not a bit number, so we don't do "int mask = 1 << bitPos" !!
-                int mask = 0b10000000 >> bitPos;
+                // bitPos is the natural bit number: 0 = LSB (right), 7 = MSB (left)
+                int mask = 1 << bitPos;
                 int globalBytePos = blockPos + (block * outputBlockSizeInBytes);
                 if (bit == 1) {
                     output[globalBytePos] = (byte) (output[globalBytePos] | mask);

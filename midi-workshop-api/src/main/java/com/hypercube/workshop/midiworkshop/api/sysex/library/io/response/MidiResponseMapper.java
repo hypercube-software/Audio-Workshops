@@ -190,7 +190,7 @@ public class MidiResponseMapper {
         BitStreamReader bsr = new BitStreamReader(payload);
         bsr.readBits(field.getOffset());
         if (field.isLsbFirst()) {
-            return bsr.readInvertedBits(field.getSize());
+            return bsr.readLsbBits(field.getSize());
         } else {
             return bsr.readBits(field.getSize());
         }

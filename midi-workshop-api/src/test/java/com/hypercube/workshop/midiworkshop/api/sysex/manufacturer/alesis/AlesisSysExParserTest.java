@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.alesis;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDecodingKey;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -77,7 +78,7 @@ class AlesisSysExParserTest {
         String actualTitle = "";
         bsr.readBits(8); // jump over "ProgramSpare"
         for (int i = 0; i < 10; i++) {
-            int c = bsr.readInvertedBits(7);
+            int c = bsr.readLsbBits(7);
             actualTitle += alesisSysExParser.getChar(c);
         }
         return actualTitle;
@@ -94,7 +95,7 @@ class AlesisSysExParserTest {
             if (i == 8 || (i > 8 && (i - 8) % 7 == 0)) {
                 actual += " ";
             }
-            actual += bsr.readBit();
+            actual += bsr.readLsbBit();
         }
         return actual;
     }
@@ -107,26 +108,16 @@ class AlesisSysExParserTest {
         //
         MidiDeviceDefinition device = new MidiDeviceDefinition();
 
-        // This key is the right one to use. I found it after hours of reverse engineering
+        // Natural bit order: A7 is the MSB (leftmost), A0 is the LSB (rightmost).
         MidiDeviceDecodingKey key = new MidiDeviceDecodingKey(7, 1, """
-                    0 A1 A2 A3 A4 A5 A6 A7
-                    0 B2 B3 B4 B5 B6 B7 A0
-                    0 C3 C4 C5 C6 C7 B0 B1
-                    0 D4 D5 D6 D7 C0 C1 C2
-                    0 E5 E6 E7 D0 D1 D2 D3
-                    0 F6 F7 E0 E1 E2 E3 E4
-                    0 G7 F0 F1 F2 F3 F4 F5
-                    0 G0 G1 G2 G3 G4 G5 G6
-                """);
-        MidiDeviceDecodingKey officialKeyDontWork = new MidiDeviceDecodingKey(7, 1, """
-                     0 A6 A5 A4 A3 A2 A1 A0
-                     0 B5 B4 B3 B2 B1 B0 A7
-                     0 C4 C3 C2 C1 C0 B7 B6
-                     0 D3 D2 D1 D0 C7 C6 C5
-                     0 E2 E1 E0 D7 D6 D5 D4
-                     0 F1 F0 E7 E6 E5 E4 E3
-                     0 G0 F7 F6 F5 F4 F3 F2
-                     0 G7 G6 G5 G4 G3 G2 G1
+                    0 A6 A5 A4 A3 A2 A1 A0
+                    0 B5 B4 B3 B2 B1 B0 A7
+                    0 C4 C3 C2 C1 C0 B7 B6
+                    0 D3 D2 D1 D0 C7 C6 C5
+                    0 E2 E1 E0 D7 D6 D5 D4
+                    0 F1 F0 E7 E6 E5 E4 E3
+                    0 G0 F7 F6 F5 F4 F3 F2
+                    0 G7 G6 G5 G4 G3 G2 G1
                 """);
         device.setDecodingKey(key);
         AlesisSysExParser alesisSysExParser = new AlesisSysExParser();
@@ -188,14 +179,43 @@ class AlesisSysExParserTest {
         System.out.println("ERRORS  : " + errors);
         bsr.readBits(1); // reserved
         System.out.println("Rom identifier : " + bsr.readBit()); // not 2 bits apparently
-        System.out.println("Mode           : " + bsr.readInvertedBits(1));
-        System.out.println("Sample Group   : " + bsr.readInvertedBits(6));
-        System.out.println("Sample Number  : " + bsr.readInvertedBits(7));
-        System.out.println("Sound Volume   : " + bsr.readInvertedBits(7));
-        System.out.println("Sound Pan      : " + bsr.readInvertedBits(3));
-        System.out.println("Sound Output   : " + bsr.readInvertedBits(2));
-        System.out.println("Sound FX Level : " + bsr.readInvertedBits(7));
-        System.out.println("Sound FX bus   : " + bsr.readInvertedBits(2));
+        System.out.println("Mode           : " + bsr.readLsbBits(1));
+        System.out.println("Sample Group   : " + bsr.readLsbBits(6));
+        System.out.println("Sample Number  : " + bsr.readLsbBits(7));
+        System.out.println("Sound Volume   : " + bsr.readLsbBits(7));
+        System.out.println("Sound Pan      : " + bsr.readLsbBits(3));
+        System.out.println("Sound Output   : " + bsr.readLsbBits(2));
+        System.out.println("Sound FX Level : " + bsr.readLsbBits(7));
+        System.out.println("Sound FX bus   : " + bsr.readLsbBits(2));
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void unpackBuffer18ProducesNaturalByteOrder() throws Exception {
+        MidiDeviceDefinition device = new MidiDeviceDefinition();
+        device.setDecodingKey(new MidiDeviceDecodingKey(7, 1, """
+                    0 A6 A5 A4 A3 A2 A1 A0
+                    0 B5 B4 B3 B2 B1 B0 A7
+                    0 C4 C3 C2 C1 C0 B7 B6
+                    0 D3 D2 D1 D0 C7 C6 C5
+                    0 E2 E1 E0 D7 D6 D5 D4
+                    0 F1 F0 E7 E6 E5 E4 E3
+                    0 G0 F7 F6 F5 F4 F3 F2
+                    0 G7 G6 G5 G4 G3 G2 G1
+                """));
+        AlesisSysExParser parser = new AlesisSysExParser();
+        byte[] payload = AlesisSysExParser.class.getResourceAsStream("/SysEx/Alesis/QS6.1/Alesis Edit Buffer18.syx")
+                .readAllBytes();
+        byte[] unpacked = parser.unpackMidiBuffer(device, payload);
+
+        // These are the bytes produced by QS-EditPro (no per-byte bit reversal).
+        assertEquals(0x00, unpacked[0] & 0xFF);
+        assertEquals(0xB0, unpacked[1] & 0xFF);
+        assertEquals(0xAA, unpacked[2] & 0xFF);
+        assertEquals(0xB4, unpacked[3] & 0xFF);
+        assertEquals(0x38, unpacked[4] & 0xFF);
+        assertEquals(0xA3, unpacked[5] & 0xFF);
+        assertEquals(0x16, unpacked[6] & 0xFF);
+        assertEquals(0xA5, unpacked[7] & 0xFF);
     }
 }

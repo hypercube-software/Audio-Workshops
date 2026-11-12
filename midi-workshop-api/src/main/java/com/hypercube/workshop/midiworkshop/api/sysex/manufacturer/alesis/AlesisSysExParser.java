@@ -9,8 +9,9 @@ import com.hypercube.workshop.midiworkshop.api.sysex.util.BitStreamReader;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.SysExReader;
 
 /**
- * I'm pretty sure all fields are in little-indian despite the manual say nothing about it (only Device Inquiry response is officially stated as "LSB first")
- * <p>This is why readInvertedBits is used</p>
+ * I'm pretty sure all fields are in little-endian despite the manual saying nothing about it
+ * (only the Device Inquiry response is officially stated as "LSB first").
+ * <p>This is why {@link BitStreamReader#readLsbBits(int)} is used for these fields.</p>
  */
 public class AlesisSysExParser extends ManufacturerSysExParser {
     private static final String characterTable = " !\"#$%&’()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[¥]^_`abcdefghijklmnopqrstuvwxyz{|}→←";
@@ -20,7 +21,7 @@ public class AlesisSysExParser extends ManufacturerSysExParser {
         String name = "";
         bsr.readBits(field.getOffset());
         for (int i = 0; i < field.getSize(); i++) {
-            name += getChar(bsr.readInvertedBits(7));
+            name += getChar(bsr.readLsbBits(7));
         }
         return name;
     }
