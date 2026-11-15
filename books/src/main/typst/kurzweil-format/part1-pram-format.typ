@@ -1,6 +1,6 @@
-#import "settings.typ": *
+#import "../common/settings.typ": *
 
-#chapter("PRAM Format", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("PRAM Format", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 

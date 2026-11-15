@@ -355,6 +355,8 @@
   logo: none,
   cover: none,
   cover-background: auto,
+  heading-background: rgb("#FFFFFFAA"),
+  header-background: none,
   image-index: none,
   body,
   main-color: blue,
@@ -409,6 +411,15 @@
     part-font-size = huge-text
   }
 
+  // Running header box. `header-background` paints it, `none` keeps it transparent.
+  let header-box(content) = box(
+    width: 100%,
+    inset: if header-background == none { (bottom: 5pt) } else { (x: 0.6em, top: 0.2em, bottom: 5pt) },
+    fill: header-background,
+    stroke: (bottom: 0.5pt),
+    content,
+  )
+
   set page(
     margin: margin,
     header: context {
@@ -430,23 +441,42 @@
       }
       let appendix = appendix-state.at(here())
       if odd_page {
-        let before = query(selector(heading.where(level: 2)).before(here()))
-        let counterInt = counter(heading).at(here())
-        if before != () and counterInt.len() > 1 {
-          box(width: 100%, inset: (bottom: 5pt), stroke: (bottom: 0.5pt))[
-            #text(if appendix != none { numbering("A.1", ..counterInt.slice(0, 2)) + " " + before.last().body } else {
-              numbering("1.1", ..counterInt.slice(0, 2)) + " " + before.last().body
-            })
-            #h(1fr)
-            #page_number
-          ]
+        // Running header of a recto page: it names the section the reader is in.
+        // That is the section which starts on this page when there is one, and
+        // otherwise the last section opened before it. Reading the counter at
+        // the top of the page instead would name the previous section whenever
+        // a new one starts on the very first line of the page.
+        let sections = query(selector(heading.where(level: 2)))
+        let on_page = sections.filter(it => it.location().page() == page_number)
+        let previous = sections.filter(it => it.location().page() < page_number)
+        let current = if on_page.len() > 0 {
+          on_page.at(0)
+        } else if previous.len() > 0 {
+          previous.at(previous.len() - 1)
+        } else {
+          none
+        }
+        if current != none {
+          // The heading counter is multi-level here, but `at` may still give a
+          // single integer when only one level has been stepped.
+          let counterInt = counter(heading).at(current.location())
+          let counterInt = if type(counterInt) == array { counterInt } else { (counterInt,) }
+          if counterInt.len() > 1 {
+            header-box[
+              #text(if appendix != none { numbering("A.1", ..counterInt.slice(0, 2)) + " " + current.body } else {
+                numbering("1.1", ..counterInt.slice(0, 2)) + " " + current.body
+              })
+              #h(1fr)
+              #page_number
+            ]
+          }
         }
       } else {
         let before = query(selector(heading.where(level: 1)).before(here()))
         let counterInt = counter(heading).at(here()).first()
 
         if before != () and counterInt > 0 {
-          box(width: 100%, inset: (bottom: 5pt), stroke: (bottom: 0.5pt))[
+          header-box[
             #set par(justify: false)
             #grid(
               columns: (auto, 1fr),
@@ -510,7 +540,7 @@
                     width: 86%,
                     stroke: (right: none, rest: 2pt + main-color),
                     inset: (left: 2em, rest: 1.6em),
-                    fill: rgb("#FFFFFFAA"),
+                    fill: heading-background,
                     radius: (right: 0pt, left: 10pt),
                     align(left, text(size: title1, it)),
                   ),
@@ -524,7 +554,7 @@
                   width: 100% + 3cm,
                   stroke: (right: none, rest: 2pt + main-color),
                   inset: (left: 2em, rest: 1.6em),
-                  fill: white,
+                  fill: heading-background,
                   radius: (right: 0pt, left: 10pt),
                   align(left, block(width: full_width, text(size: title1, it, hyphenate: false))),
                 )))
@@ -695,9 +725,18 @@
   body
 
   part("Indexes")
-  heading(level: 1, supplement: [], outlined: true)[List of Figures]
-  my-outline-sec(list-of-figure-title, figure.where(kind: image), outline-heading3)
-  
-  heading(level: 1, supplement: [], outlined: true)[List of Tables]
-  my-outline-sec(list-of-table-title, figure.where(kind: table), outline-heading3)
+  // A list which would be empty is not printed: a book without pictures gets a
+  // list of tables only, and neither heading takes a number from the other.
+  context {
+    let has-figures = query(figure.where(kind: image)).len() > 0
+    let has-tables = query(figure.where(kind: table)).len() > 0
+    if has-figures {
+      heading(level: 1, supplement: [], outlined: true)[List of Figures]
+      my-outline-sec(list-of-figure-title, figure.where(kind: image), outline-heading3)
+    }
+    if has-tables {
+      heading(level: 1, supplement: [], outlined: true)[List of Tables]
+      my-outline-sec(list-of-table-title, figure.where(kind: table), outline-heading3)
+    }
+  }
 }

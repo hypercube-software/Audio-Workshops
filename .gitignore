@@ -57,6 +57,7 @@ midi-workshop-api/src/test/resources/devices-library/*/
 /midi-workshop-api/src/test/resources/Kurzweil/anapads.krz
 /midi-workshop-api/src/test/resources/SysEx/Kurzweil/K2600R/READ_NIBBLE_200.syx
 /books/src/main/typst/playground/
-/books/src/main/typst/kurzweil-format.pdf
 /books/src/main/typst/tinymist.lock
+# PDFs written next to a book entry point when compiled without an output path
+/books/src/main/typst/*/*.pdf
 /devices-library-remote/

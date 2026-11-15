@@ -471,6 +471,14 @@ For instance in their **Sound Canvas**:
 
 Most of the time they will describe precisely the first memory section, without explaining precisely the layout of the second section. Just know that everything will be **twice larger**. That's all.
 
+## SE-02 Format
+
+The Roland **SE-02** (Boutique line, designed with Studio Electronics) saves and restores everything with Bulk Dump messages whose layout is not documented by Roland.
+
+The device definition (`devices-library/Roland/SE-02.yml`) already declares the queries needed to retrieve the edit buffer and the way presets are selected (`BANK_MSB_LSB_PRG`).
+
+The byte level analysis is in progress and is documented in a separate book: the PDF is <a href="se-02-format.pdf" target="_blank">here</a>.
+
 # AKAI
 
 AKAI doesn't provide a lot of information. This is the worst case. You can dump the memory with a SysEx but you have to understand yourself the layout

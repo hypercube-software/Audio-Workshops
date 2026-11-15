@@ -1,7 +1,7 @@
-#import "settings.typ": *
+#import "../common/settings.typ": *
 #part("The K2600 format")
 
-#chapter("Overview", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("Overview", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 == Why this document?

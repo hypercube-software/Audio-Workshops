@@ -1,7 +1,7 @@
-#import "settings.typ": *
+#import "../common/settings.typ": *
 #part("Archaeology") 
 
-#chapter("History", image: image("./assets/hd3-2481-500.svg"))
+#chapter("History", image: chapter-banner)
 #index("Sectioning")
 #codly(number-format: none)
 
@@ -2342,7 +2342,6 @@ VP is a Java program developed by Michael Warpenburg that lets users interactive
 [URL],
 [#text(fill: rgb("#bbbebf"))[#underline[https://web.archive.org/web/20160506220003if_/http://www.tangentcats.com/]]],
 )
-== Analysis
 This software was written in Vijeo Designer, a Schneider Electric IDE based on Java, which is still available. Since it relies only on LCD screenshots received via MIDI, it was not really insightful. It is also closed source.
 
 == wav2krz

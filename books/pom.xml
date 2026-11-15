@@ -7,6 +7,14 @@
     <artifactId>books</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <!-- Typst project root: the parent of the shared `common` directory.
+             It MUST be given to typst, otherwise a book cannot import `../common`
+             ("cannot read file outside of the project root"). -->
+        <typst.root>${project.basedir}/src/main/typst</typst.root>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -14,8 +22,9 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <executions>
+                    <!-- One execution per book. The PDFs are written in target/ -->
                     <execution>
-                        <id>compile-typst</id>
+                        <id>compile-kurzweil-format</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -25,8 +34,28 @@
                             <executable>typst</executable>
                             <arguments>
                                 <argument>compile</argument>
-                                <argument>${project.basedir}/src/main/typst/kurzweil-format.typ</argument>
+                                <argument>--root</argument>
+                                <argument>${typst.root}</argument>
+                                <argument>${typst.root}/kurzweil-format/kurzweil-format.typ</argument>
                                 <argument>kurzweil-format.pdf</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>compile-se-02-format</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${project.build.directory}</workingDirectory>
+                            <executable>typst</executable>
+                            <arguments>
+                                <argument>compile</argument>
+                                <argument>--root</argument>
+                                <argument>${typst.root}</argument>
+                                <argument>${typst.root}/se-02-format/se-02-format.typ</argument>
+                                <argument>se-02-format.pdf</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -1,9 +1,9 @@
-#import "settings.typ": *
+#import "../common/settings.typ": *
 
 #counter(heading).update(0)
 #part("API")
 
-#chapter("Overview", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("Overview", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 The Kurzweil API lives in the `midi-workshop-api` module, under the package `sysex.manufacturer.kurzweil`. It handles
@@ -66,7 +66,7 @@ SysEx messages carry a command byte. The `Command` enum lists all of them, but o
 - The stream formats `STREAM` (7 bits per byte) and `NIBBLE` (two bytes per data byte) are both supported when reading. The
   converter only writes `NIBBLE`.
 
-#chapter("Data model", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("Data model", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 == Object types (`KObject`)
@@ -205,7 +205,7 @@ The following classes exist in the model but are not registered for polymorphic 
   caption: [Fields of `KurzweilFile`],
 )
 
-#chapter("Deserializers", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("Deserializers", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 All the binary decoding is done by subclasses of `KFDeserializer`. The base class provides the helpers shared by all of
@@ -280,7 +280,7 @@ For `WRITE` and `LOAD`, the payload is decoded according to its format:
 
 The checksum is a simple sum of the payload bytes (`SimpleSumChecksum`).
 
-#chapter("Converter", image: image("./assets/hd3-2481-500.svg"), l: "chap1")
+#chapter("Converter", image: chapter-banner, l: "chap1")
 #index("Sectioning")
 
 `KurzweilFileConverter.toSysEx` turns the objects of a loaded file into MIDI SysEx files that can be sent to a K2600.

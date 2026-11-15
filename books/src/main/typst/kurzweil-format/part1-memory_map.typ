@@ -1,4 +1,4 @@
-﻿=== K2600R Memory map
+=== K2600R Memory map
 
 Here the result of my investigation, trying to brute-force all the object ID and all the banks of my K2600R using DIR_BANK command.
 - According to the .H, types goes from 96 to 159 but there are more.
