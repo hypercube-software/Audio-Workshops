@@ -375,7 +375,7 @@
   outline-small-depth: 2,
   outline-small-width: 9.5cm,
   heading-style: 0,
-  first-line-indent: true,
+  first-line-indent: false,
   outline-depth: 3,
 ) = {
   set document(author: author, title: title)
@@ -698,12 +698,12 @@
   set par(
     first-line-indent: 1em,
     justify: true,
-    spacing: 0.5em,
+    spacing: 1em,
   ) if first-line-indent
 
   set par(
     justify: true,
-    spacing: 0.5em,
+    spacing: 1em,
   ) if not first-line-indent
 
   show list: it => {

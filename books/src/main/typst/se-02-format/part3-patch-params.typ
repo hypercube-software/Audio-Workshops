@@ -24,7 +24,7 @@ A parameter is designated by two numbers that have nothing in common. Do not con
     [`OSC_WAVEFORM3`], [`38`], [`26`],
     [`DLY_AMOUNT`], [`0`], [`91`],
   ),
-  caption: [The same three parameters under their two identifiers],
+  caption: [Three parameters with their two identifiers],
 )
 
 The internal ID is the identifier used by the step sequencer, and the CC number is only used in MIDI control change event.
@@ -163,7 +163,7 @@ generator.
 
 == Filter
 
-Fifteen parameters drive the filter and its two envelopes. They are by far the most animated part of a patch: in the
+15 parameters drive the filter and its two envelopes. They are by far the most animated part of a patch: in the
 128 factory patterns, more than half of the automated steps target a filter parameter.
 
 #figure(
@@ -222,21 +222,3 @@ Fifteen parameters drive the filter and its two envelopes. They are by far the m
   ),
   caption: [Delay parameters],
 )
-
-== The unused parameter offsets
-
-Out of the 104 parameter slots of the payload, 60 carry a documented parameter. The other 44 read as `00` in every
-patch examined, and are listed here so that a writer knows what to do with them:
-
-#figure(
-  ptable(
-    columns: 1,
-    raw("8..16   23..24   28   38..39   43..44   50..54   70..74   83..84   88..103"),
-  ),
-  caption: [Parameter offsets without a documented parameter],
-)
-
-Parameters are documented from offset 0 to offset 87; the sixteen offsets from 88 to 103 — 32 physical bytes — are
-probably a second parameter area that the model above does not cover, since no value written there has been observed to
-change the sound. An implementation that copies a patch must keep every byte it reads; an implementation that builds a
-patch from scratch should leave those offsets at zero, which is what the instrument itself does.

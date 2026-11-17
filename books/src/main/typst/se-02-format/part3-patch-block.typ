@@ -69,12 +69,15 @@ F7`: the address sums to 87, the size to 16, and the checksum is `-(87 + 16) & 0
 
 == The slot space
 
-The 128 slots of `06` are the *user bank*: slot 0 is the patch `U001`, slot 127 is `U128`. Each slot owns a 16 KiB
-window of the address space, of which only the first 240 bytes are used; the window of slot 1 starts at `0x06010000`
-even though slot 0 is shorter than that. Reading past the 240 bytes of a patch returns zeros.
+There are 128 slots of 240 bytes per banks at address `06 bb pp 00`. Each slot contains a patch.
 
-The three factory banks A, B and C have no address of their own: they are ROM. Reading one of their patches is still
-possible, by selecting it first and then reading the edit buffer. With bank select CC 0 and a program change:
+For instance:
+- `06 03 00 00` is slot 0 of user bank, the patch `U001`
+- `06 03 7F 00` is slot 127 of user bank, the patch `U128`. 
+
+Each slot owns a 256 bytes window of the address space, of which only the first 240 bytes are used. Reading past the 240 bytes of a patch returns zeros.
+
+When a program change event is received, the patch memory (ROM) is copied into the edit buffer memory (RAM) at `05 00 00 00`.
 
 #figure(
   table(
@@ -91,6 +94,8 @@ possible, by selecting it first and then reading the edit buffer. With bank sele
   caption: [Selecting a preset],
 )
 
-The program number of a program change is 0-based, that is `A001` is `CC 0 = 0` followed by `PC 0`. The *Ref.* values
-of the parameter tables come from the user patch 1 of a factory-state unit, which is called `Inbound`; the tables
-themselves are in @chap-params[chapter]
+The program number of a program change is 0-based, that is `A001` (bank A, patch 1) is `CC 0 = 0` followed by `PC 0`. 
+
+== Song and Sequences
+
+Surprisingly, there is no way to select a sequence or a song with `Bank Select` and `Program Change`. It as to be done via SysEx.

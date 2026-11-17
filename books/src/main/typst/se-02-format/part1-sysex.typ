@@ -3,9 +3,7 @@
 
 #chapter("SysEx messages", image: red-chapter-banner, l: "chap-sysex")
 
-The SE-02 speaks the classic Roland *SysEx* dialect: a manufacturer byte, a device identifier, a four-byte model
-identifier, one command byte, a four-byte address, a payload and a checksum. Everything is *7-bit safe*: no byte of the
-message has its most significant bit set, except the `F0` and `F7` delimiters.
+The SE-02 speaks the classic Roland SysEx dialect (Aka. `One-Way` protocol) with *RQ1* and *DT1* messages.
 
 == Frame structure
 
@@ -29,12 +27,9 @@ message has its most significant bit set, except the `F0` and `F7` delimiters.
   caption: [Structure of an SE-02 SysEx message],
 )
 
-The model identifier `00 00 00 44` is used in both directions; it identifies the SE-02, as opposed to another Boutique
-unit plugged on the same port.
-
 == Commands
 
-Only two commands are used by the memory format:
+Only two commands are used in *One-Way* Roland protocol (I didn't tried the *Handshake* protocol and its 9 commands):
 
 #figure(
   table(
