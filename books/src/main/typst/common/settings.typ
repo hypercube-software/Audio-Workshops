@@ -6,8 +6,9 @@
 //
 //   books/src/main/typst/
 //     common/                 this file, the template and the shared artwork
-//     kurzweil-format/        book "Inside V.A.S.T data model"
-//     se-02-format/           book "Roland SE-02 Sysex format"
+//     kurzweil/               book "Inside V.A.S.T data model", entry point main.typ
+//     se-02/                  book "Roland SE-02 Sysex format", entry point main.typ
+//     akai-mpk261/            book "AKAI MPK-261 Sysex and Memory Reference", entry point main.typ
 //
 // A book entry point reuses this file and only overrides what differs:
 //
@@ -28,7 +29,7 @@
 // files of "common" (it never reads outside of the project root):
 //
 //   typst compile --root books/src/main/typst \
-//     books/src/main/typst/kurzweil-format/kurzweil-format.typ kurzweil-format.pdf
+//     books/src/main/typst/kurzweil/main.typ kurzweil-sysex-guide.pdf
 // =============================================================================
 #import "@preview/bytefield:0.0.8": *
 #import "@preview/codly:1.3.0": *
@@ -41,7 +42,7 @@
 )
 
 // -----------------------------------------------------------------------------
-// Artwork shared by the books, in two colour variants. Those paths are resolved
+// Artwork shared by the books, in three colour variants. Those paths are resolved
 // relative to THIS file, so a book can reuse them whatever its own sub-directory
 // is. A book which needs its own picture simply passes another `image(..)` to
 // `init` (cover:) or to `chapter` (image:).
@@ -52,6 +53,10 @@
 #let red-book-cover = image("assets/red/bg-2481-3507.svg")
 #let red-chapter-banner = image("assets/red/hd3-2481-500.svg")
 #let red-outline-banner = image("assets/red/hd-2481-500.svg")
+
+#let green-book-cover = image("assets/green/bg-2481-3507.svg")
+#let green-chapter-banner = image("assets/green/hd3-2481-500.svg")
+#let green-outline-banner = image("assets/green/hd-2481-500.svg")
 
 // Backward-compatible names used by the Kurzweil book.
 #let book-cover = blue-book-cover

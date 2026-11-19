@@ -35,7 +35,7 @@ read-only and not stored in the block.
 
 == Writing the block
 
-A complete write is a `DT1` of 16 bytes to `0x00000000`. The frame below puts the unit on MIDI channel 1, sends the
+A complete write is a `DT1` of 16 bytes to `0x00000000`. The MIDI frame below puts the unit on MIDI channel 1, sends the
 controllers on USB, and expects an external clock. Its 16 data bytes are
 `01 03 03 00 00 00 00 00 00 00 00 00 00 00 00 00`, and its checksum is `79`.
 
@@ -75,7 +75,7 @@ and neither does a song.
 
 == MIDI channel and device ID
 
-Changing the MIDI channel does not change the device ID of the SysEx frames: after setting the channel to `C2`, the unit
+Changing the MIDI channel does not change the device ID of the SysEx MIDI frames: after setting the channel to `C2`, the unit
 still answers to `10`. As a consequence, an implementation cannot infer the channel from a dump, and must read the
 system block to know it.
 

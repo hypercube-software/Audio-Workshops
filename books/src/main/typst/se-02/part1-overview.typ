@@ -153,3 +153,21 @@ the unidentified block at `0x02000000` even though none of the documented system
     The official software editor is a third-party, paid product. It is not distributed with this book, and the author is
     not affiliated with Studio Electronics. The link and the feature list above are given for information only.
 ]
+
+
+== Restoring the factory settings
+
+The factory reset erases the user memory and brings back the factory patches, patterns and settings.
+It is performed at power on:
+
++ hold the [`1`] button and turn the power on;
++ the display shows [`rSt`];
++ press the [`MANUAL`] button to run the reset;
++ when the display shows [`Fin`], turn the unit off and on again.
+
+Turning the power off before [`MANUAL`] is pressed cancels the operation.
+
+#caveat[
+  The reset overwrites every user patch, pattern and song. Read the blocks over MIDI first if they
+  must be kept.
+]

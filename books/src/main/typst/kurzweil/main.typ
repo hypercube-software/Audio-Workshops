@@ -4,14 +4,14 @@
 // The shared code (template, settings, artwork) lives in ../common, the
 // chapters and the screenshots of this book live next to this file:
 //
-//   kurzweil-format/
-//     kurzweil-format.typ   this file
-//     part1*.typ, part2.typ, history.typ
+//   kurzweil/
+//     main.typ              this file
+//     part1*.typ, part2.typ, part3-history.typ
 //     assets/               screenshots used by the chapters
 //     scripts/              generators of part1-memory_map.typ
 //
 // Compile from the books/src/main/typst directory:
-//   typst compile --root . kurzweil-format/kurzweil-format.typ
+//   typst compile --root . kurzweil/main.typ kurzweil-sysex-guide.pdf
 // =============================================================================
 #import "../common/settings.typ": *
 

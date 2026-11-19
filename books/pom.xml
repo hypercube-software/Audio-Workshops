@@ -13,6 +13,12 @@
              It MUST be given to typst, otherwise a book cannot import `../common`
              ("cannot read file outside of the project root"). -->
         <typst.root>${project.basedir}/src/main/typst</typst.root>
+
+        <!-- Name of the PDF produced for each book (written in target/).
+             Change these properties to rename a book without touching its sources. -->
+        <book.kurzweil.pdf>kurzweil-sysex-guide.pdf</book.kurzweil.pdf>
+        <book.se-02.pdf>roland-se02-sysex-guide.pdf</book.se-02.pdf>
+        <book.akai-mpk-261.pdf>akai-mpk-261-sysex-guide.pdf</book.akai-mpk-261.pdf>
     </properties>
 
     <build>
@@ -22,9 +28,10 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <executions>
-                    <!-- One execution per book. The PDFs are written in target/ -->
+                    <!-- One execution per book: the entry point is always
+                         <book>/main.typ, the PDF name comes from the properties above. -->
                     <execution>
-                        <id>compile-kurzweil-format</id>
+                        <id>compile-kurzweil</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -36,13 +43,13 @@
                                 <argument>compile</argument>
                                 <argument>--root</argument>
                                 <argument>${typst.root}</argument>
-                                <argument>${typst.root}/kurzweil-format/kurzweil-format.typ</argument>
-                                <argument>kurzweil-format.pdf</argument>
+                                <argument>${typst.root}/kurzweil/main.typ</argument>
+                                <argument>${book.kurzweil.pdf}</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>compile-se-02-format</id>
+                        <id>compile-se-02</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -54,8 +61,26 @@
                                 <argument>compile</argument>
                                 <argument>--root</argument>
                                 <argument>${typst.root}</argument>
-                                <argument>${typst.root}/se-02-format/se-02-format.typ</argument>
-                                <argument>se-02-format.pdf</argument>
+                                <argument>${typst.root}/se-02/main.typ</argument>
+                                <argument>${book.se-02.pdf}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>compile-akai-mpk-261</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${project.build.directory}</workingDirectory>
+                            <executable>typst</executable>
+                            <arguments>
+                                <argument>compile</argument>
+                                <argument>--root</argument>
+                                <argument>${typst.root}</argument>
+                                <argument>${typst.root}/akai-mpk261/main.typ</argument>
+                                <argument>${book.akai-mpk-261.pdf}</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -5,7 +5,7 @@
 
 The SE-02 speaks the classic Roland SysEx dialect (Aka. `One-Way` protocol) with *RQ1* and *DT1* messages.
 
-== Frame structure
+== MIDI frame structure
 
 #figure(
   table(
@@ -59,18 +59,16 @@ A 240-byte block is requested with size `00 00 01 70`, because `1 * 128 + 112 = 
 block.
 
 A `DT1` has no size field. Its payload starts after the address and ends before the checksum, so the length is given by
-the frame itself.
+the MIDI frame itself.
 
-=== Reading and writing a block
+=== Querying with RQ1
 
-Reading is always the same gesture: send an `RQ1` with an address and a size, and the instrument answers with a `DT1`
-carrying that many data bytes. Writing is the opposite: send a `DT1` with the same address and the data, and the
-instrument stores it.
+To read a block, send an `RQ1` whose address is the first byte of the block and whose size is the number of data bytes wanted. The instrument answers with a `DT1` at the same address.
 
 The complete request for the current patch is
 `F0 41 10 00 00 00 44 11 05 00 00 00 00 00 01 70 0A F7`. It is addressed to `0x05000000`; the four bytes after the
 address are the size `00 00 01 70`, that is 240; and the checksum is `0A`. In the figures below, the colours group the
-fields of the frame.
+fields of the MIDI frame.
 
 #figure(
   bytefield(
@@ -111,10 +109,10 @@ fields of the frame.
   caption: [Request for the current patch],
 )
 
-The answer is a `DT1` whose payload starts with the 88 parameter values, followed by the patch name. To write the data
-back, the same payload is sent with command `12` instead of `11`; there is no size field, and the checksum is now
-computed over the address and the 240 data bytes. In the figure, the payload is drawn as six bytes; it is 240 bytes on
-the wire.
+The answer is a `DT1` whose payload starts with the 88 parameter values, followed by the patch name. 
+=== Writing with DT1
+
+To write, send the same payload back with command `12` instead of `11`, at the same address. A `DT1` has no size field: its payload starts after the address and ends before the checksum, so its length is the length of the MIDI frame. In the figure, the payload is drawn as six bytes; it is 240 bytes on the wire.
 
 #figure(
   bytefield(
@@ -136,8 +134,9 @@ the wire.
 
 == Device inquiry
 
-The unit answers the universal device inquiry `F0 7E 7F 06 01 F7` with its identity. The reply carries device ID
-`10`, manufacturer `41` (Roland), family `44 03`, member `00 00`, then the four version bytes `00 03 00 00`.
+The universal device inquiry is `F0 7E 7F 06 01 F7`. Addressed to `7F`, it reaches every unit on the bus.
+
+The answer carries the identity of the unit that replied.
 
 #figure(
   bytefield(
@@ -175,10 +174,22 @@ The unit answers the universal device inquiry `F0 7E 7F 06 01 F7` with its ident
   caption: [Identity reply],
 )
 
-The last four bytes carry a version but it is not clean which one.
+The fields of the answer, in order:
+
+- `F0`, start of the MIDI frame;
+- `7E`, universal non real time;
+- `10`, device ID of the unit;
+- `06 02`, general information, identity reply;
+- `41`, manufacturer, Roland;
+- `44 03`, family code;
+- `00 00`, member number;
+- `00 03 00 00`, revision;
+- `F7`, end of the MIDI frame.
+
+The revision is fixed on this unit: it does not follow the revision of the firmware shown on the panel, and it must not be used to detect a version.
 
 #caveat[
-  The device ID of the SysEx frames is *not* the MIDI channel. It stays `10` even after the MIDI channel has been
+  The device ID of the SysEx MIDI frames is *not* the MIDI channel. It stays `10` even after the MIDI channel has been
   changed to channel 2 in the system settings. An implementation should therefore always address the unit with `10`, or
   with `7F` when a single unit is on the bus.
 ]
@@ -206,28 +217,53 @@ or, in C:
   caption: [Checksum in C],
 )
 
-Four examples, all taken from real messages:
+Two examples, taken from real messages. In the figures the bytes that are summed are green, the
+checksum byte is red, and the bytes that are not summed are grey.
 
 #figure(
-  table(
-    align: left,
-    columns: (auto, auto, auto, auto),
-    fill: (x, y) => if y == 0 { luma(230) },
-    stroke: 0.5pt,
-    head([*Message*], [*Address*], [*Payload*], [*Checksum*]),
-    [`RQ1`], [`00 00 00 00`], [size 16: `00 00 00 10`], [`70`],
-    [`RQ1`], [`05 00 00 00`], [size 240: `00 00 01 70`], [`0A`],
-    [`DT1`], [`05 00 00 00`], [240 data bytes of the patch `Inbound`], [`1C`],
-    [`DT1`], [`06 00 00 00`], [the same 240 data bytes], [`1B`],
+  bytefield(
+    bpr: 144,
+    bitheader(
+      marker: false,
+      angle: 0deg,
+      numbers: none,
+      0, [0], 8, [1], 16, [2], 24, [3], 32, [4], 40, [5], 48, [6], 56, [7],
+      64, [8], 72, [9], 80, [10], 88, [11], 96, [12], 104, [13], 112, [14], 120, [15],
+      128, [16], 136, [17],
+    ),
+    bytes(1, fill: l_gray)[F0],
+    bytes(1, fill: l_gray)[41],
+    bytes(1, fill: l_gray)[10],
+    bytes(4, fill: l_gray)[model 00 00 00 44],
+    bytes(1, fill: l_gray)[11],
+    bytes(4, fill: l_green)[address 05 00 00 00],
+    bytes(4, fill: l_green)[size 00 00 01 70],
+    bytes(1, fill: l_red)[0A],
+    bytes(1, fill: l_gray)[F7],
   ),
-  caption: [Checksums of four messages],
+  caption: [Checksum of a request],
 )
 
-The first request carries the size `16` in its last byte, so the sum is 16 and `-16 & 0x7F = 112 = 70`. The second one has
-to express a size of 240, which does not fit in seven bits: the size is packed in 7-bit groups like the address, so 240
-becomes `00 00 01 70`, that is `1 * 128 + 112`. The bytes of the message then sum to `5 + 0 + 0 + 1 + 112 = 118` — the
-address byte `05` included — and `-118 & 0x7F = 10 = 0x0A`.
+#figure(
+  bytefield(
+    bpr: 160,
+    bytes(1, fill: l_gray)[F0],
+    bytes(1, fill: l_gray)[41],
+    bytes(1, fill: l_gray)[10],
+    bytes(4, fill: l_gray)[model 00 00 00 44],
+    bytes(1, fill: l_gray)[12],
+    bytes(4, fill: l_green)[address 05 00 00 00],
+    bytes(6, fill: l_green)[240 data bytes],
+    bytes(1, fill: l_red)[1C],
+    bytes(1, fill: l_gray)[F7],
+  ),
+  caption: [Checksum of a dump],
+)
 
-The last two lines are the interesting ones. Both messages carry exactly the same 240 data bytes, but their addresses
-differ by one (`05` and `06`), and so do their checksums, in the other direction: `1C` and `1B`. If the two checksums
-computed for the same payload do not differ by one, the summation loop is wrong.
+For the request, the green bytes are `05 00 00 00` and `00 00 01 70`. Their sum is `118`, so the
+checksum is `128 - 118 = 10`, written `0A`.
+
+For the dump, the green bytes are the address and the 240 data bytes. Their sum gives `1C`.
+
+The address takes part in the sum, so the same data sent to `06 00 00 00` instead of `05 00 00 00`
+gets the checksum `1B`: the address byte is one higher, the checksum one lower.
