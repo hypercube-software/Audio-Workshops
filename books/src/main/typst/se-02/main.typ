@@ -28,6 +28,7 @@
   lang: "en",
   // Red artwork for this book; the Kurzweil book uses the blue variant.
   cover: red-book-cover,
+  banners: red-banners,
   image-index: red-outline-banner,
   // Colours of this book. Any key not set here falls back to `default-theme`.
   theme: (

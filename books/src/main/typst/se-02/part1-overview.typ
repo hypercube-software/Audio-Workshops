@@ -3,7 +3,7 @@
 
 #part("The SE-02 protocol")
 
-#chapter("Overview", image: red-chapter-banner, l: "chap1")
+#chapter("Overview", l: "chap1")
 
 == Why this document?
 

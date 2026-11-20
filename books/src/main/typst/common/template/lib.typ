@@ -44,6 +44,11 @@
 // Draft mode: typst compile --input draft=true (skips chapter images and running headers)
 #let draft = sys.inputs.at("draft", default: "false") == "true"
 #let heading-image = state("heading-image", none)
+// Images cycled by `chapter` when it is called without an explicit `image:`.
+#let chapter-banners = state("chapter-banners", ())
+// Counts the chapters across the whole book: unlike `heading`, it is never reset
+// by `part`, so the banner cycle keeps alternating from one part to the next.
+#let banner-cycle = counter("banner-cycle")
 #let supplement-part-state = state("supplement_part", none)
 #let part-style-state = state("part-style", 0)
 #let part-state = state("part-state", none)
@@ -122,7 +127,8 @@
   counter(heading).update(0)
 }
 
-#let chapter(title, image: none, l: none) = {
+#let chapter(title, image: auto, l: none) = {
+  banner-cycle.step()
   heading-image.update(x => if draft { none } else { image })
   if l != none [
     #heading(level: 1, title) #label(l)
@@ -530,6 +536,16 @@
         if (heading-style == 0) {
           context {
             let img = heading-image.at(here())
+            // `auto` means "take the next banner of the book's cycle": the chapter
+            // number picks the image, so the order is stable across builds.
+            if img == auto {
+              let images = chapter-banners.at(here())
+              img = if images.len() == 0 {
+                none
+              } else {
+                images.at(calc.rem(banner-cycle.get().first() - 1, images.len()))
+              }
+            }
             if img != none {
               set image(width: 21cm, height: 9.4cm)
               place(move(dx: -3cm, dy: -3cm, img))

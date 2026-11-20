@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #part("Archaeology") 
 
-#chapter("History", image: chapter-banner)
+#chapter("History")
 #index("Sectioning")
 #codly(number-format: none)
 

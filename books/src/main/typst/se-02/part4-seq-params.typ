@@ -3,7 +3,7 @@
 
 #part("Sequencer")
 
-#chapter("Sequencer parameters", image: red-chapter-banner, l: "chap-param-ids")
+#chapter("Sequencer parameters", l: "chap-param-ids")
 
 The step sequencer can automate 60 of the parameters of a patch. A step stores the automated parameter as a *sequencer
  parameter ID*. This ID is an internal identifier: it is not the MIDI CC number.

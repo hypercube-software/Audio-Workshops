@@ -1,6 +1,6 @@
 #import "../common/settings.typ": *
 
-#chapter("PRAM Format", image: chapter-banner, l: "chap1")
+#chapter("PRAM Format", l: "chap1")
 #index("Sectioning")
 
 

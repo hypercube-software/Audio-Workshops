@@ -1,6 +1,6 @@
 #import "../common/settings.typ": *
 
-#chapter("Objects", image: chapter-banner, l: "chap1")
+#chapter("Objects", l: "chap1")
 #index("Sectioning")
 
 The following data structures are shared between the PRAM format and the MIDI format. They are the direct transcription of officials .H

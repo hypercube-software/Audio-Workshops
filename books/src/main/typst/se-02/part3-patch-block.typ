@@ -3,7 +3,7 @@
 
 #part("Synth engine")
 
-#chapter("The patch block", image: red-chapter-banner, l: "chap-patch")
+#chapter("The patch block", l: "chap-patch")
 
 A patch is 240 bytes. The same 240 bytes are reachable at two addresses: the *current patch* at `0x05000000`, which is
 the working buffer the synth plays, and the *user presets* at `0x06nn0000`, where `nn` is the user preset number, from

@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("SysEx messages", image: red-chapter-banner, l: "chap-sysex")
+#chapter("SysEx messages", l: "chap-sysex")
 
 The SE-02 speaks the classic Roland SysEx dialect (Aka. `One-Way` protocol) with *RQ1* and *DT1* messages.
 

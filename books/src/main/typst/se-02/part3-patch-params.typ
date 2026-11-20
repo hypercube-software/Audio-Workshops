@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("Patch parameters", image: red-chapter-banner, l: "chap-params")
+#chapter("Patch parameters", l: "chap-params")
 
 The 88 parameters of a patch are grouped in eight blocks. Each table gives everything needed to read or
 write 1 parameter:

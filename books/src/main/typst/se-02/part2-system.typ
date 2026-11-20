@@ -3,7 +3,7 @@
 
 #part("Global settings")
 
-#chapter("System settings", image: red-chapter-banner, l: "chap-system")
+#chapter("System settings", l: "chap-system")
 
 The system settings live in a single 16-byte block at `0x00000000`. They are the only settings of the instrument that
 are not stored in a patch, a pattern or a song: the MIDI channel, the clock source, the destination of the controllers

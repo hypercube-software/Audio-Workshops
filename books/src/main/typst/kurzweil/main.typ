@@ -21,8 +21,9 @@
   author: "2026",
   lang: "en",
   // Shared artwork, see common/settings.typ
-  cover: book-cover,
-  image-index: outline-banner,
+  cover: blue-book-cover,
+  banners: blue-banners,
+  image-index: blue-outline-banner,
   // Colours of this book. Only the accent colour differs from the shared
   // defaults (`default-theme`): cover band, chapter titles and running header
   // keep their values from common/settings.typ.

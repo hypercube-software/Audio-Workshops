@@ -37,31 +37,45 @@
 #import "@preview/rivet:0.3.1": *
 
 #import "template/lib.typ": (
-  appendices, book, chapter, corollary, definition, example, exercise, index, make-index, my-bibliography, notation,
+  appendices, book, chapter, chapter-banners, corollary, definition, example, exercise, index, make-index, my-bibliography, notation,
   part, problem, proposition, remark, scr, theorem, update-heading-image, vocabulary,
 )
 
 // -----------------------------------------------------------------------------
-// Artwork shared by the books, in three colour variants. Those paths are resolved
-// relative to THIS file, so a book can reuse them whatever its own sub-directory
-// is. A book which needs its own picture simply passes another `image(..)` to
-// `init` (cover:) or to `chapter` (image:).
-#let blue-book-cover = image("assets/blue/bg-2481-3507.svg")
-#let blue-chapter-banner = image("assets/blue/hd3-2481-500.svg")
-#let blue-outline-banner = image("assets/blue/hd-2481-500.svg")
+// Artwork shared by the books, in three colour variants. Files are produced by
+// books/src/main/jshell/generate-svg-backgrounds.jsh during the initialize phase of
+// books/pom.xml, and sized to the real print area: A4 for the cover, 21 x 9.4 cm
+// for the banners. `svg.<theme>.seed` in books/pom.xml gives each variant its own
+// grid, `svg.<theme>.*` its colours.
+//
+// Those paths are resolved relative to THIS file, so a book can reuse them whatever
+// its own sub-directory is. A book which needs its own picture simply passes another
+// `image(..)` to `init` (cover:) or to `chapter` (image:).
+#let blue-book-cover = image("assets/generated/blue/cover.svg")
+#let blue-chapter-banner = image("assets/generated/blue/banner-hexagon.svg")
+#let blue-outline-banner = image("assets/generated/blue/banner-wave.svg")
+#let blue-bands-banner = image("assets/generated/blue/banner-bands.svg")
 
-#let red-book-cover = image("assets/red/bg-2481-3507.svg")
-#let red-chapter-banner = image("assets/red/hd3-2481-500.svg")
-#let red-outline-banner = image("assets/red/hd-2481-500.svg")
+#let red-book-cover = image("assets/generated/red/cover.svg")
+#let red-chapter-banner = image("assets/generated/red/banner-hexagon.svg")
+#let red-outline-banner = image("assets/generated/red/banner-wave.svg")
+#let red-bands-banner = image("assets/generated/red/banner-bands.svg")
 
-#let green-book-cover = image("assets/green/bg-2481-3507.svg")
-#let green-chapter-banner = image("assets/green/hd3-2481-500.svg")
-#let green-outline-banner = image("assets/green/hd-2481-500.svg")
+#let green-book-cover = image("assets/generated/green/cover.svg")
+#let green-chapter-banner = image("assets/generated/green/banner-hexagon.svg")
+#let green-outline-banner = image("assets/generated/green/banner-wave.svg")
+#let green-bands-banner = image("assets/generated/green/banner-bands.svg")
 
 // Backward-compatible names used by the Kurzweil book.
 #let book-cover = blue-book-cover
 #let chapter-banner = blue-chapter-banner
 #let outline-banner = blue-outline-banner
+#let bands-banner = blue-bands-banner
+
+// Chapter banners cycled by `chapter` when no `image:` is given, one set per colour.
+#let blue-banners = (blue-chapter-banner, blue-outline-banner, blue-bands-banner)
+#let red-banners = (red-chapter-banner, red-outline-banner, red-bands-banner)
+#let green-banners = (green-chapter-banner, green-outline-banner, green-bands-banner)
 
 // -----------------------------------------------------------------------------
 // Default colours, overridable per book with `init.with(theme: (..))`.
@@ -133,6 +147,7 @@
   theme: (:),
   cover: book-cover,
   image-index: outline-banner,
+  banners: (),
   copyright: none,
   list-of-figure-title: "List of Figures",
   list-of-table-title: "List of Tables",
@@ -143,6 +158,10 @@
 ) = {
   // Book specific colours on top of the shared defaults
   let palette = default-theme + theme
+
+  // Banners cycled by `chapter`: the chapter number picks one, so a book only
+  // declares its palette (`blue-banners`, `red-banners`, `green-banners`).
+  chapter-banners.update(x => banners)
 
   show: codly-init.with()
   codly(

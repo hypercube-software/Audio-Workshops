@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("Patterns", image: red-chapter-banner, l: "chap-pattern")
+#chapter("Patterns", l: "chap-pattern")
 
 A pattern is 144 bytes: a 16-byte header that describes the loop, followed by 16 steps of 8 bytes. Two addresses give
 access to it:

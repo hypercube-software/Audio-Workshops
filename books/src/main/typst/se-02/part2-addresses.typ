@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("Addresses and sizes", image: red-chapter-banner, l: "chap-address")
+#chapter("Addresses and sizes", l: "chap-address")
 
 Every `RQ1` and `DT1` carries an address; only a `RQ1` also carries a size. Both are numbers, and both
 must be encoded before they go on the wire: they are split into bytes of 7 bits, so that the most

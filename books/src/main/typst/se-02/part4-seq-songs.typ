@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("Songs", image: red-chapter-banner, l: "chap-song")
+#chapter("Songs", l: "chap-song")
 
 A song chains sixteen parts. Each part names a pattern, the patch to play it with, and a repeat count, and the
 sequencer plays the parts in order. A song is 144 bytes, exactly like a pattern, but the two blocks share nothing but

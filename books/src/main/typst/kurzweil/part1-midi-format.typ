@@ -2,7 +2,7 @@
 #let hx(b, c) = box(fill: c, inset: (x: 2.5pt, y: 2pt), radius: 2pt, raw(b))
 #let hexline(..c) = block(c.pos().join(h(2pt)))
 
-#chapter("MIDI Format", image: chapter-banner, l: "chap1")
+#chapter("MIDI Format", l: "chap1")
 #index("Sectioning")
 
 If you load a K26 file in the unit, you can perfectly retreive the very same content via MIDI, using various commands. The only difference is that:
