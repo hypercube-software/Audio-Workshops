@@ -5,8 +5,11 @@
   number: "0",
   title: none,
   heading_page: "0",
-  location: none) = {
+  location: none,
+  linkColor: auto) = {
   set text(size: textSize, fill: textColor, weight: textWeight)
+  let titleContent = if linkColor == auto { title } else { text(fill: linkColor, title) }
+  let pageContent = if linkColor == auto { heading_page } else { text(fill: linkColor, heading_page) }
   box(width: 100%, inset: (y: insetSize))[
     #grid(
       columns: (1.2cm, 1fr, auto),
@@ -14,12 +17,12 @@
       gutter: 0pt, 
       number,
       [
-        #link(location, title)
+        #link(location, titleContent)
         #box(width: 1fr, repeat(text(weight: "regular")[. #h(4pt)]))
       ],
       [
         #h(4pt)
-        #link(location, heading_page)
+        #link(location, pageContent)
       ]
     )
   ]
@@ -76,7 +79,7 @@
   outline(depth: depth, indent: 0em)
 }
 
-#let my-outline-small(partTitle, appendix-state, part-state, part-location,part-change,part-counter, main-color, textSize1:none, textSize2:none, textSize3:none, textSize4:none, depth: 2, width: 9.5) = {
+#let my-outline-small(partTitle, appendix-state, part-state, part-location,part-change,part-counter, main-color, textSize1:none, textSize2:none, textSize3:none, textSize4:none, depth: 2, width: 9.5, subColor: black) = {
   show outline.entry: it => {
     let appendix-state = appendix-state.at(it.element.location())
     let numberingFormat = if appendix-state != none {"A.1"} else {"1.1"}
@@ -91,10 +94,10 @@
     if (part-state == partTitle and counterInt.first() >0 and appendix-state==none){
       if it.level == 1 {
         v(0.5cm, weak: true)
-        my-outline-row(insetSize: 1pt, textWeight: "bold", textSize: textSize2, textColor:main-color, number: number, title: title, heading_page: heading_page, location: it.element.location())
+        my-outline-row(insetSize: 1pt, textWeight: "bold", textSize: textSize2, textColor:main-color, linkColor: main-color, number: number, title: title, heading_page: heading_page, location: it.element.location())
       }
       else if it.level ==2 {
-        my-outline-row(textWeight: "regular", textSize: textSize4, textColor:black, number: number, title: text(fill: black, title), heading_page: text(fill: black, heading_page), location: it.element.location())
+        my-outline-row(textWeight: "regular", textSize: textSize4, textColor:subColor, linkColor: subColor, number: number, title: text(fill: subColor, title), heading_page: text(fill: subColor, heading_page), location: it.element.location())
       }
     }
     else{

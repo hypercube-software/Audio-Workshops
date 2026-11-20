@@ -38,7 +38,7 @@
 
 #import "template/lib.typ": (
   appendices, book, chapter, chapter-banners, corollary, definition, example, exercise, index, make-index, my-bibliography, notation,
-  part, problem, proposition, remark, scr, theorem, update-heading-image, vocabulary,
+  part, part-background-state, part-change, problem, proposition, remark, scr, theorem, update-heading-image, vocabulary,
 )
 
 // -----------------------------------------------------------------------------
@@ -52,16 +52,19 @@
 // its own sub-directory is. A book which needs its own picture simply passes another
 // `image(..)` to `init` (cover:) or to `chapter` (image:).
 #let blue-book-cover = image("assets/generated/blue/cover.svg")
+#let blue-part-background = image("assets/generated/blue/part.svg")
 #let blue-chapter-banner = image("assets/generated/blue/banner-hexagon.svg")
 #let blue-outline-banner = image("assets/generated/blue/banner-wave.svg")
 #let blue-bands-banner = image("assets/generated/blue/banner-bands.svg")
 
 #let red-book-cover = image("assets/generated/red/cover.svg")
+#let red-part-background = image("assets/generated/red/part.svg")
 #let red-chapter-banner = image("assets/generated/red/banner-hexagon.svg")
 #let red-outline-banner = image("assets/generated/red/banner-wave.svg")
 #let red-bands-banner = image("assets/generated/red/banner-bands.svg")
 
 #let green-book-cover = image("assets/generated/green/cover.svg")
+#let green-part-background = image("assets/generated/green/part.svg")
 #let green-chapter-banner = image("assets/generated/green/banner-hexagon.svg")
 #let green-outline-banner = image("assets/generated/green/banner-wave.svg")
 #let green-bands-banner = image("assets/generated/green/banner-bands.svg")
@@ -148,6 +151,7 @@
   cover: book-cover,
   image-index: outline-banner,
   banners: (),
+  part-background: none,
   copyright: none,
   list-of-figure-title: "List of Figures",
   list-of-table-title: "List of Tables",
@@ -162,6 +166,7 @@
   // Banners cycled by `chapter`: the chapter number picks one, so a book only
   // declares its palette (`blue-banners`, `red-banners`, `green-banners`).
   chapter-banners.update(x => banners)
+  part-background-state.update(x => part-background)
 
   show: codly-init.with()
   codly(
@@ -198,7 +203,9 @@
     footer: context {
       if here().page() > 1 {
         // Pour éviter le numéro sur la page de garde
-        align(center, counter(page).display())
+        // Part pages paint a dark background: their page number goes white.
+        let on-part = part-change.at(here()) and part-background-state.at(here()) != none
+        align(center, text(fill: if on-part { white } else { black }, counter(page).display()))
       }
     },
   )

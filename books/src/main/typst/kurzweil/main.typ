@@ -22,6 +22,7 @@
   lang: "en",
   // Shared artwork, see common/settings.typ
   cover: blue-book-cover,
+  part-background: blue-part-background,
   banners: blue-banners,
   image-index: blue-outline-banner,
   // Colours of this book. Only the accent colour differs from the shared

@@ -14,9 +14,10 @@
 // same seeds always give the same bytes.
 //
 // Output, per theme, in svg.out/<theme>/:
-//   cover.svg           A4 page (210 x 297 mm), cover of the book
+//   cover.svg           A4 page (210 x 297 mm), cover of the book: gradient + mesh
+//   part.svg            A4 page, same gradient and glow as the cover but without the mesh
 //   banner-hexagon.svg  21 x 9.4 cm, hexagon pattern (chapter banner)
-//   banner-wave.svg     21 x 9.4 cm, curves (outline banner)
+//   banner-wave.svg     21 x 9.4 cm, sine waves and one Gaussian bump (outline banner)
 //   banner-bands.svg    21 x 9.4 cm, slanted bands with progressive transparency
 // =============================================================================
 import java.nio.charset.StandardCharsets;
@@ -46,6 +47,17 @@ long svgThemeSeed(String theme) {
 
 String svgNum(double v) {
     return String.format(Locale.ROOT, "%.2f", v);
+}
+
+// Blends a "#rrggbb" colour towards white (t = 0 keeps it, t = 1 gives white).
+String svgLighten(String hex, double t) {
+    int r = Integer.parseInt(hex.substring(1, 3), 16);
+    int g = Integer.parseInt(hex.substring(3, 5), 16);
+    int b = Integer.parseInt(hex.substring(5, 7), 16);
+    r = (int) Math.round(r + (255 - r) * t);
+    g = (int) Math.round(g + (255 - g) * t);
+    b = (int) Math.round(b + (255 - b) * t);
+    return String.format(Locale.ROOT, "#%02x%02x%02x", r, g, b);
 }
 
 String svgHex(double cx, double cy, double r, double angleOffset) {
@@ -252,6 +264,7 @@ String svgRender(String theme, String kind, double w, double h) {
         case "cover" -> 1;
         case "banner" -> 2;
         case "bands" -> 4;
+        case "part" -> 5;
         default -> 3;
     };
     Random rnd = new Random(svgThemeSeed(theme) + offset);
@@ -280,9 +293,11 @@ String svgRender(String theme, String kind, double w, double h) {
     sb.append("<linearGradient id=\"bg\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">")
       .append("<stop offset=\"0\" stop-color=\"").append(deep).append("\"/>")
       .append("<stop offset=\"1\" stop-color=\"").append(base).append("\"/></linearGradient>\n");
+    String glowColor = kind.equals("part") ? svgLighten(accent, 0.55) : accent;
     sb.append("<radialGradient id=\"glow\">")
-      .append("<stop offset=\"0\" stop-color=\"").append(accent).append("\" stop-opacity=\"0.45\"/>")
-      .append("<stop offset=\"1\" stop-color=\"").append(accent).append("\" stop-opacity=\"0\"/></radialGradient>\n");
+      .append("<stop offset=\"0\" stop-color=\"").append(glowColor).append("\" stop-opacity=\"")
+      .append(kind.equals("part") ? "0.55" : "0.45").append("\"/>")
+      .append("<stop offset=\"1\" stop-color=\"").append(glowColor).append("\" stop-opacity=\"0\"/></radialGradient>\n");
     if (kind.equals("bands")) {
         sb.append("<linearGradient id=\"tri\" x1=\"0\" y1=\"1\" x2=\"1\" y2=\"0\">")
           .append("<stop offset=\"0\" stop-color=\"").append(accent).append("\" stop-opacity=\"0.35\"/>")
@@ -303,10 +318,26 @@ String svgRender(String theme, String kind, double w, double h) {
       .append("\" fill=\"").append(fill).append("\"/>\n");
 
     if (!flat && !svgDebug) {
-        double gx = kind.equals("cover") ? w * 0.82 : w * rnd.nextDouble();
-        double gy = kind.equals("cover") ? h * 0.55 : h * rnd.nextDouble();
+        double gx;
+        double gy;
+        double gr;
+        if (kind.equals("part")) {
+            // Huge glow in the bottom right corner: it lights the area where the part
+            // page prints its outline, so the text stays readable on the dark gradient.
+            gx = w * 0.88;
+            gy = h * 0.90;
+            gr = Math.max(w, h) * 0.85;
+        } else if (kind.equals("cover")) {
+            gx = w * 0.82;
+            gy = h * 0.55;
+            gr = Math.max(w, h) * 0.45;
+        } else {
+            gx = w * rnd.nextDouble();
+            gy = h * rnd.nextDouble();
+            gr = Math.max(w, h) * 0.45;
+        }
         sb.append("<circle cx=\"").append(svgNum(gx)).append("\" cy=\"").append(svgNum(gy))
-          .append("\" r=\"").append(svgNum(Math.max(w, h) * 0.45)).append("\" fill=\"url(#glow)\"/>\n");
+          .append("\" r=\"").append(svgNum(gr)).append("\" fill=\"url(#glow)\"/>\n");
     }
 
     if (kind.equals("banner")) {
@@ -351,7 +382,7 @@ String svgRender(String theme, String kind, double w, double h) {
     return sb.append("</svg>\n").toString();
 }
 
-String[] svgFiles = {"cover.svg", "banner-hexagon.svg", "banner-wave.svg", "banner-bands.svg"};
+String[] svgFiles = {"cover.svg", "part.svg", "banner-hexagon.svg", "banner-wave.svg", "banner-bands.svg"};
 var svgThemeList = new java.util.ArrayList<String>();
 for (String t : svgThemes.split(",")) {
     svgThemeList.add(t.trim());
@@ -394,6 +425,7 @@ if (svgUpToDate) {
         Path dir = svgOut.resolve(theme);
         Files.createDirectories(dir);
         Files.writeString(dir.resolve("cover.svg"), svgRender(theme, "cover", 210, 297), StandardCharsets.UTF_8);
+        Files.writeString(dir.resolve("part.svg"), svgRender(theme, "part", 210, 297), StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("banner-hexagon.svg"), svgRender(theme, "banner", 210, 94), StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("banner-wave.svg"), svgRender(theme, "wave", 210, 94), StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("banner-bands.svg"), svgRender(theme, "bands", 210, 94), StandardCharsets.UTF_8);

@@ -46,6 +46,8 @@
 #let heading-image = state("heading-image", none)
 // Images cycled by `chapter` when it is called without an explicit `image:`.
 #let chapter-banners = state("chapter-banners", ())
+// Full page image or colour painted behind the part pages (none = pale accent tint).
+#let part-background-state = state("part-background-state", none)
 // Counts the chapters across the whole book: unlike `heading`, it is never reset
 // by `part`, so the banner cycle keeps alternating from one part to the next.
 #let banner-cycle = counter("banner-cycle")
@@ -75,28 +77,40 @@
       let supplement_part = supplement-part-state.at(here())
       let outline-small-depth = outline-small-depth-state.at(here())
       let outline-small-width = outline-small-width-state.at(here())
+      let part-bg = part-background-state.at(here())
+      let outline-color = if part-bg == none { main-color } else { white }
       if part-style == 0 [
         #set par(justify: false)
-        #place(block(
-          width: 100%,
-          height: 100%,
-          outset: (x: 3cm, bottom: 2.5cm, top: 3cm),
-          fill: main-color.lighten(70%),
-        ))
-        #place(top + right, text(fill: black, size: large-text, weight: "bold", box(width: 60%, part-state.get())))
-        #place(top + left, text(fill: main-color, size: part-font-size, weight: "bold", part-counter.display("I")))
+        #if part-bg == none {
+          place(block(
+            width: 100%,
+            height: 100%,
+            outset: (x: 3cm, bottom: 2.5cm, top: 3cm),
+            fill: main-color.lighten(70%),
+          ))
+        } else {
+          set image(width: 100% + 6cm, height: 100% + 5.5cm, fit: "cover")
+          place(dx: -3cm, dy: -3cm, part-bg)
+        }
+        #place(top + right, text(fill: if part-bg == none { black } else { white }, size: large-text, weight: "bold", box(width: 60%, part-state.get())))
+        #place(top + left, text(fill: if part-bg == none { main-color } else { main-color.lighten(40%) }, size: part-font-size, weight: "bold", part-counter.display("I")))
       ] else if part-style == 1 [
         #set par(justify: false)
-        #place(block(
-          width: 100%,
-          height: 100%,
-          outset: (x: 3cm, bottom: 2.5cm, top: 3cm),
-          fill: main-color.lighten(70%),
-        ))
+        #if part-bg == none {
+          place(block(
+            width: 100%,
+            height: 100%,
+            outset: (x: 3cm, bottom: 2.5cm, top: 3cm),
+            fill: main-color.lighten(70%),
+          ))
+        } else {
+          set image(width: 100% + 6cm, height: 100% + 5.5cm, fit: "cover")
+          place(dx: -3cm, dy: -3cm, part-bg)
+        }
         #place(top + left)[
-          #block(text(fill: black, size: 2.5em, weight: "bold", supplement_part + " " + part-counter.display("I")))
+          #block(text(fill: if part-bg == none { black } else { white }, size: 2.5em, weight: "bold", supplement_part + " " + part-counter.display("I")))
           #v(1cm, weak: true)
-          #move(dx: -4pt, block(text(fill: main-color, size: 6em, weight: "bold", part-state.get())))
+          #move(dx: -4pt, block(text(fill: if part-bg == none { main-color } else { main-color.lighten(40%) }, size: 6em, weight: "bold", part-state.get())))
         ]
       ]
       align(bottom + right, my-outline-small(
@@ -106,13 +120,14 @@
         part-location,
         part-change,
         part-counter,
-        main-color,
+        outline-color,
         textSize1: outline-part,
         textSize2: outline-heading1,
         textSize3: outline-heading2,
         textSize4: outline-heading3,
         depth: outline-small-depth,
         width: outline-small-width,
+        subColor: if part-bg == none { black } else { white.transparentize(20%) },
       ))
       hide(heading(
         level: 1, 
