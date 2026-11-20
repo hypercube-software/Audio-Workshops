@@ -13,82 +13,82 @@ access to it:
         fill: (x, y) => if y == 0 { luma(230) },
         stroke: 0.5pt,
         head([*Address*], [*Block*], [*Content*]), [`10 00 00 00`], [Current pattern],
-        [The pattern the sequencer is playing], [`11 ss 00 00`], [Stored pattern],
-        [Slot `ss`, from 0 to 127],
+        [The pattern the sequencer is playing], [`11 nn 00 00`], [Stored pattern],
+        [Number `nn`, from 0 to 127],
     ),
     caption: [Addresses of the pattern blocks],
 )
 
 Like a patch, a pattern exists twice: a working copy at `0x10000000` that the front panel edits, and a stored copy in
-one of the 128 slots. Slot 0 is the pattern displayed as `1` and slot 127 the pattern displayed as `128`.
+one of the 128 patterns. Pattern 0 is displayed as `1` and pattern 127 as `128`.
 
 == Header
 
 #figure(
     ptable(
-        columns: (auto, auto, auto, auto, 1fr),
-        head([*Offset*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
-        [`0`..`2`],
+        columns: (auto, auto, auto, auto, auto, 1fr),
+        head([*Packed address*], [*Packed Size*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
+        [`10 00 00 00`], [`00 00 00 03`],
         [Tempo],
         [12 bits, see below],
         [`03 08 04`],
         [130.0 BPM],
-        [`3`],
+        [`10 00 00 03`], [`00 00 00 01`],
         [Patch bank],
         [`1`..`4`],
         [`01`],
         [Bank of the patch of the pattern: `1` = A, `2` = B, `3` = C, `4` = User],
-        [`4`],
+        [`10 00 00 04`], [`00 00 00 01`],
         [Patch number],
         [`0`..`127`],
         [`67`],
         [Program number of that patch, 0-based; In this example `0x0167` is `103`, the program number of `A104`],
-        [`5`],
+        [`10 00 00 05`], [`00 00 00 01`],
         [Scale],
         [`0`..`5`],
         [`01`],
         [`1/16`, `1/8`, `1/4`, `1/16T`, `1/8T`, `1/4T`],
-        [`6`],
+        [`10 00 00 06`], [`00 00 00 01`],
         [Step count],
         [`15`],
         [`0F`],
         [Number of steps minus one; always `15` (16 steps) in factory patterns],
-        [`7`],
+        [`10 00 00 07`], [`00 00 00 01`],
         [First step],
         [`0`..`15`],
         [`00`],
         [First step of the loop, minus one],
-        [`8`],
+        [`10 00 00 08`], [`00 00 00 01`],
         [Last step],
         [`0`..`15`],
         [`0F`],
         [Last step of the loop, minus one],
-        [`9`],
+        [`10 00 00 09`], [`00 00 00 01`],
         [Direction],
         [`0`..`3`],
         [`00`],
         [Forward, backward, ping-pong, random],
-        [`10`],
+        [`10 00 00 0A`], [`00 00 00 01`],
         [Shuffle],
         [`50` + offset],
         [`32`],
         [Raw value; the displayed shuffle is the value minus `50` (`32` is `50`, that is a shuffle of `0`)],
-        [`11`],
+        [`10 00 00 0B`], [`00 00 00 01`],
         [Destination],
         [`0`..`2`],
         [`00`],
         [`Int`, `Ext`, `Both`],
-        [`12`],
+        [`10 00 00 0C`], [`00 00 00 01`],
         [Play flag],
         [`0` `1`],
         [`00`],
         [`0` = the pattern plays, `1` = the steps are blocked],
-        [`13`],
+        [`10 00 00 0D`], [`00 00 00 01`],
         [Key trigger],
         [`0`..`2`],
         [`00`],
         [`OFF`, `On`, `trn`],
-        [`14`..`15`],
+        [`10 00 00 0E`], [`00 00 00 02`],
         [Reserved],
         [`00`],
         [`00 00`],
@@ -97,7 +97,7 @@ one of the 128 slots. Slot 0 is the pattern displayed as `1` and slot 127 the pa
     caption: [Header of a pattern],
 )
 
-The *Ref.* column is the header of the first factory pattern, in slot 0. Over the 128 factory patterns, the last eight
+The *Ref.* column is the header of the first factory pattern, pattern 0. Over the 128 factory patterns, the last eight
 header bytes are almost constant: the direction is forward in 113 of them, the shuffle offset is zero in 112, the
 destination is `Int` in all of them, the first step is `1` in all of them and the play flag is `0` in all of them. The
 two bytes that change from one pattern to the other are the patch bank and number, which is expected: a pattern
@@ -131,17 +131,17 @@ The tempo is a 12-bit value stored as three nibbles, counted in tenths of a beat
 )
 
 The instrument accepts tempos from 40 to 300, that is a `t` from `0` to `2600`. Twelve bits are exactly what that range
-needs, and the header stores the value as three nibbles at offsets `0` to `2`.
+needs, and the header stores the value as three nibbles from `0x10000000` to `0x10000002`.
 
 == Steps
 
-The 16 steps start at offset 16 and each one occupies 8 bytes, so step `n` (0 to 15) is at offsets `16 + 8n` to
-`23 + 8n`.
+The 16 steps start at `0x10000010` and each one occupies 8 bytes: step 1 is read at that address with the
+packed size `8`, and each following step starts 8 bytes later.
 
 #figure(
     ptable(
         columns: (auto, auto, auto, auto, 1fr),
-        head([*Offset*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
+        head([*Offset in the step*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
         [`+0`],
         [Note switch],
         [`0` `1`],
@@ -195,14 +195,14 @@ step whose note is off. A step therefore has two independent switches — the no
 inactive one is a change of the pattern, not a neutral write.
 
 The `+4` PRM switch is the PRM button of the unit. The `+5` parameter ID is an internal identifier used only by the
-sequencer; it is neither the MIDI CC number nor the parameter offset of the patch (#cref(<chap-param-ids>)).
+sequencer; it is neither the MIDI CC number nor the address of the patch parameter (#cref(<chap-param-ids>)).
 
 The gate is stored one below its displayed value, like several other lengths of this format. The displayed range is 10
 to 100 %, so the stored range is 9 to 99.
 
 == A complete pattern
 
-The table below decodes the 16 steps of the first factory pattern, slot 0, whose header was given above. Gates and
+The table below decodes the 16 steps of the first factory pattern, pattern 0, whose header was given above. Gates and
 parameter values are the *stored* values; the display adds one to the gate and shows nothing for the parameter ID,
 which has no name on the instrument. In the payload column, the colours group the fields: note (green), gate (blue),
 glide (purple), PRM switch, parameter ID and value (orange).

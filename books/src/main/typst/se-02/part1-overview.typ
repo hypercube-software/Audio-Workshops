@@ -78,9 +78,10 @@ Four memory blocks are described here:
 
 == Conventions
 
-A byte is always written as two hexadecimal digits and set in a code font: `F0`, `7F`, `12`. In a table, an address is written as its four bytes separated by spaces: `05 00 00 00`. In the running text, the same
-address is written as one hexadecimal literal: `0x05000000`. Offsets inside a block are given in decimal, and in hex
-when the two are easy to confuse.
+A byte is always written as two hexadecimal digits and set in a code font: `F0`, `7F`, `12`. The addresses of this book are always the packed ones, as they travel in the MIDI frame. In the text, the 4
+packed bytes are written as one hexadecimal literal: `0x05000150`. In a frame or in a table, they keep their
+spaces: `05 00 01 50`. The unpacked address (`0x050000D0` for the same byte) only appears where this book
+explains the difference between the 2 forms.
 
 Two words are used with a precise meaning in this book:
 - The *stored value* is what the memory contains. It is *not* always what the front panel displays.
@@ -110,29 +111,23 @@ All the memory blocks of the instrument live in eight regions:
         columns: (auto, auto, auto, 1fr),
         fill: (x, y) => if y == 0 { luma(230) },
         stroke: 0.5pt,
-        head([*Address*], [*Size*], [*Slots*], [*Content*]), [`00 00 00 00`], [16], [1],
+        head([*Address*], [*Size*], [*Count*], [*Content*]), [`00 00 00 00`], [16], [1],
         [System settings: MIDI channel, clock source, CC output, power off, screen saver], [`02 00 00 00`], [16], [1],
         [Unidentified region; its content does not change with the system settings], [`05 00 00 00`], [240], [1],
-        [Current patch (the edit buffer)], [`06 bb pp 00`], [240], [4 × 128],
-        [Stored patch, bank `bb`, program `pp`], [`10 00 00 00`], [144], [1],
+        [Current patch (the edit buffer)], [`06 nn 00 00`], [240], [128],
+        [Stored user preset number `nn` (0 to 127)], [`10 00 00 00`], [144], [1],
         [Current pattern], [`11 nn 00 00`], [144], [128],
-        [Stored pattern, slot `nn` (0 to 127)], [`20 00 00 00`], [144], [1],
+        [Stored pattern number `nn` (0 to 127)], [`20 00 00 00`], [144], [1],
         [Current song], [`21 nn 00 00`], [144], [16],
-        [Stored song, slot `nn` (0 to 15)],
+        [Stored song number `nn` (0 to 15)],
     ),
     caption: [The regions of the SE-02 memory map],
 )
 
-The `bb` byte of a stored patch gives the bank:
-
-- `0` — bank A;
-- `1` — bank B;
-- `2` — bank C;
-- `3` — the user bank.
-
-That is exactly the value of the *Bank Select MSB* MIDI event (CC 0) used to pick a preset. The
-program number `pp` is the value of the program change that follows it, so a preset is entirely described by a
-`CC 0` + `PC` pair.
+The address `0x06000000` is the user bank: `nn` is a user preset number, whatever bank is selected on the
+unit. The factory presets are in ROM and have no address; a `CC 0` + `PC` pair loads one into the edit
+buffer at `0x05000000`. The bank and the preset are chosen together by the *Bank Select MSB* (CC 0) and the
+program change that follows.
 
 The pattern and song blocks have the same size (144 bytes) but a different content: a pattern holds 16 steps of notes, a
 song holds 16 parts of a chain. They never overlap in the address space.
@@ -160,10 +155,10 @@ the unidentified block at `0x02000000` even though none of the documented system
 The factory reset erases the user memory and brings back the factory patches, patterns and settings.
 It is performed at power on:
 
-+ hold the [`1`] button and turn the power on;
-+ the display shows [`rSt`];
-+ press the [`MANUAL`] button to run the reset;
-+ when the display shows [`Fin`], turn the unit off and on again.
++ Hold the [`1`] button and turn the power on;
++ The display shows [`rSt`];
++ Press the [`MANUAL`] button to run the reset;
++ When the display shows [`Fin`], turn the unit off and on again.
 
 Turning the power off before [`MANUAL`] is pressed cancels the operation.
 

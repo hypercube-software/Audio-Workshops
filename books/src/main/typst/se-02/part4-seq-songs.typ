@@ -15,25 +15,25 @@ their size.
     stroke: 0.5pt,
     head([*Address*], [*Block*], [*Content*]),
     [`20 00 00 00`], [Current song], [The song the sequencer is playing],
-    [`21 ss 00 00`], [Stored song], [Slot `ss`, from 0 to 15],
+    [`21 nn 00 00`], [Stored song], [Number `nn`, from 0 to 15],
   ),
   caption: [Addresses of the song blocks],
 )
 
-There are 16 songs, and like the patterns they are numbered from one on the instrument: slot 0 is the song displayed
+There are 16 songs, and like the patterns they are numbered from one on the instrument: song 0 is displayed
 as `1`.
 
 == Header
 
 #figure(
   ptable(
-    columns: (auto, auto, auto, auto, 1fr),
-    head([*Offset*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
-    [`0`..`2`], [Tempo], [12 bits], [`03 02 00`], [Same encoding as a pattern: `03 02 00` is 120.0 BPM],
-    [`3`], [Destination], [`0`..`2`], [`00`], [`Int`, `Ext`, `Both`],
-    [`4`], [Reserved], [`00`], [`00`], [],
-    [`5`], [Key trigger], [`0`..`2`], [`00`], [`OFF`, `On`, `trn`],
-    [`6`..`15`], [Reserved], [`00`], [ten zeros], [],
+    columns: (auto, auto, auto, auto, auto, 1fr),
+    head([*Packed address*], [*Packed Size*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
+    [`20 00 00 00`], [`00 00 00 03`], [Tempo], [12 bits], [`03 02 00`], [Same encoding as a pattern: `03 02 00` is 120.0 BPM],
+    [`20 00 00 03`], [`00 00 00 01`], [Destination], [`0`..`2`], [`00`], [`Int`, `Ext`, `Both`],
+    [`20 00 00 04`], [`00 00 00 01`], [Reserved], [`00`], [`00`], [],
+    [`20 00 00 05`], [`00 00 00 01`], [Key trigger], [`0`..`2`], [`00`], [`OFF`, `On`, `trn`],
+    [`20 00 00 06`], [`00 00 00 0A`], [Reserved], [`00`], [ten zeros], [],
   ),
   caption: [Header of a song],
 )
@@ -44,12 +44,13 @@ no clock source, because the clock source is global — see #cref(<chap-system>)
 
 == Parts
 
-The 16 parts start at offset 16 and each one occupies 8 bytes.
+The 16 parts start at `0x20000010` and each one occupies 8 bytes: part 1 is read at that address with the
+packed size `8`, and each following part starts 8 bytes later.
 
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, 1fr),
-    head([*Offset*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
+    head([*Offset in the part*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
     [`+0`], [Pattern number, high nibble], [`0`..`15`], [`04`], [High nibble of the pattern number],
     [`+1`], [Pattern number, low nibble], [`0`..`15`], [`0A`], [Low nibble of the pattern number (`04 0A` is `74`)],
     [`+2`], [Patch bank], [`1`..`4`], [`02`], [`1` = A, `2` = B, `3` = C, `4` = User],
@@ -95,7 +96,7 @@ fields: pattern (green), bank (blue), patch (orange), repeats (purple), reserved
 )
 
 The first factory song chains fourteen parts and leaves the last two empty. Part 1 replays the pattern displayed as `74`
-eight times — which is pattern slot 73, at `0x11490000`, not `0x114A0000` — with the patch `B93`. Part 14 replays the
+eight times — which is pattern 73, at `0x11490000`, not `0x114A0000` — with the patch `B93`. Part 14 replays the
 same pattern four times, which is the usual way such a chain is built: a chorus, a variation, and a return.
 
 The two empty parts store a pattern number of `0`, a bank of `5`, which is outside the bank table, and a patch number of
