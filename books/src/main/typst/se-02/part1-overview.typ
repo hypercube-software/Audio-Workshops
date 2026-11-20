@@ -108,26 +108,33 @@ All the memory blocks of the instrument live in eight regions:
 #figure(
     table(
         align: left,
-        columns: (auto, auto, auto, 1fr),
+        columns: (auto, auto, auto, auto, 1fr),
         fill: (x, y) => if y == 0 { luma(230) },
         stroke: 0.5pt,
-        head([*Address*], [*Size*], [*Count*], [*Content*]), [`00 00 00 00`], [16], [1],
-        [System settings: MIDI channel, clock source, CC output, power off, screen saver], [`02 00 00 00`], [16], [1],
-        [Unidentified region; its content does not change with the system settings], [`05 00 00 00`], [240], [1],
-        [Current patch (the edit buffer)], [`06 nn 00 00`], [240], [128],
-        [Stored user preset number `nn` (0 to 127)], [`10 00 00 00`], [144], [1],
-        [Current pattern], [`11 nn 00 00`], [144], [128],
-        [Stored pattern number `nn` (0 to 127)], [`20 00 00 00`], [144], [1],
-        [Current song], [`21 nn 00 00`], [144], [16],
+        head([*Packed address*], [*Packed Size*], [*Size*], [*Count*], [*Content*]),
+        [`00 00 00 00`], [`00 00 00 10`], [16], [1],
+        [System settings: MIDI channel, clock source, CC output, power off, screen saver],
+        [`02 00 00 00`], [`00 00 00 10`], [16], [1],
+        [Reserved internal storage],
+        [`05 00 00 00`], [`00 00 01 70`], [240], [1],
+        [Patch edit buffer],
+        [`06 nn 00 00`], [`00 00 01 70`], [240], [128],
+        [Stored user preset number `nn` (0 to 127)],
+        [`10 00 00 00`], [`00 00 01 10`], [144], [1],
+        [Pattern edit buffer],
+        [`11 nn 00 00`], [`00 00 01 10`], [144], [128],
+        [Stored pattern number `nn` (0 to 127)],
+        [`20 00 00 00`], [`00 00 01 10`], [144], [1],
+        [Song edit buffer],
+        [`21 nn 00 00`], [`00 00 01 10`], [144], [16],
         [Stored song number `nn` (0 to 15)],
     ),
     caption: [The regions of the SE-02 memory map],
 )
 
-The address `0x06000000` is the user bank: `nn` is a user preset number, whatever bank is selected on the
-unit. The factory presets are in ROM and have no address; a `CC 0` + `PC` pair loads one into the edit
-buffer at `0x05000000`. The bank and the preset are chosen together by the *Bank Select MSB* (CC 0) and the
-program change that follows.
+The address `0x06000000` is the user bank: `nn` is a user preset number. The factory presets live in ROM, and a
+`CC 0` + `PC` pair loads one into the edit buffer at `0x05000000`. The bank and the preset are chosen together
+by the *Bank Select MSB* (CC 0) and the program change that follows.
 
 The pattern and song blocks have the same size (144 bytes) but a different content: a pattern holds 16 steps of notes, a
 song holds 16 parts of a chain. They never overlap in the address space.

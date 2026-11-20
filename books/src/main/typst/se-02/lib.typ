@@ -25,7 +25,7 @@
 // the parameter IDs, for instance) run over two pages. `kfigure` is for the
 // small tables whose caption must stay with the table: the block around the
 // figure is not breakable, so both go to the next page together.
-#let kfigure(..args) = block(breakable: false, figure(..args))
+#let kfigure(..args) = align(center, block(breakable: false, figure(..args)))
 
 // A reference to a chapter of *another part*.
 //
@@ -74,7 +74,8 @@
   let b = payload.split(" ")
   bytefield(
     bpr: 64,
-    bytes(2, fill: l_green)[#b.slice(0, 2).join(" ")],
+    bytes(1, fill: l_green)[#b.at(0)],
+    bytes(1, fill: l_green)[#b.at(1)],
     bytes(1, fill: l_blue)[#b.at(2)],
     bytes(1, fill: l_purple)[#b.at(3)],
     bytes(1, fill: l_orange)[#b.at(4)],

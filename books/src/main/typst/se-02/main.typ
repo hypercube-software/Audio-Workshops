@@ -28,6 +28,7 @@
   lang: "en",
   // Red artwork for this book; the Kurzweil book uses the blue variant.
   cover: red-book-cover,
+  part-background: red-part-background,
   banners: red-banners,
   image-index: red-outline-banner,
   // Colours of this book. Any key not set here falls back to `default-theme`.
@@ -47,7 +48,7 @@
 
 #include "part1-overview.typ"
 #include "part1-sysex.typ"
-#include "part2-addresses.typ"
+#include "part2-encodings.typ"
 #include "part2-system.typ"
 #include "part3-patch-block.typ"
 #include "part3-patch-params.typ"

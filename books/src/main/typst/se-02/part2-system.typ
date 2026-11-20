@@ -101,26 +101,36 @@ energy-saving options off, and the two CV calibration values at `0`.
 
 Reading it back is a `RQ1` with size `00 00 00 10` and checksum `70`, as shown in #cref(<chap-sysex>).
 
-== Sync is shared by three menus
+== Sync is shared by two menus
 
-The clock source at `0x00000005` is exposed three times on the unit:
+The clock source at `0x00000005` is exposed in 2 menus:
 
 - In *System Setup*, button 7;
-- In the *SEQ SETUP* of the sequencer (`NOTE` + `GATE`), button 2;
-- In the *SONG SETUP* (`EDIT` + `PTN`), button 2.
+- In the *SEQ SETUP* of the sequencer (`NOTE` + `GATE`), button 2.
 
-All three write exactly the same byte. It is therefore not necessary to visit one menu after another: a single write to
-`0x00000005` configures all the sequencer modes at once. In other words, a pattern does *not* carry its own clock source,
-and neither does a song.
-
-== MIDI channel and device ID
-
-Changing the MIDI channel does not change the device ID of the SysEx MIDI frames: after setting the channel to `C2`, the unit
-still answers to `10`. As a consequence, an implementation cannot infer the channel from a dump, and must read the
-system block to know it.
+Both write the same byte, so a single write at `0x00000005` sets the clock source of the sequencer. The *SONG SETUP*
+has its own *Sync* entry, stored in the song header at `0x20000004`.
 
 == The second system block
 
-The block at `0x02000000` (16 bytes too) is read by the official software editor at start-up, like the block at `0x00000000`, but none of
-the settings above changes it. Its role is unknown. For a faithful backup, read it and store it as it is; for a restore,
-write it back unchanged — no interpretation is needed.
+The block at `0x02000000` is 16 bytes of reserved internal storage. It is readable and writable at its address. On
+this unit, it holds:
+
+#figure(
+    bytefield(
+        bpr: 128,
+        bytes(1, fill: l_orange)[00],
+        bytes(1, fill: l_orange)[01],
+        bytes(1, fill: l_orange)[01],
+        bytes(1, fill: l_orange)[01],
+        bytes(1, fill: l_orange)[00],
+        bytes(1, fill: l_orange)[01],
+        bytes(1, fill: l_orange)[00],
+        bytes(1, fill: l_orange)[07],
+        bytes(8, fill: l_gray)[00 00 00 00 00 00 00 00],
+    ),
+    caption: [Content of the reserved block],
+)
+
+The official software editor reads it at start-up: a faithful backup keeps these 16 bytes as they are, and a restore
+writes them back.

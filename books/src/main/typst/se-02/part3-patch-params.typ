@@ -15,9 +15,6 @@ write 1 parameter:
 - The *CC* column the controller that edits it on the unit
 - The *Ref.* column the value of the reference patch `Inbound`.
 
-A 8-bit value is 2 nibbles: the first byte holds the 4 most significant bits, the second byte the 4 least
-significant bits.
-
 == Two identifiers for one parameter
 
 A parameter is designated by two numbers that have nothing in common. Do not confuse them:

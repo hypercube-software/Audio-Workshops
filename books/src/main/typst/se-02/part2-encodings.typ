@@ -1,7 +1,7 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#chapter("Addresses and sizes", l: "chap-address")
+#chapter("Encodings", l: "chap-address")
 
 Every `RQ1` and `DT1` carries an address; only a `RQ1` also carries a size. Both are numbers, and both
 must be encoded before they go on the wire: they are split into bytes of 7 bits, so that the most
@@ -87,8 +87,41 @@ When a payload is read, a value must be rebuilt from its nibbles; when it is wri
     caption: [How a value is written in the payload],
 ) <tbl-values>
 
-The tempo of a pattern or a song is the only value wider than 2 nibbles: 3 nibbles, for example `02 05 08`. These nibbles do not hold a number that could be read
-as is: the pattern chapter gives the formula that turns them into a tempo.
+The tempo is the only value wider than 2 nibbles: the next section gives its encoding.
+
+== Tempo
+
+The tempo of a pattern or a song is 12 bits wide, stored as 3 nibbles. The field does not hold the tempo in beats
+per minute: it holds a count in tenths of a beat per minute above 40. A field of `0x320` is 800 tenths above 40, that
+is `120` BPM; it is not a tempo of `0x320` BPM. The panel displays whole BPM.
+
+#figure(
+    ptable(
+        columns: 1,
+        raw("t      = (header[0] << 8) | (header[1] << 4) | header[2]\ntempo  = 40 + t / 10\n\nt      = round((tempo - 40) * 10)\nheader = [ (t >> 8) & 0x0F, (t >> 4) & 0x0F, t & 0x0F ]"),
+    ),
+    caption: [Encoding of the tempo],
+)
+
+The instrument accepts tempos from `40` to `300` BPM, that is a count from `0x000` to `0xA28`. The field sits at the
+start of the pattern header, `0x10000000`, and of the song header, `0x20000000`.
+
+#kfigure(
+    table(
+        align: left,
+        columns: (auto, auto, auto),
+        fill: (x, y) => if y == 0 { luma(230) },
+        stroke: 0.5pt,
+        head([*Tempo*], [*Count t*], [*Nibbles*]),
+        [`40`], [`0x000`], [`00 00 00`],
+        [`80`], [`0x190`], [`01 09 00`],
+        [`120`], [`0x320`], [`03 02 00`],
+        [`130`], [`0x384`], [`03 08 04`],
+        [`200`], [`0x640`], [`06 04 00`],
+        [`300`], [`0xA28`], [`0A 02 08`],
+    ),
+    caption: [Six tempos and their encoding],
+)
 
 == Blocks
 
@@ -322,7 +355,7 @@ The cutoff and its 2 neighbours, from `0x0500006C` to `0x05000071`, before and a
 === A 12-bit value
 
 The widest value of the SE-02 is the tempo of a pattern or a song: 12 bits, 3 nibbles. At the start of the
-pattern, address `0x10000000`, the message writes the 3 nibbles `02 05 08`, which is the tempo `100.0` BPM.
+pattern, address `0x10000000`, the message writes the 3 nibbles `02 05 08`, which is the tempo `100` BPM.
 
 #figure(
     bytefield(
@@ -379,7 +412,7 @@ pattern, address `0x10000000`, the message writes the 3 nibbles `02 05 08`, whic
     caption: [A dump that writes 1 12-bit value],
 )
 
-The tempo, before and after: `02 08 0A` is `105.0` BPM, `02 05 08` is `100.0` BPM.
+The tempo, before and after: `02 08 0A` is `105` BPM, `02 05 08` is `100` BPM.
 
 #figure(
     bytefield(

@@ -9,18 +9,21 @@ access to it:
 #figure(
     table(
         align: left,
-        columns: (auto, auto, 1fr),
+        columns: (auto, auto, auto, 1fr),
         fill: (x, y) => if y == 0 { luma(230) },
         stroke: 0.5pt,
-        head([*Address*], [*Block*], [*Content*]), [`10 00 00 00`], [Current pattern],
-        [The pattern the sequencer is playing], [`11 nn 00 00`], [Stored pattern],
-        [Number `nn`, from 0 to 127],
+        head([*Packed address*], [*Packed Size*], [*Block*], [*Content*]),
+        [`10 00 00 00`], [`00 00 01 10`], [Pattern edit buffer], [The pattern the sequencer is playing],
+        [`11 nn 00 00`], [`00 00 01 10`], [Stored pattern], [Number `nn`, from 0 to 127],
     ),
     caption: [Addresses of the pattern blocks],
 )
 
-Like a patch, a pattern exists twice: a working copy at `0x10000000` that the front panel edits, and a stored copy in
-one of the 128 patterns. Pattern 0 is displayed as `1` and pattern 127 as `128`.
+Like a patch, a pattern exists twice: the *pattern edit buffer* at `0x10000000`, which the sequencer plays, and 128
+stored patterns in flash. Pattern 0 is displayed as `1` and pattern 127 as `128`.
+
+A stored pattern is played by copying it into the edit buffer: read its 144 bytes at `0x11nn0000`, then write them at
+`0x10000000`.
 
 == Header
 
@@ -30,9 +33,9 @@ one of the 128 patterns. Pattern 0 is displayed as `1` and pattern 127 as `128`.
         head([*Packed address*], [*Packed Size*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
         [`10 00 00 00`], [`00 00 00 03`],
         [Tempo],
-        [12 bits, see below],
+        [12 bits, see #cref(<chap-address>)],
         [`03 08 04`],
-        [130.0 BPM],
+        [130 BPM],
         [`10 00 00 03`], [`00 00 00 01`],
         [Patch bank],
         [`1`..`4`],
@@ -103,81 +106,54 @@ destination is `Int` in all of them, the first step is `1` in all of them and th
 two bytes that change from one pattern to the other are the patch bank and number, which is expected: a pattern
 remembers the patch it was written for.
 
-The tempo is a 12-bit value stored as three nibbles, counted in tenths of a beat per minute above 40:
-
-#figure(
-    ptable(
-        columns: 1,
-        raw("t      = (header[0] << 8) | (header[1] << 4) | header[2]\ntempo  = 40 + t / 10\n\nt      = round((tempo - 40) * 10)\nheader = [ (t >> 8) & 0x0F, (t >> 4) & 0x0F, t & 0x0F ]"),
-    ),
-    caption: [Encoding of the tempo],
-)
-
-#figure(
-    table(
-        align: left,
-        columns: (auto, auto, auto),
-        fill: (x, y) => if y == 0 { luma(230) },
-        stroke: 0.5pt,
-        head([*Tempo*], [*t*], [*Header bytes*]), [`40.0`], [`0`],
-        [`00 00 00`], [`80.0`], [`400`],
-        [`01 09 00`], [`120.0`], [`800`],
-        [`03 02 00`], [`130.0`], [`900`],
-        [`03 08 04`], [`200.0`], [`1600`],
-        [`06 04 00`], [`300.0`], [`2600`],
-        [`0A 02 08`],
-    ),
-    caption: [Six tempos and their encoding],
-)
-
-The instrument accepts tempos from 40 to 300, that is a `t` from `0` to `2600`. Twelve bits are exactly what that range
-needs, and the header stores the value as three nibbles from `0x10000000` to `0x10000002`.
+The tempo field is a count in tenths of a beat per minute above 40, stored as 3 nibbles; its encoding is described
+in #cref(<chap-address>).
 
 == Steps
 
-The 16 steps start at `0x10000010` and each one occupies 8 bytes: step 1 is read at that address with the
-packed size `8`, and each following step starts 8 bytes later.
+The 16 steps start at `0x10000010` and each one occupies 8 bytes: step 1 is at `0x10000010`, step 2 at `0x10000018`,
+and so on. The table gives the addresses inside step 1.
 
 #figure(
     ptable(
-        columns: (auto, auto, auto, auto, 1fr),
-        head([*Offset in the step*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
-        [`+0`],
+        columns: (auto, auto, auto, auto, auto, 1fr),
+        head([*Packed address*], [*Packed Size*], [*Field*], [*Values*], [*Ref.*], [*Meaning*]),
+        [`10 00 00 10`], [`00 00 00 01`],
         [Note switch],
         [`0` `1`],
         [`01`],
         [`1` = the step emits a note, `0` = silent step],
-        [`+1`],
+        [`10 00 00 11`], [`00 00 00 01`],
         [Note number],
         [`0`..`127`],
         [`24`],
-        [MIDI note number (`24` is the C two octaves below middle C)],
-        [`+2`],
+        [MIDI note number (`24` is `C2`)],
+        [`10 00 00 12`], [`00 00 00 01`],
         [Gate],
         [`9`..`99`],
         [`54`],
         [Gate length, in percent, minus one (`54` is displayed as `85`)],
-        [`+3`],
+        [`10 00 00 13`], [`00 00 00 01`],
         [Glide],
         [`0` `1`],
         [`00`],
         [`1` = the note glides from the previous one],
-        [`+4`],
+        [`10 00 00 14`], [`00 00 00 01`],
         [PRM switch],
         [`0` `1`],
         [`00`],
         [`1` = the step applies the parameter value below],
-        [`+5`],
+        [`10 00 00 15`], [`00 00 00 01`],
         [Parameter ID],
         [`0`..`59`],
         [`19`],
         [Parameter automated by the step, from the #link(<chap-param-ids>)[list of parameter IDs] (`19` is `FLT_CUTOFF`)],
-        [`+6`],
+        [`10 00 00 16`], [`00 00 00 01`],
         [Parameter value, high nibble],
         [`0`..`15`],
         [`06`],
         [High nibble of the value],
-        [`+7`],
+        [`10 00 00 17`], [`00 00 00 01`],
         [Parameter value, low nibble],
         [`0`..`15`],
         [`0D`],
@@ -186,15 +162,31 @@ packed size `8`, and each following step starts 8 bytes later.
     caption: [Content of a step record],
 )
 
-The *Ref.* column is the first step of the first factory pattern: `01 24 54 00 00 19 06 0D`, a C note with a gate of
-85 %, no glide, and a parameter value of `109` for the cutoff, but with its PRM switch off.
+The *Ref.* column is the first step of the first factory pattern:
+
+#figure(
+    pattern-step("01 24 54 00 00 19 06 0D"),
+    caption: [The reference step],
+)
+
+It plays a `C2` note with a gate of `85` %, no glide, and a parameter value of `109` for the cutoff, with its PRM
+switch off.
 
 That last detail matters for anyone who copies patterns: *all eight bytes of a step are always meaningful*. The
 parameter ID and value of that step are stored even though the switch is off, and so are the gate and the glide of a
 step whose note is off. A step therefore has two independent switches — the note and PRM — and zeroing the fields of an
 inactive one is a change of the pattern, not a neutral write.
 
-The `+4` PRM switch is the PRM button of the unit. The `+5` parameter ID is an internal identifier used only by the
+A step whose note switch is `0` is silent, and its other bytes keep their content. Step 10 of pattern 5:
+
+#figure(
+    pattern-step("00 2D 63 00 01 23 08 09"),
+    caption: [A step with the note switch off],
+)
+
+The note is `A2`, the gate `99`, and the step carries a value for `OSC_ENV1` even though it plays nothing.
+
+The PRM switch is the PRM button of the unit. The parameter ID is an internal identifier used only by the
 sequencer; it is neither the MIDI CC number nor the address of the patch parameter (#cref(<chap-param-ids>)).
 
 The gate is stored one below its displayed value, like several other lengths of this format. The displayed range is 10
@@ -213,112 +205,112 @@ glide (purple), PRM switch, parameter ID and value (orange).
         head([*Step*], [*Payload*], [*Note*], [*Gate*], [*Glide*], [*Parameter ID*], [*Value*]),
         [`1`],
         [#pattern-step("01 24 54 00 00 19 06 0D")],
-        [`0x24 (36)`],
+        [`C2`],
         [`0x54 (84)`],
         [—],
         [off],
         [`0x6D (109)`],
         [`2`],
         [#pattern-step("01 24 45 00 00 00 00 00")],
-        [`0x24 (36)`],
+        [`C2`],
         [`0x45 (69)`],
         [—],
         [off],
         [`0x00 (0)`],
         [`3`],
         [#pattern-step("01 3C 45 00 01 04 00 03")],
-        [`0x3C (60)`],
+        [`C4`],
         [`0x45 (69)`],
         [—],
         [`4`, `LFO_MODE`],
         [`0x03 (3)`],
         [`4`],
         [#pattern-step("01 24 45 00 00 19 08 04")],
-        [`0x24 (36)`],
+        [`C2`],
         [`0x45 (69)`],
         [—],
         [off],
         [`0x84 (132)`],
         [`5`],
         [#pattern-step("01 30 1D 00 01 04 00 02")],
-        [`0x30 (48)`],
+        [`C3`],
         [`0x1D (29)`],
         [—],
         [`4`, `LFO_MODE`],
         [`0x02 (2)`],
         [`6`],
         [#pattern-step("01 33 45 00 00 19 07 09")],
-        [`0x33 (51)`],
+        [`D#3`],
         [`0x45 (69)`],
         [—],
         [off],
         [`0x79 (121)`],
         [`7`],
         [#pattern-step("01 2E 1D 01 00 00 00 00")],
-        [`0x2E (46)`],
+        [`A#2`],
         [`0x1D (29)`],
         [on],
         [off],
         [`0x00 (0)`],
         [`8`],
         [#pattern-step("01 3C 45 00 01 19 03 08")],
-        [`0x3C (60)`],
+        [`C4`],
         [`0x45 (69)`],
         [—],
         [`25`, `FLT_CUTOFF`],
         [`0x38 (56)`],
         [`9`],
         [#pattern-step("01 3C 1D 00 01 19 01 0F")],
-        [`0x3C (60)`],
+        [`C4`],
         [`0x1D (29)`],
         [—],
         [`25`, `FLT_CUTOFF`],
         [`0x1F (31)`],
         [`10`],
         [#pattern-step("01 2B 1D 00 00 19 07 01")],
-        [`0x2B (43)`],
+        [`G2`],
         [`0x1D (29)`],
         [—],
         [off],
         [`0x71 (113)`],
         [`11`],
         [#pattern-step("01 33 1D 00 00 23 07 0F")],
-        [`0x33 (51)`],
+        [`D#3`],
         [`0x1D (29)`],
         [—],
         [off],
         [`0x7F (127)`],
         [`12`],
         [#pattern-step("01 24 1D 00 00 19 09 04")],
-        [`0x24 (36)`],
+        [`C2`],
         [`0x1D (29)`],
         [—],
         [off],
         [`0x94 (148)`],
         [`13`],
         [#pattern-step("01 30 1D 00 01 17 04 0E")],
-        [`0x30 (48)`],
+        [`C3`],
         [`0x1D (29)`],
         [—],
         [`23`, `FLT_ATTACK2`],
         [`0x4E (78)`],
         [`14`],
         [#pattern-step("01 3C 45 00 00 00 00 00")],
-        [`0x3C (60)`],
+        [`C4`],
         [`0x45 (69)`],
         [—],
         [off],
         [`0x00 (0)`],
         [`15`],
         [#pattern-step("01 3F 1D 01 00 23 09 0F")],
-        [`0x3F (63)`],
+        [`D#4`],
         [`0x1D (29)`],
         [on],
         [off],
         [`0x9F (159)`],
         [`16`],
         [#pattern-step("01 3C 45 00 01 17 02 07")],
-        [`0x3C (60)`],
+        [`C4`],
         [`0x45 (69)`],
         [—],
         [`23`, `FLT_ATTACK2`],
@@ -327,8 +319,8 @@ glide (purple), PRM switch, parameter ID and value (orange).
     caption: [The 16 steps of the first factory pattern],
 )
 
-Three remarks on this pattern. First, the note numbers are not limited to a musical range: `24` is the lowest note the
-unit will play and `60` the middle C, and the steps alternate between them freely. Second, the PRM switch is off on
+Three remarks on this pattern. First, the note numbers are not limited to a musical range: `C2` is the lowest note the
+unit will play and `C4` the middle C, and the steps alternate between them freely. Second, the PRM switch is off on
 most steps but their parameter values are populated anyway, which is exactly the residual data described above. Third,
 the steps that do carry a PRM (`3`, `5`, `8`, `9`, `13`, `16`) alternate between two parameters, the cutoff and the
 attack of the second envelope, which is the usual way a pattern of this instrument breathes.

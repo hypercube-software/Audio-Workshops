@@ -153,7 +153,22 @@ To write, send the same payload back in a `DT1`, at the same address. In the fig
 
 == Device inquiry
 
-The universal device inquiry is `F0 7E 7F 06 01 F7`. Addressed to `7F`, it reaches every unit on the bus.
+The universal device inquiry is:
+
+#figure(
+    bytefield(
+        bpr: 48,
+        bytes(1, fill: l_gray)[F0],
+        bytes(1, fill: l_gray)[7E],
+        bytes(1, fill: l_blue)[7F],
+        bytes(2, fill: l_gray)[06 01],
+        bytes(1, fill: l_gray)[F7],
+    ),
+    caption: [Device inquiry],
+)
+
+It is addressed to `0x7F`, the broadcast address of the MIDI specification: every unit on the bus answers, each with
+its own device ID.
 
 The answer carries the identity of the unit that replied.
 
@@ -223,9 +238,7 @@ The fields of the answer, in order:
 The revision is fixed on this unit: it does not follow the revision of the firmware shown on the panel, and it must not be used to detect a version.
 
 #caveat[
-    The device ID of the SysEx MIDI frames is *not* the MIDI channel. It stays `10` even after the MIDI channel has been
-    changed to channel 2 in the system settings. An implementation should therefore always address the unit with `10`, or
-    with `7F` when a single unit is on the bus.
+    The device ID of the SE-02 is fixed at `0x10`: every frame carries it, whatever the MIDI channel is.
 ]
 
 == Checksum <sec-checksum>

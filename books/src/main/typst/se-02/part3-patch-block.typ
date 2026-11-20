@@ -5,43 +5,29 @@
 
 #chapter("The patch block", l: "chap-patch")
 
-A patch is 240 bytes. The same 240 bytes are reachable at two addresses: the *current patch* at `0x05000000`, which is
-the working buffer the synth plays, and the *user presets* at `0x06nn0000`, where `nn` is the user preset number, from
-0 to 127. Writing to `0x05000000` changes the sound without touching the memory, exactly like turning a knob; writing
-to `0x06nn0000` overwrites a user preset.
+A patch is 240 bytes. The same 240 bytes are reachable at 2 addresses: the *edit buffer* at `0x05000000`, the RAM copy
+the synth plays, and the *user presets* at `0x06nn0000`, where `nn` is the preset number, from 0 to 127. Writing to
+`0x05000000` changes the current sound, exactly like turning a knob; writing to `0x06nn0000` overwrites a stored
+preset.
 
 == Payload layout
 
 #figure(
     ptable(
         columns: (auto, auto, 1fr),
-        head([*Address*], [*Size*], [*Content*]),
+        head([*Packed address*], [*Packed Size*], [*Content*]),
         [`05 00 00 00`],
-        [208],
-        [104 parameter values, each stored as two nibbles],
+        [`00 00 01 50`],
+        [104 parameter values],
         [`05 00 01 50`],
-        [16],
+        [`00 00 00 10`],
         [Patch name, ASCII, padded with `00`],
         [`05 00 01 60`],
-        [16],
+        [`00 00 00 10`],
         [Reserved, `00` in every patch examined],
     ),
     caption: [Layout of the 240-byte patch block],
 )
-
-Each parameter occupies 2 consecutive payload bytes, at an even offset `o`: the first one holds the 4 most
-significant bits of the value, the second one the 4 least significant bits:
-
-#figure(
-    ptable(
-        columns: 1,
-        raw("payload[o]     = (value >> 4) & 0x0F\npayload[o + 1] =  value       & 0x0F\n\nvalue = (payload[o] << 4) | payload[o + 1]"),
-    ),
-    caption: [Encoding of a parameter value],
-)
-
-Both nibbles stay below `10`, so the block never contains a byte with its most significant bit set. A parameter that
-holds `134` is stored as `08 06`.
 
 The parameter tables of #cref(<chap-params>) cover the addresses `0x05000000` to `0x0500012F`. The bytes that
 follow, `0x05000130` to `0x0500014F`, are unused and read as `00`.
@@ -101,22 +87,26 @@ that carries the name alone, without the 240 bytes of the patch.
 
 The instrument holds 2 kinds of presets:
 
-- The 3 factory banks, A, B and C, in ROM. They have no address in the SysEx space: the only way to read one is
-  to select it, which copies it into the edit buffer at `0x05000000`, and then to read that buffer;
-- The user bank, 128 presets in flash, at `0x06000000`. It is the one that the SysEx frames reach.
+- The factory presets, in banks A, B and C, live in ROM. Selecting one copies it into the edit buffer.
+- The 128 user presets live in flash, at `0x06000000`. The SysEx frames read and write them there.
 
-User preset `nn` starts at `0x06nn0000`, and its name is at `0x06nn0150`. That address does not depend on the
-bank selected on the unit.
+The edit buffer is the RAM copy that the synth plays: selecting a preset, factory or user, copies it at
+`0x05000000`.
+
+User preset `nn` starts at `0x06nn0000`, and its name is at `0x06nn0150`:
 
 - `0x06000000` is user preset 0;
 - `0x06050000` is user preset 5, `He Says Bass` on this unit;
 - `0x067F0000` is user preset 127, still empty.
 
-Each preset owns a 256-byte window: only the first 240 bytes are used, and reading past them returns zeros.
+Each preset owns a 256-byte window: its 240 bytes of patch, then 16 bytes that read as `0`.
 
-So a factory preset is saved one at a time: select it with a `CC 0` + `PC` pair, then read `0x05000000`. The user
-bank, on the other hand, is read and written in place, at its own address.
+To save a factory preset, select it with a `CC 0` + `PC` pair and read the edit buffer at `0x05000000`. The user
+presets are read and written in place, at their own address.
 
 == Song and Sequences
 
-Surprisingly, there is no way to select a sequence or a song with `Bank Select` and `Program Change`. It as to be done via SysEx.
+A song is selected on the unit, with the mode selector and the number buttons: no MIDI message carries a pattern or
+a song number. The sequencer plays the song edit buffer at `0x20000000`, and a stored song is played by copying it
+there: read `0x21nn0000`, then write its 144 bytes at `0x20000000`. `Bank Select` and `Program Change` select
+patches, and `Start`, `Continue`, `Stop` and `Song Position` drive the playback.
