@@ -161,17 +161,17 @@ bound the values it sends.
     [Controller], [`05 14`], [`00 18`], [`0`..`127`], [`2D`], [CC number sent by the knob],
     [Minimum], [`05 2C`], [`00 18`], [`0`..`127`], [`00`], [Value sent at the left stop],
     [Maximum], [`05 44`], [`00 18`], [`0`..`127`], [`7F`], [Value sent at the right stop],
-    [MSB], [`05 5C`], [`00 18`], [`0`..`127`], [`7F`], [Coarse part of the current value],
-    [LSB], [`05 74`], [`00 18`], [`0`..`127`], [`7F`], [Fine part of the current value],
-    [Value], [`06 0C`], [`00 18`], [`0`..`127`], [`01`], [Current value, as displayed],
+    [MSB], [`05 5C`], [`00 18`], [`0`..`127`], [`7F`], [Coarse part of the increment, for the Increment/Decrement 1
+      type],
+    [LSB], [`05 74`], [`00 18`], [`0`..`127`], [`7F`], [Fine part of the increment],
+    [Value], [`06 0C`], [`00 18`], [`0`..`127`], [`01`], [Value sent with an increment or a decrement message],
     [MIDI to DIN], [`06 24`], [`00 18`], [`0` `1`], [`00`], [Whether the knob is copied to the DIN output],
   ),
   caption: [Fields of the knobs],
 )
 
-The knob block stores a current value and its 2 halves: the 3 bytes follow the movement of the knob, and the unit
-rewrites them. A tool treats them as read-only; a restore that writes them back gives the knob its position at
-power-on.
+The 3 bytes MSB, LSB and Value belong to the Increment/Decrement 1 type: they decide what a turn of the knob sends,
+and the unit never rewrites them. For the other types, the minimum and maximum bound the values.
 
 == Keystroke codes
 
@@ -232,5 +232,5 @@ address `0x0514`:
   caption: [Changing the controller number of a knob],
 )
 
-The unit takes the new value immediately, without a store: the knob sends the other controller from that point, until
-the preset is reloaded. The flash memory keeps the user preset, and the other 2 banks keep their settings.
+The unit takes the new value immediately: the knob sends the other controller from that point, until another preset is
+loaded. The user preset keeps its content, and the other 2 banks keep their settings.

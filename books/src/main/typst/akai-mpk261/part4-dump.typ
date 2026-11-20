@@ -1,18 +1,20 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#part("Preset transfers")
+#part("User presets")
 
 #chapter("The preset dump", l: "chap-dump")
 
-`DPRESET` moves a whole preset in 1 message, and it is the only command that reaches the 30 user presets: the
-preset memory of #cref(<chap-preset>) is the edit buffer. A preset dump is what a librarian saves, what a backup
-restores, and what the front panel sends when a preset is exported.
+A user preset is 1 of the 30 slots of the unit. The `WPRESET` command writes 1 whole preset into a slot in 1 message, and the `QPRESET` command
+reads 1 back: they are what a librarian saves, what a backup restores, and what the front panel sends when a preset is
+exported.
+
+The 2 commands designate a slot by its number, from 1 to 30; `00` designates the preset that is playing.
 
 == The MIDI frame
 
-A dump is 1555 bytes: the usual header, the size `0C 0B`, the number and the name of the preset, 1538 bytes of data,
-and `F7`.
+A preset dump is 1555 bytes: the usual header, the size `0C 0B`, the number and the name of the preset, 1538 bytes of
+data, and `F7`.
 
 #figure(
   bytefield(
@@ -63,25 +65,62 @@ The offsets of this chapter are counted from the first byte of the MIDI frame, `
 regions align. A tool that reads a `.syx` file and strips the 7 bytes of the header subtracts 7 from every offset of the
 table.
 
+== Reading a user preset
+
+The `QPRESET` command carries 1 payload byte, the number of the slot:
+
+#figure(
+  bytefield(
+    bpr: 72,
+    bytes(1, fill: l_gray)[F0],
+    bytes(1, fill: l_gray)[47],
+    bytes(1, fill: l_gray)[00],
+    bytes(1, fill: l_gray)[25],
+    bytes(1, fill: l_blue)[12],
+    bytes(2, fill: l_purple)[00 01],
+    bytes(1, fill: l_orange)[n],
+    bytes(1, fill: l_gray)[F7],
+  ),
+  caption: [Reading a user preset],
+)
+
+The unit answers with the `WPRESET` frame of figure 4.1, byte for byte the same frame that the front panel sends when
+it exports that preset. The answer reads the saved copy, not the edit buffer: a preset that was modified in the edit
+buffer comes back as it was saved.
+
+There is no request for all 30 presets: the front panel sends 30 MIDI frames, 1 per preset, each one complete with its
+own size field.
+
+== Writing a user preset
+
+The `WPRESET` command writes the whole record into the slot that its number designates. The unit answers nothing, so a tool
+verifies the write by reading the preset back with the `QPRESET` command and comparing the 1547-byte payload.
+
+The edit buffer keeps its content: a `WPRESET` frame writes a user preset, and the new content reaches the edit buffer when
+the preset is loaded (see #cref(<chap-global>)).
+
+The comparison covers every byte: the unidentified bytes are part of the preset, and a dump that drops them produces a
+preset that the unit accepts and that loses part of its state.
+
 == Number and name
 
 The preset number at `0x007` is the number displayed by the unit, from 1 to 30. The byte at `0x0001` of the global
-memory counts from zero: the reference preset is displayed as 8, carried as `08` in its dump and as `07` in the global
-memory.
+settings counts from zero: the reference preset is displayed as 8, carried as `08` in its dump and as `07` in the
+global settings.
 
 #caveat[
   A tool that copies the byte of one place to the other is off by one. The 2 fields have different origins, and
   neither byte carries its convention.
 ]
 
-The name at `0x008` is 8 ASCII characters, padded on the right with spaces. It is the name of the user preset, so a dump
-carries the name twice: once here, once in the data, at `0x0008` of the edit buffer — the 2 are equal in a dump
-produced by the unit, and a tool that renames a preset before sending it back changes both.
+The name at `0x008` is 8 ASCII characters, padded on the right with spaces. It is the first field of the saved record,
+so a dump carries it once. The edit buffer keeps its own name at `0x0000`: a tool that renames a user preset changes
+the name here, and the edit buffer shows the old name until the preset is loaded.
 
 == Records of the dump
 
-The data of a dump holds the same controls as the preset memory, in another shape: the preset memory is a structure
-of arrays, the dump an array of structures. Each control has 1 record, and the fields of that record follow each other.
+The data of a dump holds the same controls as the edit buffer, in another shape: the edit buffer is a structure of
+arrays, the dump an array of structures. Each control has 1 record, and the fields of that record follow each other.
 
 #figure(
   ptable(
@@ -97,15 +136,15 @@ of arrays, the dump an array of structures. Each control has 1 record, and the f
   caption: [Records of the dump, and their fields],
 )
 
-2 records change the order of the fields. In the preset memory, the MIDI to DIN flag of a knob comes after its
-value; in a dump, it comes before the MSB. In a pad record the 2 colours are the last 2 bytes, at offsets 9 and 10,
-where the memory keeps them in 2 arrays of 64 bytes.
+2 records change the order of the fields. In the edit buffer, the MIDI to DIN flag of a knob comes after its value; in
+a dump, it comes before the MSB. In a pad record the 2 colours are the last 2 bytes, at offsets 9 and 10, where the
+memory keeps them in 2 arrays of 64 bytes.
 
 #caveat[
   The position of the MIDI to DIN flag inside a pad record is not established: the values observed at offset 3 of the
   record are compatible with that flag, and with the momentary/toggle mode as well. A tool that must change a pad
-  writes the preset memory with `WPRESET`, which is fully mapped, and lets the unit produce the dump; a tool
-  that only archives presets keeps the records as they are.
+  writes the edit buffer with the `WEDIT` command, which is fully mapped, and lets the unit produce the dump; a tool that only
+  archives presets keeps the records as they are.
 ]
 
 Record `i` of a block starts at `block + i * size`, where `block` and `size` come from the table above. Pad 1 of bank A
@@ -114,14 +153,14 @@ first fader at `0x3D5`.
 
 == Keyboard and split
 
-The keyboard block of a dump holds the same content as `0x0016` to `0x001D` of the preset memory, in a slightly
+The keyboard block of a dump holds the same content as `0x0016` to `0x001C` of the edit buffer, in a slightly
 different order: channel, octave, aftertouch, a flag, MIDI to DIN, transpose, then the transport type.
 
 #figure(
   ptable(
     columns: (auto, auto, auto, 1fr),
     head([*Offset*], [*Field*], [*Ref.*], [*Meaning*]),
-    [`0x01D`], [Channel], [`00`], [Same encoding as the preset memory],
+    [`0x01D`], [Channel], [`00`], [Same encoding as the edit buffer],
     [`0x01E`], [Octave], [`04`], [Plus 4],
     [`0x01F`], [Aftertouch], [`01`], [Off, on],
     [`0x020`], [flag], [`01`], [Constant],
@@ -133,37 +172,29 @@ different order: channel, octave, aftertouch, a flag, MIDI to DIN, transpose, th
 )
 
 The split is at the end of the MIDI frame, at `0x5E9`: the 7 zone bytes of zone A, the 7 of zone B, then the split
-switch, the split note and the B channel. It carries the same information as `0x001D` to `0x0026` of the preset
-memory, in the order of the front panel rather than in the order of the memory.
+switch, the split note and the B channel. It carries the same information as `0x001D` to `0x0026` of the edit buffer,
+in the order of the front panel rather than in the order of the memory.
 
-== Receiving and sending
-
-The unit produces a dump from its SysEx menu, which offers to send 1 preset or all 30. 2 points matter when a tool
-reads them:
-
-- A dump of *all* presets is a stream of 30 MIDI frames, each one complete, with its own size field.
-- A dump is far longer than the 127 bytes a single read or a single write carries, because the first byte of its
-  payload is a preset number: the size field alone gives the length of the MIDI frame. A parser that reads the byte
-  after the size as a count misreads every dump.
-
-Sending is the reverse: 1 MIDI frame per preset, addressed by its number. `DPRESET` has no acknowledgement, so a write
-is verified by reading the preset back — the unit sends it from its SysEx menu — and comparing the 1547-byte payload.
-The comparison covers every byte: the unidentified bytes are part of the preset, and a dump that drops them loses part
-of the state of the unit.
+== The 2 views of a preset
 
 #figure(
   ptable(
     columns: (auto, auto, auto),
-    head([*Property*], [*Preset memory*], [*Preset dump*]),
-    [Message], [`QPRESET`], [`DPRESET`],
-    [Size], [1544 bytes], [1547-byte payload, 1555-byte MIDI frame],
+    head([*Property*], [*Edit buffer*], [*User preset*]),
+    [Command], [`QEDIT`, `WEDIT`], [`QPRESET`, `WPRESET`],
+    [Size], [1544 bytes], [1546-byte record, 1547-byte payload],
     [Layout], [Structure of arrays], [Array of structures],
-    [Scope], [The preset in the edit buffer], [Any of the 30 user presets],
-    [Address], [2 bytes, `0x0000` to `0x0C07`], [The user preset number in the MIDI frame],
-    [Splitting], [127 data bytes per message], [1 MIDI frame, whatever its size],
+    [Scope], [The preset in use], [1 of the 30 slots],
+    [Lifetime], [Lost at power-off], [Kept until it is written again],
+    [Address], [`0x0000` to `0x0C07`], [The preset number in the MIDI frame],
   ),
   caption: [The 2 views of a preset],
 )
 
-The rule of thumb is simple: use the preset memory to *edit*, because every field is 1 byte at a known address, and
-use the dump to *store*, because it is the only way to write a user preset and the only object a backup can keep.
+The rule of thumb is simple: use the edit buffer to *edit*, because every field is 1 byte at a known address, and use
+the user preset to *store*, because it is what survives a power cycle and what a backup keeps.
+
+#caveat[
+  The `BPRESET` command writes raw bytes inside a user preset, without checking that the result forms a valid record. A tool
+  writes a user preset with the `WPRESET` command, which carries the whole record.
+]

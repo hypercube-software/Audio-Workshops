@@ -25,14 +25,15 @@ belong to the preset: 2 presets of the same unit can drive 2 different instrumen
     [`00 1C`], [`00 01`], [Transpose], [`0`..`72`], [`24`], [Transposition in semitones, plus 36: `24` is no
       transposition],
     [`00 1D`], [`00 01`], [Split], [`0` `1`], [`00`], [Off, on],
-    [`00 1E`], [`00 01`], [Split note], [`0`..`127`], [`3B`], [Highest note of the low zone: `3B` is B3],
+    [`00 1E`], [`00 01`], [Split note], [`0`..`60`], [`3B`], [Index of the key where the split sits, counted from the
+      lowest key: `00` is the lowest key, `3C` the highest],
     [`00 1F`], [`00 01`], [B channel], [`0`..`31`], [`01`], [Channel of the high zone of the split],
   ),
   caption: [Keyboard settings of the reference preset],
 )
 
 The channel at `0x0016` and the B channel at `0x001F` share the same encoding; the second one counts from zero without
-the *Common* entry: `00` is USB A1 and `1F` is USB B16. The *Common* channel is a setting of the global memory, at
+the *Common* entry: `00` is USB A1 and `1F` is USB B16. The *Common* channel is a setting of the global settings, at
 `0x000A` (see #cref(<chap-global>)).
 
 #figure(

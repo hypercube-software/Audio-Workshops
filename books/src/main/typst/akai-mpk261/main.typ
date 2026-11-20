@@ -7,14 +7,17 @@
 //   akai-mpk261/
 //     main.typ                this file
 //     lib.typ                 helpers of the chapters
-//     part1-overview.typ      what the unit is, what this book documents
-//     part1-sysex.typ         MIDI frames, commands, 14-bit fields
-//     part2-global.typ        the global memory (system settings, live states)
-//     part3-preset.typ        the preset block (name, tempo, transport, arp)
+//     part1-overview.typ      what the unit is, the 3 memories, conventions, ports, memory map
+//     part1-sysex.typ         MIDI frames, 14-bit fields, read and write
+//     part1-inquiry.typ       device inquiry and identity reply
+//     part1-firmware.typ      update mode, the frames that must never be sent
+//     part2-global.typ        the global settings (parameters, device ID, live states)
+//     part2-store.typ         saving the global settings
+//     part3-preset.typ        the edit buffer (name, tempo, transport, arp)
 //     part3-keyboard.typ      keyboard, split, wheels and pedals
 //     part3-controls.typ      DAW buttons, switches, faders and knobs
 //     part3-pads.typ          the pads and their colours
-//     part4-dump.typ          the preset dump
+//     part4-dump.typ          the preset dump (user presets)
 //     assets/                 screenshots used by the chapters (create it if needed)
 //
 // Compile from the books/src/main/typst directory:
@@ -50,7 +53,10 @@
 
 #include "part1-overview.typ"
 #include "part1-sysex.typ"
+#include "part1-inquiry.typ"
+#include "part1-firmware.typ"
 #include "part2-global.typ"
+#include "part2-store.typ"
 #include "part3-preset.typ"
 #include "part3-keyboard.typ"
 #include "part3-controls.typ"

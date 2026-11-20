@@ -4,8 +4,8 @@
 #chapter("SysEx messages", l: "chap-sysex")
 
 The MPK-261 exchanges memory blocks and presets through MIDI frames built on a fixed pattern: the AKAI manufacturer
-ID, 2 bytes that identify the model, a command byte that selects the operation, a 14-bit size, then a payload whose
-layout depends on the command. Every command of the instrument follows that pattern; the payload is what changes.
+ID, a device ID, a model byte, a command byte that selects the operation, a 14-bit size, then a payload whose layout
+depends on the command. Every command of the instrument follows that pattern; the payload is what changes.
 
 == MIDI frame structure
 
@@ -15,9 +15,9 @@ layout depends on the command. Every command of the instrument follows that patt
     head([*Bytes*], [*Field*], [*Meaning*]),
     [`F0`], [start], [Start of SysEx],
     [`47`], [manufacturer], [AKAI],
-    [`00`], [fixed], [Fixed at `00` in every MIDI frame observed],
+    [`dd`], [device], [The SysEx device ID of the unit, 0 to 127; `00` from the factory (see #cref(<chap-global>))],
     [`25`], [model], [MPK-261. The other models of the series use `23` (MPK-225) and `24` (MPK-249)],
-    [`cc`], [command], [See below],
+    [`cc`], [command], [See @sec-commands],
     [`ss ss`], [size], [2 bytes, 14-bit packed size: the number of bytes of the payload],
     [`...`], [payload], [Layout depends on the command],
     [`F7`], [end], [End of SysEx],
@@ -49,7 +49,7 @@ layout depends on the command. Every command of the instrument follows that patt
     ),
     bytes(1, fill: l_gray)[F0],
     bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_blue)[00],
+    bytes(1, fill: l_blue)[device],
     bytes(1, fill: l_blue)[25],
     bytes(1, fill: l_orange)[cmd],
     bytes(2, fill: l_purple)[size],
@@ -59,9 +59,10 @@ layout depends on the command. Every command of the instrument follows that patt
   caption: [The 5 header bytes and the trailer],
 )
 
-The header identifies the model: the byte after the manufacturer ID is `00`, the byte after it is the model, and
-every MIDI frame of an MPK-261 carries the 2 in the same order. 2 units of the same model are told apart by the MIDI
-port they answer on, and the unit that answers a request is the one connected to the port the request was sent to.
+The device byte is a setting of the unit, not a property of the protocol: it is written in the global settings at address
+`0x0030` and copied into every answer. A unit that keeps the factory value therefore sends `F0 47 00 25`. On input, the
+unit checks the manufacturer ID and the model, and ignores the device byte, so 2 units of the same model are told apart
+by the MIDI port they answer on.
 
 == The size field
 
@@ -80,7 +81,7 @@ read states the number of bytes it wants in the first byte of the payload, so th
     [Write of 64 bytes], [count, address, then data], [`00 43`], [`40 05 14 …` → `00 43`],
     [Write of 127 bytes], [count, address, then data], [`01 02`], [`7F 0B 3C …` → `01 02`],
     [Acknowledgement], [count, address, then status], [`00 04`], [`01 00 13 00` → `00 04`],
-    [Preset dump], [preset, name, then data], [`0C 0B`], [`…` → `0C 0B`],
+    [User preset], [preset, name, then data], [`0C 0B`], [`…` → `0C 0B`],
   ),
   caption: [Payload and size of the messages of the protocol],
 )
@@ -91,37 +92,15 @@ and 8 bytes come back.
 
 The count byte has its most significant bit clear, so it cannot exceed 127: a read asks for at most 127 bytes and a
 write carries at most 127 data bytes. A larger block is read or written in several messages, 1 per 127-byte slice. The
-size field is 14-bit, which is how the preset dump declares a payload of 1547 bytes with `0C 0B`.
-
-== Commands
-
-The code byte selects the operation, and a tool maps each code to the name of the command:
-
-#figure(
-  ptable(
-    columns: (auto, auto, auto, 1fr),
-    head([*Name*], [*Code*], [*Answer*], [*Role*]),
-    [`DPRESET`], [`10`], [—], [Reads a whole preset out of the unit, or writes one into a user preset],
-    [`QGLOB`], [`20`], [`WGLOB`], [Reads a block of the global memory],
-    [`QPRESET`], [`21`], [`WPRESET`], [Reads a block of the preset memory],
-    [`WGLOB`], [`30`], [`ACKG`], [Writes a block of the global memory],
-    [`WPRESET`], [`31`], [`ACKP`], [Writes a block of the preset memory],
-    [`ACKG`], [`38`], [—], [Answer to `WGLOB`: echoed count, address and a status byte],
-    [`ACKP`], [`39`], [—], [Answer to `WPRESET`],
-  ),
-  caption: [The 7 commands of the MPK-261 protocol],
-)
-
-The 2 queries and the 2 writes share the same MIDI frame; they differ by the space they address. A query and its
-answer share the same layout: the answer repeats the count and the address, then carries the data.
+size field is 14-bit, which is how a user preset declares a payload of 1547 bytes with `0C 0B`.
 
 == Reading memory
 
-A request for 1 byte of the global memory, at address `0x0001` — the index of the current preset — is:
+A request for 1 byte of the global settings, at address `0x0001` — the index of the current preset — is:
 
 #figure(
   bytefield(
-    bpr: 72,
+    bpr: 88,
     bytes(1, fill: l_gray)[F0],
     bytes(1, fill: l_gray)[47],
     bytes(1, fill: l_gray)[00],
@@ -132,7 +111,7 @@ A request for 1 byte of the global memory, at address `0x0001` — the index of 
     bytes(2, fill: l_green)[00 01],
     bytes(1, fill: l_gray)[F7],
   ),
-  caption: [Reading 1 byte of global memory],
+  caption: [Reading 1 byte of the global settings],
 )
 
 The answer repeats the count and the address, then carries the byte:
@@ -155,8 +134,9 @@ The answer repeats the count and the address, then carries the byte:
 )
 
 The byte `07` is the index of the current preset, counted from zero: it is the preset displayed as 8, which is why a
-tool that shows preset numbers adds 1. The same request through `QPRESET` reads the colour of a pad instead,
-at address `0x0B3C` (see #cref(<chap-pads>)).
+tool that shows preset numbers adds 1. Writing that byte is also how a tool loads a preset (see #cref(<chap-global>)).
+
+The same request through the `QEDIT` command reads the colour of a pad instead, at address `0x0B3C` (see #cref(<chap-pads>)).
 
 A name is a read of 8 bytes: the count `08`, followed by the address `0x0000`.
 
@@ -198,7 +178,7 @@ The answer is 8 bytes longer, and its size counts them:
 == Writing memory
 
 A write adds the data after the address: its payload becomes the count, the 2 address bytes and the data. Writing the
-value `01` at preset address `0x0013` — the range of the arpeggiator — is:
+value `01` at edit buffer address `0x0013` — the range of the arpeggiator — is:
 
 #figure(
   bytefield(
@@ -214,10 +194,10 @@ value `01` at preset address `0x0013` — the range of the arpeggiator — is:
     bytes(1, fill: l_blue)[01],
     bytes(1, fill: l_gray)[F7],
   ),
-  caption: [Writing 1 byte of preset memory],
+  caption: [Writing 1 byte of the edit buffer],
 )
 
-The unit answers with `ACKP`, whose status byte is `00` on success:
+The unit answers with the `ACKP` command, whose status byte is `00` on success:
 
 #figure(
   bytefield(
@@ -236,12 +216,13 @@ The unit answers with `ACKP`, whose status byte is `00` on success:
   caption: [The acknowledgement],
 )
 
-A status byte other than `00` is a failure. The status byte is the only diagnostic the unit gives, and a block written
-in several messages can be left half written. A tool that restores a whole preset writes as few messages as possible,
-then reads the block back to check it.
+A write to the edit buffer or to the global settings changes the unit at once and is lost at power-off: the global
+settings are saved by the `STORE` command, and a user preset by the `WPRESET` command. A block written in several
+messages can be left half written, so a tool that restores a whole preset writes as few messages as possible, then
+reads the block back.
 
 == The end of the MIDI frame
 
 The payload ends with its last data byte, and `F7` follows it at once: a parser reads the size field, takes that many
-bytes, and expects `F7` next. AKAI sends no checksum and no user reference byte, so a tool that appends one produces a
-MIDI frame whose size no longer matches its content.
+bytes, and expects `F7` next. The frames of this book carry no checksum and no user reference byte, so a tool that
+appends one produces a MIDI frame whose size no longer matches its content.

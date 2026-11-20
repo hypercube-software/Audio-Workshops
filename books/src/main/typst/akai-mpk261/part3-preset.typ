@@ -1,17 +1,18 @@
 #import "../common/settings.typ": *
 #import "lib.typ": *
 
-#part("Preset memory")
+#part("Edit buffer")
 
 #chapter("The preset block", l: "chap-preset")
 
-A preset is 1544 bytes, at addresses `0x0000` to `0x0C07`, read with `QPRESET` and written with `WPRESET`. The unit
-plays 1 of them from the edit buffer. The 30 user presets live in flash, and `DPRESET`, described in
-#cref(<chap-dump>), is the command that exchanges them.
+The edit buffer holds the preset that the unit uses: 1544 bytes, at addresses `0x0000` to `0x0C07`, read with
+the `QEDIT` command and written with the `WEDIT` command. A write changes the settings at once, and the unit loses the content at power-off.
 
-A write to the preset memory changes the preset that is playing, immediately. The flash memory of the user presets
-changes only when a `DPRESET` frame is sent back to the unit, which is what the front panel does when a preset is
-stored.
+The 30 user presets are separate objects, kept when the unit is off: the `QPRESET` command reads 1 of them and the `WPRESET` command writes 1
+of them (#cref(<chap-dump>)). Loading a user preset copies it into the edit buffer.
+
+The chapters of this part describe the edit buffer. #cref(<chap-dump>) describes the user preset, which stores the
+same settings in another layout.
 
 == Layout
 
@@ -63,8 +64,8 @@ A shorter name is padded on the right with spaces: `TWO` travels with 5 spaces a
 8 bytes as they are and trims the trailing spaces. A zero byte is a valid character in the name for the unit, and most
 editors show a name that starts with one as empty.
 
-The name belongs to the preset and lives in the edit buffer: a tool that renames a preset writes it at `0x0000`, then
-stores the preset with `DPRESET`. `WPRESET` alone renames the preset that is loaded.
+The name belongs to the preset in the edit buffer: a tool that renames the preset that is playing writes it at
+`0x0000`. The user preset keeps its own name until the edit buffer is written to it (#cref(<chap-dump>)).
 
 == Tempo, transport and arpeggiator
 

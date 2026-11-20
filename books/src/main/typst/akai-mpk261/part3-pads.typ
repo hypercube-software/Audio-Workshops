@@ -3,7 +3,7 @@
 
 #chapter("Pads", l: "chap-pads")
 
-The pads are the largest block of the preset memory: 64 records of 11 arrays, at addresses `0x063C` to `0x0B7B`. The
+The pads are the largest block of the edit buffer: 64 records of 11 arrays, at addresses `0x063C` to `0x0B7B`. The
 unit has 16 physical pads, and each one has 4 settings, 1 per bank, so a preset always describes 64 pads. Pad 1 of bank
 A is the first record, pad 16 of bank A the 16th, and pad 16 of bank D the 64th.
 
@@ -19,7 +19,7 @@ A is the first record, pad 16 of bank A the 16th, and pad 16 of bank D the 64th.
   caption: [The 4 banks of pads],
 )
 
-The active bank is a live state of the global memory, at `0x0018` (see #cref(<chap-global>)). A preset that is played
+The active bank is a live state of the global settings, at `0x0018` (see #cref(<chap-global>)). A preset that is played
 on bank B still contains the settings of the 4 banks, and an editor writes them all.
 
 == Fields
@@ -81,7 +81,7 @@ The aftertouch field of a pad applies to the note pads only:
   caption: [The 3 aftertouch modes of a pad],
 )
 
-The keyboard has its own aftertouch switch, at `0x0018` of the preset memory. Each has its own switch, and a preset
+The keyboard has its own aftertouch switch, at `0x0018` of the edit buffer. Each has its own switch, and a preset
 can send aftertouch from the pads, from the keys, or from both.
 
 == Colours
@@ -91,9 +91,9 @@ can send aftertouch from the pads, from the keys, or from both.
     columns: (auto, auto, auto, auto, auto, auto),
     head([*Value*], [*Colour*], [*Value*], [*Colour*], [*Value*], [*Colour*]),
     [`00`], [Off], [`06`], [Green-blue], [`0C`], [Hot pink],
-    [`01`], [Red], [`07`], [Aqua], [`0D`], [Pastel purple],
-    [`02`], [Orange], [`08`], [Light blue], [`0E`], [Pastel green],
-    [`03`], [Amber], [`09`], [Blue], [`0F`], [Pastel pink],
+    [`01`], [Red], [`07`], [Aqua], [`0D`], [Light purple],
+    [`02`], [Orange], [`08`], [Light blue], [`0E`], [Light green],
+    [`03`], [Amber], [`09`], [Blue], [`0F`], [Light pink],
     [`04`], [Yellow], [`0A`], [Purple], [`10`], [Grey],
     [`05`], [Green], [`0B`], [Pink], [—], [—],
   ),
@@ -126,5 +126,5 @@ Changing the hit colour of the first pad of bank A is a write of 1 byte at addre
   caption: [Changing the colour of a pad],
 )
 
-The pad lights in amber as soon as `ACKP` arrives. The first pad of bank B is at `0x0B4C`, 16 bytes
+The pad lights in amber as soon as the `ACKP` command arrives. The first pad of bank B is at `0x0B4C`, 16 bytes
 further: the 16 pads of a bank are contiguous, and a whole bank of colours is a single write of 16 bytes.
