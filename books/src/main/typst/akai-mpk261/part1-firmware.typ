@@ -5,8 +5,8 @@
 
 #caveat[
     *Do not send the frames of this chapter.* They drive the update mode of the unit: the first one erases the OS and
-    leaves the controller waiting for a transfer. The frames are documented here so that a tool recognises them and
-    never sends them by accident.
+    leaves the controller waiting for a transfer. The frames are documented here so that they are recognised, and never
+    sent by accident.
 ]
 
 == The update mode

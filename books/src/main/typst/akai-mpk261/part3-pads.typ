@@ -126,5 +126,5 @@ Changing the hit colour of the first pad of bank A is a write of 1 byte at addre
   caption: [Changing the colour of a pad],
 )
 
-The pad lights in amber as soon as the `ACKP` command arrives. The first pad of bank B is at `0x0B4C`, 16 bytes
+The pad lights in amber as soon as the `ACKE` command arrives. The first pad of bank B is at `0x0B4C`, 16 bytes
 further: the 16 pads of a bank are contiguous, and a whole bank of colours is a single write of 16 bytes.

@@ -42,7 +42,7 @@ device ID of the protocol, and the state of the buttons that the front panel use
     [`00 1B`], [`00 0A`], [unidentified], [—], [—], [Internal state],
     [`00 25`], [`00 05`], [Program Change mode], [—], [—], [Settings of that mode, see below],
     [`00 2A`], [`00 05`], [unidentified], [—], [—], [Internal state],
-    [`00 2F`], [`00 01`], [internal], [`0`..`15`], [`00`], [Role not established; saved by the `STORE` command],
+    [`00 2F`], [`00 01`], [internal], [`0`..`15`], [`00`], [Role not established; saved by the `SGLOB` command],
     [`00 30`], [`00 01`], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see below],
     [`00 31`], [`02 48`], [unidentified], [—], [—], [Internal state],
   ),
@@ -50,11 +50,11 @@ device ID of the protocol, and the state of the buttons that the front panel use
 )
 
 4 settings store a value offset from the one the front panel shows: the pad sensitivity, the keyboard curve, the
-keyboard gain and the 2 key sensitivities. A tool that displays them applies the translation of the last column; a tool
-that writes them applies the inverse.
+keyboard gain and the 2 key sensitivities. The last column gives the translation from the stored value to the
+displayed one; the inverse gives the value to store.
 
 There is no global tempo: the *Tempo* page of the global mode writes the tempo of the current preset, at
-`0x0008` of the edit buffer (see #cref(<chap-preset>)).
+`0x0008` of the edit buffer (see #cref(<chap-header>)).
 
 == The device ID
 
@@ -63,8 +63,8 @@ and to tell several machines apart on the same bus. It travels after the manufac
 unit repeats it at `0x0D` of the identity reply (#cref(<chap-inquiry>)). A unit that keeps the factory value sends
 `F0 47 00 25`.
 
-The unit writes this ID in the frames that it sends, and it does not filter an incoming frame on the ID: a tool that
-writes `00` reaches a unit that carries another value. The byte is part of the settings saved by the `STORE` command.
+The unit writes this ID in the frames that it sends, and it does not filter an incoming frame on the ID: a frame that
+carries `00` reaches a unit that carries another value. The byte is part of the settings saved by the `SGLOB` command.
 
 == Live states
 
@@ -89,12 +89,12 @@ rewrites them as the buttons are pressed, and they read back the current state:
 
 #caveat[
   These bytes are *outputs* of the front panel. Whether a write changes the state of the unit has not been established,
-  so a tool treats the 8 bytes as read-only and changes the corresponding setting where it belongs: the pad bank and
+  so the 8 bytes are read-only, and the corresponding setting changes where it belongs: the pad bank and
   the control bank select which of the 64 pads and 24 knobs a performance uses, and the memory of the preset always
   contains all of them (see #cref(<chap-controls>)).
 ]
 
-The pad bank is the only live state that the `STORE` command saves: the unit uses the same bank after a power cycle.
+The pad bank is the only live state that the `SGLOB` command saves: the unit uses the same bank after a power cycle.
 
 == Program Change mode
 
@@ -134,8 +134,8 @@ Three ranges have no known meaning:
   `0x001E` and `0x0034`, are interface states: they move when a page is opened, and return to their previous value
   when it is left.
 
-A tool that restores the global settings block writes these bytes back as they were read. They are the reason a backup is
-a dump and not a list of settings.
+A restore writes these bytes back as they were read. They are the reason a backup is a dump and not a
+list of settings.
 
 == Writing the block
 
@@ -163,7 +163,7 @@ The size is `00 13`, that is 16 data bytes plus the count and the address. The u
 byte is `00`. A single setting can also be written alone: the contrast, at address `0x0002`, is 1 byte and takes a
 message of size `00 04`.
 
-These writes change the RAM: the unit uses them at once, and a power cycle brings back the value that the `STORE` command
+These writes change the RAM: the unit uses them at once, and a power cycle brings back the value that the `SGLOB` command
 (#cref(<chap-store>)) saved.
 
 #caveat[

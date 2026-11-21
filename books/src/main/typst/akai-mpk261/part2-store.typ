@@ -4,11 +4,11 @@
 #chapter("Saving the global settings", l: "chap-store")
 
 A write to the global settings changes the RAM only: the unit uses the new settings at once, and a power cycle brings
-the saved copy back. The `STORE` command saves them.
+back what flash holds. The `SGLOB` command saves them.
 
 == The frame
 
-The `STORE` command carries 1 payload byte: the contrast of the display, from 0 to 99.
+The `SGLOB` command carries 1 payload byte: the contrast of the display, from 0 to 99.
 
 #figure(
   bytefield(
@@ -25,8 +25,8 @@ The `STORE` command carries 1 payload byte: the contrast of the display, from 0 
   caption: [Saving the global settings],
 )
 
-The command is peculiar, and a tool must know it before anything else: its payload *carries the contrast only*, and it
-saves *every setting of the global settings*, not just that byte. The payload is not the data that the command writes.
+The command is peculiar: its payload *carries the contrast only*, and the command saves *all the global settings*, not
+just that byte. The payload is not the data that the command writes.
 
 What the command does, in order:
 
@@ -37,15 +37,16 @@ What the command does, in order:
 The contrast is in that payload because of the front panel: the *Utilities* page of the global mode holds the
 *Contrast* setting and the *Save Globals* action, and the frame carries the value of that page.
 
-Every setting that the tool wants to save must therefore be in the RAM before the command, written with the `WGLOB`
-command; the payload is only the last of them, the contrast.
+Every setting to save must therefore be in the RAM before the command, written with the `WGLOB` command; the payload
+is only the last of them, the contrast.
 
-The command answers nothing, and the only way to check the write is to power the unit off and on, then read the global
-settings with the `QGLOB` command.
+The command *answers nothing*, and the unit has no command that reads the stored block back. The only way to check the
+write is to power the unit off and on, which loads the block into the RAM, then read the global settings with the
+`QGLOB` command.
 
 == The saved block <sec-store-block>
 
-The `STORE` command packs 18 settings into a block of 20 bytes and writes that block in the memory of the unit. The 2
+The `SGLOB` command packs 18 settings into a block of 20 bytes and writes that block in the memory of the unit. The 2
 first bytes of the block are constants, `01 02`; the 18 settings follow, in this order:
 
 #figure(
@@ -71,7 +72,7 @@ first bytes of the block are constants, `01 02`; the 18 settings follow, in this
     [`00 03`], [`00 01`], [Pad velocity sensitivity],
     [`00 0E`], [`00 01`], [Note display],
   ),
-  caption: [The settings saved by STORE],
+  caption: [The settings saved by SGLOB],
 )
 
 The order of the table is the order of the block, which differs from the order of the global settings. The block is
@@ -82,11 +83,11 @@ the bank that the pads use.
 
 1. Read the current contrast with the `QGLOB` command, at address `0x0002`.
 2. Write the settings with the `WGLOB` command; the unit acknowledges each write with the `ACKG` command.
-3. Send the `STORE` command with the contrast value.
+3. Send the `SGLOB` command with the contrast value.
 4. Wait for the write to complete, about 200 ms.
 5. Power the unit off and on, then read the global settings with the `QGLOB` command to check.
 
-== What STORE leaves out
+== What SGLOB leaves out
 
 The saved block holds 18 settings and 2 constants, and nothing else (see @sec-store-block). The global settings hold more, and these
 are not part of the block:
@@ -101,15 +102,15 @@ are not part of the block:
     [`00 25`], [`00 05`], [Program Change mode],
     [`00 31`], [`02 48`], [Unidentified bytes],
   ),
-  caption: [The global settings that STORE leaves out],
+  caption: [The global settings that SGLOB leaves out],
 )
 
-A tool that reads the global settings sees these bytes change with the buttons and the pages of the front panel, so 2
-reads differ there. A backup of the settings keeps only the block above.
+These bytes change with the buttons and the pages of the front panel, so 2 reads differ there. A backup of the
+settings keeps only the block above.
 
 #caveat[
-  `STORE` saves all 18 settings of the block, so the settings that the tool did not touch keep the value they have in
-  the RAM. Read the 18 settings first, and write back the ones that the tool does not change.
+  `SGLOB` saves all 18 settings of the block, so the settings that were not written keep the value they have in
+  the RAM. Read the 18 settings first, and write back the ones that do not change.
 ]
 
 == The stored fields
@@ -119,4 +120,4 @@ reads differ there. A backup of the settings keeps only the block above.
 - The `SERIAL` command writes the 16 bytes of the serial number, the one that the device inquiry reports (#cref(<chap-inquiry>));
 - The `FIELD4` command writes 4 bytes of a field whose role is not established.
 
-They carry no checksum and answer nothing, and a tool has no reason to send them.
+They carry no checksum and answer nothing.

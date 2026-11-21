@@ -145,7 +145,7 @@ A device ID is the address that SysEx uses to designate the receiver of a messag
 the same bus. The unit writes its own ID in every frame that it sends, and it does not filter an incoming frame on that
 ID: a frame reaches the unit whatever ID it carries.
 
-A tool that changes the ID changes the header of the frames that the unit sends, and the unit still answers frames
+Changing the ID changes the header of the frames that the unit sends, and the unit still answers frames
 that carry `00`, the factory value.
 
 == The field at 0x02
@@ -154,14 +154,14 @@ The MIDI specification gives the identity reply a field that the responder fills
 that field with the common channel of the controls, at `0x000A`, counted from zero, so the answer of a unit on the
 factory settings carries `00` there.
 
-A tool reads that byte as a channel and finds the device ID at `0x0D`. The 2 values are independent: copying one into
+That byte carries the common channel, and the device ID sits at `0x0D`. The 2 values are independent: copying one into
 the other sets the common channel of the presets.
 
-== What the inquiry is good for
+== What the identity reply gives
 
-A tool reads the identity reply before anything else:
+The reply describes the unit in 4 fields:
 
-- The family field tells which model of the series answers, so the same tool can drive the 3 models;
-- The version field tells the version of the OS, without having to look at the *OS* page of the front panel;
-- The serial number identifies the unit, for a library that keeps the presets of several units apart;
-- The device ID at `0x0D` tells which unit of a bus answers, when several of them share it.
+- The family field gives the model, so the replies of the 3 models of the series differ there;
+- The version field gives the version of the OS, without having to look at the *OS* page of the front panel;
+- The serial number is unique to the unit;
+- The device ID at `0x0D` designates the unit on a bus that carries several of them.

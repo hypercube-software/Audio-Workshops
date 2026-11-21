@@ -47,7 +47,7 @@ type at `0x0464` and its controller number at `0x0514`; knob 9, the first knob o
 
 2 consequences matter for an implementation:
 
-- A single field of a single control is 1 byte, so a tool reads or writes it alone, with a message of size `00 04`.
+- A single field of a single control is 1 byte, so a message of size `00 04` reads or writes it alone.
 - A whole array of 24 bytes takes a message of size `00 1B`, and the block of 312 bytes needs several messages, because
   a single message carries at most 127 data bytes (see #cref(<chap-sysex>)).
 
@@ -88,8 +88,8 @@ because a DAW button can be assigned to a keyboard shortcut instead of a MIDI me
     [Program], [`00 6F`], [`00 05`], [`0`..`127`], [`00`], [Program number when the type is a program bank],
     [MSB], [`00 74`], [`00 05`], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
     [LSB], [`00 79`], [`00 05`], [`0`..`127`], [`00`], [Least significant byte of the bank],
-    [MIDI to DIN], [`00 7E`], [`00 05`], [`0` `1`], [`00`], [Whether the button is copied to the DIN output],
-    [Note], [`00 83`], [`00 05`], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [Note], [`00 7E`], [`00 05`], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [MIDI to DIN], [`00 83`], [`00 05`], [`0` `1`], [`00`], [Whether the button is copied to the DIN output],
     [Velocity], [`00 88`], [`00 05`], [`0`..`127`], [`7F`], [Velocity of that note],
     [unknown], [`00 8D`], [`00 05`], [`00`], [`00`], [Unidentified],
     [Key 1], [`00 92`], [`00 05`], [`0`..`83`], [`25`], [Key code when the type is a keystroke],
@@ -118,8 +118,8 @@ the table below gives the first byte of each, and switch `i` sits at the `i`-th 
     [Program], [`01 7C`], [`00 18`], [`0`..`127`], [`00`], [Program number when the type is a program bank],
     [MSB], [`02 14`], [`00 18`], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
     [LSB], [`02 2C`], [`00 18`], [`0`..`127`], [`00`], [Least significant byte of the bank],
-    [MIDI to DIN], [`02 44`], [`00 18`], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
-    [Note], [`02 5C`], [`00 18`], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [Note], [`02 44`], [`00 18`], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [MIDI to DIN], [`02 5C`], [`00 18`], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
     [Velocity], [`02 74`], [`00 18`], [`0`..`127`], [`7F`], [Velocity of that note],
     [unknown], [`03 0C`], [`00 18`], [`00`], [`00`], [Unidentified],
     [Key 1], [`03 24`], [`00 18`], [`0`..`83`], [`00`], [Key code when the type is a keystroke],

@@ -103,7 +103,7 @@ switch says.
 )
 
 A wheel has both a zone and a channel, stored apart: the zone is 1 byte of the matrix at `0x0021`, the channel is the
-first field of the wheel record at `0x0028`. A tool that moves a controller from one zone to the other changes the byte
+first field of the wheel record at `0x0028`. Moving a controller from one zone to the other changes the byte
 of the matrix; the channel of the record stays where it is.
 
 A wheel always sends a continuous controller; its minimum and maximum bound the values it can produce.
@@ -160,5 +160,5 @@ record: a footswitch set to *Sustain* sends CC 64 on the channel at `0x0041` or 
 == Undocumented bytes
 
 The chapter leaves 8 bytes without a documented role: `0x002C` and `0x002D`, `0x0032` to `0x0037`, `0x003C` and
-`0x003D`, and `0x0047` and `0x0048`. They keep the same values across the presets examined. They are listed here so
-that a tool that rewrites the block knows they exist.
+`0x003D`, and `0x0047` and `0x0048`. They keep the same values across the presets examined. They are listed here
+because they are part of the block.

@@ -13,11 +13,11 @@
 //     part1-firmware.typ      update mode, the frames that must never be sent
 //     part2-global.typ        the global settings (parameters, device ID, live states)
 //     part2-store.typ         saving the global settings
-//     part3-preset.typ        the edit buffer (name, tempo, transport, arp)
+//     part3-layout.typ        the preset: edit buffer and user presets, their 2 layouts
+//     part3-header.typ        name, tempo, transport and arpeggiator
 //     part3-keyboard.typ      keyboard, split, wheels and pedals
 //     part3-controls.typ      DAW buttons, switches, faders and knobs
 //     part3-pads.typ          the pads and their colours
-//     part4-dump.typ          the preset dump (user presets)
 //     assets/                 screenshots used by the chapters (create it if needed)
 //
 // Compile from the books/src/main/typst directory:
@@ -57,8 +57,8 @@
 #include "part1-firmware.typ"
 #include "part2-global.typ"
 #include "part2-store.typ"
-#include "part3-preset.typ"
+#include "part3-layout.typ"
+#include "part3-header.typ"
 #include "part3-keyboard.typ"
 #include "part3-controls.typ"
 #include "part3-pads.typ"
-#include "part4-dump.typ"

@@ -133,8 +133,8 @@ The answer repeats the count and the address, then carries the byte:
   caption: [The answer to that request],
 )
 
-The byte `07` is the index of the current preset, counted from zero: it is the preset displayed as 8, which is why a
-tool that shows preset numbers adds 1. Writing that byte is also how a tool loads a preset (see #cref(<chap-global>)).
+The byte `07` is the index of the current preset, counted from zero: it is the preset displayed as 8, which is why the
+displayed number is 1 more than the byte. Writing that byte loads the preset (see #cref(<chap-global>)).
 
 The same request through the `QEDIT` command reads the colour of a pad instead, at address `0x0B3C` (see #cref(<chap-pads>)).
 
@@ -197,7 +197,7 @@ value `01` at edit buffer address `0x0013` — the range of the arpeggiator — 
   caption: [Writing 1 byte of the edit buffer],
 )
 
-The unit answers with the `ACKP` command, whose status byte is `00` on success:
+The unit answers with the `ACKE` command, whose status byte is `00` on success:
 
 #figure(
   bytefield(
@@ -217,12 +217,11 @@ The unit answers with the `ACKP` command, whose status byte is `00` on success:
 )
 
 A write to the edit buffer or to the global settings changes the unit at once and is lost at power-off: the global
-settings are saved by the `STORE` command, and a user preset by the `WPRESET` command. A block written in several
-messages can be left half written, so a tool that restores a whole preset writes as few messages as possible, then
-reads the block back.
+settings are saved by the `SGLOB` command, and a user preset by the `WPRESET` command. A block written in several
+messages can be left half written, so a restore writes as few messages as possible, then reads the block back.
 
 == The end of the MIDI frame
 
 The payload ends with its last data byte, and `F7` follows it at once: a parser reads the size field, takes that many
-bytes, and expects `F7` next. The frames of this book carry no checksum and no user reference byte, so a tool that
-appends one produces a MIDI frame whose size no longer matches its content.
+bytes, and expects `F7` next. The frames of this book carry no checksum and no user reference byte, so an appended
+checksum produces a MIDI frame whose size no longer matches its content.

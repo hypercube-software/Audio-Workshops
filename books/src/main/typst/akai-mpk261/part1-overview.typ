@@ -28,18 +28,18 @@ or turn the same pad into a program change.
 
 == The 3 memories
 
-The unit keeps its settings in 3 places, and a tool must know which one it writes:
+The unit keeps its settings in 3 places:
 
 #kfigure(
     ptable(
         columns: (auto, 1fr),
         head([*Memory*], [*Content*]),
         [ROM],
-        [The factory content of the 30 presets, which the unit reads and copies back into the user presets when it
+        [The factory content of the 30 presets, which the unit writes back into the user presets when it
             is reset to the factory settings],
         [RAM],
-        [The *edit buffer*, that is the copy of the preset that the unit uses, and the settings of the global
-            memory. The unit clears it at power-off],
+        [The 2 *edit buffers*: the global settings and the preset the unit works with. The unit clears them at
+            power-off],
         [Flash],
         [The *user presets*, the global settings and the OS. What is written there survives a power cycle],
     ),
@@ -48,13 +48,14 @@ The unit keeps its settings in 3 places, and a tool must know which one it write
 
 The book uses 2 words with a precise meaning:
 
-- The *edit buffer* is the copy of the preset that the unit uses. A write to the edit buffer changes the settings at
-    once, and is lost at power-off unless the preset is stored.
+- An *edit buffer* is the RAM area where a group of settings is edited. The unit has 2: the global settings and the
+    preset. A write changes the settings at once, and is lost at power-off unless it is stored. This book calls the
+    preset one *the edit buffer*.
 - A *user preset* is 1 of the 30 rewritable slots. The unit ships them with factory content, and a factory reset puts
     that content back.
 
-The edit buffer and the user presets have different layouts: the edit buffer is a *set of arrays of fields*, a user
-preset is a *set of records*. #cref(<chap-preset>) and #cref(<chap-dump>) describe the 2 forms.
+The edit buffer and the user presets hold the same settings in 2 layouts: the control matrices below show how the 2
+forms relate, and #cref(<chap-preset>) gives the details.
 
 == Why this document
 
@@ -70,9 +71,8 @@ for 3 kinds of readers:
 - The author of a backup tool;
 - Anyone who wants to script a change that the front panel makes tedious.
 
-Some bytes of the 2 memories carry a role that is not established. They are listed in the tables as *reserved* or
-*unidentified* rather than left out, because a tool that rewrites a whole block must know that they exist and must
-preserve them.
+Some bytes of the 2 memory spaces carry a role that is not established. They are listed in the tables as *reserved* or
+*unidentified* rather than left out, because they are part of the data and must be preserved when it is written back.
 
 == Disclaimer
 
@@ -90,9 +90,9 @@ contained in this document. Always back up your presets before sending anything 
 non-essential preset first.
 
 #block(breakable: false)[
-    == Scope of this book
+    == Scope
 
-    This book describes 3 blocks:
+    The book describes the global settings and the preset:
 
     #kfigure(
         table(
@@ -100,23 +100,20 @@ non-essential preset first.
             columns: (auto, 1fr, auto),
             fill: (x, y) => if y == 0 { luma(230) },
             stroke: 0.5pt,
-            head([*Block*], [*Content*], [*Chapter*]),
+            head([*Settings*], [*Content*], [*Chapter*]),
             [Global settings],
             [377 bytes of system settings: contrast, pad and keyboard response, common channel, clock source, device ID, and
                 the state of the buttons that belong to no preset],
 
             [#cref(<chap-global>)],
-            [Edit buffer],
-            [1544 bytes: the preset that the unit uses — name, tempo, transport, arpeggiator, keyboard split, wheels, pedals
-                and the 64 pads, 24 switches, 24 faders and 24 knobs],
+            [Preset],
+            [The edit buffer, 1544 bytes: name, tempo, transport, arpeggiator, keyboard split, wheels, pedals, and the 64
+                pads, 24 switches, 24 faders and 24 knobs. The 30 user presets store the same settings, which travel in a
+                1555-byte MIDI frame],
 
             [#cref(<chap-preset>)],
-            [User preset],
-            [The 1555-byte MIDI frame that writes 1 of the 30 user presets, or reads it back],
-
-            [#cref(<chap-dump>)],
         ),
-        caption: [The 3 blocks of this book],
+        caption: [Scope],
     )
 ]
 
@@ -129,9 +126,8 @@ an address travels in 2 bytes, the most significant group first. In the text, th
 hexadecimal literal: `0x0B3C`. In a MIDI frame or in a table, they keep their spaces: `0B 3C`. The unpacked form of the
 same byte (`0x5BC`) appears only where this book explains the difference between the 2 forms.
 
-A field table gives the packed address of the first control of its array; the byte of control `i` is the `i`-th byte of
-that array. A table of blocks gives the first byte of each block in its `Packed address` column and the length of the
-block in its `Packed size` column, both without the `0x` prefix.
+A table gives the packed address of the first value of an array and the length of that array, both without the `0x`
+prefix. The value of instance `i` is at the address plus `i`.
 
 Values that do not fit in 7 bits are sent in 2 bytes, most significant group first, because a MIDI data byte has its
 most significant bit clear. The book calls this encoding *14-bit packing* and always says when it applies.
@@ -171,7 +167,7 @@ port answers it.
 == Commands <sec-commands>
 
 The unit has no published documentation for its SysEx messages, so the book names each command after the operation
-that it performs. A tool reads the command byte of a frame and maps it to 1 of these names:
+that it performs. The command byte of a frame maps to 1 of these names:
 
 #kfigure(
     ptable(
@@ -199,24 +195,24 @@ that it performs. A tool reads the command byte of a frame and maps it to 1 of t
         [Writes a block of the global settings],
         [`WEDIT`],
         [`31`],
-        [`ACKP`],
+        [`ACKE`],
         [Writes a block of the edit buffer],
-        [`BPRESET`],
+        [`PPRESET`],
         [`32`],
-        [`ACKB`],
-        [Writes bytes inside a user preset, at a given offset],
+        [`ACKP`],
+        [Pokes bytes into a user preset, at a given address],
         [`ACKG`],
         [`38`],
         [—],
         [Answer to the `WGLOB` command: echoed count, address and a status byte],
-        [`ACKP`],
+        [`ACKE`],
         [`39`],
         [—],
         [Answer to the `WEDIT` command],
-        [`ACKB`],
+        [`ACKP`],
         [`3A`],
         [—],
-        [Status of the `BPRESET` command],
+        [Answer to the `PPRESET` command: echoed count, address, preset number and a status byte],
     ),
     caption: [The commands of the 2 memories],
 )
@@ -231,7 +227,7 @@ The settings of the unit that belong to no preset, and the OS, travel through th
         [`7A`],
         [—],
         [Sets the contrast of the display, in the global settings],
-        [`STORE`],
+        [`SGLOB`],
         [`7B`],
         [—],
         [Sets the contrast, then saves the global settings (see #cref(<chap-store>))],
@@ -302,7 +298,11 @@ memory effect:
     caption: [The codes with no established role],
 )
 
-The 2 queries and the 2 writes share the same MIDI frame; they differ by the space they address. A query and its
+Each name starts with its verb: `W` writes, `Q` queries, `P` pokes, and `ACK` answers. The `P` of `PPRESET` comes from
+the `POKE` of BASIC: the command writes bytes at an address, here inside a stored preset. `ACKP` answers it and echoes
+the count, the address and the preset number; `ACKG` answers `WGLOB`, and `ACKE` answers `WEDIT`.
+
+The 2 queries and the 2 writes share the same MIDI frame; they differ by the memory space they address. A query and its
 answer share the same layout: the answer repeats the count and the address, then carries the data.
 
 Every answer that ends with a status byte carries `00` on success. A status byte other than `00` is a failure, and it
@@ -311,16 +311,54 @@ is the only diagnostic the unit gives.
 #cref(<chap-sysex>) describes the frame of each command, and #cref(<chap-inquiry>) the device inquiry, which uses none
 of these codes.
 
-== The 2 address spaces
+== Global and preset settings
 
-The unit is peculiar: it exposes 2 distinct memory spaces, each reached by its own command and each starting at
-address `0x0000`:
+The unit stores 2 groups of settings, in RAM and in flash memory:
+
+#figure(
+    ptable(
+        columns: (auto, 1fr, 1fr),
+        head([*Settings*], [*RAM (edit buffer)*], [*Flash memory*]),
+        [Global],
+        [377 bytes of global settings, read with `QGLOB` and written with `WGLOB`],
+        [18 settings, saved by the `SGLOB` command in a 20-byte block; no command reads it back (see
+            #cref(<chap-store>))],
+        [Preset],
+        [1544 bytes of preset settings, read with `QEDIT` and written with `WEDIT`],
+        [30 user presets of 1546 bytes, read with `QPRESET` and written with `WPRESET`],
+    ),
+    caption: [RAM and Flash memory],
+)
+
+The 2 groups answer different needs:
+
+- The *global settings* belong to no preset: contrast, pad and key response, common channel, clock source, device ID,
+    and the state of 8 buttons;
+- A *preset* holds 1 performance: its name, its tempo, its arpeggiator, its keyboard split and its control assignments.
+
+The 2 areas play different roles:
+
+- *RAM* holds the settings the unit works with. A write changes them at once, and a power cycle clears them: the preset
+    in RAM can differ from every stored preset until it is saved;
+- *Flash memory* holds the saved settings. The unit reads it at power-on, and a backup keeps it.
+
+The 2 stored paths differ:
+
+- A *user preset* has a full path: `QPRESET` reads the stored record, `WPRESET` writes it. A third special command
+    `PPRESET` can be used to write part of it;
+- The *stored global block* has a write path only: `SGLOB` saves it from the RAM, and no command reads it back. To see
+    what it holds, power the unit off and on, then read the RAM with `QGLOB`.
+
+== RAM address spaces
+
+The unit can be confusing because the 2 RAM address spaces start at the very same address `0x0000`. Only the commands differ.
+As usual in MIDI, we deal with packed values. A packed address is 2 bytes of 7 bits, so each address space is 16384 bytes wide.
 
 #figure(
     ptable(
         columns: (auto, auto, auto, auto, auto, auto, 1fr),
         head(
-            [*Space*],
+            [*Memory space*],
             [*Packed address*],
             [*Packed size*],
             [*Size*],
@@ -343,94 +381,118 @@ address `0x0000`:
         [`WEDIT`],
         [The preset in the edit buffer],
     ),
-    caption: [The 2 address spaces of the instrument],
+    caption: [The RAM address spaces (edit buffers)],
 )
 
-A packed address is 2 7-bit bytes, so each space is 16384 bytes wide. The global space uses the first 377 bytes, the
-preset space the first 1544. The same address designates 1 byte of each space, and a tool keeps the 2 apart.
+The same address designates 1 byte of each memory space. #cref(<chap-global>) describes the 377 bytes of the global
+settings; #cref(<chap-preset>) and the chapters that follow it describe the preset.
 
-== Memory map
+#block(breakable: false)[
+    == Control matrices <sec-matrices>
 
-The 2 spaces share the same organisation: a fixed header, the settings of the controls, then a tail of unidentified
-bytes. #cref(<chap-global>) describes the global settings; #cref(<chap-preset>) and #cref(<chap-dump>) describe the
-preset space.
+    This device handle so many controls that the memory layout has to be complex. Hang on !
+
+    A preset assigns 5 control types:
+
+    - *Pads*: 16 pads, in 4 banks;
+    - *Switches*: 8 switches, in 3 banks;
+    - *Faders*: 8 faders, in 3 banks;
+    - *Knobs*: 8 knobs, in 3 banks;
+    - *DAW buttons*: the 5 transport buttons.
+
+    Each control type has its own parameters. The values of 1 type form a matrix of *n* controls x *m* parameters.
+]
 
 #kfigure(
-    ptable(
-        columns: (auto, auto, auto, 1fr),
-        head([*Packed address*], [*Packed size*], [*Size*], [*Content*]),
-        [`00 00`],
-        [`00 10`],
-        [16],
-        [Documented system settings],
-        [`00 10`],
-        [`00 03`],
-        [3],
-        [Unidentified flags],
-        [`00 13`],
-        [`00 08`],
-        [8],
-        [State of the pad bank and of the control bank],
-        [`00 1B`],
-        [`00 0A`],
-        [10],
-        [Unidentified],
-        [`00 25`],
-        [`00 05`],
-        [5],
-        [Program Change mode],
-        [`00 2A`],
-        [`02 4F`],
-        [335],
-        [Unidentified],
+    block(
+        width: 100%,
+        stack(
+            spacing: 10pt,
+            align(
+                center,
+                table(
+                    columns: 6,
+                    stroke: 0.5pt,
+                    align: center,
+                    fill: (x, y) => if y == 0 { luma(230) } else if y == 3 { l_blue } else if x == 3 { l_green },
+                    table.header(
+                        [*Parameter*],
+                        [*Control 1*],
+                        [*Control 2*],
+                        [*…*],
+                        [*Control n−1*],
+                        [*Control n*],
+                    ),
+
+                    [*Parameter 1*], [], [], [], [], [],
+                    [*Parameter 2*], [], [], [], [], [],
+                    [*…*], [], [], [], [], [],
+                    [*Parameter m−1*], [], [], [], [], [],
+                    [*Parameter m*], [], [], [], [], [],
+                ),
+            ),
+            align(
+                center,
+                block(
+                    width: 70%,
+                    text(
+                        size: 8.5pt,
+                        table(
+                            align: left,
+                            columns: (auto, auto, 1fr),
+                            stroke: 0.5pt,
+                            inset: 3pt,
+                            head([*Colour*], [*Flow*], [*Meaning*]),
+                            [#box(fill: l_blue, width: 10pt, height: 10pt)],
+                            [*Line by line*],
+
+                            [The order of the *edit buffer*: every value of 1 parameter follows, then the next parameter],
+                            [#box(fill: l_green, width: 10pt, height: 10pt)],
+                            [*Column by column*],
+
+                            [The order of a *user preset*: every parameter of 1 control follows, then the next control],
+                        ),
+                    ),
+                ),
+            ),
+        ),
     ),
-    caption: [Organisation of the global settings],
+    caption: [The matrix of a control type],
 )
 
-#kfigure(
+The 5 matrices differ in size:
+
+#figure(
     ptable(
-        columns: (auto, auto, auto, 1fr),
-        head([*Packed address*], [*Packed size*], [*Size*], [*Content*]),
-        [`00 00`],
-        [`00 16`],
-        [22],
-        [Name, tempo, transport, arpeggiator],
-        [`00 16`],
-        [`00 12`],
-        [18],
-        [Keyboard, split and zones],
-        [`00 28`],
-        [`00 23`],
-        [35],
-        [Wheels, pedals and footswitches],
-        [`00 4B`],
-        [`00 10`],
-        [16],
-        [Arpeggiator pattern, 1 byte per step],
-        [`00 5B`],
-        [`00 41`],
-        [65],
-        [DAW buttons, 5 records],
-        [`01 1C`],
-        [`02 38`],
-        [312],
-        [Switches, 24 records],
-        [`03 54`],
-        [`01 10`],
-        [144],
-        [Faders, 24 records],
-        [`04 64`],
-        [`01 58`],
-        [216],
-        [Knobs, 24 records],
-        [`06 3C`],
-        [`05 40`],
+        columns: (auto, auto, auto, auto),
+        head([*Control type*], [*Instances*], [*Parameters*], [*Total*]),
+        [Pads],
+        [64],
+        [11],
         [704],
-        [Pads, 64 records],
-        [`0B 7C`],
-        [`00 0C`],
-        [12],
-        [Unidentified, constant in the presets examined],
+        [Switches],
+        [24],
+        [13],
+        [312],
+        [Faders],
+        [24],
+        [6],
+        [144],
+        [Knobs],
+        [24],
+        [9],
+        [216],
+        [DAW buttons],
+        [5],
+        [13],
+        [65],
     ),
-    caption: [Organisation of the edit buffer],
+    caption: [The 5 control matrices],
 )
+
+The 5 matrices hold 1441 values in all, and every value is *1 byte*.
+
+Note that two groups of settings have only one instance (they are not related to a specific control type), they old only one column:
+
+- The *preset head*: name, tempo, transport, arpeggiator, keyboard, wheels, pedals, split and pattern.
+- The *global settings*: 377 bytes of system fields
