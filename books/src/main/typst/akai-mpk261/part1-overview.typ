@@ -38,19 +38,19 @@ The unit keeps its settings in 3 places:
         [The factory content of the 30 presets, which the unit writes back into the user presets when it
             is reset to the factory settings],
         [RAM],
-        [The 2 *edit buffers*: the global settings and the preset the unit works with. The unit clears them at
+        [The 2 *edit buffers*: the global edit buffer and the preset edit buffer. The unit clears them at
             power-off],
         [Flash],
-        [The *user presets*, the global settings and the OS. What is written there survives a power cycle],
+        [The *user presets*, the stored global block and the OS. What is written there survives a power cycle],
     ),
     caption: [The 3 memories of the unit],
 )
 
 The book uses 2 words with a precise meaning:
 
-- An *edit buffer* is the RAM area where a group of settings is edited. The unit has 2: the global settings and the
-    preset. A write changes the settings at once, and is lost at power-off unless it is stored. This book calls the
-    preset one *the edit buffer*.
+- An *edit buffer* is the RAM area where a group of settings is edited. The unit has 2: the global edit buffer and the
+    preset edit buffer. A write changes the settings at once, and is lost at power-off unless it is stored. This book
+    calls the preset one *the edit buffer*.
 - A *user preset* is 1 of the 30 rewritable slots. The unit ships them with factory content, and a factory reset puts
     that content back.
 
@@ -184,7 +184,7 @@ that it performs. The command byte of a frame maps to 1 of these names:
         [`QGLOB`],
         [`20`],
         [`WGLOB`],
-        [Query a block of the global settings],
+        [Query a block of the global settings in RAM],
         [`QEDIT`],
         [`21`],
         [`WEDIT`],
@@ -192,7 +192,7 @@ that it performs. The command byte of a frame maps to 1 of these names:
         [`WGLOB`],
         [`30`],
         [`ACKG`],
-        [Writes a block of the global settings],
+        [Writes a block of the global settings in RAM],
         [`WEDIT`],
         [`31`],
         [`ACKE`],

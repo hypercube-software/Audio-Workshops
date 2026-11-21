@@ -5,7 +5,7 @@
 
 #chapter("System settings", l: "chap-global")
 
-The global settings occupy 377 bytes, at addresses `0x0000` to `0x0278`, read with the `QGLOB` command and written
+The global settings in RAM occupy 377 bytes, at addresses `0x0000` to `0x0278`, read with the `QGLOB` command and written
 with the `WGLOB` command. They decide how the unit behaves at power-on, how its pads and keys respond to velocity, the
 device ID of the protocol, and the state of the buttons that the front panel uses while a preset is played.
 
@@ -46,7 +46,7 @@ device ID of the protocol, and the state of the buttons that the front panel use
     [`00 30`], [`00 01`], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see below],
     [`00 31`], [`02 48`], [unidentified], [—], [—], [Internal state],
   ),
-  caption: [Content of the global settings],
+  caption: [Content of the global settings in RAM],
 )
 
 4 settings store a value offset from the one the front panel shows: the pad sensitivity, the keyboard curve, the
