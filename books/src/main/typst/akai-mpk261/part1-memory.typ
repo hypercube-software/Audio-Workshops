@@ -107,7 +107,7 @@ As usual in MIDI, we deal with packed values. A packed address is 2 bytes of 7 b
 The same address designates 1 byte of each memory space. #cref(<chap-global>) describes the 377 bytes of the global
 settings; #cref(<chap-preset>) and the chapters that follow it describe the preset.
 
-#block(breakable: false)[
+#block(breakable: false, width: 100%)[
     == Control parameter matrices <sec-matrices>
 
     This device handle so many controls that the memory layout has to be complex. Hang on !

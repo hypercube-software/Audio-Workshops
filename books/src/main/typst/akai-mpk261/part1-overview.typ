@@ -58,7 +58,7 @@ accepts no responsibility for data loss, malfunction or damage to any device res
 contained in this document. Always back up your presets before sending anything to the instrument, and test on a
 non-essential preset first.
 
-#block(breakable: false)[
+#block(breakable: false, width: 100%)[
     == Scope
 
     The book describes the global settings and the preset:
@@ -95,8 +95,8 @@ an address travels in 2 bytes, the most significant group first. In the text, th
 hexadecimal literal: `0x0B3C`. In a MIDI frame or in a table, they keep their spaces: `0B 3C`. The unpacked form of the
 same byte (`0x5BC`) appears only where this book explains the difference between the 2 forms.
 
-A table gives the packed address of the first value of an array and the length of that array, both without the `0x`
-prefix. The value of instance `i` is at the address plus `i`.
+A table gives the packed address of a parameter and the size of its array, when it has one. In a table, the address keeps
+its 2 bytes with a space, without the `0x` prefix: `04 64`. #cref(<chap-preset>) explains the 2 addresses of a parameter.
 
 Values that do not fit in 7 bits are sent in 2 bytes, most significant group first, because a MIDI data byte has its
 most significant bit clear. The book calls this encoding *14-bit packing* and always says when it applies.

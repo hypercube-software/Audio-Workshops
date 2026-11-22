@@ -11,7 +11,7 @@ The figures colour the fields as in #cref(<chap-edit-cmds>), with 1 addition: ye
 == User presets
 
 `QPRESET` asks for 1 stored preset. Its payload is 1 byte, the preset number, from 1 to 30; `00` designates the
-preset that is playing:
+current preset (edit buffer):
 
 #figure(
   frame(
@@ -33,8 +33,21 @@ preset that is playing:
   caption: [QPRESET: Query user preset 8],
 ) <fig-qpreset>
 
+The preset number is the number displayed by the unit, from 1 to 30. The byte at `0x0001` of the global settings
+counts from zero: the reference preset is displayed as 8, carried as `08` in its dump and as `07` in the global
+settings.
+
+#caveat[
+  Copying the byte of one place to the other is off by one. The 2 fields have different origins, and
+  neither byte carries its convention.
+]
+
 The answer reuses the `WPRESET` frame: the preset number, the name and the whole record, in a frame of 1555 bytes. Its
 payload size is `0C 0B`, that is 1547 bytes: 1 for the preset number, 8 for the name, 1538 for the data.
+
+The answer reads the stored record: a preset modified in the edit buffer comes back as it was saved. There is no
+request for all 30 presets: the front panel sends 30 MIDI frames, 1 per preset, each one complete with its own size
+field.
 
 #figure(
   frame(
@@ -85,6 +98,10 @@ number and a status byte:
   ),
   caption: [ACKW: the answer to a write of user preset 8],
 )
+
+A `WPRESET` frame writes a user preset, and the new content reaches the edit buffer when the preset is loaded (see
+#cref(<chap-global>)). A write is verified by reading the preset back with `QPRESET` and comparing the 1547-byte
+payload: the status byte of `ACKW` says that the frame arrived, not that the record is valid.
 
 `PPRESET` writes a block of bytes at an address inside the stored record, without carrying the whole preset. Its
 payload is the count, the packed address, the preset number, then the data; the frame below writes 2 bytes at `0x0575`, in the
@@ -145,6 +162,11 @@ The unit answers with `ACKP`, which repeats the count, the address and the prese
 
 The address is an offset in the record, and the unit does not compare it with the 1546 bytes of the record: an offset
 past the end continues in the next user preset.
+
+#caveat[
+  `PPRESET` pokes raw bytes into a user preset, without checking that the result forms a valid record. A user preset
+  is written with the `WPRESET` command, which carries the whole record.
+]
 
 == Stored settings
 

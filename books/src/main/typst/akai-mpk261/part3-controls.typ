@@ -153,22 +153,22 @@ bound the values it sends.
 
 == Knobs
 
-#figure(
+#kfigure(
   ptable(
-    columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`04 64`], [24], [`0`..`3`], [`00`], [CC, aftertouch, increment 1, increment 2],
-    [Channel], [`04 7C`], [24], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
-    [Controller], [`05 14`], [24], [`0`..`127`], [`2D`], [CC number sent by the knob],
-    [Minimum], [`05 2C`], [24], [`0`..`127`], [`00`], [Value sent at the left stop],
-    [Maximum], [`05 44`], [24], [`0`..`127`], [`7F`], [Value sent at the right stop],
-    [MSB], [`05 5C`], [24], [`0`..`127`], [`7F`], [Coarse part of the increment, for the Increment/Decrement 1
+    columns: (auto, auto, auto, auto, 1fr),
+    head([*Packed field address*], [*Field size*], [*Packed array address*], [*Array size*], [*Description*]),
+    [`05 75`], [1], [`04 64`], [24], [Type, `0`..`3`: CC, aftertouch, increment 1, increment 2],
+    [`05 76`], [1], [`04 7C`], [24], [Channel, `0`..`32`: same encoding as the keyboard channel],
+    [`05 77`], [1], [`05 14`], [24], [Controller, `0`..`127`: CC number sent by the knob],
+    [`05 78`], [1], [`05 2C`], [24], [Minimum, `0`..`127`: value sent at the left stop],
+    [`05 79`], [1], [`05 44`], [24], [Maximum, `0`..`127`: value sent at the right stop],
+    [`05 7A`], [1], [`06 24`], [24], [MIDI to DIN, `0` `1`: whether the knob is copied to the DIN output],
+    [`05 7B`], [1], [`05 5C`], [24], [MSB, `0`..`127`: coarse part of the increment, for the Increment/Decrement 1
       type],
-    [LSB], [`05 74`], [24], [`0`..`127`], [`7F`], [Fine part of the increment],
-    [Value], [`06 0C`], [24], [`0`..`127`], [`01`], [Value sent with an increment or a decrement message],
-    [MIDI to DIN], [`06 24`], [24], [`0` `1`], [`00`], [Whether the knob is copied to the DIN output],
+    [`05 7C`], [1], [`05 74`], [24], [LSB, `0`..`127`: fine part of the increment],
+    [`05 7D`], [1], [`06 0C`], [24], [Value, `0`..`127`: value sent with an increment or a decrement message],
   ),
-  caption: [Fields of the knobs],
+  caption: [The knobs, in the 2 layouts],
 )
 
 The 3 bytes MSB, LSB and Value belong to the Increment/Decrement 1 type: they decide what a turn of the knob sends,

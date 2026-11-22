@@ -31,7 +31,7 @@ A shorter name is padded on the right with spaces: `TWO` travels with 5 spaces a
 8 bytes as they are and trims the trailing spaces. A zero byte is a valid character in the name for the unit, and most
 editors show a name that starts with one as empty.
 
-The name belongs to the preset in the edit buffer: renaming the preset that is playing writes it at
+The name belongs to the preset in the edit buffer: renaming the current preset writes it at
 `0x0000`. The user preset keeps its own name until the edit buffer is written to it (see #cref(<chap-preset>)).
 
 == Tempo, transport and arpeggiator

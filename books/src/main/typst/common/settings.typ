@@ -121,6 +121,7 @@
 #let l_green = green.lighten(55%)
 #let l_purple = purple.lighten(55%)
 #let l_red = red.lighten(55%)
+#let l_yellow = yellow.lighten(55%)
 
 // Code block without line numbers: #nonum[` ... `]. Resets the codly number format afterwards.
 #let nonum(body) = {

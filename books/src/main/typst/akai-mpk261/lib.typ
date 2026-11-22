@@ -25,7 +25,7 @@
 // pages. `kfigure` is for the small tables whose caption must stay with the
 // table: the block around the figure is not breakable, so both go to the next
 // page together.
-#let kfigure(..args) = block(breakable: false, figure(..args))
+#let kfigure(..args) = align(center, block(breakable: false, figure(..args)))
 
 // A reference to a chapter of *another part*.
 //
