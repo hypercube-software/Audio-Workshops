@@ -220,4 +220,4 @@ The settings that follow exist once: no control matrix holds them.
 - The *keyboard, the split and the pedals*: the channel and the transposition of the notes, the 2 split zones, and the routing of the wheels and of the pedals;
 - The *global settings*: 377 bytes of system fields, which belong to the unit and travel in no preset.
 
-#cref(<chap-global>) describes the global settings; #cref(<chap-header>) and the chapter that follows describe the 2 groups of the preset.
+#cref(<chap-global>) describes the global settings; #cref(<chap-preset>) and the chapters that follow describe the preset.

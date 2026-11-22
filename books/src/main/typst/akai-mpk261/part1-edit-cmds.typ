@@ -116,7 +116,7 @@ A status byte other than `00` is a failure, and it is the only diagnostic the un
 == Current preset
 
 `QEDIT` reads a block of the preset edit buffer. Its payload is the count and the packed address; the frame below reads
-the colour of a pad, 1 byte at `0x0B3C` (see #cref(<chap-pads>)):
+the colour of a pad, 1 byte at `0x0B3C` (see #cref(<chap-controls>)):
 
 #figure(
   frame(

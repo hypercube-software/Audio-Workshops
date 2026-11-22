@@ -31,20 +31,20 @@ device ID of the protocol, and the state of the buttons that the front panel use
     [`00 0A`], [1], [Common channel], [`0`..`31`], [`00`], [Channel shared by the presets that use *Common*: `00`
       is USB A1, `1F` is USB B16],
     [`00 0B`], [1], [Tap average], [`2`..`4`], [`03`], [Number of taps averaged by the tap tempo],
-    [`00 0C`], [1], [Clock source], [`0` `1`], [`01`], [Internal, external],
-    [`00 0D`], [1], [Tempo LED], [`0` `1`], [`01`], [Whether the LED follows the tempo],
-    [`00 0E`], [1], [Note display], [`0` `1`], [`00`], [Note shown by value or by number],
-    [`00 0F`], [1], [Transport to DIN], [`0` `1`], [`00`], [Whether transport messages are copied to the DIN
+    [`00 0C`], [1], [Clock source], [`0`, `1`], [`01`], [Internal, external],
+    [`00 0D`], [1], [Tempo LED], [`0`, `1`], [`01`], [Whether the LED follows the tempo],
+    [`00 0E`], [1], [Note display], [`0`, `1`], [`00`], [Note shown by value or by number],
+    [`00 0F`], [1], [Transport to DIN], [`0`, `1`], [`00`], [Whether transport messages are copied to the DIN
       output],
-    [`00 10`], [3], [unidentified], [—], [`00 00 00`], [Flags that the unit sets and clears; the front panel, the MIDI ports and the
+    [`00 10`], [3], [Unknown], [—], [`00 00 00`], [Flags that the unit sets and clears; the front panel, the MIDI ports and the
       display show the same behaviour whatever their value],
-    [`00 13`], [8], [Live states], [—], [—], [State of 8 buttons, see below],
-    [`00 1B`], [10], [unidentified], [—], [—], [Internal state],
-    [`00 25`], [5], [Program Change mode], [—], [—], [Settings of that mode, see below],
-    [`00 2A`], [5], [unidentified], [—], [—], [Internal state],
+    [`00 13`], [8], [Live states], [—], [—], [State of 8 buttons, see @live-states],
+    [`00 1B`], [10], [Unknown], [—], [—], [Internal state],
+    [`00 25`], [5], [Program Change mode], [—], [—], [Settings of that mode, see @program-change-mode],
+    [`00 2A`], [5], [Unknown], [—], [—], [Internal state],
     [`00 2F`], [1], [internal], [`0`..`15`], [`00`], [Role not established; saved by the `SGLOB` command],
-    [`00 30`], [1], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see below],
-    [`00 31`], [328], [unidentified], [—], [—], [Internal state],
+    [`00 30`], [1], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see @device-id],
+    [`00 31`], [328], [Unknown], [—], [—], [Internal state],
   ),
   caption: [Content of the global settings in RAM],
 )
@@ -54,9 +54,9 @@ keyboard gain and the 2 key sensitivities. The last column gives the translation
 displayed one; the inverse gives the value to store.
 
 There is no global tempo: the *Tempo* page of the global mode writes the tempo of the current preset, at
-`0x0008` of the edit buffer (see #cref(<chap-header>)).
+`0x0008` of the edit buffer (see #cref(<chap-preset>)).
 
-== The device ID
+== The device ID <device-id>
 
 The byte at `0x0030` is the device ID of the unit: the address that SysEx uses to designate the receiver of a message,
 and to tell several machines apart on the same bus. It travels after the manufacturer ID in every MIDI frame, and the
@@ -66,7 +66,7 @@ unit repeats it at `0x0D` of the identity reply (#cref(<chap-inquiry>)). A unit 
 The unit writes this ID in the frames that it sends, and it does not filter an incoming frame on the ID: a frame that
 carries `00` reaches a unit that carries another value. The byte is part of the settings saved by the `SGLOB` command.
 
-== Live states
+== Live states <live-states>
 
 The 8 bytes at `0x0013` to `0x001A` mirror the buttons of the front panel rather than a setting of the user. The unit
 rewrites them as the buttons are pressed, and they read back the current state:
@@ -75,14 +75,14 @@ rewrites them as the buttons are pressed, and they read back the current state:
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
     head([*Packed address*], [*Size*], [*State*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 13`], [1], [Arp Latch], [`0` `1`], [`00`], [The arpeggiator keeps playing after the keys are released],
-    [`00 14`], [1], [Arp], [`0` `1`], [`00`], [The arpeggiator is running],
-    [`00 15`], [1], [Full Level], [`0` `1`], [`00`], [The pads send velocity 127],
-    [`00 16`], [1], [16 Level], [`0` `1`], [`00`], [The pads send a fixed velocity set by a knob],
-    [`00 17`], [1], [Note Repeat], [`0` `1`], [`00`], [The note repeat is armed],
+    [`00 13`], [1], [Arp Latch], [`0`, `1`], [`00`], [The arpeggiator keeps playing after the keys are released],
+    [`00 14`], [1], [Arp], [`0`, `1`], [`00`], [The arpeggiator is running],
+    [`00 15`], [1], [Full Level], [`0`, `1`], [`00`], [The pads send velocity 127],
+    [`00 16`], [1], [16 Level], [`0`, `1`], [`00`], [The pads send a fixed velocity set by a knob],
+    [`00 17`], [1], [Note Repeat], [`0`, `1`], [`00`], [The note repeat is armed],
     [`00 18`], [1], [Pad bank], [`0`..`3`], [`00`], [Bank `A` to `D` of the 16 pads],
     [`00 19`], [1], [Control bank], [`0`..`2`], [`00`], [Bank `A` to `C` of the knobs, faders and switches],
-    [`00 1A`], [1], [Time division], [`0` `1`], [`00`], [State of the time division button of the note repeat],
+    [`00 1A`], [1], [Time division], [`0`, `1`], [`00`], [State of the time division button of the note repeat],
   ),
   caption: [The live states of the global settings],
 )
@@ -96,7 +96,7 @@ rewrites them as the buttons are pressed, and they read back the current state:
 
 The pad bank is the only live state that the `SGLOB` command saves: the unit uses the same bank after a power cycle.
 
-== Program Change mode
+== Program Change mode <program-change-mode>
 
 The *Program Change* mode of the front panel decides what happens when a pad is hit: the pad sends a program change,
 or a bank select followed by a program change, in place of a note.
@@ -109,12 +109,12 @@ backup of the presets does not carry them.
   ptable(
     columns: (auto, auto, auto, auto, 1fr),
     head([*Packed address*], [*Size*], [*Setting*], [*Stored*], [*Meaning*]),
-    [`00 24`], [1], [reserved], [`00`], [Most significant byte of the bank],
+    [`00 24`], [1], [reserved], [`00`], [MSB of the bank],
     [`00 25`], [1], [Channel], [`0`..`31`], [Channel of the program change: Common, USB A1 to B16],
     [`00 26`], [1], [Program], [`0`..`127`], [Program number sent],
-    [`00 27`], [1], [reserved], [`00`], [Least significant byte of the bank],
+    [`00 27`], [1], [reserved], [`00`], [LSB of the bank],
     [`00 28`], [1], [reserved], [`00`], [—],
-    [`00 29`], [1], [MIDI to DIN], [`0` `1`], [Whether the program change is copied to the DIN output],
+    [`00 29`], [1], [MIDI to DIN], [`0`, `1`], [Whether the program change is copied to the DIN output],
   ),
   caption: [Settings of the Program Change mode],
 )

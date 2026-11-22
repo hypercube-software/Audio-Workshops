@@ -11,12 +11,18 @@
 #import "../common/settings.typ": *
 
 // A parameter table. Same arguments as `table`.
-#let ptable(..args) = text(size: 8.5pt, table(
-  align: left,
-  fill: (x, y) => if y == 0 { luma(230) },
-  stroke: 0.5pt,
-  ..args,
-))
+#let ptable(..args) = {
+  let named = args.named()
+  let fill = named.at("fill", default: (x, y) => if y == 0 { luma(230) })
+  let rest = named.pairs().filter(p => p.first() != "fill").to-dict()
+  text(size: 8.5pt, table(
+    align: left,
+    fill: fill,
+    stroke: 0.5pt,
+    ..rest,
+    ..args.pos(),
+  ))
+}
 
 // Header row of a `ptable`.
 #let head(..cells) = table.header(..cells)

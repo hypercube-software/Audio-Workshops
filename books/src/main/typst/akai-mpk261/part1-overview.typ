@@ -41,7 +41,7 @@ for 3 kinds of readers:
 - Anyone who wants to script a change that the front panel makes tedious.
 
 Some bytes of the 2 memory spaces carry a role that is not established. They are listed in the tables as *reserved* or
-*unidentified* rather than left out, because they are part of the data and must be preserved when it is written back.
+*unknown* rather than left out, because they are part of the data and must be preserved when it is written back.
 
 == Disclaimer
 
@@ -114,11 +114,12 @@ on; under macOS and Linux they appear as `MPK261 Port 1` to `Port 4`.
         columns: (auto, auto, 1fr),
         head([*Port*], [*Function*], [*Content*]),
         [`1`],
-        [Play],
+        [USB A],
         [Notes, aftertouch, controllers, pad and transport events. The official OS updater uses this port],
         [`2`],
-        [—],
-        [Reserved by the driver; no documented content],
+        [USB B],
+        [The second USB port of the unit. The *Channel* field of a control selects it with the values `11` to `20`:
+            USB B1 to USB B16],
         [`3`],
         [DIN],
         [The MIDI DIN connector of the rear panel. The messages that reach it follow the *MIDI to DIN*

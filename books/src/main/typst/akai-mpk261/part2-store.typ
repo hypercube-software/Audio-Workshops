@@ -86,7 +86,7 @@ are not part of the block:
     [`00 19`], [1], [Control bank],
     [`00 1A`], [1], [Time division],
     [`00 25`], [5], [Program Change mode],
-    [`00 31`], [328], [Unidentified bytes],
+    [`00 31`], [328], [Unknown bytes],
   ),
   caption: [The global settings that SGLOB leaves out],
 )
