@@ -6,87 +6,145 @@
 The flash memory holds the 30 user presets and the stored settings. The preset commands carry the whole record or a
 block of it; the setting commands carry a fixed payload.
 
+The figures colour the fields as in #cref(<chap-edit-cmds>), with 1 addition: yellow is the preset number.
+
 == User presets
 
-`QPRESET` asks for 1 stored preset. Its payload is 1 byte, the number of the slot, from 1 to 30; `00` designates the
+`QPRESET` asks for 1 stored preset. Its payload is 1 byte, the preset number, from 1 to 30; `00` designates the
 preset that is playing:
 
 #figure(
-  bytefield(
-    bpr: 72,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[12],
-    bytes(2, fill: l_purple)[00 01],
-    bytes(1, fill: l_orange)[08],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 72,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[12],
+      bytes(2, fill: l_purple)[00 01],
+      bytes(1, fill: l_yellow)[08],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
+    (l_yellow, [preset number]),
   ),
-  caption: [QPRESET: reading a user preset in flash memory],
-)
+  caption: [QPRESET: Query user preset 8],
+) <fig-qpreset>
 
-The answer reuses the `WPRESET` frame: the slot, the name and the whole record, in a frame of 1555 bytes. `WPRESET`
-writes with the same frame (see #cref(<chap-preset>)).
+The answer reuses the `WPRESET` frame: the preset number, the name and the whole record, in a frame of 1555 bytes. Its
+payload size is `0C 0B`, that is 1547 bytes: 1 for the preset number, 8 for the name, 1538 for the data.
 
 #figure(
-  bytefield(
-    bpr: 184,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[10],
-    bytes(2, fill: l_purple)[0C 0B],
-    bytes(1, fill: l_orange)[08],
-    bytes(8, fill: l_green)[name],
-    bytes(6, fill: l_gray)[1538 data bytes],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 184,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[10],
+      bytes(2, fill: l_purple)[0C 0B],
+      bytes(1, fill: l_yellow)[08],
+      bytes(8)[name],
+      bytes(6)[1538 data bytes],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
+    (l_yellow, [preset number]),
   ),
-  caption: [WPRESET: a write in flash memory, and the answer to QPRESET],
+  caption: [WPRESET: Write user preset 8, and the answer to QPRESET],
+) <fig-wpreset>
+
+A dump of preset `00` is built from the *edit buffer*, not read from the flash memory: the bytes of the record that the edit buffer
+does not hold come back as `00`. To back up a preset, dump its preset number.
+
+`WPRESET` writes with the same frame (see #cref(<chap-preset>)). The unit answers with `ACKW`, which gives the preset
+number and a status byte:
+
+#figure(
+  frame(
+    bytefield(
+      bpr: 80,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[11],
+      bytes(2, fill: l_purple)[00 02],
+      bytes(1, fill: l_yellow)[08],
+      bytes(1, fill: l_red)[00],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
+    (l_yellow, [preset number]),
+    (l_red, [status]),
+  ),
+  caption: [ACKW: the answer to a write of user preset 8],
 )
 
 `PPRESET` writes a block of bytes at an address inside the stored record, without carrying the whole preset. Its
-payload is the count, the packed address, the slot, then the data; the frame below writes 2 bytes at `0x0575`, in the
-record of slot 8:
+payload is the count, the packed address, the preset number, then the data; the frame below writes 2 bytes at `0x0575`, in the
+record of preset 8:
 
 #figure(
-  bytefield(
-    bpr: 112,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[32],
-    bytes(2, fill: l_purple)[00 06],
-    bytes(1, fill: l_orange)[02],
-    bytes(2, fill: l_green)[05 75],
-    bytes(1, fill: l_orange)[08],
-    bytes(2, fill: l_blue)[00 01],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 112,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[32],
+      bytes(2, fill: l_purple)[00 06],
+      bytes(1, fill: l_orange)[02],
+      bytes(2, fill: l_green)[05 75],
+      bytes(1, fill: l_yellow)[08],
+      bytes(2)[00 01],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
+    (l_orange, [count]),
+    (l_green, [address]),
+    (l_yellow, [preset number]),
   ),
-  caption: [PPRESET: writing 2 bytes inside a user preset in flash memory],
+  caption: [PPRESET: Poke 2 bytes at 0x0575 in user preset 8],
 )
 
-The unit answers with `ACKP`, which repeats the count, the address and the slot, then gives a status byte:
+The unit answers with `ACKP`, which repeats the count, the address and the preset number, then gives a status byte:
 
 #figure(
-  bytefield(
-    bpr: 104,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[3A],
-    bytes(2, fill: l_purple)[00 05],
-    bytes(1, fill: l_orange)[02],
-    bytes(2, fill: l_green)[05 75],
-    bytes(1, fill: l_orange)[08],
-    bytes(1, fill: l_blue)[00],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 104,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[3A],
+      bytes(2, fill: l_purple)[00 05],
+      bytes(1, fill: l_orange)[02],
+      bytes(2, fill: l_green)[05 75],
+      bytes(1, fill: l_yellow)[08],
+      bytes(1, fill: l_red)[00],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
+    (l_orange, [count]),
+    (l_green, [address]),
+    (l_yellow, [preset number]),
+    (l_red, [status]),
   ),
-  caption: [ACKP: the answer to a poke in flash memory],
+  caption: [ACKP: the answer to a poke of 2 bytes at 0x0575 in user preset 8],
 )
+
+The address is an offset in the record, and the unit does not compare it with the 1546 bytes of the record: an offset
+past the end continues in the next user preset.
 
 == Stored settings
 
@@ -96,50 +154,62 @@ The unit answers with `ACKP`, which repeats the count, the address and the slot,
 (see #cref(<chap-store>)):
 
 #figure(
-  bytefield(
-    bpr: 72,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[7B],
-    bytes(2, fill: l_purple)[00 01],
-    bytes(1, fill: l_orange)[32],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 72,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[7B],
+      bytes(2, fill: l_purple)[00 01],
+      bytes(1)[32],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
   ),
-  caption: [SGLOB: saving the global edit buffer to flash memory],
+  caption: [SGLOB: Save the global settings],
 )
 
 `FIELD4` writes 4 bytes in a stored field whose role is not established:
 
 #figure(
-  bytefield(
-    bpr: 96,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[78],
-    bytes(2, fill: l_purple)[00 04],
-    bytes(4, fill: l_orange)[data],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 96,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[78],
+      bytes(2, fill: l_purple)[00 04],
+      bytes(4)[data],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
   ),
-  caption: [FIELD4: writing 4 bytes in a stored field],
+  caption: [FIELD4: Write 4 bytes],
 )
 
 `SERIAL` writes the 16 bytes of the serial number that the device inquiry reports (see #cref(<chap-inquiry>)):
 
 #figure(
-  bytefield(
-    bpr: 192,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[79],
-    bytes(2, fill: l_purple)[00 10],
-    bytes(16, fill: l_orange)[serial, ASCII],
-    bytes(1, fill: l_gray)[F7],
+  frame(
+    bytefield(
+      bpr: 192,
+      bytes(1, fill: l_gray)[F0],
+      bytes(1, fill: l_gray)[47],
+      bytes(1, fill: l_gray)[00],
+      bytes(1, fill: l_gray)[25],
+      bytes(1, fill: l_blue)[79],
+      bytes(2, fill: l_purple)[00 10],
+      bytes(16)[serial, ASCII],
+      bytes(1, fill: l_gray)[F7],
+    ),
+    (l_blue, [command]),
+    (l_purple, [payload size]),
   ),
-  caption: [SERIAL: writing the serial number],
+  caption: [SERIAL: Write the serial number],
 )

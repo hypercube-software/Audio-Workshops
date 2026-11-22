@@ -12,22 +12,22 @@ belong to the preset: 2 presets of the same unit can drive 2 different instrumen
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 16`], [`00 01`], [Channel], [`0`..`32`], [`00`], [Channel of the notes: `00` is *Common*, `01` to `10` are USB
+    head([*Packed address*], [*Size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 16`], [1], [Channel], [`0`..`32`], [`00`], [Channel of the notes: `00` is *Common*, `01` to `10` are USB
       A1 to A16, `11` to `20` are USB B1 to B16],
-    [`00 17`], [`00 01`], [Octave], [`1`..`7`], [`04`], [Octave shift of the keys, plus 4: `04` is no shift, `01` is 3
+    [`00 17`], [1], [Octave], [`1`..`7`], [`04`], [Octave shift of the keys, plus 4: `04` is no shift, `01` is 3
       octaves down and `07` 3 octaves up],
-    [`00 18`], [`00 01`], [Aftertouch], [`0` `1`], [`01`], [Whether the unit sends channel aftertouch],
-    [`00 19`], [`00 01`], [flag], [`01`], [`01`], [Constant in the presets examined],
-    [`00 1A`], [`00 01`], [MIDI to DIN], [`0` `1`], [`00`], [Whether the notes are copied to the DIN output],
-    [`00 1B`], [`00 01`], [Transport type], [`0`..`4`], [`03`], [Protocol of the transport buttons: `00` is MMC, `04`
+    [`00 18`], [1], [Aftertouch], [`0` `1`], [`01`], [Whether the unit sends channel aftertouch],
+    [`00 19`], [1], [flag], [`01`], [`01`], [Constant in the presets examined],
+    [`00 1A`], [1], [MIDI to DIN], [`0` `1`], [`00`], [Whether the notes are copied to the DIN output],
+    [`00 1B`], [1], [Transport type], [`0`..`4`], [`03`], [Protocol of the transport buttons: `00` is MMC, `04`
       the Pro Tools variant, the other values follow the Edit menu],
-    [`00 1C`], [`00 01`], [Transpose], [`0`..`72`], [`24`], [Transposition in semitones, plus 36: `24` is no
+    [`00 1C`], [1], [Transpose], [`0`..`72`], [`24`], [Transposition in semitones, plus 36: `24` is no
       transposition],
-    [`00 1D`], [`00 01`], [Split], [`0` `1`], [`00`], [Off, on],
-    [`00 1E`], [`00 01`], [Split note], [`0`..`60`], [`3B`], [Index of the key where the split sits, counted from the
+    [`00 1D`], [1], [Split], [`0` `1`], [`00`], [Off, on],
+    [`00 1E`], [1], [Split note], [`0`..`60`], [`3B`], [Index of the key where the split sits, counted from the
       lowest key: `00` is the lowest key, `3C` the highest],
-    [`00 1F`], [`00 01`], [B channel], [`0`..`31`], [`01`], [Channel of the high zone of the split],
+    [`00 1F`], [1], [B channel], [`0`..`31`], [`01`], [Channel of the high zone of the split],
   ),
   caption: [Keyboard settings of the reference preset],
 )
@@ -65,15 +65,15 @@ zone `B`. Beyond the notes, each controller goes to one zone, the other, or both
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Controller*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 20`], [`00 01`], [Pitch bend], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 21`], [`00 01`], [Modulation wheel], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 22`], [`00 01`], [Footswitch 1], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 23`], [`00 01`], [Footswitch 2], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 24`], [`00 01`], [Expression pedal], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 25`], [`00 01`], [Arpeggiator], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 26`], [`00 01`], [Aftertouch], [`0`..`3`], [`03`], [Off, A, B, A and B],
-    [`00 27`], [`00 01`], [unknown], [`00`], [`00`], [Unidentified],
+    head([*Packed address*], [*Size*], [*Controller*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 20`], [1], [Pitch bend], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 21`], [1], [Modulation wheel], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 22`], [1], [Footswitch 1], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 23`], [1], [Footswitch 2], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 24`], [1], [Expression pedal], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 25`], [1], [Arpeggiator], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 26`], [1], [Aftertouch], [`0`..`3`], [`03`], [Off, A, B, A and B],
+    [`00 27`], [1], [unknown], [`00`], [`00`], [Unidentified],
   ),
   caption: [Assignment of the controllers to the 2 zones],
 )
@@ -87,17 +87,17 @@ switch says.
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 28`], [`00 01`], [Modulation channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
-    [`00 29`], [`00 01`], [Modulation controller], [`0`..`127`], [`01`], [MIDI CC number sent by the wheel, 1 by
+    head([*Packed address*], [*Size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 28`], [1], [Modulation channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
+    [`00 29`], [1], [Modulation controller], [`0`..`127`], [`01`], [MIDI CC number sent by the wheel, 1 by
       default],
-    [`00 2A`], [`00 01`], [Modulation minimum], [`0`..`127`], [`00`], [Value sent at the bottom of the wheel],
-    [`00 2B`], [`00 01`], [Modulation maximum], [`0`..`127`], [`7F`], [Value sent at the top of the wheel],
-    [`00 2C`], [`00 02`], [unidentified], [—], [`7F 7F`], [Probably the coarse and fine resolution of the wheel, or its
+    [`00 2A`], [1], [Modulation minimum], [`0`..`127`], [`00`], [Value sent at the bottom of the wheel],
+    [`00 2B`], [1], [Modulation maximum], [`0`..`127`], [`7F`], [Value sent at the top of the wheel],
+    [`00 2C`], [2], [unidentified], [—], [`7F 7F`], [Probably the coarse and fine resolution of the wheel, or its
       copy to the DIN output],
-    [`00 30`], [`00 01`], [Pitch bend channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
-    [`00 31`], [`00 01`], [Pitch bend to DIN], [`0` `1`], [`00`], [Whether the bend is copied to the DIN output],
-    [`00 32`], [`00 06`], [unidentified], [—], [`00 00 00 00 7F 7F`], [—],
+    [`00 30`], [1], [Pitch bend channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
+    [`00 31`], [1], [Pitch bend to DIN], [`0` `1`], [`00`], [Whether the bend is copied to the DIN output],
+    [`00 32`], [6], [unidentified], [—], [`00 00 00 00 7F 7F`], [—],
   ),
   caption: [Wheel settings of the reference preset],
 )
@@ -113,25 +113,25 @@ A wheel always sends a continuous controller; its minimum and maximum bound the 
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 38`], [`00 01`], [Expression channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
-    [`00 39`], [`00 01`], [Expression controller], [`0`..`127`], [`46`], [MIDI CC number sent by the pedal],
-    [`00 3A`], [`00 01`], [Expression minimum], [`0`..`127`], [`14`], [Value sent when the pedal is released],
-    [`00 3B`], [`00 01`], [Expression maximum], [`0`..`127`], [`7F`], [Value sent when the pedal is pressed],
-    [`00 3C`], [`00 02`], [unidentified], [—], [`7F 7F`], [—],
-    [`00 3E`], [`00 01`], [Expression to DIN], [`0` `1`], [`01`], [Whether the pedal is copied to the DIN output],
-    [`00 3F`], [`00 01`], [Footswitch 1 type], [`0`..`7`], [`00`], [Function of the switch, see below],
-    [`00 40`], [`00 01`], [Footswitch 2 type], [`0`..`7`], [`00`], [Function of the switch],
-    [`00 41`], [`00 01`], [Footswitch 1 channel], [`0`..`32`], [`00`], [Channel of the switch],
-    [`00 42`], [`00 01`], [Footswitch 2 channel], [`0`..`32`], [`00`], [Channel of the switch],
-    [`00 43`], [`00 01`], [Footswitch 1 controller], [`0`..`127`], [`00`], [CC number, used when the type is a
+    head([*Packed address*], [*Size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 38`], [1], [Expression channel], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
+    [`00 39`], [1], [Expression controller], [`0`..`127`], [`46`], [MIDI CC number sent by the pedal],
+    [`00 3A`], [1], [Expression minimum], [`0`..`127`], [`14`], [Value sent when the pedal is released],
+    [`00 3B`], [1], [Expression maximum], [`0`..`127`], [`7F`], [Value sent when the pedal is pressed],
+    [`00 3C`], [2], [unidentified], [—], [`7F 7F`], [—],
+    [`00 3E`], [1], [Expression to DIN], [`0` `1`], [`01`], [Whether the pedal is copied to the DIN output],
+    [`00 3F`], [1], [Footswitch 1 type], [`0`..`7`], [`00`], [Function of the switch, see below],
+    [`00 40`], [1], [Footswitch 2 type], [`0`..`7`], [`00`], [Function of the switch],
+    [`00 41`], [1], [Footswitch 1 channel], [`0`..`32`], [`00`], [Channel of the switch],
+    [`00 42`], [1], [Footswitch 2 channel], [`0`..`32`], [`00`], [Channel of the switch],
+    [`00 43`], [1], [Footswitch 1 controller], [`0`..`127`], [`00`], [CC number, used when the type is a
       controller],
-    [`00 44`], [`00 01`], [Footswitch 2 controller], [`0`..`127`], [`00`], [CC number],
-    [`00 45`], [`00 01`], [Footswitch 1 mode], [`0` `1`], [`00`], [Momentary, toggle],
-    [`00 46`], [`00 01`], [Footswitch 2 mode], [`0` `1`], [`00`], [Momentary, toggle],
-    [`00 47`], [`00 02`], [unidentified], [—], [`00 00`], [—],
-    [`00 49`], [`00 01`], [Footswitch 1 to DIN], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
-    [`00 4A`], [`00 01`], [Footswitch 2 to DIN], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
+    [`00 44`], [1], [Footswitch 2 controller], [`0`..`127`], [`00`], [CC number],
+    [`00 45`], [1], [Footswitch 1 mode], [`0` `1`], [`00`], [Momentary, toggle],
+    [`00 46`], [1], [Footswitch 2 mode], [`0` `1`], [`00`], [Momentary, toggle],
+    [`00 47`], [2], [unidentified], [—], [`00 00`], [—],
+    [`00 49`], [1], [Footswitch 1 to DIN], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
+    [`00 4A`], [1], [Footswitch 2 to DIN], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
   ),
   caption: [Pedal settings of the reference preset],
 )

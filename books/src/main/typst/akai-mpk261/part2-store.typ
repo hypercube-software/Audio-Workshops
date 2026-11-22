@@ -4,26 +4,12 @@
 #chapter("Saving the global settings", l: "chap-store")
 
 A write to the global settings changes the RAM only: the unit uses the new settings at once, and a power cycle brings
-back what flash holds. The `SGLOB` command saves them.
+back what the flash memory holds. The `SGLOB` command saves them.
 
-== The frame
+== The payload
 
-The `SGLOB` command carries 1 payload byte: the contrast of the display, from 0 to 99.
-
-#figure(
-  bytefield(
-    bpr: 72,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[7B],
-    bytes(2, fill: l_purple)[00 01],
-    bytes(1, fill: l_orange)[cc],
-    bytes(1, fill: l_gray)[F7],
-  ),
-  caption: [Saving the global settings],
-)
+The `SGLOB` command carries 1 payload byte: the contrast of the display, from 0 to 99. #cref(<chap-flash-cmds>) gives
+its frame.
 
 The command is peculiar: its payload *carries the contrast only*, and the command saves *all the global settings*, not
 just that byte. The payload is not the data that the command writes.
@@ -52,25 +38,25 @@ first bytes of the block are constants, `01 02`; the 18 settings follow, in this
 #figure(
   ptable(
     columns: (auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Setting*]),
-    [`00 01`], [`00 01`], [Current preset: the preset that the unit loads at power-on],
-    [`00 18`], [`00 01`], [Pad bank],
-    [`00 0A`], [`00 01`], [Common channel],
-    [`00 2F`], [`00 01`], [Internal, role not established],
-    [`00 30`], [`00 01`], [SysEx device ID],
-    [`00 02`], [`00 01`], [Contrast],
-    [`00 0B`], [`00 01`], [Tap average],
-    [`00 0D`], [`00 01`], [Tempo LED],
-    [`00 0C`], [`00 01`], [Clock source],
-    [`00 0F`], [`00 01`], [Transport to DIN],
-    [`00 06`], [`00 01`], [Keyboard curve],
-    [`00 07`], [`00 01`], [Keyboard gain],
-    [`00 09`], [`00 01`], [Black key sensitivity],
-    [`00 08`], [`00 01`], [White key sensitivity],
-    [`00 05`], [`00 01`], [Pad threshold],
-    [`00 04`], [`00 01`], [Pad velocity curve],
-    [`00 03`], [`00 01`], [Pad velocity sensitivity],
-    [`00 0E`], [`00 01`], [Note display],
+    head([*Packed address*], [*Size*], [*Setting*]),
+    [`00 01`], [1], [Current preset: the preset that the unit loads at power-on],
+    [`00 18`], [1], [Pad bank],
+    [`00 0A`], [1], [Common channel],
+    [`00 2F`], [1], [Internal, role not established],
+    [`00 30`], [1], [SysEx device ID],
+    [`00 02`], [1], [Contrast],
+    [`00 0B`], [1], [Tap average],
+    [`00 0D`], [1], [Tempo LED],
+    [`00 0C`], [1], [Clock source],
+    [`00 0F`], [1], [Transport to DIN],
+    [`00 06`], [1], [Keyboard curve],
+    [`00 07`], [1], [Keyboard gain],
+    [`00 09`], [1], [Black key sensitivity],
+    [`00 08`], [1], [White key sensitivity],
+    [`00 05`], [1], [Pad threshold],
+    [`00 04`], [1], [Pad velocity curve],
+    [`00 03`], [1], [Pad velocity sensitivity],
+    [`00 0E`], [1], [Note display],
   ),
   caption: [The settings saved by SGLOB],
 )
@@ -95,12 +81,12 @@ are not part of the block:
 #figure(
   ptable(
     columns: (auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Content*]),
-    [`00 13`], [`00 05`], [Arp Latch, Arp, Full Level, 16 Level and Note Repeat: live states of the buttons],
-    [`00 19`], [`00 01`], [Control bank],
-    [`00 1A`], [`00 01`], [Time division],
-    [`00 25`], [`00 05`], [Program Change mode],
-    [`00 31`], [`02 48`], [Unidentified bytes],
+    head([*Packed address*], [*Size*], [*Content*]),
+    [`00 13`], [5], [Arp Latch, Arp, Full Level, 16 Level and Note Repeat: live states of the buttons],
+    [`00 19`], [1], [Control bank],
+    [`00 1A`], [1], [Time division],
+    [`00 25`], [5], [Program Change mode],
+    [`00 31`], [328], [Unidentified bytes],
   ),
   caption: [The global settings that SGLOB leaves out],
 )

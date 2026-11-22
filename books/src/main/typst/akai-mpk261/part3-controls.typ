@@ -8,13 +8,13 @@ number of controls and in the fields a control of their kind needs:
 
 #figure(
   ptable(
-    columns: (auto, auto, auto, auto, auto, auto, 1fr),
-    head([*Block*], [*Controls*], [*Packed address*], [*Packed size*], [*Size*], [*Fields*], [*Banked by*]),
-    [DAW buttons], [5], [`00 5B`], [`00 41`], [65], [13], [—],
-    [Switches], [24], [`01 1C`], [`02 38`], [312], [13], [8 per bank, 3 banks],
-    [Faders], [24], [`03 54`], [`01 10`], [144], [6], [8 per bank, 3 banks],
-    [Knobs], [24], [`04 64`], [`01 58`], [216], [9], [8 per bank, 3 banks],
-    [Pads], [64], [`06 3C`], [`05 40`], [704], [11], [16 per bank, 4 banks],
+    columns: (auto, auto, auto, auto, auto, 1fr),
+    head([*Block*], [*Controls*], [*Packed address*], [*Size*], [*Fields*], [*Banked by*]),
+    [DAW buttons], [5], [`00 5B`], [65], [13], [—],
+    [Switches], [24], [`01 1C`], [312], [13], [8 per bank, 3 banks],
+    [Faders], [24], [`03 54`], [144], [6], [8 per bank, 3 banks],
+    [Knobs], [24], [`04 64`], [216], [9], [8 per bank, 3 banks],
+    [Pads], [64], [`06 3C`], [704], [11], [16 per bank, 4 banks],
   ),
   caption: [The 5 blocks of controls],
 )
@@ -27,16 +27,16 @@ For the knobs, the 24 types come first, then the 24 channels, then the 24 contro
 #figure(
   ptable(
     columns: (auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Content*]),
-    [Type], [`04 64`], [`00 18`], [Type of the 24 knobs, 1 byte each],
-    [Channel], [`04 7C`], [`00 18`], [Channel of the 24 knobs],
-    [Controller], [`05 14`], [`00 18`], [Controller number of the 24 knobs],
-    [Minimum], [`05 2C`], [`00 18`], [Minimum value of the 24 knobs],
-    [Maximum], [`05 44`], [`00 18`], [Maximum value of the 24 knobs],
-    [MSB], [`05 5C`], [`00 18`], [Coarse value of the 24 knobs],
-    [LSB], [`05 74`], [`00 18`], [Fine value of the 24 knobs],
-    [Value], [`06 0C`], [`00 18`], [Current value of the 24 knobs],
-    [MIDI to DIN], [`06 24`], [`00 18`], [Whether the 24 knobs are copied to the DIN output],
+    head([*Array*], [*Packed address*], [*Size*], [*Content*]),
+    [Type], [`04 64`], [24], [Type of the 24 knobs, 1 byte each],
+    [Channel], [`04 7C`], [24], [Channel of the 24 knobs],
+    [Controller], [`05 14`], [24], [Controller number of the 24 knobs],
+    [Minimum], [`05 2C`], [24], [Minimum value of the 24 knobs],
+    [Maximum], [`05 44`], [24], [Maximum value of the 24 knobs],
+    [MSB], [`05 5C`], [24], [Coarse value of the 24 knobs],
+    [LSB], [`05 74`], [24], [Fine value of the 24 knobs],
+    [Value], [`06 0C`], [24], [Current value of the 24 knobs],
+    [MIDI to DIN], [`06 24`], [24], [Whether the 24 knobs are copied to the DIN output],
   ),
   caption: [The 9 arrays of the knob block],
 )
@@ -47,8 +47,8 @@ type at `0x0464` and its controller number at `0x0514`; knob 9, the first knob o
 
 2 consequences matter for an implementation:
 
-- A single field of a single control is 1 byte, so a message of size `00 04` reads or writes it alone.
-- A whole array of 24 bytes takes a message of size `00 1B`, and the block of 312 bytes needs several messages, because
+- A single field of a single control is 1 byte, so a payload size of `00 04` reads or writes it alone.
+- A whole array of 24 bytes takes a payload size of `00 1B`, and the block of 312 bytes needs several messages, because
   a single message carries at most 127 data bytes (see #cref(<chap-sysex>)).
 
 == Banks and numbering
@@ -69,7 +69,8 @@ index of the control inside the block is `bank * 8 + position`, with the positio
 )
 
 The control bank selects which of the 3 settings the first 8 knobs of the block use; the memory of the preset holds all
-3. An editor shows all of them, or it silently overwrites the settings of the other banks when it writes a whole array.
+3 of them. An editor shows all of them, or it silently overwrites the settings of the other banks when it writes a
+whole array.
 
 == DAW buttons
 
@@ -79,21 +80,21 @@ because a DAW button can be assigned to a keyboard shortcut instead of a MIDI me
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`00 5B`], [`00 05`], [`0`..`4`], [`00`], [CC, note, program change, program bank, keystroke],
-    [Channel], [`00 60`], [`00 05`], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
-    [Controller], [`00 65`], [`00 05`], [`0`..`127`], [`7C`], [CC number, note number, program number or bank,
+    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [Type], [`00 5B`], [5], [`0`..`4`], [`00`], [CC, note, program change, program bank, keystroke],
+    [Channel], [`00 60`], [5], [`0`..`32`], [`00`], [Same encoding as the keyboard channel],
+    [Controller], [`00 65`], [5], [`0`..`127`], [`7C`], [CC number, note number, program number or bank,
       depending on the type],
-    [Mode], [`00 6A`], [`00 05`], [`0` `1`], [`00`], [Momentary, toggle],
-    [Program], [`00 6F`], [`00 05`], [`0`..`127`], [`00`], [Program number when the type is a program bank],
-    [MSB], [`00 74`], [`00 05`], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
-    [LSB], [`00 79`], [`00 05`], [`0`..`127`], [`00`], [Least significant byte of the bank],
-    [Note], [`00 7E`], [`00 05`], [`0`..`127`], [`00`], [Note number when the type is a note],
-    [MIDI to DIN], [`00 83`], [`00 05`], [`0` `1`], [`00`], [Whether the button is copied to the DIN output],
-    [Velocity], [`00 88`], [`00 05`], [`0`..`127`], [`7F`], [Velocity of that note],
-    [unknown], [`00 8D`], [`00 05`], [`00`], [`00`], [Unidentified],
-    [Key 1], [`00 92`], [`00 05`], [`0`..`83`], [`25`], [Key code when the type is a keystroke],
-    [Key 2], [`00 97`], [`00 05`], [`0`..`14`], [`00`], [Modifiers of that keystroke],
+    [Mode], [`00 6A`], [5], [`0` `1`], [`00`], [Momentary, toggle],
+    [Program], [`00 6F`], [5], [`0`..`127`], [`00`], [Program number when the type is a program bank],
+    [MSB], [`00 74`], [5], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
+    [LSB], [`00 79`], [5], [`0`..`127`], [`00`], [Least significant byte of the bank],
+    [Note], [`00 7E`], [5], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [MIDI to DIN], [`00 83`], [5], [`0` `1`], [`00`], [Whether the button is copied to the DIN output],
+    [Velocity], [`00 88`], [5], [`0`..`127`], [`7F`], [Velocity of that note],
+    [unknown], [`00 8D`], [5], [`00`], [`00`], [Unidentified],
+    [Key 1], [`00 92`], [5], [`0`..`83`], [`25`], [Key code when the type is a keystroke],
+    [Key 2], [`00 97`], [5], [`0`..`14`], [`00`], [Modifiers of that keystroke],
   ),
   caption: [Fields of the DAW buttons],
 )
@@ -110,20 +111,20 @@ the table below gives the first byte of each, and switch `i` sits at the `i`-th 
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`01 1C`], [`00 18`], [`0`..`4`], [`00`], [CC, note, program change, program bank, keystroke],
-    [Channel], [`01 34`], [`00 18`], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
-    [Controller], [`01 4C`], [`00 18`], [`0`..`127`], [`1C`], [CC number, note number, program number or bank],
-    [Mode], [`01 64`], [`00 18`], [`0` `1`], [`00`], [Momentary, toggle],
-    [Program], [`01 7C`], [`00 18`], [`0`..`127`], [`00`], [Program number when the type is a program bank],
-    [MSB], [`02 14`], [`00 18`], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
-    [LSB], [`02 2C`], [`00 18`], [`0`..`127`], [`00`], [Least significant byte of the bank],
-    [Note], [`02 44`], [`00 18`], [`0`..`127`], [`00`], [Note number when the type is a note],
-    [MIDI to DIN], [`02 5C`], [`00 18`], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
-    [Velocity], [`02 74`], [`00 18`], [`0`..`127`], [`7F`], [Velocity of that note],
-    [unknown], [`03 0C`], [`00 18`], [`00`], [`00`], [Unidentified],
-    [Key 1], [`03 24`], [`00 18`], [`0`..`83`], [`00`], [Key code when the type is a keystroke],
-    [Key 2], [`03 3C`], [`00 18`], [`0`..`14`], [`00`], [Modifiers of that keystroke],
+    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [Type], [`01 1C`], [24], [`0`..`4`], [`00`], [CC, note, program change, program bank, keystroke],
+    [Channel], [`01 34`], [24], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
+    [Controller], [`01 4C`], [24], [`0`..`127`], [`1C`], [CC number, note number, program number or bank],
+    [Mode], [`01 64`], [24], [`0` `1`], [`00`], [Momentary, toggle],
+    [Program], [`01 7C`], [24], [`0`..`127`], [`00`], [Program number when the type is a program bank],
+    [MSB], [`02 14`], [24], [`0`..`127`], [`00`], [Most significant byte of the bank, or invert switch],
+    [LSB], [`02 2C`], [24], [`0`..`127`], [`00`], [Least significant byte of the bank],
+    [Note], [`02 44`], [24], [`0`..`127`], [`00`], [Note number when the type is a note],
+    [MIDI to DIN], [`02 5C`], [24], [`0` `1`], [`00`], [Whether the switch is copied to the DIN output],
+    [Velocity], [`02 74`], [24], [`0`..`127`], [`7F`], [Velocity of that note],
+    [unknown], [`03 0C`], [24], [`00`], [`00`], [Unidentified],
+    [Key 1], [`03 24`], [24], [`0`..`83`], [`00`], [Key code when the type is a keystroke],
+    [Key 2], [`03 3C`], [24], [`0`..`14`], [`00`], [Modifiers of that keystroke],
   ),
   caption: [Fields of the switches],
 )
@@ -136,13 +137,13 @@ controller numbers 120 to 124 in the reference preset.
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`03 54`], [`00 18`], [`0` `1`], [`00`], [CC, aftertouch],
-    [Channel], [`03 6C`], [`00 18`], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
-    [Controller], [`04 04`], [`00 18`], [`0`..`127`], [`07`], [CC number sent by the fader],
-    [Minimum], [`04 1C`], [`00 18`], [`0`..`127`], [`00`], [Value sent at the bottom of the travel],
-    [Maximum], [`04 34`], [`00 18`], [`0`..`127`], [`7F`], [Value sent at the top of the travel],
-    [MIDI to DIN], [`04 4C`], [`00 18`], [`0` `1`], [`00`], [Whether the fader is copied to the DIN output],
+    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [Type], [`03 54`], [24], [`0` `1`], [`00`], [CC, aftertouch],
+    [Channel], [`03 6C`], [24], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
+    [Controller], [`04 04`], [24], [`0`..`127`], [`07`], [CC number sent by the fader],
+    [Minimum], [`04 1C`], [24], [`0`..`127`], [`00`], [Value sent at the bottom of the travel],
+    [Maximum], [`04 34`], [24], [`0`..`127`], [`7F`], [Value sent at the top of the travel],
+    [MIDI to DIN], [`04 4C`], [24], [`0` `1`], [`00`], [Whether the fader is copied to the DIN output],
   ),
   caption: [Fields of the faders],
 )
@@ -155,17 +156,17 @@ bound the values it sends.
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`04 64`], [`00 18`], [`0`..`3`], [`00`], [CC, aftertouch, increment 1, increment 2],
-    [Channel], [`04 7C`], [`00 18`], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
-    [Controller], [`05 14`], [`00 18`], [`0`..`127`], [`2D`], [CC number sent by the knob],
-    [Minimum], [`05 2C`], [`00 18`], [`0`..`127`], [`00`], [Value sent at the left stop],
-    [Maximum], [`05 44`], [`00 18`], [`0`..`127`], [`7F`], [Value sent at the right stop],
-    [MSB], [`05 5C`], [`00 18`], [`0`..`127`], [`7F`], [Coarse part of the increment, for the Increment/Decrement 1
+    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [Type], [`04 64`], [24], [`0`..`3`], [`00`], [CC, aftertouch, increment 1, increment 2],
+    [Channel], [`04 7C`], [24], [`0`..`32`], [`01`], [Same encoding as the keyboard channel],
+    [Controller], [`05 14`], [24], [`0`..`127`], [`2D`], [CC number sent by the knob],
+    [Minimum], [`05 2C`], [24], [`0`..`127`], [`00`], [Value sent at the left stop],
+    [Maximum], [`05 44`], [24], [`0`..`127`], [`7F`], [Value sent at the right stop],
+    [MSB], [`05 5C`], [24], [`0`..`127`], [`7F`], [Coarse part of the increment, for the Increment/Decrement 1
       type],
-    [LSB], [`05 74`], [`00 18`], [`0`..`127`], [`7F`], [Fine part of the increment],
-    [Value], [`06 0C`], [`00 18`], [`0`..`127`], [`01`], [Value sent with an increment or a decrement message],
-    [MIDI to DIN], [`06 24`], [`00 18`], [`0` `1`], [`00`], [Whether the knob is copied to the DIN output],
+    [LSB], [`05 74`], [24], [`0`..`127`], [`7F`], [Fine part of the increment],
+    [Value], [`06 0C`], [24], [`0`..`127`], [`01`], [Value sent with an increment or a decrement message],
+    [MIDI to DIN], [`06 24`], [24], [`0` `1`], [`00`], [Whether the knob is copied to the DIN output],
   ),
   caption: [Fields of the knobs],
 )

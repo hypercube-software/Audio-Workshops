@@ -176,7 +176,7 @@
                                 <argument>compile</argument>
                                 <argument>--root</argument>
                                 <argument>${typst.root}</argument>
-                                <argument>${typst.root}/se-02/main.typ</argument>
+                                <argument>${typst.root}/roland-se-02/main.typ</argument>
                                 <argument>${book.se-02.pdf}</argument>
                             </arguments>
                         </configuration>

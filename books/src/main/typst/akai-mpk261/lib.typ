@@ -40,6 +40,30 @@
   link(target, [Part #numbering("I", pt), chapter #chap])
 }
 
+// Legend of the coloured fields, set under the bytefield of a frame figure.
+//
+// Each argument is a pair: a fill colour and the name of the field.
+//   #frame-legend((l_blue, [command]), (l_green, [address]))
+#let frame-legend(..fields) = block(
+  width: 100%,
+  above: 5pt,
+  text(
+    size: 8pt,
+    for (i, (fill, name)) in fields.pos().enumerate() {
+      if i > 0 [ · ]
+      box(fill: fill, width: 7pt, height: 7pt, radius: 1pt)
+      [ #name ]
+    },
+  ),
+)
+
+// A bytefield with its legend, ready for a `figure`.
+//   frame(#bytefield(...), (l_blue, [command]), (l_green, [address]))
+#let frame(figure, ..fields) = [
+  #figure
+  #frame-legend(..fields)
+]
+
 // Callout used for a warning about a field whose semantic is not fully covered.
 #let caveat(body) = block(
   width: 100%,

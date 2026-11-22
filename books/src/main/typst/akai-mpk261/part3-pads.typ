@@ -27,19 +27,19 @@ on bank B still contains the settings of the 4 banks, and an editor writes them 
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Array*], [*Packed address*], [*Packed size*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [Type], [`06 3C`], [`00 40`], [`0`..`2`], [`02`], [Note, program change, program bank],
-    [Channel], [`06 7C`], [`00 40`], [`0`..`32`], [`0A`], [Same encoding as the keyboard channel],
-    [Note], [`07 3C`], [`00 40`], [`0`..`127`], [`2F`], [Note number when the type is a note; `2F` is B2],
-    [Mode], [`07 7C`], [`00 40`], [`0` `1`], [`00`], [Momentary, toggle],
-    [Aftertouch], [`08 3C`], [`00 40`], [`0`..`2`], [`01`], [Off, channel, polyphonic],
-    [Program], [`08 7C`], [`00 40`], [`0`..`127`], [`50`], [Program number when the type is a program change or a
+    head([*Array*], [*Packed address*], [*Size*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [Type], [`06 3C`], [64], [`0`..`2`], [`02`], [Note, program change, program bank],
+    [Channel], [`06 7C`], [64], [`0`..`32`], [`0A`], [Same encoding as the keyboard channel],
+    [Note], [`07 3C`], [64], [`0`..`127`], [`2F`], [Note number when the type is a note; `2F` is B2],
+    [Mode], [`07 7C`], [64], [`0` `1`], [`00`], [Momentary, toggle],
+    [Aftertouch], [`08 3C`], [64], [`0`..`2`], [`01`], [Off, channel, polyphonic],
+    [Program], [`08 7C`], [64], [`0`..`127`], [`50`], [Program number when the type is a program change or a
       program bank],
-    [MSB], [`09 3C`], [`00 40`], [`0`..`127`], [`1E`], [Most significant byte of the bank],
-    [LSB], [`09 7C`], [`00 40`], [`0`..`127`], [`28`], [Least significant byte of the bank],
-    [MIDI to DIN], [`0A 3C`], [`00 40`], [`0` `1`], [`00`], [Whether the pad is copied to the DIN output],
-    [Off colour], [`0A 7C`], [`00 40`], [`0`..`16`], [`10`], [Colour of the pad at rest],
-    [On colour], [`0B 3C`], [`00 40`], [`0`..`16`], [`08`], [Colour of the pad when it is hit],
+    [MSB], [`09 3C`], [64], [`0`..`127`], [`1E`], [Most significant byte of the bank],
+    [LSB], [`09 7C`], [64], [`0`..`127`], [`28`], [Least significant byte of the bank],
+    [MIDI to DIN], [`0A 3C`], [64], [`0` `1`], [`00`], [Whether the pad is copied to the DIN output],
+    [Off colour], [`0A 7C`], [64], [`0`..`16`], [`10`], [Colour of the pad at rest],
+    [On colour], [`0B 3C`], [64], [`0`..`16`], [`08`], [Colour of the pad when it is hit],
   ),
   caption: [Fields of the pads],
 )

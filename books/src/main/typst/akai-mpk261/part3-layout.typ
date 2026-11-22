@@ -10,11 +10,11 @@ pedals, of the 64 pads, and of the 24 switches, 24 faders and 24 knobs. The unit
 
 - The *edit buffer* is a RAM block of 1544 bytes, at addresses `0x0000` to `0x0C07`. The `QEDIT` command reads it and the
   `WEDIT` command writes it; a write changes the settings at once, and the unit clears the block at power-off.
-- A *user preset* is 1 of the 30 slots of flash. The `QPRESET` command reads 1 of them and the `WPRESET` command writes 1
+- A *user preset* is 1 of the 30 presets of the flash memory. The `QPRESET` command reads 1 of them and the `WPRESET` command writes 1
   of them; the content survives a power cycle. Loading a user preset reads it into the edit buffer.
 
-The front panel edits the edit buffer, and storing a preset writes it into a slot. Both forms carry the same settings in
-2 different layouts, and the 2 pairs of commands take a different argument: an address for the edit buffer, a slot
+The front panel edits the edit buffer, and storing a preset writes it into the flash memory. Both forms carry the same settings in
+2 different layouts, and the 2 pairs of commands take a different argument: an address for the edit buffer, a preset
 number for a user preset.
 
 == The edit buffer
@@ -24,20 +24,20 @@ follow each other. The 1544 bytes divide as follows:
 
 #figure(
   ptable(
-    columns: (auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Size*], [*Content*], [*Chapter*]),
-    [`00 00`], [`00 08`], [8], [Name of the preset], [#cref(<chap-header>)],
-    [`00 08`], [`00 02`], [2], [Tempo, 14-bit packed], [#cref(<chap-header>)],
-    [`00 0A`], [`00 0C`], [12], [Transport and arpeggiator], [#cref(<chap-header>)],
-    [`00 16`], [`00 12`], [18], [Keyboard, split and zones], [#cref(<chap-keyboard>)],
-    [`00 28`], [`00 23`], [35], [Wheels, expression pedal and footswitches], [#cref(<chap-keyboard>)],
-    [`00 4B`], [`00 10`], [16], [Arpeggiator pattern, 1 byte per step], [#cref(<chap-header>)],
-    [`00 5B`], [`00 41`], [65], [DAW buttons, 5 records], [#cref(<chap-controls>)],
-    [`01 1C`], [`02 38`], [312], [Switches, 24 records], [#cref(<chap-controls>)],
-    [`03 54`], [`01 10`], [144], [Faders, 24 records], [#cref(<chap-controls>)],
-    [`04 64`], [`01 58`], [216], [Knobs, 24 records], [#cref(<chap-controls>)],
-    [`06 3C`], [`05 40`], [704], [Pads, 64 records], [#cref(<chap-pads>)],
-    [`0B 7C`], [`00 0C`], [12], [Unidentified, identical in every preset examined], [],
+    columns: (auto, auto, auto, 1fr),
+    head([*Packed address*], [*Size*], [*Content*], [*Chapter*]),
+    [`00 00`], [8], [Name of the preset], [#cref(<chap-header>)],
+    [`00 08`], [2], [Tempo, 14-bit packed], [#cref(<chap-header>)],
+    [`00 0A`], [12], [Transport and arpeggiator], [#cref(<chap-header>)],
+    [`00 16`], [18], [Keyboard, split and zones], [#cref(<chap-keyboard>)],
+    [`00 28`], [35], [Wheels, expression pedal and footswitches], [#cref(<chap-keyboard>)],
+    [`00 4B`], [16], [Arpeggiator pattern, 1 byte per step], [#cref(<chap-header>)],
+    [`00 5B`], [65], [DAW buttons, 5 records], [#cref(<chap-controls>)],
+    [`01 1C`], [312], [Switches, 24 records], [#cref(<chap-controls>)],
+    [`03 54`], [144], [Faders, 24 records], [#cref(<chap-controls>)],
+    [`04 64`], [216], [Knobs, 24 records], [#cref(<chap-controls>)],
+    [`06 3C`], [704], [Pads, 64 records], [#cref(<chap-pads>)],
+    [`0B 7C`], [12], [Unidentified, identical in every preset examined], [],
   ),
   caption: [Layout of the 1544-byte preset block],
 )
@@ -47,29 +47,13 @@ block and the arpeggiator pattern are plain fields, in the order of the table ab
 
 == `WPRESET`
 
-A user preset holds 1546 bytes: the 8 bytes of the name and 1538 bytes of data. The slot number designates the preset in
-the MIDI frame, and is not part of the record. The 2 commands designate a slot by its number, from 1 to 30; `00`
+A user preset holds 1546 bytes: the 8 bytes of the name and 1538 bytes of data. The preset number designates the preset in
+the MIDI frame, and is not part of the record. The 2 commands designate a preset by its number, from 1 to 30; `00`
 designates the preset that is playing.
 
-The `WPRESET` command writes the whole record into the slot that its number designates. Its MIDI frame is 1555 bytes:
-the usual header, the size `0C 0B`, the number and the name of the preset, 1538 bytes of data, and `F7`.
-
-#figure(
-  bytefield(
-    bpr: 184,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[10],
-    bytes(2, fill: l_purple)[0C 0B],
-    bytes(1, fill: l_orange)[n],
-    bytes(8, fill: l_green)[name],
-    bytes(6, fill: l_gray)[1538 data bytes],
-    bytes(1, fill: l_gray)[F7],
-  ),
-  caption: [MIDI frame of a user preset],
-)
+The `WPRESET` command writes the whole record into the preset that its number designates. Its MIDI frame is 1555 bytes
+(see @fig-wpreset): the usual header, the size `0C 0B`, the number and the name of the preset, 1538 bytes of data, and
+`F7`.
 
 The size `0C 0B` counts the payload that follows: the preset number, the 8 bytes of the name and 1538 bytes of data,
 that is 1547 bytes. Every dump carries the same size, whatever the preset, because the MIDI frame has a fixed length.
@@ -105,8 +89,8 @@ regions align. Without the 7 header bytes of a `.syx` file, every offset of the 
 The 13 bytes at `0x010` hold the tempo, the transport and the arpeggiator, in an order that is not established. The 16
 steps of the pattern have no 16-byte block of their own.
 
-The unit *answers nothing* to the `WPRESET` command: a write is verified by reading the preset back with the `QPRESET`
-command and comparing the 1547-byte payload.
+The `ACKW` answer of `WPRESET` gives the preset number and a status byte, and nothing more: a write is verified by
+reading the preset back with the `QPRESET` command and comparing the 1547-byte payload.
 
 The edit buffer keeps its content: a `WPRESET` frame writes a user preset, and the new content reaches the edit buffer
 when the preset is loaded (see #cref(<chap-global>)).
@@ -194,22 +178,7 @@ in the order of the front panel rather than in the order of the memory.
 
 == `QPRESET`
 
-The `QPRESET` command carries 1 payload byte, the number of the slot:
-
-#figure(
-  bytefield(
-    bpr: 72,
-    bytes(1, fill: l_gray)[F0],
-    bytes(1, fill: l_gray)[47],
-    bytes(1, fill: l_gray)[00],
-    bytes(1, fill: l_gray)[25],
-    bytes(1, fill: l_blue)[12],
-    bytes(2, fill: l_purple)[00 01],
-    bytes(1, fill: l_orange)[n],
-    bytes(1, fill: l_gray)[F7],
-  ),
-  caption: [Reading a user preset],
-)
+The `QPRESET` command carries 1 payload byte, the preset number (see @fig-qpreset).
 
 The unit answers with the frame of the `WPRESET` command, byte for byte the same frame that the front panel sends when
 it exports that preset. The answer reads the stored preset, not the edit buffer: a preset that was modified in the edit
@@ -227,7 +196,7 @@ own size field.
     [Command], [`QEDIT`, `WEDIT`], [`QPRESET`, `WPRESET`],
     [Size], [1544 bytes], [1546-byte record, 1547-byte payload],
     [Layout], [Structure of arrays], [Array of structures],
-    [Scope], [The preset in use], [1 of the 30 slots],
+    [Scope], [The preset in use], [1 of the 30 presets],
     [Lifetime], [Lost at power-off], [Kept until it is written again],
     [Address], [`0x0000` to `0x0C07`], [The preset number in the MIDI frame],
   ),

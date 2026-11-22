@@ -39,24 +39,24 @@ The name belongs to the preset in the edit buffer: renaming the preset that is p
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 08`], [`00 02`], [Tempo], [2 bytes], [`00 64`], [Beats per minute, 14-bit packed: `00 64` is 100 BPM],
-    [`00 0A`], [`00 01`], [flag], [`01`], [`01`], [Constant in the presets examined],
-    [`00 0B`], [`00 01`], [flag], [`04`], [`04`], [Constant in the presets examined],
-    [`00 0C`], [`00 01`], [flag], [`00`], [`00`], [Constant in the presets examined],
-    [`00 0D`], [`00 01`], [Time division], [`0`..`7`], [`04`], [Shared by the arpeggiator and the note repeat: `00` is
+    head([*Packed address*], [*Size*], [*Field*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 08`], [2], [Tempo], [2 bytes], [`00 64`], [Beats per minute, 14-bit packed: `00 64` is 100 BPM],
+    [`00 0A`], [1], [flag], [`01`], [`01`], [Constant in the presets examined],
+    [`00 0B`], [1], [flag], [`04`], [`04`], [Constant in the presets examined],
+    [`00 0C`], [1], [flag], [`00`], [`00`], [Constant in the presets examined],
+    [`00 0D`], [1], [Time division], [`0`..`7`], [`04`], [Shared by the arpeggiator and the note repeat: `00` is
       `1/4`, `01` `1/4T`, `02` `1/8`, `03` `1/8T`, `04` `1/16`, `05` `1/16T`, `06` `1/32`, `07` `1/32T`],
-    [`00 0E`], [`00 01`], [Note repeat mode], [`0` `1`], [`01`], [Momentary, toggle],
-    [`00 0F`], [`00 01`], [Gate], [`0`..`99`], [`19`], [Duration of the notes produced by the note repeat and the
+    [`00 0E`], [1], [Note repeat mode], [`0` `1`], [`01`], [Momentary, toggle],
+    [`00 0F`], [1], [Gate], [`0`..`99`], [`19`], [Duration of the notes produced by the note repeat and the
       arpeggiator, in percent of the step: `19` is 25 %],
-    [`00 10`], [`00 01`], [Swing], [`50`..`75`], [`32`], [Delay of the even steps, in percent: `32` is 50 %, that is no
+    [`00 10`], [1], [Swing], [`50`..`75`], [`32`], [Delay of the even steps, in percent: `32` is 50 %, that is no
       swing],
-    [`00 11`], [`00 01`], [flag], [`01`], [`01`], [Constant in the presets examined],
-    [`00 12`], [`00 01`], [Arpeggiator type], [`0`..`10`], [`04`], [`00` is *Up* and `0A` is *Chord*; the values in
+    [`00 11`], [1], [flag], [`01`], [`01`], [Constant in the presets examined],
+    [`00 12`], [1], [Arpeggiator type], [`0`..`10`], [`04`], [`00` is *Up* and `0A` is *Chord*; the values in
       between are the other types, in the order of the Edit menu],
-    [`00 13`], [`00 01`], [Arpeggiator range], [`0`..`3`], [`02`], [Octaves added to the notes played],
-    [`00 14`], [`00 01`], [Arpeggiator pattern], [`0` `1`], [`00`], [Off, on: the pattern of `0x004B` is used when on],
-    [`00 15`], [`00 01`], [Arpeggiator length], [`1`..`16`], [`10`], [Number of steps of the pattern that are played],
+    [`00 13`], [1], [Arpeggiator range], [`0`..`3`], [`02`], [Octaves added to the notes played],
+    [`00 14`], [1], [Arpeggiator pattern], [`0` `1`], [`00`], [Off, on: the pattern of `0x004B` is used when on],
+    [`00 15`], [1], [Arpeggiator length], [`1`..`16`], [`10`], [Number of steps of the pattern that are played],
   ),
   caption: [Tempo, transport and arpeggiator of the reference preset],
 )

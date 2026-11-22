@@ -7,7 +7,7 @@
 //   books/src/main/typst/
 //     common/                 this file, the template and the shared artwork
 //     kurzweil/               book "Inside V.A.S.T data model", entry point main.typ
-//     se-02/                  book "Roland SE-02 Sysex format", entry point main.typ
+//     roland-se-02/           book "Roland SE-02 Sysex format", entry point main.typ
 //     akai-mpk261/            book "AKAI MPK-261 Sysex and Memory Reference", entry point main.typ
 //
 // A book entry point reuses this file and only overrides what differs:

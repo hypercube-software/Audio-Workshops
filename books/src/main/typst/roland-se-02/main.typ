@@ -4,10 +4,12 @@
 // Same layout as the other books: shared code in ../common, everything which is
 // specific to this book (chapters, pictures) next to this file:
 //
-//   se-02/
+//   roland-se-02/
 //     main.typ                this file
+//     lib.typ                 helpers of the chapters
 //     part1-overview.typ
 //     part1-sysex.typ
+//     part2-encodings.typ
 //     part2-system.typ
 //     part3-patch-block.typ
 //     part3-patch-params.typ
@@ -17,7 +19,7 @@
 //     assets/                 screenshots used by the chapters (create it if needed)
 //
 // Compile from the books/src/main/typst directory:
-//   typst compile --root . se-02/main.typ roland-se02-sysex-guide.pdf
+//   typst compile --root . roland-se-02/main.typ roland-se02-sysex-guide.pdf
 // =============================================================================
 #import "../common/settings.typ": *
 

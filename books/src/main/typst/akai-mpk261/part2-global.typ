@@ -14,37 +14,37 @@ device ID of the protocol, and the state of the buttons that the front panel use
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Parameter*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 00`], [`00 01`], [reserved], [`00`], [`00`], [Identical in every dump examined],
-    [`00 01`], [`00 01`], [Current preset], [`0`..`29`], [`07`], [Index of the preset in the edit buffer, counted from
+    head([*Packed address*], [*Size*], [*Parameter*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 00`], [1], [reserved], [`00`], [`00`], [Identical in every dump examined],
+    [`00 01`], [1], [Current preset], [`0`..`29`], [`07`], [Index of the preset in the edit buffer, counted from
       zero: `07` is the preset displayed as 8. Writing the byte loads that user preset],
-    [`00 02`], [`00 01`], [Contrast], [`0`..`99`], [`32`], [Contrast of the display, 50 by default],
-    [`00 03`], [`00 01`], [Pad velocity sensitivity], [`0`..`9`], [`04`], [Sensitivity minus 1: `04` is the setting
+    [`00 02`], [1], [Contrast], [`0`..`99`], [`32`], [Contrast of the display, 50 by default],
+    [`00 03`], [1], [Pad velocity sensitivity], [`0`..`9`], [`04`], [Sensitivity minus 1: `04` is the setting
       displayed as `5`],
-    [`00 04`], [`00 01`], [Pad velocity curve], [`0`..`4`], [`00`], [`0` linear, `1` exponential 1, `2` exponential 2,
+    [`00 04`], [1], [Pad velocity curve], [`0`..`4`], [`00`], [`0` linear, `1` exponential 1, `2` exponential 2,
       `3` logarithmic 1, `4` logarithmic 2],
-    [`00 05`], [`00 01`], [Pad threshold], [`0`..`10`], [`03`], [Velocity below which a pad hit is ignored],
-    [`00 06`], [`00 01`], [Keyboard curve], [`0`..`100`], [`3C`], [Curve minus 50: `3C` is `+10`],
-    [`00 07`], [`00 01`], [Keyboard gain], [`0`..`40`], [`14`], [Gain minus 20: `14` is `0`],
-    [`00 08`], [`00 01`], [White key sensitivity], [`0`..`40`], [`0A`], [Sensitivity minus 20: `0A` is `-10`],
-    [`00 09`], [`00 01`], [Black key sensitivity], [`0`..`40`], [`0A`], [Sensitivity minus 20: `0A` is `-10`],
-    [`00 0A`], [`00 01`], [Common channel], [`0`..`31`], [`00`], [Channel shared by the presets that use *Common*: `00`
+    [`00 05`], [1], [Pad threshold], [`0`..`10`], [`03`], [Velocity below which a pad hit is ignored],
+    [`00 06`], [1], [Keyboard curve], [`0`..`100`], [`3C`], [Curve minus 50: `3C` is `+10`],
+    [`00 07`], [1], [Keyboard gain], [`0`..`40`], [`14`], [Gain minus 20: `14` is `0`],
+    [`00 08`], [1], [White key sensitivity], [`0`..`40`], [`0A`], [Sensitivity minus 20: `0A` is `-10`],
+    [`00 09`], [1], [Black key sensitivity], [`0`..`40`], [`0A`], [Sensitivity minus 20: `0A` is `-10`],
+    [`00 0A`], [1], [Common channel], [`0`..`31`], [`00`], [Channel shared by the presets that use *Common*: `00`
       is USB A1, `1F` is USB B16],
-    [`00 0B`], [`00 01`], [Tap average], [`2`..`4`], [`03`], [Number of taps averaged by the tap tempo],
-    [`00 0C`], [`00 01`], [Clock source], [`0` `1`], [`01`], [Internal, external],
-    [`00 0D`], [`00 01`], [Tempo LED], [`0` `1`], [`01`], [Whether the LED follows the tempo],
-    [`00 0E`], [`00 01`], [Note display], [`0` `1`], [`00`], [Note shown by value or by number],
-    [`00 0F`], [`00 01`], [Transport to DIN], [`0` `1`], [`00`], [Whether transport messages are copied to the DIN
+    [`00 0B`], [1], [Tap average], [`2`..`4`], [`03`], [Number of taps averaged by the tap tempo],
+    [`00 0C`], [1], [Clock source], [`0` `1`], [`01`], [Internal, external],
+    [`00 0D`], [1], [Tempo LED], [`0` `1`], [`01`], [Whether the LED follows the tempo],
+    [`00 0E`], [1], [Note display], [`0` `1`], [`00`], [Note shown by value or by number],
+    [`00 0F`], [1], [Transport to DIN], [`0` `1`], [`00`], [Whether transport messages are copied to the DIN
       output],
-    [`00 10`], [`00 03`], [unidentified], [—], [`00 00 00`], [Flags that the unit sets and clears; the front panel, the MIDI ports and the
+    [`00 10`], [3], [unidentified], [—], [`00 00 00`], [Flags that the unit sets and clears; the front panel, the MIDI ports and the
       display show the same behaviour whatever their value],
-    [`00 13`], [`00 08`], [Live states], [—], [—], [State of 8 buttons, see below],
-    [`00 1B`], [`00 0A`], [unidentified], [—], [—], [Internal state],
-    [`00 25`], [`00 05`], [Program Change mode], [—], [—], [Settings of that mode, see below],
-    [`00 2A`], [`00 05`], [unidentified], [—], [—], [Internal state],
-    [`00 2F`], [`00 01`], [internal], [`0`..`15`], [`00`], [Role not established; saved by the `SGLOB` command],
-    [`00 30`], [`00 01`], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see below],
-    [`00 31`], [`02 48`], [unidentified], [—], [—], [Internal state],
+    [`00 13`], [8], [Live states], [—], [—], [State of 8 buttons, see below],
+    [`00 1B`], [10], [unidentified], [—], [—], [Internal state],
+    [`00 25`], [5], [Program Change mode], [—], [—], [Settings of that mode, see below],
+    [`00 2A`], [5], [unidentified], [—], [—], [Internal state],
+    [`00 2F`], [1], [internal], [`0`..`15`], [`00`], [Role not established; saved by the `SGLOB` command],
+    [`00 30`], [1], [SysEx device ID], [`0`..`127`], [`00`], [Device ID of the SysEx protocol, see below],
+    [`00 31`], [328], [unidentified], [—], [—], [Internal state],
   ),
   caption: [Content of the global settings in RAM],
 )
@@ -74,15 +74,15 @@ rewrites them as the buttons are pressed, and they read back the current state:
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*State*], [*Stored*], [*Ref.*], [*Meaning*]),
-    [`00 13`], [`00 01`], [Arp Latch], [`0` `1`], [`00`], [The arpeggiator keeps playing after the keys are released],
-    [`00 14`], [`00 01`], [Arp], [`0` `1`], [`00`], [The arpeggiator is running],
-    [`00 15`], [`00 01`], [Full Level], [`0` `1`], [`00`], [The pads send velocity 127],
-    [`00 16`], [`00 01`], [16 Level], [`0` `1`], [`00`], [The pads send a fixed velocity set by a knob],
-    [`00 17`], [`00 01`], [Note Repeat], [`0` `1`], [`00`], [The note repeat is armed],
-    [`00 18`], [`00 01`], [Pad bank], [`0`..`3`], [`00`], [Bank `A` to `D` of the 16 pads],
-    [`00 19`], [`00 01`], [Control bank], [`0`..`2`], [`00`], [Bank `A` to `C` of the knobs, faders and switches],
-    [`00 1A`], [`00 01`], [Time division], [`0` `1`], [`00`], [State of the time division button of the note repeat],
+    head([*Packed address*], [*Size*], [*State*], [*Stored*], [*Ref.*], [*Meaning*]),
+    [`00 13`], [1], [Arp Latch], [`0` `1`], [`00`], [The arpeggiator keeps playing after the keys are released],
+    [`00 14`], [1], [Arp], [`0` `1`], [`00`], [The arpeggiator is running],
+    [`00 15`], [1], [Full Level], [`0` `1`], [`00`], [The pads send velocity 127],
+    [`00 16`], [1], [16 Level], [`0` `1`], [`00`], [The pads send a fixed velocity set by a knob],
+    [`00 17`], [1], [Note Repeat], [`0` `1`], [`00`], [The note repeat is armed],
+    [`00 18`], [1], [Pad bank], [`0`..`3`], [`00`], [Bank `A` to `D` of the 16 pads],
+    [`00 19`], [1], [Control bank], [`0`..`2`], [`00`], [Bank `A` to `C` of the knobs, faders and switches],
+    [`00 1A`], [1], [Time division], [`0` `1`], [`00`], [State of the time division button of the note repeat],
   ),
   caption: [The live states of the global settings],
 )
@@ -108,13 +108,13 @@ backup of the presets does not carry them.
 #figure(
   ptable(
     columns: (auto, auto, auto, auto, 1fr),
-    head([*Packed address*], [*Packed size*], [*Setting*], [*Stored*], [*Meaning*]),
-    [`00 24`], [`00 01`], [reserved], [`00`], [Most significant byte of the bank],
-    [`00 25`], [`00 01`], [Channel], [`0`..`31`], [Channel of the program change: Common, USB A1 to B16],
-    [`00 26`], [`00 01`], [Program], [`0`..`127`], [Program number sent],
-    [`00 27`], [`00 01`], [reserved], [`00`], [Least significant byte of the bank],
-    [`00 28`], [`00 01`], [reserved], [`00`], [—],
-    [`00 29`], [`00 01`], [MIDI to DIN], [`0` `1`], [Whether the program change is copied to the DIN output],
+    head([*Packed address*], [*Size*], [*Setting*], [*Stored*], [*Meaning*]),
+    [`00 24`], [1], [reserved], [`00`], [Most significant byte of the bank],
+    [`00 25`], [1], [Channel], [`0`..`31`], [Channel of the program change: Common, USB A1 to B16],
+    [`00 26`], [1], [Program], [`0`..`127`], [Program number sent],
+    [`00 27`], [1], [reserved], [`00`], [Least significant byte of the bank],
+    [`00 28`], [1], [reserved], [`00`], [—],
+    [`00 29`], [1], [MIDI to DIN], [`0` `1`], [Whether the program change is copied to the DIN output],
   ),
   caption: [Settings of the Program Change mode],
 )
@@ -159,9 +159,9 @@ reference unit it is:
   caption: [Writing the system settings],
 )
 
-The size is `00 13`, that is 16 data bytes plus the count and the address. The unit answers with the `ACKG` command, whose status
+The payload size is `00 13`, that is 16 data bytes plus the count and the address. The unit answers with the `ACKG` command, whose status
 byte is `00`. A single setting can also be written alone: the contrast, at address `0x0002`, is 1 byte and takes a
-message of size `00 04`.
+payload size of `00 04`.
 
 These writes change the RAM: the unit uses them at once, and a power cycle brings back the value that the `SGLOB` command
 (#cref(<chap-store>)) saved.
