@@ -7,7 +7,8 @@
 //   akai-mpk261/
 //     main.typ                this file
 //     lib.typ                 helpers of the chapters
-//     part1-overview.typ      what the unit is, conventions, ports, the commands
+//     part1-overview.typ      what the unit is, why this document, disclaimer, scope, conventions
+//     part1-protocol.typ      the 4 MIDI ports, the commands of the 2 memories and of the OS
 //     part1-memory.typ        the 3 memories, RAM and flash memory, address spaces, control matrices
 //     part1-sysex.typ         MIDI frames, 14-bit fields, read and write
 //     part1-inquiry.typ       device inquiry and identity reply
@@ -53,6 +54,7 @@
 )
 
 #include "part1-overview.typ"
+#include "part1-protocol.typ"
 #include "part1-memory.typ"
 #include "part1-sysex.typ"
 #include "part1-inquiry.typ"
