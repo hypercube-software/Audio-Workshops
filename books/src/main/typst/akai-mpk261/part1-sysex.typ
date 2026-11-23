@@ -4,7 +4,7 @@
 #chapter("SysEx messages", l: "chap-sysex")
 
 The MPK-261 exchanges memory blocks and presets through MIDI frames built on a fixed pattern: the AKAI manufacturer
-ID, a device ID, a model byte, a command byte that selects the operation, a 14-bit size, then a payload whose layout
+ID, a device ID, a model byte, a command byte that selects the operation, a 14-bit size, then a payload whose structure
 depends on the command. Every command of the instrument follows that pattern; the payload is what changes.
 
 == MIDI frame structure
@@ -19,7 +19,7 @@ depends on the command. Every command of the instrument follows that pattern; th
     [`25`], [model], [MPK-261. The other models of the series use `23` (MPK-225) and `24` (MPK-249)],
     [`cc`], [command], [See @sec-commands],
     [`ss ss`], [payload size], [2 bytes, 14-bit packing: the number of bytes of the payload],
-    [`...`], [payload], [Layout depends on the command],
+    [`...`], [payload], [Structure depends on the command],
     [`F7`], [end], [End of SysEx],
   ),
   caption: [Structure of an MPK-261 SysEx message],

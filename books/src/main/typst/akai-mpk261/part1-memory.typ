@@ -31,8 +31,8 @@ The book uses 2 words with a precise meaning:
 - A *user preset* is 1 of the 30 presets stored in the flash memory. The unit ships them with factory content, and a
     factory reset puts that content back. Each one is rewritable.
 
-The edit buffer and the user presets hold the same settings in 2 layouts: the control matrices below show how the 2
-forms relate, and #cref(<chap-preset>) gives the details.
+The *edit buffer* and the *user presets* hold the same settings in 2 memory layouts: the control matrices below show how
+the 2 forms relate, and #cref(<chap-preset>) gives the details.
 
 == Global and preset settings
 
@@ -120,7 +120,10 @@ settings; #cref(<chap-preset>) and the chapters that follow it describe the pres
     - *Knobs*: 8 knobs, in 3 banks;
     - *DAW buttons*: the 5 transport buttons.
 
-    Each control type has its own parameters. The values of 1 type form a matrix of *n* controls x *m* parameters.
+    The panel has 8 switches, 8 faders, 8 knobs and 16 pads: 40 physical controls. The banks turn them into 24
+    switches, 24 faders, 24 knobs and 64 pads: *136* virtual controls, and *141* with the 5 transport buttons.
+
+    Each control type has its own parameters. The values of a type form a matrix of *n* controls x *m* parameters.
 ]
 
 #kfigure(
@@ -166,11 +169,11 @@ settings; #cref(<chap-preset>) and the chapters that follow it describe the pres
                             [#box(fill: l_blue, width: 10pt, height: 10pt)],
                             [*Line by line*],
 
-                            [The order of the *edit buffer*: every value of 1 parameter follows, then the next parameter],
+                            [The order of the *edit buffer*: every value of a parameter follows, then the next parameter],
                             [#box(fill: l_green, width: 10pt, height: 10pt)],
                             [*Column by column*],
 
-                            [The order of a *user preset*: every parameter of 1 control follows, then the next control],
+                            [The order of a *user preset*: every parameter of a control follows, then the next control],
                         ),
                     ),
                 ),

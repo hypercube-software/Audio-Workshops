@@ -3,9 +3,8 @@
 
 #chapter("Controls", l: "chap-controls")
 
-A preset describes 5 kinds of control, and gives each one a record of n fields. The edit buffer and a user preset hold
-the same records in 2 orders: #cref(<chap-preset>) gives the 2 addresses of each field, this chapter gives the fields
-and their values.
+Among its settings, a preset holds 5 kinds of control: the DAW buttons, the switches, the faders, the knobs and the
+pads. Each one is a record of n fields. This chapter gives the fields and their values.
 
 #figure(
   ptable(
@@ -20,8 +19,21 @@ and their values.
   caption: [The 5 kinds of control],
 )
 
-The 2 addresses of a field follow 1 rule: the *array address* counts in the edit buffer, where the field is an array of
-1 value per control, and the *field address* counts in a user preset, where the field sits in the record of each control.
+== Warning
+
+*BEWARE*: the field tables of this chapter describe 2 *memory layouts* in a single table. It is very important that you
+understand how to read them.
+
+Each table of a control gives 2 addresses for a field:
+
+- The column *Field Pack. Addr.* stands for *field packed address* (with its related column *Field size*, the size of
+    that field in the record). This is, in the *user preset* memory layout, the field's address in the first record, the
+    record of control 1; the record of control 2 starts 1 record size further;
+- The column *Array Pack. Addr.* stands for *array packed address* (with its related column *Array length*, the number
+    of values in that array). This is, in the *edit buffer* memory layout, the field's address, where it is an array of
+    1 value per control.
+
+The 2 functions of @value-address give the formula behind these 2 addresses.
 
 == Banks
 
@@ -32,7 +44,7 @@ A preset describes 24 switches, 24 faders, 24 knobs and 64 pads, while the panel
     24 virtual controls;
 - The *pads* have 4 banks, A, B, C and D; the 16 physical pads thus address 64 virtual pads.
 
-The preset stores the 24 switches, the 24 faders, the 24 knobs and the 64 pads whatever the selected bank. The 2
+The preset stores the 24 switches, the 24 faders, the 24 knobs and the 64 pads whatever the selected bank. The 2 memory
 layouts hold the same controls, with the same banks; only the order of the blocks and the addresses change. The bank
 index is `0` for A, `1` for B, `2` for C and `3` for D.
 
@@ -100,12 +112,58 @@ address is the start of the block plus
 A record is 13 bytes for a switch, 6 for a fader, 9 for a knob and 11 for a pad. Each control adds 1 record to the
 address.
 
+=== Value address <value-address>
+
+The tables above give the base of each block. The address of 1 value follows from the control type, the bank, the
+hardware number and the field:
+
+#figure(
+  ptable(
+    columns: (auto, auto, auto, auto, auto, auto),
+    head([*Control type*], [*Hardware*], [*Banks*], [*Fields*], [*Array base*], [*Record base*]),
+    [DAW buttons], [5], [1], [13], [`0x005B`], [`0x0595`],
+    [Switches], [8], [3], [13], [`0x009C`], [`0x045D`],
+    [Faders], [8], [3], [6], [`0x01D4`], [`0x03CD`],
+    [Knobs], [8], [3], [9], [`0x0264`], [`0x02F5`],
+    [Pads], [16], [4], [11], [`0x033C`], [`0x0035`],
+  ),
+  caption: [The counts and the bases of the 5 control types],
+)
+
+The bases are the byte offsets behind the packed addresses: the switches start at `01 1C`, that is the offset `0x009C`.
+The 2 packed bytes of an address are `offset >> 7` and `offset & 0x7F`.
+
+```c
+int getValueAddressForCurrentPreset(
+    ControlType type, int bank, int hardware, int field
+) {
+    int h = hardwareCount[type];
+    int n = h * bankCount[type];          // values per array
+    return arrayBase[type] + field * n + bank * h + (hardware - 1);
+}
+
+int getValueAddressForUserPresets(
+    ControlType type, int bank, int hardware, int field
+) {
+    int h = hardwareCount[type];
+    int r = fieldCount[type];             // record size, in bytes
+    return recordBase[type] + (bank * h + (hardware - 1)) * r + field;
+}
+```
+
+`bank` is `0` for A, `1` for B, `2` for C and `3` for D; `hardware` counts from 1; `field` counts from 0.
+
+For instance, the *Type* (field 0) of switch 9, which is hardware 1 of bank B:
+
+- current preset: `0x009C + 0 + 8 + 0 = 0x00A4`, the packed address `01 24`;
+- user preset: `0x045D + 8 * 13 + 0 = 0x04C5`, the packed address `09 45`.
+
 === Switches
 
 #kfigure(
   ptable(
-    columns: (2.2cm, 1.2cm, 2.2cm, 1.2cm, 2.8cm, 1.3cm, 1fr),
-    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array size*], [*Field name*], [*Range*], [*Description*]),
+    columns: (2.2cm, 1.2cm, 2.2cm, 1.6cm, 2.8cm, 1.3cm, 1fr),
+    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array length*], [*Field name*], [*Range*], [*Description*]),
     [`08 5D`], [1], [`01 1C`], [24], [Type], [`0`..`4`], [CC, note, program change, program bank, keystroke],
     [`08 5E`], [1], [`01 34`], [24], [Channel], [`0`..`32`], [See @channel-encoding],
     [`08 5F`], [1], [`01 4C`], [24], [Controller], [`0`..`127`], [CC number, note number, program number or bank],
@@ -129,8 +187,8 @@ A switch and a DAW button share the same record.
 
 #kfigure(
   ptable(
-    columns: (2.2cm, 1.2cm, 2.2cm, 1.2cm, 2.8cm, 1.3cm, 1fr),
-    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array size*], [*Field name*], [*Range*], [*Description*]),
+    columns: (2.2cm, 1.2cm, 2.2cm, 1.6cm, 2.8cm, 1.3cm, 1fr),
+    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array length*], [*Field name*], [*Range*], [*Description*]),
     [`07 4D`], [1], [`03 54`], [24], [Type], [`0`, `1`], [CC, aftertouch],
     [`07 4E`], [1], [`03 6C`], [24], [Channel], [`0`..`32`], [See @channel-encoding],
     [`07 4F`], [1], [`04 04`], [24], [Controller], [`0`..`127`], [CC number sent by the fader],
@@ -148,8 +206,8 @@ bound the values it sends.
 
 #kfigure(
   ptable(
-    columns: (2.2cm, 1.2cm, 2.2cm, 1.2cm, 2.8cm, 1.3cm, 1fr),
-    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array size*], [*Field name*], [*Range*], [*Description*]),
+    columns: (2.2cm, 1.2cm, 2.2cm, 1.6cm, 2.8cm, 1.3cm, 1fr),
+    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array length*], [*Field name*], [*Range*], [*Description*]),
     [`05 75`], [1], [`04 64`], [24], [Type], [`0`..`3`], [CC, aftertouch, increment 1, increment 2],
     [`05 76`], [1], [`04 7C`], [24], [Channel], [`0`..`32`], [See @channel-encoding],
     [`05 77`], [1], [`05 14`], [24], [Controller], [`0`..`127`], [CC number sent by the knob],
@@ -173,8 +231,8 @@ bank A is the first record, pad 16 of bank A the 16th, and pad 16 of bank D the 
 
 #kfigure(
   ptable(
-    columns: (2.2cm, 1.2cm, 2.2cm, 1.2cm, 2.8cm, 1.3cm, 1fr),
-    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array size*], [*Field name*], [*Range*], [*Description*]),
+    columns: (2.2cm, 1.2cm, 2.2cm, 1.6cm, 2.8cm, 1.3cm, 1fr),
+    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array length*], [*Field name*], [*Range*], [*Description*]),
     [`00 35`], [1], [`06 3C`], [64], [Type], [`0`..`2`], [Note, program change, program bank],
     [`00 36`], [1], [`06 7C`], [64], [Channel], [`0`..`32`], [See @channel-encoding],
     [`00 37`], [1], [`07 3C`], [64], [Note], [`0`..`127`], [Note number when the type is a note; `2F` is B2],
@@ -245,7 +303,7 @@ A colour of `00` turns the pad off: the pad still sends its message when it is h
 
 ==== Aftertouch
 
-The aftertouch field of a pad applies to the note pads only:
+A pad's aftertouch field applies to the note pads only:
 
 #kfigure(
   ptable(
@@ -268,8 +326,8 @@ assigned to a keyboard shortcut instead of a MIDI message.
 
 #kfigure(
   ptable(
-    columns: (2.2cm, 1.2cm, 2.2cm, 1.2cm, 2.8cm, 1.3cm, 1fr),
-    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array size*], [*Field name*], [*Range*], [*Description*]),
+    columns: (2.2cm, 1.2cm, 2.2cm, 1.6cm, 2.8cm, 1.3cm, 1fr),
+    head([*Field Pack. Addr.*], [*Field size*], [*Array Pack. Addr.*], [*Array length*], [*Field name*], [*Range*], [*Description*]),
     [`0B 15`], [1], [`00 5B`], [5], [Type], [`0`..`4`], [CC, note, program change, program bank, keystroke],
     [`0B 16`], [1], [`00 60`], [5], [Channel], [`0`..`32`], [See @channel-encoding],
     [`0B 17`], [1], [`00 65`], [5], [Controller], [`0`..`127`], [CC number, note number, program number or bank, depending on the type],
@@ -318,7 +376,7 @@ controller number is unused.
 )
 
 The punctuation block runs in the order `,` `.` `/` `[` `]` `\` `'` `;` `-` `=`, at codes `37` to `40`. The code is the
-position of the key on a US keyboard, so the same physical key gives the same code whatever the layout of the operating
+position of the key on a US keyboard, so the same physical key gives the same code whatever the keyboard layout of the operating
 system.
 
 #kfigure(

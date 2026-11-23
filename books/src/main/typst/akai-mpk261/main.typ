@@ -1,7 +1,7 @@
 // =============================================================================
 // Entry point of the book "AKAI MPK-261 Sysex and Memory Reference".
 //
-// Same layout as the other books: shared code in ../common, everything which is
+// Same structure as the other books: shared code in ../common, everything which is
 // specific to this book (chapters, pictures) next to this file:
 //
 //   akai-mpk261/
@@ -16,7 +16,7 @@
 //     part1-firmware.typ      update mode, the frames that must never be sent
 //     part2-global.typ        the global settings (parameters, device ID, live states)
 //     part2-store.typ         saving the global settings
-//     part3-layout.typ        the preset: edit buffer and user presets, their 2 layouts, the arpeggiator pattern
+//     part3-layout.typ        the preset: edit buffer and user presets, their 2 memory layouts, the arpeggiator pattern
 //     part3-controls.typ      DAW buttons, switches, faders, knobs, pads, keystroke codes, channel encoding
 //     part3-examples.typ      writing 1 control, writing 1 colour
 //     assets/                 screenshots used by the chapters (create it if needed)

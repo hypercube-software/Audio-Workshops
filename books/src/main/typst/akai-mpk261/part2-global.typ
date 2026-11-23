@@ -9,7 +9,7 @@ The global settings in RAM occupy 377 bytes, at addresses `0x0000` to `0x0278`, 
 with the `WGLOB` command. They decide how the unit behaves at power-on, how its pads and keys respond to velocity, the
 device ID of the protocol, and the state of the buttons that the front panel uses while a preset is played.
 
-== Layout
+== Memory layout
 
 #figure(
   ptable(

@@ -118,7 +118,7 @@ on; under macOS and Linux they appear as `MPK261 Port 1` to `Port 4`.
         [Notes, aftertouch, controllers, pad and transport events. The official OS updater uses this port],
         [`2`],
         [USB B],
-        [The second USB port of the unit. The *Channel* field of a control selects it with the values `11` to `20`:
+        [The unit's second USB port. A control's *Channel* field selects it with the values `11` to `20`:
             USB B1 to USB B16],
         [`3`],
         [DIN],
@@ -233,7 +233,7 @@ The settings of the unit that belong to no preset, and the OS, travel through th
     caption: [The commands of the stored settings and of the OS],
 )
 
-A last group of 7 codes reaches the display and the stored fields of the unit, and none of them has an established
+A last group of 7 codes reaches the display and the unit's stored fields, and none of them has an established
 memory effect:
 
 #figure(
@@ -278,7 +278,7 @@ the count, the address and the preset number; `ACKG` answers `WGLOB`, `ACKE` ans
 `WPRESET`.
 
 The 2 queries and the 2 writes share the same MIDI frame; they differ by the memory space they address. A query and its
-answer share the same layout: the answer repeats the count and the address, then carries the data.
+answer share the same frame layout: the answer repeats the count and the address, then carries the data.
 
 Every answer that ends with a status byte carries `00` on success. A status byte other than `00` is a failure, and it
 is the only diagnostic the unit gives.

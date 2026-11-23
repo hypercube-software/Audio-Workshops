@@ -193,9 +193,9 @@ the count and the address, then gives a status byte:
   caption: [ACKE: the answer to a write of 1 byte at 0x0013],
 )
 
-2 reads give the settings of the current preset, in the 2 layouts of #cref(<chap-preset>):
+2 reads give the settings of the current preset, in the 2 memory layouts of #cref(<chap-preset>):
 
-- `QEDIT` reads them in the layout of the edit buffer, 127 bytes at most per request: a full preset takes 12 requests of
-    127 bytes and 1 of 20 bytes;
-- `QPRESET`, with the preset number `00`, reads them in the layout of a user preset, in a single request; the bytes that
-    the edit buffer does not hold come back as `00` (see #cref(<chap-flash-cmds>)).
+- `QEDIT` reads them in the memory layout of the edit buffer, 127 bytes at most per request: a full preset takes 12
+    requests of 127 bytes and 1 of 20 bytes;
+- `QPRESET`, with the preset number `00`, reads them in the memory layout of a user preset, in a single request; the
+    bytes that the edit buffer does not hold come back as `00` (see #cref(<chap-flash-cmds>)).

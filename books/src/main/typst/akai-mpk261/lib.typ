@@ -1,7 +1,7 @@
 // =============================================================================
 // Helpers shared by the chapters of the MPK-261 book.
 //
-// The layout of every table of this book is the same as in the other books: a
+// The structure of every table of this book is the same as in the other books: a
 // plain `table` with a grey header row, wrapped in a `figure` so that it gets a
 // number, a caption and an entry in the list of tables.
 //
