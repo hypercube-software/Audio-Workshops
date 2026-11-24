@@ -1,0 +1,292 @@
+# ============================================================
+# Roland SE-02 memory map
+# ============================================================
+# The reference for this layout is the book at
+# books/src/main/typst/roland-se-02/.
+#
+# The SE-02 uses packed 4-byte addresses (28 bits). The device ID
+# is fixed at 0x10 and the model ID is 00 00 00 44.
+#
+# The stored blocks are addressed with a preset number in the second
+# packed byte:
+#   user preset nn : 06 nn 00 00
+#   stored pattern nn : 11 nn 00 00
+#   stored song nn : 21 nn 00 00
+# The stored blocks are arrays of Preset, Pattern and Song. These structs
+# are padded to 0x4000 bytes, so preset nn is at 06 nn 00 00.
+#
+# A preset is a composite struct: PatchParameters (NIBBLES, 2 nibbles
+# per 8-bit value), PatchName (BYTES) and Reserved16 (BYTES). The child
+# structs override the parent format.
+# ============================================================
+
+@Model Roland SE-02
+@Packed
+
+# ------------------------------------------------------------
+# Zones
+# ------------------------------------------------------------
+# The SE-02 regions use disjoint addresses. They all live in the
+# implicit Default memory space: no MemorySpace block and no -r option.
+
+@00000000-0000000A System Settings
+{
+    SystemSettings
+}
+
+@0000000A-00000004 NIBBLES CV Calibration
+{
+    CVCalibration
+}
+
+@0000000E-00000002 System Reserved
+{
+    byte Reserved 0E
+    byte Reserved 0F
+}
+
+@02000000-00000010 Reserved Internal Storage
+{
+    Reserved16
+}
+
+@05000000-00010000 Patch Edit Buffer
+{
+    Preset
+}
+
+@06000000-01000000 User Presets
+{
+    Preset preset[128 preset]
+}
+
+@10000000-00010000 Pattern Edit Buffer
+{
+    Pattern
+}
+
+@11000000-01000000 Stored Patterns
+{
+    Pattern pattern[128 pattern]
+}
+
+@20000000-00010000 Song Edit Buffer
+{
+    Song
+}
+
+@21000000-00100000 Stored Songs
+{
+    Song song[16 song]
+}
+
+# ------------------------------------------------------------
+# System settings (16 bytes)
+# ------------------------------------------------------------
+
+struct SystemSettings
+{
+    byte MIDI TX Ch
+    byte TX CC
+    byte TX PC
+    byte Soft Through
+    byte Chain Mode
+    byte Sync
+    byte MIDI Key Trigger
+    byte Auto Off
+    byte Screen Saver Time
+    byte Reserved 09
+}
+
+struct NIBBLES CVCalibration
+{
+    byte CV Fine Tune
+    byte CV Key Follow
+}
+
+# ------------------------------------------------------------
+# Patch parameters (88 documented values, gaps, 16 unused values)
+#
+# The addresses of the book are packed 4-byte literals. Each
+# 8-bit value occupies 2 address units, hence one logical byte
+# in this NIBBLES zone.
+# ------------------------------------------------------------
+
+struct NIBBLES PatchParameters
+{
+    # Common
+    byte COM_BENDRANGE
+    byte COM_MOD_SENS
+    byte COM_AFT_SENS1
+    byte COM_AFT_SENS2
+    byte COM_DYNAMICS
+    byte COM_VOLUME
+    byte COM_PWM_LF_RATE
+    byte COM_PWM_LF_DPTH
+    byte Unknown 10[9] # 10..21
+    byte COM_OCT
+    byte COM_TRNS
+    byte COM_TRNS_SW
+
+    # Control
+    byte CTRL_GLIDE
+    byte CTRL_GLIDE_TYPE
+    byte CTRL_WHL
+    byte Unknown 2E[2] # 2E..31
+
+    # Oscillators
+    byte OSC_RANGE1
+    byte OSC_RANGE2
+    byte OSC_RANGE3
+    byte Unknown 38 # 38..39
+    byte OSC_FINE1
+    byte OSC_FINE2
+    byte OSC_WAVEFORM1
+    byte OSC_WAVEFORM2
+    byte OSC_WAVEFORM3
+    byte OSC_SYNC
+    byte OSC_ENV1
+    byte OSC_KYBD
+    byte OSC_XMOD
+    byte Unknown 4C[2] # 4C..4F
+
+    # Cross modulation
+    byte XMOD_O2FLT
+    byte XMOD_O3TO
+    byte XMOD_O3PW
+    byte Unknown 56[2] # 56..59
+
+    # Mixer
+    byte MIX_OSC1
+    byte MIX_OSC2
+    byte MIX_OSC3
+    byte MIX_FEEDBACK
+    byte MIX_NOISE
+    byte Unknown 64[5] # 64..6D
+
+    # Filter
+    byte FLT_CUTOFF
+    byte FLT_ATTACK1
+    byte FLT_ATTACK2
+    byte FLT_EMPHASIS
+    byte FLT_DECAY1
+    byte FLT_DECAY2
+    byte FLT_KEY13
+    byte FLT_KEY23
+    byte FLT_SUSTAIN1
+    byte FLT_SUSTAIN2
+    byte FLT_CONTOUR
+    byte FLT_MTRIG
+    byte FLT_NORM
+    byte FLT_REL
+    byte FLT_GATE
+    byte Unknown 8C[5] # 8C..95
+
+    # LFO
+    byte LFO_RATE
+    byte LFO_OSC
+    byte LFO_WAVE
+    byte LFO_FILTER
+    byte LFO_OSC_SEL
+    byte LFO_FLT
+    byte LFO_MODE
+    byte LFO_SYNC
+    byte Unknown A6[2] # A6..A9
+
+    # Delay
+    byte DLY_TIME
+    byte DLY_REGEN
+    byte DLY_AMOUNT
+    byte Unknown B0[16] # B0..CF, unused
+}
+
+struct PatchName
+{
+    String Name[16]
+}
+
+struct Reserved16
+{
+    byte Reserved[16]
+}
+
+# A preset is one 240-byte record: the 208 parameter bytes (NIBBLES),
+# then the 16-byte name and 16 reserved bytes (BYTES).
+# A preset is padded to 0x4000 bytes: the 240 bytes of the preset, then padding.
+struct 00010000 Preset
+{
+    PatchParameters Parameters
+    PatchName Name
+    Reserved16 Reserved
+}
+
+# ------------------------------------------------------------
+# Pattern (144 bytes)
+# ------------------------------------------------------------
+
+# A pattern is padded to 0x4000 bytes: the 144 bytes of the pattern, then padding.
+struct 00010000 Pattern
+{
+    PatternHeader Header
+    PatternStep Steps[16]
+}
+
+struct PatternHeader
+{
+    byte Tempo[3] # 12-bit tempo, 3 nibbles
+    byte Patch Bank
+    byte Patch Number
+    byte Scale
+    byte Step Count
+    byte First Step
+    byte Last Step
+    byte Direction
+    byte Shuffle
+    byte Destination
+    byte Play Flag
+    byte Key Trigger
+    byte Reserved[2]
+}
+
+struct PatternStep
+{
+    byte Note Switch
+    byte Note Number
+    byte Gate
+    byte Glide
+    byte PRM Switch
+    byte Parameter ID
+    byte Parameter Value High
+    byte Parameter Value Low
+}
+
+# ------------------------------------------------------------
+# Song (144 bytes)
+# ------------------------------------------------------------
+
+# A song is padded to 0x4000 bytes: the 144 bytes of the song, then padding.
+struct 00010000 Song
+{
+    SongHeader Header
+    SongPart Parts[16]
+}
+
+struct SongHeader
+{
+    byte Tempo[3] # 12-bit tempo, 3 nibbles
+    byte Destination
+    byte Sync
+    byte Key Trigger
+    byte Loop
+    byte Reserved[9]
+}
+
+struct SongPart
+{
+    byte Pattern Number High
+    byte Pattern Number Low
+    byte Patch Bank
+    byte Patch Number
+    byte Repeats
+    byte Reserved[3]
+}

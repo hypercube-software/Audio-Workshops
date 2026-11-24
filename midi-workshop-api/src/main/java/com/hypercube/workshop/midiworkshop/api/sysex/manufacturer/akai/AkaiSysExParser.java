@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.akai;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
@@ -83,14 +84,35 @@ public class AkaiSysExParser extends ManufacturerSysExParser {
         int presetNumber = reader.getByte();
         MemoryMap map = device.getMemory()
                 .getMemoryMap(AkaiMemorySpace.USER_PRESETS.getMmapName(), AkaiMemorySpace.USER_PRESETS.getZoneName());
-        int size = map.getSize()
+        MemoryField presetArray = findPresetArray(map);
+        int presetCount = presetArray.getArray()
+                .size();
+        int presetSize = presetArray.getEffectiveSize()
                 .value();
-        if (reader.remaining() != size) {
-            throw new MidiError("AKAI preset payload has %d bytes, expected %d".formatted(reader.remaining(), size));
+        if (reader.remaining() != presetSize) {
+            throw new MidiError("AKAI preset payload has %d bytes, expected %d".formatted(reader.remaining(), presetSize));
         }
-        for (int i = 0; i < size; i++) {
-            map.writeByte(MemoryInt28.from(i, 2), reader.getByte());
+        // WPRESET 0 is the edit buffer, not a stored preset. Never write it
+        // into Preset[0].
+        if (presetNumber < 1 || presetNumber > presetCount) {
+            log.warn("Ignore AKAI user preset {}: stored presets are 1 to {}", presetNumber, presetCount);
+            return;
+        }
+        int base = (presetNumber - 1) * presetSize;
+        int byteCount = map.getBaseAddress()
+                .byteCount();
+        for (int i = 0; i < presetSize; i++) {
+            map.writeByte(MemoryInt28.from(base + i, byteCount), reader.getByte());
         }
         log.debug("Parsed AKAI user preset {}", presetNumber);
+    }
+
+    private MemoryField findPresetArray(MemoryMap map) {
+        return map.getFields()
+                .stream()
+                .filter(MemoryField::isArray)
+                .filter(MemoryField::isReference)
+                .findFirst()
+                .orElseThrow(() -> new MidiError("AKAI mmap zone %s has no preset array".formatted(map.getName())));
     }
 }

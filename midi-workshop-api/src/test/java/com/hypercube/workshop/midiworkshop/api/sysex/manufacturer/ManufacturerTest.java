@@ -14,6 +14,8 @@ class ManufacturerTest {
                 .getName());
         assertEquals("DS-330", Manufacturer.searchDevice("DS-330")
                 .getName());
+        assertEquals("SE-02", Manufacturer.searchDevice("SE-02")
+                .getName());
         assertEquals("Neutron", Manufacturer.searchDevice("Neutron")
                 .getName());
     }

@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.MidiDevice;
 import java.io.Closeable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -17,14 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public abstract class AbstractMidiDevice implements Closeable {
-    private static final Set<String> instances = new HashSet<>();
     @Getter
     protected final String name;
     private final AtomicInteger openCount = new AtomicInteger();
 
     protected AbstractMidiDevice(String name) {
         this.name = name;
-        sanityCheck();
     }
 
     /**
@@ -50,7 +46,8 @@ public abstract class AbstractMidiDevice implements Closeable {
                 .getSimpleName();
         int count = openCount.get();
         if (count == 0) {
-            throw new MidiError("%s::close on '%s' called too much, since count is 0, something is wrong in your code (use try-with-resource)".formatted(portType, getName()));
+            log.debug("{}::close on '{}' ignored: device already closed", portType, getName());
+            return;
         }
         boolean open = isOpen();
         boolean effectiveClose = count == 1 && open;
@@ -58,9 +55,6 @@ public abstract class AbstractMidiDevice implements Closeable {
         if (effectiveClose) {
             try {
                 effectiveClose();
-                synchronized (instances) {
-                    instances.remove(getUniqueName());
-                }
             } catch (Exception e) {
                 throw new MidiError(e);
             }
@@ -84,15 +78,5 @@ public abstract class AbstractMidiDevice implements Closeable {
     protected abstract void effectiveOpen() throws Exception;
 
     protected abstract void effectiveClose();
-
-    private void sanityCheck() {
-        String uniqueName = getUniqueName();
-        synchronized (instances) {
-            if (instances.contains(uniqueName)) {
-                throw new IllegalStateException("Duplicate instance of midi device class '%s' detected".formatted(uniqueName));
-            }
-            instances.add(uniqueName);
-        }
-    }
 
 }

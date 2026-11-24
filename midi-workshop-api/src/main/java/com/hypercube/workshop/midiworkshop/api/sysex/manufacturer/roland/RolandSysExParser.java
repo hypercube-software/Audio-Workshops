@@ -22,15 +22,24 @@ public class RolandSysExParser extends ManufacturerSysExParser {
     public Device parse(Manufacturer manufacturer, SysExReader buffer) {
         int deviceId = buffer.getByte();
 
+        // Most Roland devices use a 1-byte model ID. The SE-02 uses a 4-byte
+        // model ID (00 00 00 44), so a leading zero identifies the wide form.
         int deviceModel = buffer.getByte();
-        //log.info("Roland Device Model {}", "%02X".formatted(deviceModel));
+        int modelByteCount = 1;
+        if (deviceModel == 0) {
+            buffer.getByte();
+            buffer.getByte();
+            deviceModel = buffer.getByte();
+            modelByteCount = 4;
+        }
         RolandDevice device = Manufacturer.ROLAND.getDevice(deviceModel);
 
         if (device.getMemory() == null) {
             device.loadMemoryMap();
         }
 
-        RolandCommandParser cmd = RolandCommand.get(getCommand(buffer))
+        int command = modelByteCount == 4 ? buffer.getByte() : getCommand(buffer);
+        RolandCommandParser cmd = RolandCommand.get(command)
                 .getParser();
         buffer.mark();
         int bodySize = 0;

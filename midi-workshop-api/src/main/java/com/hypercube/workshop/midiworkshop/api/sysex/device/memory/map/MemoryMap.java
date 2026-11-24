@@ -165,4 +165,49 @@ public class MemoryMap {
         int relativeAddress = address.value() - baseAddress.value();
         return memory[relativeAddress] & 0xFF;
     }
+
+    /**
+     * Read one logical value from the map, taking the field format into
+     * account.
+     *
+     * <p>For {@link MemoryMapFormat#BYTES} this is a plain byte. For
+     * {@link MemoryMapFormat#NIBBLES} the value is rebuilt from the two
+     * consecutive nibbles stored at the address. The format is resolved from
+     * the deepest field containing the address, so a composite struct can mix
+     * NIBBLES and BYTES children.
+     */
+    public int readValueByte(MemoryInt28 address) {
+        MemoryField field = findField(address);
+        MemoryMapFormat valueFormat = field == null ? format : field.getParent()
+                .getFormat();
+        return switch (valueFormat) {
+            case BYTES -> readByte(address);
+            case NIBBLES -> (readByte(address) << 4) | readByte(address.add(1));
+        };
+    }
+
+    private MemoryField findField(MemoryInt28 address) {
+        for (MemoryField field : fields) {
+            int start = field.getAddress()
+                    .value();
+            int fieldSize = field.getEffectiveTotalSize()
+                    .value();
+            if (address.value() < start || address.value() >= start + fieldSize) {
+                continue;
+            }
+            if (!field.isReference()) {
+                return field;
+            }
+            int offset = address.value() - start;
+            if (field.isArray()) {
+                int elementSize = field.getReference()
+                        .getEffectiveSize()
+                        .value();
+                offset = offset % elementSize;
+            }
+            return field.getReference()
+                    .findField(MemoryInt28.from(offset));
+        }
+        return null;
+    }
 }

@@ -7,6 +7,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMe
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SysExParserTest {
 
@@ -67,17 +69,18 @@ public class SysExParserTest {
         assertEquals(3, memory.getMemorySpaces()
                 .size());
 
-        MemoryMap userPreset = memory.getMemoryMap("UserPresets", "User Preset");
+        MemoryMap userPreset = memory.getMemoryMap("UserPresets", "User Presets");
+        int presetBase = 7 * 0x60A; // WPRESET 8 -> Preset[7]
         StringBuilder name = new StringBuilder();
         for (int i = 0; i < 8; i++) {
-            name.append((char) userPreset.readByte(MemoryInt28.from(i, 2)));
+            name.append((char) userPreset.readByte(MemoryInt28.from(presetBase + i, 4)));
         }
         assertEquals("StudOne5", name.toString());
-        assertEquals(0x00, userPreset.readByte(MemoryInt28.from(9, 2)));
-        assertEquals(0x64, userPreset.readByte(MemoryInt28.from(10, 2)));
-        assertEquals(0x04, userPreset.readByte(MemoryInt28.from(12, 2)));
-        assertEquals(0x19, userPreset.readByte(MemoryInt28.from(14, 2)));
-        assertEquals(0x32, userPreset.readByte(MemoryInt28.from(15, 2)));
+        assertEquals(0x00, userPreset.readByte(MemoryInt28.from(presetBase + 9, 4)));
+        assertEquals(0x64, userPreset.readByte(MemoryInt28.from(presetBase + 10, 4)));
+        assertEquals(0x04, userPreset.readByte(MemoryInt28.from(presetBase + 12, 4)));
+        assertEquals(0x19, userPreset.readByte(MemoryInt28.from(presetBase + 14, 4)));
+        assertEquals(0x32, userPreset.readByte(MemoryInt28.from(presetBase + 15, 4)));
     }
 
     @Test
@@ -96,6 +99,43 @@ public class SysExParserTest {
         assertNotNull(device);
         assertEquals(0x42, device.getMemory()
                 .readByte("Global", MemoryInt28.from(8, 2)));
+    }
+
+    @Test
+    void ignoreNonSysExMessage() {
+        assertNull(new SysExParser().parse(new byte[]{(byte) 0xF8}));
+        assertNull(new SysExParser().parse(new byte[]{(byte) 0xFE}));
+    }
+
+    @Test
+    void ignoreAkaiEditBufferPreset() {
+        Device device = Manufacturer.AKAI.getDevice("MPK-261");
+        device.loadMemoryMap();
+
+        new SysExParser().parse(akaiPresetFrame(0, 0x42));
+
+        MemoryMap presets = device.getMemory()
+                .getMemoryMap("UserPresets", "User Presets");
+        assertEquals(0, presets.readByte(MemoryInt28.from(0, 4)));
+    }
+
+    /**
+     * Build a {@code WPRESET} answer carrying a 1546-byte preset record.
+     */
+    private byte[] akaiPresetFrame(int presetNumber, int firstValue) {
+        int payloadSize = 1 + 0x60A;
+        byte[] frame = new byte[5 + 2 + payloadSize + 1];
+        frame[0] = (byte) 0xF0;
+        frame[1] = 0x47;
+        frame[2] = 0x00;
+        frame[3] = 0x25;
+        frame[4] = 0x10;
+        frame[5] = (byte) (payloadSize >> 7);
+        frame[6] = (byte) (payloadSize & 0x7F);
+        frame[7] = (byte) presetNumber;
+        frame[8] = (byte) firstValue;
+        frame[frame.length - 1] = (byte) 0xF7;
+        return frame;
     }
 
     /**

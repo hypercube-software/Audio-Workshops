@@ -68,6 +68,9 @@ public enum Manufacturer {
     ROLAND("Roland", 0x41, new RolandSysExParser(), RolandDevice.class,
             List.of(
                     new DeviceDefinition("RSP-550", 0x38),
+                    new DeviceDefinition("SE-02", 0x44,
+                            m -> new RolandDevice(m, "SE-02", 0x44, 0x10,
+                                    new int[]{0x00, 0x00, 0x00, 0x44}, 4, 2)),
                     new DeviceDefinition("DS-330", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
                     new DeviceDefinition("SC-33", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
                     new DeviceDefinition("SC-55", ROLAND_SOUND_CANVAS_DEVICE_MULTI),
@@ -87,7 +90,10 @@ public enum Manufacturer {
     BEHRINGER("Behringer", 0x2032, new BehringerSysExParser(), BehringerDevice.class, List.of(
             new DeviceDefinition("Neutron", 0x28)));
 
-    private record DeviceDefinition(String name, int code) {
+    private record DeviceDefinition(String name, int code, Function<Manufacturer, ? extends Device> factory) {
+        private DeviceDefinition(String name, int code) {
+            this(name, code, null);
+        }
     }
 
     ;
@@ -95,17 +101,20 @@ public enum Manufacturer {
     private <T extends Device> Manufacturer(String title, int code, ManufacturerSysExParser parser, Class<T> deviceClass, List<DeviceDefinition> devices) {
         this.title = title;
         this.code = code;
-        this.devices = new Devices<>(
-                devices.stream()
-                        .map(d -> {
-                            try {
-                                return deviceClass.getConstructor(Manufacturer.class, String.class, int.class)
-                                        .newInstance(this, d.name, d.code);
-                            } catch (Exception e) {
-                                throw new MidiError(e);
-                            }
-                        })
-                        .toList());
+        List<Device> builtDevices = devices.stream()
+                .map(d -> {
+                    if (d.factory != null) {
+                        return (Device) d.factory.apply(this);
+                    }
+                    try {
+                        return (Device) deviceClass.getConstructor(Manufacturer.class, String.class, int.class)
+                                .newInstance(this, d.name, d.code);
+                    } catch (Exception e) {
+                        throw new MidiError(e);
+                    }
+                })
+                .toList();
+        this.devices = new Devices<>(builtDevices);
         this.parser = Optional.ofNullable(parser)
                 .orElseGet(ManufacturerSysExParser::new);
     }

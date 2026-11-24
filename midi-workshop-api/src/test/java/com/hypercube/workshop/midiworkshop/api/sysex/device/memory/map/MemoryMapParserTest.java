@@ -3,6 +3,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -203,10 +204,10 @@ class MemoryMapParserTest {
                 .size());
         assertMemorySpaceZones(dm, "CurrentPreset", "Preset Edit Buffer");
         assertMemorySpaceZones(dm, "Global", "Global Settings");
-        assertMemorySpaceZones(dm, "UserPresets", "User Preset");
+        assertMemorySpaceZones(dm, "UserPresets", "User Presets");
         assertMemoryMapSize(0x179, "Global Settings", dm);
         assertMemoryMapSize(0x608, "Preset Edit Buffer", dm);
-        assertMemoryMapSize(0x60A, "User Preset", dm);
+        assertMemoryMapSize(0x60A * 30, "User Presets", dm);
 
         MemoryMap global = referencedStruct(dm, "Global Settings");
         assertEquals(0x179, global.getSize()
@@ -257,10 +258,14 @@ class MemoryMapParserTest {
         assertEquals(8 * 24, field(knobArray, "MIDI to DIN").getAddress()
                 .value());
 
-        MemoryMap userPreset = referencedStruct(dm, "User Preset");
+        MemoryMap userPreset = referencedStruct(dm, "User Presets");
         assertEquals(0x60A, userPreset.getSize()
                 .value());
-        assertEquals(0x35, field(userPreset, "Pads").getAddress()
+        assertEquals(30, dm.getMemoryMap("User Presets")
+                .getFields()
+                .get(0)
+                .getArray()
+                .size());        assertEquals(0x35, field(userPreset, "Pads").getAddress()
                 .value());
         assertEquals(0x2F5, field(userPreset, "Knobs").getAddress()
                 .value());
@@ -303,6 +308,150 @@ class MemoryMapParserTest {
                 .stream()
                 .map(MemoryMap::getName)
                 .toList());
+    }
+
+    @Test
+    void loadSe02Map() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/SE-02/SE-02.mmap"));
+
+        assertEquals(10, dm.getMemoryMaps()
+                .size());
+        assertEquals(1, dm.getMemorySpaces()
+                .size());
+        assertEquals(List.of("Default"), dm.getMemorySpaceNames());
+        assertEquals("Default", dm.resolveMemorySpace(null)
+                .getName());
+        assertEquals("Default", dm.resolveMemorySpace("Default")
+                .getName());
+        assertMemoryMapSize(0x0A, "System Settings", dm);
+        assertMemoryMapSize(0x02, "CV Calibration", dm);
+        assertEquals(0x04, dm.getMemoryMap("CV Calibration")
+                .getEffectiveSize()
+                .value());
+        assertMemoryMapSize(0x02, "System Reserved", dm);
+        assertMemoryMapSize(0x10, "Reserved Internal Storage", dm);
+        assertMemoryMapSize(0x4000, "Patch Edit Buffer", dm);
+        assertMemoryMapSize(0x200000, "User Presets", dm);
+        assertMemoryMapSize(0x4000, "Pattern Edit Buffer", dm);
+        assertMemoryMapSize(0x200000, "Stored Patterns", dm);
+        assertMemoryMapSize(0x4000, "Song Edit Buffer", dm);
+        assertMemoryMapSize(0x40000, "Stored Songs", dm);
+
+        assertArrayEquals(new int[]{0x05, 0x00, 0x00, 0x00}, dm.getMemoryMap("Patch Edit Buffer")
+                .getBaseAddress()
+                .getPackedBytes());
+        assertArrayEquals(new int[]{0x06, 0x00, 0x00, 0x00}, dm.getMemoryMap("User Presets")
+                .getBaseAddress()
+                .getPackedBytes());
+
+        MemoryMap system = referencedStruct(dm, "System Settings");
+        assertEquals(0x0A, system.getSize()
+                .value());
+        MemoryMap cv = referencedStruct(dm, "CV Calibration");
+        assertEquals(0x02, cv.getSize()
+                .value());
+        assertEquals(0x00, field(cv, "CV Fine Tune").getAddress()
+                .value());
+        assertEquals(0x02, field(cv, "CV Key Follow").getAddress()
+                .value());
+
+        MemoryMap preset = referencedStruct(dm, "Patch Edit Buffer");
+        assertEquals(0x4000, preset.getSize()
+                .value());
+        MemoryMap parameters = field(preset, "Parameters").getReference();
+        assertEquals(0x68, parameters.getSize()
+                .value());
+        assertEquals(0xD0, parameters.getEffectiveSize()
+                .value());
+        assertEquals(0x00, field(preset, "Parameters").getAddress()
+                .value());
+        assertEquals(0xD0, field(preset, "Name").getAddress()
+                .value());
+        assertEquals(0xE0, field(preset, "Reserved").getAddress()
+                .value());
+        assertEquals(0x00, field(parameters, "COM_BENDRANGE").getAddress()
+                .value());
+        assertEquals(0x22, field(parameters, "COM_OCT").getAddress()
+                .value());
+        assertEquals(0x28, field(parameters, "CTRL_GLIDE").getAddress()
+                .value());
+        assertEquals(0x32, field(parameters, "OSC_RANGE1").getAddress()
+                .value());
+        assertEquals(0x6E, field(parameters, "FLT_CUTOFF").getAddress()
+                .value());
+        assertEquals(0x96, field(parameters, "LFO_RATE").getAddress()
+                .value());
+        assertEquals(0xAA, field(parameters, "DLY_TIME").getAddress()
+                .value());
+        assertEquals(0xB0, field(parameters, "Unknown B0").getAddress()
+                .value());
+
+        MemoryMap storedPreset = referencedStruct(dm, "User Presets");
+        assertEquals(0x4000, storedPreset.getSize()
+                .value());
+        assertEquals(128, dm.getMemoryMap("User Presets")
+                .getFields()
+                .get(0)
+                .getArray()
+                .size());
+
+        MemoryMap pattern = referencedStruct(dm, "Pattern Edit Buffer");
+        assertEquals(0x4000, pattern.getSize()
+                .value());
+        assertEquals(0x10, field(pattern, "Steps").getAddress()
+                .value());
+        assertEquals(0x08, field(pattern, "Steps").getReference()
+                .getSize()
+                .value());
+
+        MemoryMap storedPattern = referencedStruct(dm, "Stored Patterns");
+        assertEquals(0x4000, storedPattern.getSize()
+                .value());
+        assertEquals(128, dm.getMemoryMap("Stored Patterns")
+                .getFields()
+                .get(0)
+                .getArray()
+                .size());
+
+        MemoryMap song = referencedStruct(dm, "Song Edit Buffer");
+        assertEquals(0x4000, song.getSize()
+                .value());
+        assertEquals(0x10, field(song, "Parts").getAddress()
+                .value());
+        assertEquals(0x08, field(song, "Parts").getReference()
+                .getSize()
+                .value());
+
+        MemoryMap storedSong = referencedStruct(dm, "Stored Songs");
+        assertEquals(0x4000, storedSong.getSize()
+                .value());
+        assertEquals(16, dm.getMemoryMap("Stored Songs")
+                .getFields()
+                .get(0)
+                .getArray()
+                .size());
+    }
+
+    @Test
+    void readSe02NibbleValue() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/SE-02/SE-02.mmap"));
+        MemoryInt28 address = MemoryInt28.from("05000000", true);
+
+        dm.writeByte("Default", address, 0x0C);
+        dm.writeByte("Default", MemoryInt28.from("05000001", true), 0x08);
+
+        assertEquals(0xC8, dm.readValueByte("Default", address));
+    }
+
+    @Test
+    void readSe02StoredPresetValue() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/SE-02/SE-02.mmap"));
+        MemoryInt28 address = MemoryInt28.from("06050000", true);
+
+        dm.writeByte("Default", address, 0x0C);
+        dm.writeByte("Default", address.add(1), 0x08);
+
+        assertEquals(0xC8, dm.readValueByte("Default", address));
     }
 
     private MemoryMap referencedStruct(DeviceMemory dm, String zoneName) {

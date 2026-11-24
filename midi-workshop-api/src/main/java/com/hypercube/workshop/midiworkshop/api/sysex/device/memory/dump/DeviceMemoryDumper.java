@@ -26,11 +26,12 @@ public class DeviceMemoryDumper {
     private final DeviceMemory memory;
 
     public void visitMemory(DeviceMemoryVisitor visitor) {
-        MemoryInt28 addr = MemoryInt28.from(0);
         memory.getMemorySpaces()
                 .forEach(memorySpace -> memorySpace.getMemoryMaps()
                         .forEach(memoryMap -> {
                             visitor.onNewTopLevelMemoryMap(memoryMap);
+                            MemoryInt28 addr = MemoryInt28.from(0, memoryMap.getBaseAddress()
+                                    .byteCount());
                             dumpMemory(memorySpace.getName(), memoryMap.getName(), addr, memoryMap, visitor);
                         }));
     }

@@ -54,6 +54,9 @@ public class MemoryField {
      * @return Take into account the {@link MemoryMapFormat} to get the real size in bytes
      */
     public MemoryInt28 getEffectiveSize() {
+        if (reference != null) {
+            return reference.getEffectiveSize();
+        }
         return MemoryInt28.from(switch (parent.getFormat()) {
             case BYTES -> size.value();
             case NIBBLES -> size.value() * 2;

@@ -22,7 +22,7 @@ import java.util.Optional;
 public enum AkaiMemorySpace {
     CURRENT_PRESET("CurrentPreset", "Preset Edit Buffer", AkaiDevice.QEDIT, AkaiDevice.WEDIT, AkaiDevice.WEDIT, 127, false),
     GLOBAL("Global", "Global Settings", AkaiDevice.QGLOB, AkaiDevice.WGLOB, AkaiDevice.WGLOB, 127, false),
-    USER_PRESETS("UserPresets", "User Preset", AkaiDevice.QPRESET, AkaiDevice.WPRESET, AkaiDevice.WPRESET, 1546, true);
+    USER_PRESETS("UserPresets", "User Presets", AkaiDevice.QPRESET, AkaiDevice.WPRESET, AkaiDevice.WPRESET, 1546, true);
 
     private final String mmapName;
     private final String zoneName;

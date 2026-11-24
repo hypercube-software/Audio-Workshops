@@ -117,6 +117,25 @@ public class DeviceMemory {
         return getMemorySpace(memorySpaceName).readByte(address);
     }
 
+    /**
+     * Read one logical value (format-aware) from a memory space.
+     */
+    public int readValueByte(String memorySpaceName, MemoryInt28 address) {
+        return getMemorySpace(memorySpaceName).readValueByte(address);
+    }
+
+    /**
+     * Read one logical value (format-aware) from the first space that
+     * contains the address.
+     */
+    public int readValueByte(MemoryInt28 address) {
+        return memorySpaces.stream()
+                .filter(memorySpace -> memorySpace.contains(address))
+                .findFirst()
+                .map(memorySpace -> memorySpace.readValueByte(address))
+                .orElseThrow(() -> new MidiError("[%s] Memory Address not defined: %s".formatted(name, address)));
+    }
+
     public Optional<MemorySpace> findMemorySpace(MemoryInt28 address) {
         return memorySpaces.stream()
                 .filter(memorySpace -> memorySpace.contains(address))

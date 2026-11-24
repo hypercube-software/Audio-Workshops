@@ -8,6 +8,7 @@ import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpaceAddressing;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
@@ -200,15 +201,38 @@ public abstract class Device {
             log.error("Timeout waiting SysEx...");
             return 0;
         }
-        return memory.readByte(memorySpace.getName(), address);
+        return memory.readValueByte(memorySpace.getName(), address);
     }
 
     /**
-     * Read a value from a preset-addressed memory space after requesting the
-     * whole preset record.
+     * Number of presets declared by the mmap for a preset-addressed memory
+     * space. A preset-addressed space is a single zone whose first array field
+     * references the preset structure.
+     */
+    public int getPresetCount(String memorySpaceName) {
+        MemorySpace memorySpace = memory.resolveMemorySpace(memorySpaceName);
+        return memorySpace.getMemoryMaps()
+                .stream()
+                .flatMap(zone -> zone.getFields()
+                        .stream())
+                .filter(MemoryField::isArray)
+                .filter(MemoryField::isReference)
+                .findFirst()
+                .map(field -> field.getArray()
+                        .size())
+                .orElseThrow(() -> new MidiError("No preset array in memory space %s".formatted(memorySpace.getName())));
+    }
+
+    /**
+     * Read a value from a preset-addressed memory space.
+     *
+     * <p>The device has no command for a whole-space dump: every stored preset
+     * is requested in turn (preset 1 to N), then the value is read from the
+     * parsed memory. The address is relative to the start of the space, so it
+     * can span two consecutive presets.
      */
     public int requestPresetMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, String memorySpaceName,
-                                   int presetNumber, MemoryInt28 address) {
+                                   MemoryInt28 address) {
         if (midiInPort == null) {
             return 0;
         }
@@ -216,13 +240,17 @@ public abstract class Device {
         if (getMemorySpaceAddressing(memorySpace.getName()) != MemorySpaceAddressing.PRESET) {
             throw new MidiError("Memory space %s is not preset-addressed".formatted(memorySpace.getName()));
         }
-        boolean received = receiveFrames(midiInPort, 1,
-                () -> requestPreset(midiOutPort, memorySpace.getName(), presetNumber));
-        if (!received) {
-            log.error("Timeout waiting SysEx...");
-            return 0;
+        int presetCount = getPresetCount(memorySpace.getName());
+        for (int i = 1; i <= presetCount; i++) {
+            final int presetNumber = i;
+            boolean received = receiveFrames(midiInPort, 1,
+                    () -> requestPreset(midiOutPort, memorySpace.getName(), presetNumber));
+            if (!received) {
+                log.error("Timeout waiting SysEx for memory space {} preset {}", memorySpace.getName(), presetNumber);
+                return 0;
+            }
         }
-        return memory.readByte(memorySpace.getName(), address);
+        return memory.readValueByte(memorySpace.getName(), address);
     }
 
     /**
@@ -232,6 +260,12 @@ public abstract class Device {
     private boolean receiveFrames(MidiInPort midiInPort, int expectedFrames, Runnable sender) {
         final CountDownLatch sysExReceived = new CountDownLatch(expectedFrames);
         final MidiListener listener = (device, event) -> {
+            if (!(event.getMessage() instanceof SysexMessage)) {
+                // MIDI clock (F8), active sensing and other real-time messages
+                // reach the same listener; they are not SysEx and must not be
+                // parsed as such.
+                return;
+            }
             log.info("Receive SYSEX:{}", event.toString());
             try {
                 Device parsed = new SysExParser().parse(event.getMessage());

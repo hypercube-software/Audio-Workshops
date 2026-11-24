@@ -61,6 +61,7 @@ class AkaiDeviceTest {
         assertEquals(127, device.getMaxBlockSize("CurrentPreset"));
         assertEquals(127, device.getMaxBlockSize("Global"));
         assertEquals(1546, device.getMaxBlockSize("UserPresets"));
+        assertEquals(30, device.getPresetCount("UserPresets"));
         assertTrue(AkaiMemorySpace.USER_PRESETS.isPresetAddressed());
     }
 

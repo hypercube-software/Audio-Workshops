@@ -62,6 +62,16 @@ public class MemorySpace {
                 .orElseThrow(() -> new MidiError("Memory address not mapped in space %s: %s".formatted(name, address)));
     }
 
+    /**
+     * Read one logical value from the space, taking the zone format into
+     * account (a NIBBLES value is rebuilt from two consecutive nibbles).
+     */
+    public int readValueByte(MemoryInt28 address) {
+        return findMemoryMap(address)
+                .map(m -> m.readValueByte(address))
+                .orElseThrow(() -> new MidiError("Memory address not mapped in space %s: %s".formatted(name, address)));
+    }
+
     @Override
     public String toString() {
         return name;

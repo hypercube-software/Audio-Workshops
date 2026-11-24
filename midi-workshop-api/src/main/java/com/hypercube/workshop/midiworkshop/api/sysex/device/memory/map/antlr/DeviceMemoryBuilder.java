@@ -242,10 +242,10 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     private void updateMemoryFormat(MemoryMap memoryMap, MemoryMapFormat parentFormat) {
         if (memoryMap.getFormat() == null) {
             memoryMap.setFormat(parentFormat);
-        } else if (memoryMap.getFormat() != parentFormat) {
-            throw new MidiError("Child Struct %s don't use the same format than parent %s, You must define a separate one"
-                    .formatted(memoryMap.getName(), parentFormat.name()));
         }
+        // A child may declare its own format and override the parent one. This
+        // is required by composite structs such as the SE-02 Preset, which
+        // mixes NIBBLES parameters with BYTES name and reserved fields.
     }
 
     private void resolveTypeReference(MemoryMap memoryMap, MemoryField field) {
@@ -300,7 +300,7 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
             MemoryInt28 fieldAddress = dms.getBaseAddress();
             for (var field : dms.getFields()) {
                 field.setAddress(fieldAddress);
-                fieldAddress = fieldAddress.add(field.getTotalSize());
+                fieldAddress = fieldAddress.add(field.getEffectiveTotalSize());
             }
         });
     }

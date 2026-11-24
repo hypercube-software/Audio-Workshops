@@ -51,7 +51,12 @@ public class SysExParser {
         Device device = null;
         while (sysExReader.remaining() > 0) {
             int status = sysExReader.getByte();
-            assert (status == SYSEX_START);
+            if (status != SYSEX_START) {
+                // MIDI clock (F8), active sensing (FE) and other real-time
+                // messages are not SysEx and must not be parsed as such.
+                log.debug("Ignore non-SysEx MIDI message: 0x%02X".formatted(status));
+                return null;
+            }
             int command = sysExReader.peekByte();
             if (command == SYSEX_NON_REALTIME) {
                 parseNonRealTime(sysExReader);

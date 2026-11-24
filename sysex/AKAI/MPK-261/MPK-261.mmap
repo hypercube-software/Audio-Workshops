@@ -1,14 +1,15 @@
 # ============================================================
 # AKAI MPK-261 memory map
 # ============================================================
-# The MPK-261 exposes 2 RAM edit buffers and 1 flash record:
+# The MPK-261 exposes 2 RAM edit buffers and 30 flash user presets:
 #   - the global edit buffer, 377 bytes, read/write with QGLOB/WGLOB;
 #   - the preset edit buffer, 1544 bytes, read/write with QEDIT/WEDIT;
-#   - the user preset record, 1546 bytes, read/write with
+#   - 30 user presets, 1546 bytes each, read/write with
 #     QPRESET/WPRESET, and poked with PPRESET.
 #
 # The 2 RAM spaces both start at 0x0000: only the command selects the
-# space, not the address. The flash record is also addressed from 0x0000.
+# space, not the address. The flash presets are also addressed from 0x0000:
+# QPRESET/WPRESET carry a preset number (1 to 30), not a byte address.
 # The memory spaces below therefore share the same base address.
 # AkaiSysExParser maps each command to one of these space names:
 #   CurrentPreset <- WEDIT
@@ -46,9 +47,9 @@ Global
 
 UserPresets
 {
-    @0000-0C0A User Preset
+    @00000000-00026A2C User Presets
     {
-        UserPresetRecord
+        UserPreset Preset[30]
     }
 }
 
@@ -175,10 +176,10 @@ struct PresetEditBuffer
 }
 
 # ------------------------------------------------------------
-# User preset record (1546 bytes)
+# User preset (1546 bytes)
 # ------------------------------------------------------------
 
-struct UserPresetRecord
+struct UserPreset
 {
     String Name[8]
     byte Flag 08
