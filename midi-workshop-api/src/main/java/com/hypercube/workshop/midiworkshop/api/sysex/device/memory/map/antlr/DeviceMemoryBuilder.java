@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.antlr;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
@@ -14,7 +15,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Builds the {@link DeviceMemory} model from the ANTLR parse tree.
@@ -26,11 +31,14 @@ import java.util.List;
 public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     private final File file;
     private final List<MemoryMap> memoryMaps = new ArrayList<>();
+    private final Map<String, List<MemoryMap>> memorySpaces = new LinkedHashMap<>();
+    private final Set<String> declaredMemorySpaces = new HashSet<>();
     private final List<MemoryEnum> memoryEnums = new ArrayList<>();
     private final List<MemoryField> fields = new ArrayList<>();
 
     private String model;
     private boolean packed;
+    private String currentMemorySpace = MemorySpace.DEFAULT_NAME;
     private MemoryMap currentMap;
     private MemoryEnum currentEnum;
 
@@ -41,11 +49,21 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     public DeviceMemory build() {
         resolveTypeReferences();
         resolveAddresses();
-        var topLevelMemoryMaps = memoryMaps.stream()
-                .filter(MemoryMap::isTopLevel)
+        memorySpaces.forEach((name, zones) -> {
+            if (zones.isEmpty()) {
+                throw new MidiError("%s: empty memory space: %s".formatted(file.getName(), name));
+            }
+        });
+        var spaces = memorySpaces.entrySet()
+                .stream()
+                .map(entry -> new MemorySpace(entry.getKey(), entry.getValue()))
                 .toList();
-        topLevelMemoryMaps.forEach(MemoryMap::allocateMemory);
-        return new DeviceMemory(model, topLevelMemoryMaps);
+        spaces.stream()
+                .flatMap(memorySpace -> memorySpace.getMemoryMaps()
+                        .stream())
+                .filter(MemoryMap::isTopLevel)
+                .forEach(MemoryMap::allocateMemory);
+        return new DeviceMemory(model, spaces);
     }
 
     // ------------------------------------------------------------------
@@ -65,6 +83,23 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     }
 
     @Override
+    public Void visitMemorySpaceDef(MemoryMapDslParser.MemorySpaceDefContext ctx) {
+        String name = name(words(ctx.words()), ctx, "memory space");
+        if (!declaredMemorySpaces.add(name)) {
+            throw error(ctx, "Memory space already declared: " + name);
+        }
+        List<MemoryMap> zones = memorySpaces.computeIfAbsent(name, key -> new ArrayList<>());
+        String previousMemorySpace = currentMemorySpace;
+        currentMemorySpace = name;
+        try {
+            visitChildren(ctx);
+        } finally {
+            currentMemorySpace = previousMemorySpace;
+        }
+        return null;
+    }
+
+    @Override
     public Void visitZone(MemoryMapDslParser.ZoneContext ctx) {
         String[] range = ctx.range.getText()
                 .split("-", 2);
@@ -80,6 +115,8 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
                 ? new MemoryMap(MemoryMapType.MEMORY, name, address, format)
                 : new MemoryMap(MemoryMapType.MEMORY, name, address, size, format);
         memoryMaps.add(currentMap);
+        memorySpaces.computeIfAbsent(currentMemorySpace, key -> new ArrayList<>())
+                .add(currentMap);
         return visitChildren(ctx);
     }
 

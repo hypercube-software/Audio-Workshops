@@ -5,69 +5,6 @@ skinparam classAttributeIconSize 0
 skinparam classArrowColor #AAAAAA
 skinparam classBorderColor #666666
 skinparam classBackgroundColor #EEEEEE
-enum StreamFormat {
-  NIBBLE
-  STREAM
-}
-
-class KFZoneSegment {
-  - int chan
-  - int prog
-  - int lokey
-  - int hikey
-  - int flags
-  - int trans
-  - int[] ctls
-}
-
-class KFSoundBlock {
-  - int base
-  - int nsfh
-  - int off
-  - int sflags
-  - int unused
-  - int copyID
-  - int rfu
-  - List headers
-  - List envelopes
-}
-
-class KFHobbesSegment {
-  - int subTag
-  - int coarse
-  - int fine
-  - int kScale
-  - int vScale
-  - int control
-  - int range
-  - int depth
-  - int minDepth
-  - int maxDepth
-  - int source
-  - int bitfields1
-  - int moreTscr
-  - int bitfields2
-  - int bitfields3
-}
-
-class KFLayerSegment {
-  - int loEnable
-  - int trans
-  - int tune
-  - int loKey
-  - int hiKey
-  - int vRange
-  - int eSwitch
-  - int flags
-  - int moreFlags
-  - int vTrig
-  - int hiEnable
-  - int dlyCtl
-  - int dlyMin
-  - int dlyMax
-  - int xfade
-}
-
 enum KObject {
   INDEX
   X_CODE
@@ -101,14 +38,45 @@ enum KObject {
   - int id
 }
 
-class KFLfoSegment {
-  - int rfu1
-  - int rateCtl
-  - int minRate
-  - int maxRate
-  - int phase
-  - int shape
-  - int rfu2
+enum StreamFormat {
+  NIBBLE
+  STREAM
+}
+
+abstract class KFObject {
+  # RawData data
+  # String name
+  # int objectId
+  # KObject type
+}
+
+class RawData {
+  - BitStreamReader bitStreamReader
+  - byte[] content
+  - long position
+}
+
+class KFIntonationTable {
+  - int[] itblTbl
+}
+
+class KFKeyMap {
+  - int block
+  - int cents
+  - List entries
+  - int esize
+  - int[] level
+  - Set mask
+  - int method
+  - int nelem
+  - int pitch
+}
+
+class KeyMapEntry {
+  - int atten
+  - int root
+  - int sblk
+  - int tuning
 }
 
 enum KeyMapMask {
@@ -120,8 +88,201 @@ enum KeyMapMask {
   - int mask
 }
 
-class DataNACK {
-  - int offset
+class KFMasterParameter {
+  - CDB[] c
+  - MDB m
+  - int[][] sb
+  - ZDB z
+}
+
+class MDB {
+  - int bchan
+  - int bootDisk_defaultDisk_packed
+  - int confirm
+  - int contrast
+  - int curBank
+  - int curDisk
+  - int curEffect
+  - int curEntry
+  - int curSetup
+  - int curSong
+  - int dchan
+  - int dtune
+  - int echan
+  - int fxMix
+  - int fxflags_outA_outB_fxSwitch_secsamp_rackMix_V_packed
+  - int intKey
+  - int intTbl
+  - int listIndex
+  - int listTop
+  - int localKbdChan
+  - int macroState_rfu3_packed
+  - int[] markList
+  - int oldSetup
+  - int rfu2
+  - int rmode_rpchg_rANO_displayLink_seqTempoLock_packed
+  - int rpmap
+  - int rvmap
+  - int sampflags_playflags_packed
+  - int samptime
+  - int scsiID
+  - int seqClickProg
+  - int seqClock_seqClickKey_packed
+  - int seqCountOff_seqClickMode_seqClickChan_packed
+  - int seqKeyWait_seqClickVel_packed
+  - int seqQuantAmt
+  - int seqQuantGrid
+  - int seqQuantSwing
+  - int seqRecDub_seqRecMode_seqLoop_seqSync_packed
+  - int seqTempo
+  - int sysxID
+  - int tag
+  - int tpmap
+  - int trans
+  - int tvmap
+  - int view
+  - int xflags_kbdTrans_packed
+  - int xpmap
+  - int xvmap
+}
+
+class ZDB {
+  - int chan
+  - int[] ctls
+  - int flags
+  - int hikey
+  - int lokey
+  - int prog
+  - int tag
+  - int trans
+}
+
+class KFPressureMap {
+  - int[] pmapPrss
+}
+
+class KFProgram {
+  - KFAsrSegment asr
+  - KFEfxSegment efx
+  - KFFcnSegment fcn1
+  - KFFcnSegment fcn2
+  - KFFXRootTableSegment fxrt
+  - KFHammSegment1 hammseg1
+  - KFHammSegment2 hammseg2
+  - KFHammSegment3 hammseg3
+  - List layers
+  - KFLfoSegment lfo
+  - KFProgramCommon pgm
+  - int segmentsStart
+}
+
+class KFArpSegment {
+  - int arpSyncFlags
+  - int clocksPerBeat
+  - int durationPerBeat
+  - int glissando
+  - int hiKey
+  - int initialState
+  - int initialTempo
+  - int latchMode
+  - int limitOption
+  - int noteShift
+  - int onOffControl
+  - int playOrder
+  - int rfu1
+  - int rfu2
+  - int rfu3
+  - int shiftLimit
+  - int tempoSource
+  - int velocityCtrl
+  - int velocityFixed
+  - int velocityMode
+}
+
+class KFAsrSegment {
+  - int atime
+  - int dtime
+  - int flags
+  - int rfu1
+  - int rfu2
+  - int rtime
+  - int trigger
+}
+
+class KFCalvinSegment {
+  - int alg
+  - int ccr
+  - int ckScale
+  - int cpitch
+  - int cvScale
+  - int dtune
+  - int fineHz
+  - int fpitch
+  - int keymap
+  - int legato
+  - int pcontrol
+  - int pdepth
+  - int pmax
+  - int pmin
+  - int prange
+  - int psource
+  - int rfu2
+  - int root
+  - int skeymap
+  - int slegato
+  - int sroot
+  - int subTag
+  - int tcontrol
+  - int tkScale
+  - int trange
+  - int trans
+  - int tshift
+  - int tvScale
+}
+
+class KFChannelSegment {
+  - int brange
+  - int chan
+  - int dtune
+  - int flags
+  - int nlyrs
+  - int outflags
+  - int pan
+  - int playflags
+  - int portRate
+  - int prog
+  - int rfu1
+  - int rfu2
+  - int trans
+  - int volume
+}
+
+class KFEfxSegment {
+  - int chan
+  - int ctl1
+  - int ctl2
+  - int mix
+  - int out1
+  - int out2
+  - int prog
+}
+
+class KFEncSegment {
+  - int atCtl
+  - int atKScale
+  - int atRange
+  - int atTime
+  - int atVScale
+  - int dtCtl
+  - int dtKScale
+  - int dtRange
+  - int dtTime
+  - int flags
+  - int rfu1
+  - int rtCtl
+  - int rtKScale
+  - int rtRange
+  - int rtTime
 }
 
 class KFEnvSegment {
@@ -129,182 +290,246 @@ class KFEnvSegment {
   - int[][] segs
 }
 
-class KFProgramCommon {
-  - int fmt
-  - int numLayers
-  - int modeFlags
-  - int bendRange
-  - int portSlope
-  - int mixControl
-  - int mixRange
-  - int coarse1
-  - int control1
-  - int range1
-  - int dest1
-  - int coarse2
-  - int control2
-  - int range2
-  - int dest2
+class KFFXPartSegment {
+  - int adjust
+  - int depth
+  - int num
+  - int param
+  - int rfu
+  - int source
+  - int strip
+}
+
+class KFFXRootTableSegment {
+  - KFAsrSegment asr1
+  - KFAsrSegment asr2
+  - KFFcnSegment fcn1
+  - KFFcnSegment fcn2
+  - KFFcnSegment fcn3
+  - KFFcnSegment fcn4
+  - KFLfoSegment lfo1
+  - KFLfoSegment lfo2
+  - List patch
+  - int[] rfu
+  - int studio
+  - int vers
+}
+
+class KFFcnSegment {
+  - int arg1
+  - int arg2
+  - int op
 }
 
 class KFHammSegment1 {
-  - int version
-  - int basekey
-  - int nwheels
-  - int bitfields1
-  - int toneleak
-  - int resmap
+  - int balance
   - int[] bartones
+  - int basekey
+  - int bass_f
+  - int bass_g
+  - int bitfields1
+  - int emph_f
+  - int emph_g
+  - int noizvol
+  - int nwheels
+  - int par1_f
+  - int par1_g
+  - int par1_q
+  - int par2_f
+  - int par2_g
+  - int par2_q
+  - int resmap
+  - int toneleak
+  - int treb_f
+  - int treb_g
+  - int version
   - int volmap
   - int volume
-  - int balance
-  - int emph_g
-  - int emph_f
-  - int bass_g
-  - int bass_f
-  - int par1_g
-  - int par1_f
-  - int par1_q
-  - int par2_g
-  - int par2_f
-  - int par2_q
-  - int treb_g
-  - int treb_f
-  - int noizvol
-}
-
-class KFProgram {
-  - int segmentsStart
-  - KFProgramCommon pgm
-  - KFAsrSegment asr
-  - KFFcnSegment fcn1
-  - KFLfoSegment lfo
-  - KFFcnSegment fcn2
-  - KFEfxSegment efx
-  - KFFXRootTableSegment fxrt
-  - KFHammSegment1 hammseg1
-  - KFHammSegment2 hammseg2
-  - KFHammSegment3 hammseg3
-  - List layers
 }
 
 class KFHammSegment2 {
-  - int noizpitch
-  - int noizlevel
-  - int noizdecay
-  - int perc1
-  - int perc2
-  - int noizvel
-  - int percvel
-  - int[] perclevel
-  - int[] percdecay
-  - int[] perclcomp
-  - int[] rfu2
   - int bass_q
-  - int treb_q
-  - int noizrtrig
-  - int leakmode
-  - int leslieCtl
   - int chorusCtl
   - int chorusSelect
+  - int leakmode
+  - int leslieCtl
+  - int noizdecay
+  - int noizlevel
+  - int noizpitch
+  - int noizrtrig
+  - int noizvel
+  - int perc1
+  - int perc2
+  - int[] percdecay
+  - int[] perclcomp
+  - int[] perclevel
+  - int percvel
+  - int[] rfu2
   - int rfu3
+  - int treb_q
 }
 
 class KFHammSegment3 {
   - int[] drawbars
+  - int keyclick
+  - int loTune
+  - int noizran
+  - int rcvMap
+  - int relclick
+  - int rfu4
+  - int[] rfu5
   - int rfu6
   - int rfu7
-  - int keyclick
-  - int relclick
-  - int noizran
-  - int rfu4
-  - int loTune
-  - int rcvMap
-  - int[] rfu5
 }
 
-class KFArpSegment {
+class KFHobbesSegment {
+  - int bitfields1
+  - int bitfields2
+  - int bitfields3
+  - int coarse
+  - int control
+  - int depth
+  - int fine
+  - int kScale
+  - int maxDepth
+  - int minDepth
+  - int moreTscr
+  - int range
+  - int source
+  - int subTag
+  - int vScale
+}
+
+class KFLayer {
+  - List asr
+  - KFEncSegment atk
+  - KFCalvinSegment cseg
+  - KFEncSegment enc
+  - List env
+  - List fcn1
+  - List fcn2
+  - List hseq
+  - List lfo
+  - KFLayerSegment lyr
+}
+
+class KFLayerSegment {
+  - int dlyCtl
+  - int dlyMax
+  - int dlyMin
+  - int eSwitch
+  - int flags
+  - int hiEnable
   - int hiKey
-  - int initialState
-  - int latchMode
-  - int playOrder
-  - int glissando
-  - int tempoSource
-  - int onOffControl
-  - int clocksPerBeat
-  - int durationPerBeat
-  - int initialTempo
-  - int velocityMode
-  - int velocityFixed
-  - int velocityCtrl
-  - int noteShift
-  - int shiftLimit
-  - int limitOption
-  - int arpSyncFlags
+  - int loEnable
+  - int loKey
+  - int moreFlags
+  - int trans
+  - int tune
+  - int vRange
+  - int vTrig
+  - int xfade
+}
+
+class KFLfoSegment {
+  - int maxRate
+  - int minRate
+  - int phase
+  - int rateCtl
   - int rfu1
   - int rfu2
-  - int rfu3
+  - int shape
 }
 
 class KFMasterSegment {
-  - int bitfields1
-  - int scsiID
   - int bchan
-  - int rvmap
-  - int rpmap
-  - int intTbl
-  - int intKey
-  - int sysxID
-  - int trans
-  - int dtune
-  - int sampflags
-  - int playflags
-  - int rfu2
-  - int samptime
-  - int curSetup
-  - int oldSetup
-  - int curBank
-  - int curEntry
-  - int fxflags
-  - int curEffect
-  - int localKbdChan
-  - int fxMix
-  - int echan
+  - int bitfields1
   - int bitfields2
-  - int curSong
-  - int tvmap
-  - int tpmap
-  - int curDisk
-  - int contrast
-  - int view
-  - int confirm
-  - int xflags
-  - int kbdTrans
-  - int xvmap
-  - int xpmap
-  - int dchan
   - int bitfields3
-  - int[] markList
   - int bitfields4
   - int bitfields5
   - int bitfields6
   - int bitfields7
-  - int seqClickProg
-  - int seqQuantGrid
-  - int seqQuantAmt
-  - int seqQuantSwing
+  - int confirm
+  - int contrast
+  - int curBank
+  - int curDisk
+  - int curEffect
+  - int curEntry
+  - int curSetup
+  - int curSong
+  - int dchan
+  - int dtune
+  - int echan
+  - int fxMix
+  - int fxflags
+  - int intKey
+  - int intTbl
+  - int kbdTrans
   - int listIndex
   - int listTop
+  - int localKbdChan
+  - int[] markList
+  - int oldSetup
+  - int playflags
+  - int rfu2
+  - int rpmap
+  - int rvmap
+  - int sampflags
+  - int samptime
+  - int scsiID
+  - int seqClickProg
+  - int seqQuantAmt
+  - int seqQuantGrid
+  - int seqQuantSwing
   - int seqTempo
+  - int sysxID
+  - int tpmap
+  - int trans
+  - int tvmap
+  - int view
+  - int xflags
+  - int xpmap
+  - int xvmap
 }
 
-class KFSoundBlockEnvelope {
-  - int attackRate
-  - int attackLevel
-  - int decayRate
-  - int decayLevel
-  - int releaseRate
-  - int releaseLevel
+class KFProgramCommon {
+  - int bendRange
+  - int coarse1
+  - int coarse2
+  - int control1
+  - int control2
+  - int dest1
+  - int dest2
+  - int fmt
+  - int mixControl
+  - int mixRange
+  - int modeFlags
+  - int numLayers
+  - int portSlope
+  - int range1
+  - int range2
+}
+
+class KFProgramSegment {
+  - ProgramSegmentIdentifier id
+  - RawData segmentContent
+}
+
+class KFZoneSegment {
+  - int chan
+  - int[] ctls
+  - int flags
+  - int hikey
+  - int lokey
+  - int prog
+  - int trans
+}
+
+class ProgramSegmentIdentifier {
+  - int instanceId
+  - int rawValue
+  - ProgramSegmentType type
 }
 
 enum ProgramSegmentType {
@@ -329,62 +554,140 @@ enum ProgramSegmentType {
   HAMSEG2TAG
   HAMSEG3TAG
   UNKNOWN
-  - int tag
-  - int size
-  - String orgName
   - Class clazz
   - KFSegmentDeserializer deserializer
+  - String orgName
+  - int size
+  - int tag
 }
 
-class MDB {
-  - int tag
-  - int rmode_rpchg_rANO_displayLink_seqTempoLock_packed
-  - int scsiID
-  - int bchan
-  - int rvmap
-  - int rpmap
-  - int intTbl
-  - int intKey
-  - int sysxID
-  - int trans
-  - int dtune
-  - int sampflags_playflags_packed
+class KFSoundBlock {
+  - int base
+  - int copyID
+  - List envelopes
+  - List headers
+  - int nsfh
+  - int off
+  - int rfu
+  - int sflags
+  - int unused
+}
+
+class KFSoundBlockEnvelope {
+  - int attackLevel
+  - int attackRate
+  - int decayLevel
+  - int decayRate
+  - int releaseLevel
+  - int releaseRate
+}
+
+class KFSoundBlockHeader {
+  - long alt
+  - int amp1
+  - int amp2
+  - int env1
+  - int env2
+  - long eos
+  - int flags
+  - long los
+  - int nameOffset
+  - byte[] pcmData
+  - int pitch
+  - int rootk
+  - long sos
+  - long srate
+}
+
+class FXBus {
+  - int alloc
+  - int auxBal
+  - int auxLevel
+  - int auxSend
+  - int busID
+  - int mixBal
+  - int mixLevel
+  - int mixSend
+  - int multiEffect
+  - int rfu
+  - int[] rfu2
+  - int version
+  - int wetDry
+  - int wetDry2
+  - int wetDrySel
+  - int wetDrySel2
+}
+
+class FXInput {
+  - int busID
+  - int eq1Freq
+  - int eq1Level
+  - int eq1Q
+  - int eq1Type
+  - int eq2Freq
+  - int eq2Level
+  - int eq2Q
+  - int eq2Type
+  - int eqEnable
+  - int mode
+  - int rfu1
   - int rfu2
-  - int samptime
-  - int curSetup
-  - int oldSetup
-  - int curBank
-  - int curEntry
-  - int fxflags_outA_outB_fxSwitch_secsamp_rackMix_V_packed
-  - int curEffect
-  - int localKbdChan
-  - int fxMix
-  - int echan
-  - int macroState_rfu3_packed
-  - int curSong
-  - int tvmap
-  - int tpmap
-  - int curDisk
-  - int contrast
-  - int view
-  - int confirm
-  - int xflags_kbdTrans_packed
-  - int xvmap
-  - int xpmap
-  - int dchan
-  - int seqRecDub_seqRecMode_seqLoop_seqSync_packed
-  - int[] markList
-  - int seqCountOff_seqClickMode_seqClickChan_packed
-  - int seqClock_seqClickKey_packed
-  - int seqKeyWait_seqClickVel_packed
-  - int bootDisk_defaultDisk_packed
-  - int seqClickProg
-  - int seqQuantGrid
-  - int seqQuantAmt
-  - int seqQuantSwing
-  - int listIndex
-  - int listTop
-  - int seqTempo
+  - int rfu3
+  - int rfu4
+  - int rfu5
+  - int rfu6
+  - int send1Assign
+  - int send1Level
+  - int send1Pan
+  - int send1Type
+  - int send1Width
+  - int send2Assign
+  - int send2Level
+  - int send2Pan
+  - int send2Type
+  - int send2Width
+  - int useStereo
+  - int version
+}
+
+class KFStudio {
+  - int auxFXID
+  - int auxMixBal
+  - int auxMixLevel
+  - int auxWetDry
+  - int auxWetDry2
+  - int auxWetDrySel
+  - int auxWetDrySel2
+  - int mixBal
+  - int[] mixCoeffs
+  - int mixLevel
+  - int mixSend
+  - List theBusses
+  - List theInputs
+  - List theOutputs
+  - int version
+}
+
+class KFVelocityMap {
+  - int[] vmapVels
+}
+
+class BaseObject {
+  - int objectId
+  - int objectType
+  - int size
+}
+
+class DataACK {
+  - int offset
+}
+
+class DataNACK {
+  - int offset
+}
+
+class EndOfBank {
+  - int bankId
 }
 
 class ObjectInfo {
@@ -392,410 +695,107 @@ class ObjectInfo {
   - String name
 }
 
-class KFEfxSegment {
-  - int chan
-  - int prog
-  - int mix
-  - int ctl1
-  - int out1
-  - int ctl2
-  - int out2
-}
-
-class KeyMapEntry {
-  - int tuning
-  - int atten
-  - int sblk
-  - int root
-}
-
-class KFFcnSegment {
-  - int op
-  - int arg1
-  - int arg2
-}
-
-abstract class KFObject {
-  # RawData data
-  # KObject type
-  # String name
-  # int objectId
+class ObjectLoad {
+  - StreamFormat format
+  - int offset
+  - byte[] payload
 }
 
 class ObjectScreenBitmap {
   - BufferedImage image
 }
 
-class ObjectWrite {
-  - int mode
-  - String name
-  - StreamFormat format
-  - byte[] payload
-  - KFObject kfObject
-}
-
 class ObjectScreenText {
   - String text
 }
 
-class ProgramSegmentIdentifier {
-  - int rawValue
-  - ProgramSegmentType type
-  - int instanceId
-}
-
-class KFStudio {
-  - int version
-  - int mixSend
-  - int auxFXID
-  - int auxMixLevel
-  - int auxMixBal
-  - int mixLevel
-  - int mixBal
-  - int auxWetDry
-  - int auxWetDry2
-  - int auxWetDrySel
-  - int auxWetDrySel2
-  - int[] mixCoeffs
-  - List theOutputs
-  - List theInputs
-  - List theBusses
-}
-
-class KFChannelSegment {
-  - int chan
-  - int nlyrs
-  - int flags
-  - int prog
-  - int volume
-  - int pan
-  - int trans
-  - int dtune
-  - int brange
-  - int playflags
-  - int portRate
-  - int outflags
-  - int rfu1
-  - int rfu2
-}
-
-class KFVelocityMap {
-  - int[] vmapVels
-}
-
-class KFProgramSegment {
-  - RawData segmentContent
-  - ProgramSegmentIdentifier id
-}
-
-class KFFXPartSegment {
-  - int num
-  - int strip
-  - int param
-  - int adjust
-  - int source
-  - int depth
-  - int rfu
-}
-
-class KFIntonationTable {
-  - int[] itblTbl
-}
-
-class FXBus {
-  - int version
-  - int busID
-  - int multiEffect
-  - int alloc
-  - int auxLevel
-  - int auxBal
-  - int mixLevel
-  - int mixBal
-  - int wetDry
-  - int wetDry2
-  - int auxSend
-  - int wetDrySel
-  - int wetDrySel2
-  - int mixSend
-  - int rfu
-  - int[] rfu2
-}
-
-class KFAsrSegment {
-  - int rfu1
-  - int trigger
-  - int flags
-  - int dtime
-  - int atime
-  - int rfu2
-  - int rtime
-}
-
-class KFLayer {
-  - KFLayerSegment lyr
-  - List asr
-  - List fcn1
-  - List lfo
-  - List fcn2
-  - KFEncSegment enc
-  - KFEncSegment atk
-  - List env
-  - KFCalvinSegment cseg
-  - List hseq
-}
-
-class KFFXRootTableSegment {
-  - int vers
-  - int studio
-  - int[] rfu
-  - List patch
-  - KFAsrSegment asr1
-  - KFAsrSegment asr2
-  - KFFcnSegment fcn1
-  - KFFcnSegment fcn2
-  - KFLfoSegment lfo1
-  - KFLfoSegment lfo2
-  - KFFcnSegment fcn3
-  - KFFcnSegment fcn4
-}
-
-class ZDB {
-  - int tag
-  - int chan
-  - int prog
-  - int lokey
-  - int hikey
-  - int flags
-  - int trans
-  - int[] ctls
-}
-
-class KFSoundBlockHeader {
-  - int rootk
-  - int flags
-  - int amp1
-  - int amp2
-  - int pitch
-  - int nameOffset
-  - long sos
-  - long alt
-  - long los
-  - long eos
-  - int env1
-  - int env2
-  - long srate
-  - byte[] pcmData
-}
-
-class KFKeyMap {
-  - int block
-  - int method
-  - Set mask
-  - int pitch
-  - int cents
-  - int nelem
-  - int esize
-  - int[] level
-  - List entries
-}
-
-class KFEncSegment {
-  - int rfu1
-  - int flags
-  - int atTime
-  - int atKScale
-  - int atVScale
-  - int atCtl
-  - int atRange
-  - int dtTime
-  - int dtKScale
-  - int dtCtl
-  - int dtRange
-  - int rtTime
-  - int rtKScale
-  - int rtCtl
-  - int rtRange
-}
-
-class KFMasterParameter {
-  - MDB m
-  - ZDB z
-  - CDB[] c
-  - int[][] sb
-}
-
-class EndOfBank {
-  - int bankId
-}
-
-class FXInput {
-  - int version
-  - int busID
-  - int mode
-  - int useStereo
-  - int eqEnable
-  - int eq1Type
-  - int eq1Level
-  - int eq1Freq
-  - int eq1Q
-  - int rfu1
-  - int eq2Type
-  - int eq2Level
-  - int eq2Freq
-  - int eq2Q
-  - int rfu2
-  - int send1Type
-  - int send1Assign
-  - int send1Level
-  - int send1Pan
-  - int send1Width
-  - int rfu3
-  - int send2Type
-  - int send2Assign
-  - int send2Level
-  - int send2Pan
-  - int send2Width
-  - int rfu4
-  - int rfu5
-  - int rfu6
-}
-
-class KFCalvinSegment {
-  - int subTag
-  - int trans
-  - int dtune
-  - int tkScale
-  - int tvScale
-  - int tcontrol
-  - int trange
-  - int skeymap
-  - int sroot
-  - int slegato
-  - int keymap
-  - int root
-  - int legato
-  - int tshift
-  - int rfu2
-  - int cpitch
-  - int fpitch
-  - int ckScale
-  - int cvScale
-  - int pcontrol
-  - int prange
-  - int pdepth
-  - int pmin
-  - int pmax
-  - int psource
-  - int ccr
-  - int alg
-  - int fineHz
-}
-
-class KFPressureMap {
-  - int[] pmapPrss
-}
-
-class RawData {
-  - byte[] content
-  - long position
-  - BitStreamReader bitStreamReader
-}
-
-class DataACK {
-  - int offset
-}
-
-class BaseObject {
-  - int objectType
-  - int objectId
-  - int size
-}
-
-class ObjectLoad {
-  - int offset
+class ObjectWrite {
   - StreamFormat format
+  - KFObject kfObject
+  - int mode
+  - String name
   - byte[] payload
 }
 
-BaseObject <|-- ObjectScreenText
-KFProgramSegment <|-- KFFcnSegment
-KFProgramSegment <|-- KFEfxSegment
-KFProgramSegment <|-- KFFXRootTableSegment
-KFProgramSegment <|-- KFProgramCommon
-KFProgramSegment <|-- KFEncSegment
-BaseObject <|-- EndOfBank
-BaseObject <|-- ObjectWrite
-KFObject <|-- KFStudio
-KFProgramSegment <|-- KFHammSegment3
+KFObject <|-- KFIntonationTable
+KFObject <|-- KFKeyMap
+KFObject <|-- KFMasterParameter
+KFObject <|-- KFPressureMap
+KFObject <|-- KFProgram
 KFProgramSegment <|-- KFArpSegment
-KFProgramSegment <|-- KFZoneSegment
+KFProgramSegment <|-- KFAsrSegment
+KFProgramSegment <|-- KFCalvinSegment
+KFProgramSegment <|-- KFChannelSegment
+KFProgramSegment <|-- KFEfxSegment
+KFProgramSegment <|-- KFEncSegment
 KFProgramSegment <|-- KFEnvSegment
 KFProgramSegment <|-- KFFXPartSegment
-KFObject <|-- KFSoundBlock
-KFObject <|-- KFProgram
-KFProgramSegment <|-- KFLayerSegment
-KFProgramSegment <|-- KFAsrSegment
-KFObject <|-- KFKeyMap
-KFObject <|-- KFIntonationTable
-KFProgramSegment <|-- KFLfoSegment
-KFProgramSegment <|-- KFChannelSegment
-BaseObject <|-- ObjectScreenBitmap
-KFObject <|-- KFPressureMap
+KFProgramSegment <|-- KFFXRootTableSegment
+KFProgramSegment <|-- KFFcnSegment
 KFProgramSegment <|-- KFHammSegment1
-BaseObject <|-- ObjectInfo
 KFProgramSegment <|-- KFHammSegment2
-BaseObject <|-- DataNACK
-BaseObject <|-- DataACK
-KFObject <|-- KFMasterParameter
-KFProgramSegment <|-- KFMasterSegment
-BaseObject <|-- ObjectLoad
-KFProgramSegment <|-- KFCalvinSegment
+KFProgramSegment <|-- KFHammSegment3
 KFProgramSegment <|-- KFHobbesSegment
+KFProgramSegment <|-- KFLayerSegment
+KFProgramSegment <|-- KFLfoSegment
+KFProgramSegment <|-- KFMasterSegment
+KFProgramSegment <|-- KFProgramCommon
+KFProgramSegment <|-- KFZoneSegment
+KFObject <|-- KFSoundBlock
+KFObject <|-- KFStudio
 KFObject <|-- KFVelocityMap
-KFProgram o-- KFHammSegment1 : hammseg1
-ObjectLoad o-- StreamFormat : format
-KFProgram o-- KFProgramCommon : pgm
-KFLayer o-- KFCalvinSegment : cseg
-KFFXRootTableSegment o-- KFFcnSegment : fcn3
-KFFXRootTableSegment o-- KFFcnSegment : fcn4
-KFFXRootTableSegment o-- KFFcnSegment : fcn1
-KFFXRootTableSegment o-- KFFcnSegment : fcn2
-KFSoundBlock o-- "0..*" KFSoundBlockHeader : headers
-KFLayer o-- "0..*" KFLfoSegment : lfo
-ObjectWrite o-- StreamFormat : format
-KFProgram o-- "0..*" KFLayer : layers
-KFProgram o-- KFHammSegment2 : hammseg2
-KFLayer o-- "0..*" KFFcnSegment : fcn1
-KFObject o-- KObject : type
-KFProgramSegment o-- ProgramSegmentIdentifier : id
-KFLayer o-- "0..*" KFFcnSegment : fcn2
-KFFXRootTableSegment o-- KFLfoSegment : lfo2
-KFFXRootTableSegment o-- KFLfoSegment : lfo1
-ProgramSegmentIdentifier o-- ProgramSegmentType : type
-KFLayer o-- KFLayerSegment : lyr
-KFProgram o-- KFFcnSegment : fcn2
+BaseObject <|-- DataACK
+BaseObject <|-- DataNACK
+BaseObject <|-- EndOfBank
+BaseObject <|-- ObjectInfo
+BaseObject <|-- ObjectLoad
+BaseObject <|-- ObjectScreenBitmap
+BaseObject <|-- ObjectScreenText
+BaseObject <|-- ObjectWrite
 KFFXRootTableSegment o-- "0..*" KFFXPartSegment : patch
-KFSoundBlock o-- "0..*" KFSoundBlockEnvelope : envelopes
-KFProgram o-- KFFcnSegment : fcn1
-KFProgram o-- KFFXRootTableSegment : fxrt
-KFProgramSegment o-- RawData : segmentContent
-KFProgram o-- KFEfxSegment : efx
-KFStudio o-- "0..*" FXBus : theBusses
-KFKeyMap o-- "0..*" KeyMapMask : mask
-KFLayer o-- "0..*" KFAsrSegment : asr
-KFKeyMap o-- "0..*" KeyMapEntry : entries
-KFProgram o-- KFHammSegment3 : hammseg3
-KFMasterParameter o-- MDB : m
-KFLayer o-- "0..*" KFHobbesSegment : hseq
-KFStudio o-- "0..*" FXInput : theInputs
-KFProgram o-- KFAsrSegment : asr
 KFFXRootTableSegment o-- KFAsrSegment : asr1
 KFFXRootTableSegment o-- KFAsrSegment : asr2
-KFProgram o-- KFLfoSegment : lfo
-KFLayer o-- KFEncSegment : atk
-ObjectWrite o-- KFObject : kfObject
-KFLayer o-- KFEncSegment : enc
-KFObject o-- RawData : data
-KFMasterParameter o-- ZDB : z
+KFFXRootTableSegment o-- KFFcnSegment : fcn1
+KFFXRootTableSegment o-- KFFcnSegment : fcn2
+KFFXRootTableSegment o-- KFFcnSegment : fcn3
+KFFXRootTableSegment o-- KFFcnSegment : fcn4
+KFFXRootTableSegment o-- KFLfoSegment : lfo1
+KFFXRootTableSegment o-- KFLfoSegment : lfo2
+KFKeyMap o-- "0..*" KeyMapEntry : entries
+KFKeyMap o-- "0..*" KeyMapMask : mask
+KFLayer o-- "0..*" KFAsrSegment : asr
 KFLayer o-- "0..*" KFEnvSegment : env
+KFLayer o-- "0..*" KFFcnSegment : fcn1
+KFLayer o-- "0..*" KFFcnSegment : fcn2
+KFLayer o-- "0..*" KFHobbesSegment : hseq
+KFLayer o-- "0..*" KFLfoSegment : lfo
+KFLayer o-- KFCalvinSegment : cseg
+KFLayer o-- KFEncSegment : atk
+KFLayer o-- KFEncSegment : enc
+KFLayer o-- KFLayerSegment : lyr
+KFMasterParameter o-- MDB : m
+KFMasterParameter o-- ZDB : z
+KFObject o-- KObject : type
+KFObject o-- RawData : data
+KFProgram o-- "0..*" KFLayer : layers
+KFProgram o-- KFAsrSegment : asr
+KFProgram o-- KFEfxSegment : efx
+KFProgram o-- KFFXRootTableSegment : fxrt
+KFProgram o-- KFFcnSegment : fcn1
+KFProgram o-- KFFcnSegment : fcn2
+KFProgram o-- KFHammSegment1 : hammseg1
+KFProgram o-- KFHammSegment2 : hammseg2
+KFProgram o-- KFHammSegment3 : hammseg3
+KFProgram o-- KFLfoSegment : lfo
+KFProgram o-- KFProgramCommon : pgm
+KFProgramSegment o-- ProgramSegmentIdentifier : id
+KFProgramSegment o-- RawData : segmentContent
+KFSoundBlock o-- "0..*" KFSoundBlockEnvelope : envelopes
+KFSoundBlock o-- "0..*" KFSoundBlockHeader : headers
+KFStudio o-- "0..*" FXBus : theBusses
+KFStudio o-- "0..*" FXInput : theInputs
+ObjectLoad o-- StreamFormat : format
+ObjectWrite o-- KFObject : kfObject
+ObjectWrite o-- StreamFormat : format
+ProgramSegmentIdentifier o-- ProgramSegmentType : type
 @enduml

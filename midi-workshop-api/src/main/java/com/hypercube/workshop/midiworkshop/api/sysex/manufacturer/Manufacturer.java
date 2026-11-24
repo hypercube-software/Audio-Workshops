@@ -3,6 +3,8 @@ package com.hypercube.workshop.midiworkshop.api.sysex.manufacturer;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.akai.AkaiDevice;
+import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.akai.AkaiSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.behringer.BehringerDevice;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.behringer.BehringerSysExParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.roland.RolandDevice;
@@ -79,7 +81,8 @@ public enum Manufacturer {
     KORG("Korg", 0x42),
     YAMAHA("Yamaha", 0x43),
     CASIO("Casio", 0x44),
-    AKAI("Akai", 0x47),
+    AKAI("AKAI", 0x47, new AkaiSysExParser(), AkaiDevice.class,
+            List.of(new DeviceDefinition("MPK-261", AkaiDevice.MODEL_MPK261))),
     M_AUDIO("M-Audio", 0x2008),
     BEHRINGER("Behringer", 0x2032, new BehringerSysExParser(), BehringerDevice.class, List.of(
             new DeviceDefinition("Neutron", 0x28)));
@@ -154,6 +157,30 @@ public enum Manufacturer {
         return Optional.ofNullable(parser)
                 .map(p -> p.parse(this, sysExReader))
                 .orElse(null);
+    }
+
+    /**
+     * Find a device by model name across all manufacturers.
+     *
+     * <p>Model names are unique across manufacturers. The method still checks
+     * for duplicates and fails explicitly if a name is defined twice.
+     *
+     * @param name Name of a manufacturer device
+     * @return the device, with the manufacturer that defines it
+     */
+    public static Device searchDevice(String name) {
+        List<? extends Device> matches = Arrays.stream(values())
+                .filter(m -> m.devices != null)
+                .flatMap(m -> m.devices.search(name)
+                        .stream())
+                .toList();
+        if (matches.size() == 1) {
+            return matches.getFirst();
+        } else if (matches.isEmpty()) {
+            throw new MidiError("Unknown device " + name);
+        } else {
+            throw new MidiError("Multiple manufacturers define device " + name);
+        }
     }
 
     /**

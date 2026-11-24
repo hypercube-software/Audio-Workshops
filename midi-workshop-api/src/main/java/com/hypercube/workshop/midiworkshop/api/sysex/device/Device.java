@@ -6,6 +6,8 @@ import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpaceAddressing;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapParser;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
@@ -41,6 +43,9 @@ import static com.hypercube.workshop.midiworkshop.api.sysex.util.SysExConstants.
 @EqualsAndHashCode
 @Slf4j
 public abstract class Device {
+    private static final long SYSEX_TIMEOUT_MS = 2_000;
+    private static final long SYSEX_TIMEOUT_PER_FRAME_MS = 1_000;
+
     @EqualsAndHashCode.Include
     protected final Manufacturer manufacturer;
     @EqualsAndHashCode.Exclude
@@ -102,6 +107,40 @@ public abstract class Device {
     public abstract void sendData(MidiOutPort midiOutPort, MemoryInt28 address, int value);
 
     /**
+     * @return how the space is addressed on the wire
+     */
+    public MemorySpaceAddressing getMemorySpaceAddressing(String memorySpaceName) {
+        return MemorySpaceAddressing.BYTE;
+    }
+
+    /**
+     * Maximum number of bytes the device accepts in one memory request.
+     * The default is unlimited: the whole zone is requested at once.
+     */
+    public int getMaxBlockSize(String memorySpaceName) {
+        return Integer.MAX_VALUE;
+    }
+
+    /**
+     * Send a read request for a byte-addressed memory space.
+     *
+     * <p>The device implementation selects the SysEx command from the space
+     * name; the caller never builds a MIDI frame.
+     */
+    public void requestMemorySpace(MidiOutPort midiOutPort, String memorySpaceName, MemoryInt28 address, MemoryInt28 size) {
+        requestData(midiOutPort, address, size);
+    }
+
+    /**
+     * Send a read request for a preset-addressed memory space.
+     *
+     * @param presetNumber preset number, or 0 for the current preset
+     */
+    public void requestPreset(MidiOutPort midiOutPort, String memorySpaceName, int presetNumber) {
+        throw new MidiError("Memory space %s is not addressed by preset number".formatted(memorySpaceName));
+    }
+
+    /**
      * We store device memory maps in predefined folders
      */
     public void loadMemoryMap() {
@@ -112,29 +151,109 @@ public abstract class Device {
         setMemory(deviceMemory);
     }
 
+    /**
+     * Read a value from the default memory space.
+     *
+     * @deprecated prefer {@link #requestMemory(MidiInPort, MidiOutPort, String, MemoryInt28, MemoryInt28)}
+     * so the space name is explicit.
+     */
+    @Deprecated
     public int requestMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, MemoryInt28 address, MemoryInt28 size) {
-        try {
-            if (midiInPort == null)
-                return 0;
-            final CountDownLatch sysExReceived = new CountDownLatch(1);
-            final MidiListener listener = (device, event) -> {
-                log.info("Receive SYSEX:{}", event.toString());
-                SysExParser sysExParser = new SysExParser();
-                Device d = sysExParser.parse(event.getMessage());
-                assert (d == this);
-                sysExReceived.countDown();
-            };
-            midiInPort.addSysExListener(listener);
-            requestData(midiOutPort, address, size);
-            boolean timedOut = !sysExReceived.await(500, TimeUnit.MILLISECONDS);
-            midiInPort.removeListener(listener);
-            if (timedOut) {
-                log.error("Timeout waiting SysEx...");
-                return 0;
+        return requestMemory(midiInPort, midiOutPort, null, address, size);
+    }
+
+    /**
+     * Read a value from a memory space, splitting the request when the device
+     * imposes a maximum block size.
+     *
+     * @param memorySpaceName space name, or {@code null}/blank for the default
+     */
+    public int requestMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, String memorySpaceName,
+                             MemoryInt28 address, MemoryInt28 size) {
+        if (midiInPort == null) {
+            return 0;
+        }
+        MemorySpace memorySpace = memory.resolveMemorySpace(memorySpaceName);
+        if (getMemorySpaceAddressing(memorySpace.getName()) == MemorySpaceAddressing.PRESET) {
+            throw new MidiError("Memory space %s is preset-addressed, use requestPresetMemory".formatted(memorySpace.getName()));
+        }
+        int total = size.value();
+        if (total < 1) {
+            throw new MidiError("Invalid memory size: " + total);
+        }
+        int maxBlockSize = getMaxBlockSize(memorySpace.getName());
+        if (maxBlockSize < 1) {
+            throw new MidiError("Invalid max block size for memory space %s: %d".formatted(memorySpace.getName(), maxBlockSize));
+        }
+        int blocks = (int) (((long) total + maxBlockSize - 1) / maxBlockSize);
+        boolean received = receiveFrames(midiInPort, blocks, () -> {
+            int offset = 0;
+            while (offset < total) {
+                int blockSize = Math.min(maxBlockSize, total - offset);
+                MemoryInt28 blockAddress = MemoryInt28.from(address.value() + offset, address.byteCount());
+                MemoryInt28 blockSizeValue = MemoryInt28.from(blockSize, address.byteCount());
+                requestMemorySpace(midiOutPort, memorySpace.getName(), blockAddress, blockSizeValue);
+                offset += blockSize;
             }
-            return memory.readByte(address);
+        });
+        if (!received) {
+            log.error("Timeout waiting SysEx...");
+            return 0;
+        }
+        return memory.readByte(memorySpace.getName(), address);
+    }
+
+    /**
+     * Read a value from a preset-addressed memory space after requesting the
+     * whole preset record.
+     */
+    public int requestPresetMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, String memorySpaceName,
+                                   int presetNumber, MemoryInt28 address) {
+        if (midiInPort == null) {
+            return 0;
+        }
+        MemorySpace memorySpace = memory.resolveMemorySpace(memorySpaceName);
+        if (getMemorySpaceAddressing(memorySpace.getName()) != MemorySpaceAddressing.PRESET) {
+            throw new MidiError("Memory space %s is not preset-addressed".formatted(memorySpace.getName()));
+        }
+        boolean received = receiveFrames(midiInPort, 1,
+                () -> requestPreset(midiOutPort, memorySpace.getName(), presetNumber));
+        if (!received) {
+            log.error("Timeout waiting SysEx...");
+            return 0;
+        }
+        return memory.readByte(memorySpace.getName(), address);
+    }
+
+    /**
+     * Send the requests and wait for the matching answers, which are parsed
+     * into {@link #memory} by the manufacturer parser.
+     */
+    private boolean receiveFrames(MidiInPort midiInPort, int expectedFrames, Runnable sender) {
+        final CountDownLatch sysExReceived = new CountDownLatch(expectedFrames);
+        final MidiListener listener = (device, event) -> {
+            log.info("Receive SYSEX:{}", event.toString());
+            try {
+                Device parsed = new SysExParser().parse(event.getMessage());
+                if (equals(parsed)) {
+                    sysExReceived.countDown();
+                }
+            } catch (RuntimeException e) {
+                // The raw frame is still available on disk; do not block the
+                // caller if a device sends an unrelated frame.
+                log.warn("Unable to parse SysEx: {}", e.getMessage());
+            }
+        };
+        midiInPort.addSysExListener(listener);
+        try {
+            sender.run();
+            long timeout = SYSEX_TIMEOUT_MS + (long) expectedFrames * SYSEX_TIMEOUT_PER_FRAME_MS;
+            return sysExReceived.await(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new MidiError(e);
+        } finally {
+            midiInPort.removeListener(listener);
         }
     }
 

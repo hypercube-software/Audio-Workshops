@@ -5,6 +5,7 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryVisitor;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
@@ -57,7 +58,7 @@ public class SynthEditorService implements SynthEditorBusListener {
             var p = params.get(i);
             log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
             MemoryInt28 address = MemoryInt28.fromPacked(p.getAddress());
-            int value = device.requestMemory(inputDevice, outputDevice, address,
+            int value = device.requestMemory(inputDevice, outputDevice, MemorySpace.DEFAULT_NAME, address,
                     MemoryInt28.from(p.getSize(), address.byteCount()));
             p.setValue(value);
             progress = (i + 1) * 100 / params.size();

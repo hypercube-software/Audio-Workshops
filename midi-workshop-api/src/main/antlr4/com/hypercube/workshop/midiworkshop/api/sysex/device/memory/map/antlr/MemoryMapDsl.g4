@@ -19,7 +19,7 @@ grammar MemoryMapDsl;
 // ============================================================
 
 file
-    : (NL | modelDecl | addressingDecl | zone | structDef | enumDef)* EOF
+    : (NL | modelDecl | addressingDecl | memorySpaceDef | zone | structDef | enumDef)* EOF
     ;
 
 modelDecl
@@ -29,6 +29,28 @@ modelDecl
 addressingDecl
     : PACKED
     | UNPACKED
+    ;
+
+// A memory space is a named group of zones. Zones inside a space all use
+// the same protocol addressing, so the Java parser can select a space by
+// name before reading the payload.
+//
+// CurrentPreset
+// {
+//     @0000-0C08 Preset Edit Buffer
+//     {
+//         PresetEditBuffer
+//     }
+// }
+//
+// When a zone is declared outside any memorySpaceDef, it belongs to the
+// implicit "Default" space.
+memorySpaceDef
+    : words NL* LBRACE spaceBody RBRACE
+    ;
+
+spaceBody
+    : (NL | zone)*
     ;
 
 // @400000-000100 [NIBBLES] SystemParams Zone

@@ -41,7 +41,14 @@ public class Devices<T extends Device> {
     }
 
     public T get(String name) {
-        return Optional.ofNullable(devices.get(name))
+        return search(name)
                 .orElseThrow(() -> new MidiError("Unknown device " + name));
+    }
+
+    /**
+     * Look up a device by name without throwing.
+     */
+    public Optional<T> search(String name) {
+        return Optional.ofNullable(devices.get(name));
     }
 }

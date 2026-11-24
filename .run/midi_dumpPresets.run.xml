@@ -3,11 +3,11 @@
     <option name="ALTERNATIVE_JRE_PATH" value="graalvm-24" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
-      <env name="MDL_FOLDER" value="../devices-library" />
+      <env name="MDL_FOLDER" value="../devices-library-remote" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.hypercube.workshop.midiworkshop.MidiWorkshopApplication" />
     <module name="midi-workshop" />
-    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;CS2x&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="dump-presets -d &quot;QS6.1&quot;" />
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/midi-workshop" />
     <extension name="coverage">
       <pattern>

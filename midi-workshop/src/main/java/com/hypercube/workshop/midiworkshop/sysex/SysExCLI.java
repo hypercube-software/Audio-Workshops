@@ -15,6 +15,8 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryVisitor;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpaceAddressing;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
@@ -52,8 +54,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.hypercube.workshop.midiworkshop.api.sysex.util.SysExConstants.SYSEX_GENERAL_INFORMATION;
@@ -71,7 +73,7 @@ public class SysExCLI {
     private final MidiPortsManager midiPortsManager;
     private final SampleDumpStandardExample sampleDumpStandardExample;
     private final CyclicBarrier listenerThreadReady = new CyclicBarrier(2);
-    private final CyclicBarrier sysExReceived = new CyclicBarrier(2);
+    private final Semaphore sysExReceived = new Semaphore(0);
 
     @ShellMethod(value = "parse SysEx file and dump the device memory to disk")
     public void parse(@ShellOption(value = "-i", help = "*.syx file") File input, @ShellOption(value = "-o", help = "Memory Dump in TXT format") File output) {
@@ -113,7 +115,9 @@ public class SysExCLI {
     }
 
     @ShellMethod(value = "read device memory")
-    public void readMemory(@ShellOption(value = "-m", help = "Device Model") String modelName,
+    public void readMemory(@ShellOption(value = "-m", help = "Device Model (any manufacturer)") String modelName,
+                           @ShellOption(value = "-r", defaultValue = "", help = "Memory space name (optional when the mmap has only Default)") String memorySpaceName,
+                           @ShellOption(value = "-p", defaultValue = "-1", help = "Preset number for preset-addressed spaces") int presetNumber,
                            @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,
                            @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
                            @ShellOption(value = "-a", help = "Packed address of a parameter (2 to 4 MIDI bytes, e.g. 0128 or 400000)") String address,
@@ -122,22 +126,37 @@ public class SysExCLI {
         m.collectHardwareDevices();
         m.listPorts();
 
-        var device = Manufacturer.ROLAND.getDevice(modelName);
+        var device = Manufacturer.searchDevice(modelName);
         device.loadMemoryMap();
+        MemorySpace memorySpace = device.getMemory()
+                .resolveMemorySpace(memorySpaceName);
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, modelName);
         try (var out = m.openOutput(outputDevice)) {
             try (var in = m.openInput(inputDevice)) {
                 MemoryInt28 paramAddress = MemoryInt28.from(address, true);
                 MemoryInt28 paramSize = MemoryInt28.from(size, paramAddress.byteCount());
-                log.info("Query device at address {} with size {}", paramAddress, paramSize);
-                int value = device.requestMemory(in, out, paramAddress, paramSize);
+                log.info("Query device in memory space {} at address {} with size {}", memorySpace.getName(), paramAddress, paramSize);
+                int value = switch (device.getMemorySpaceAddressing(memorySpace.getName())) {
+                    case BYTE -> device.requestMemory(in, out, memorySpace.getName(), paramAddress, paramSize);
+                    case PRESET -> {
+                        if (presetNumber < 0) {
+                            throw new MidiError("Memory space %s is preset-addressed, use -p".formatted(memorySpace.getName()));
+                        }
+                        yield device.requestPresetMemory(in, out, memorySpace.getName(), presetNumber, paramAddress);
+                    }
+                };
                 log.info("Value at {} is {}", paramAddress, value);
             }
         }
     }
 
     @ShellMethod(value = "Use the device memory map to query data and save everything to disk as SysEx file")
-    public void dumpMemory(@ShellOption(value = "-m", help = "Device Model") String modelName, @ShellOption(value = "-i", defaultValue = "") String inputDevice, @ShellOption(value = "-o") String outputDevice, @ShellOption(value = "-f") File output) throws InterruptedException, IOException {
+    public void dumpMemory(@ShellOption(value = "-m", help = "Device Model (any manufacturer)") String modelName,
+                           @ShellOption(value = "-r", defaultValue = "", help = "Memory space name (optional when the mmap has only Default)") String memorySpaceName,
+                           @ShellOption(value = "-p", defaultValue = "-1", help = "Preset number for preset-addressed spaces") int presetNumber,
+                           @ShellOption(value = "-i", defaultValue = "") String inputDevice,
+                           @ShellOption(value = "-o") String outputDevice,
+                           @ShellOption(value = "-f") File output) throws InterruptedException, IOException {
         if (output.exists()) {
             Files.delete(output.toPath());
         }
@@ -147,19 +166,81 @@ public class SysExCLI {
 
         try (var out = m.openOutput(outputDevice)) {
             try (var in = inputDevice.isEmpty() ? m.openInputs(m.getInputs()) : m.openInput(inputDevice)) {
-                var model = Manufacturer.ROLAND.getDevice(modelName);
+                var model = Manufacturer.searchDevice(modelName);
                 model.loadMemoryMap();
+                System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, modelName);
+                MemorySpace memorySpace = model.getMemory()
+                        .resolveMemorySpace(memorySpaceName);
+                MemorySpaceAddressing addressing = MemorySpace.DEFAULT_NAME.equals(memorySpace.getName())
+                        ? MemorySpaceAddressing.BYTE
+                        : model.getMemorySpaceAddressing(memorySpace.getName());
+                validatePresetNumber(memorySpace, addressing, presetNumber);
                 DeviceMemoryDumper dumper = new DeviceMemoryDumper(model.getMemory());
-                dumper.dumpMemoryMap(new File("target/map.dat"));
-                dumper.dumpMemory(new File("target/mem.dat"));
                 AtomicInteger total = new AtomicInteger();
                 MidiMonitorEventListener listener = (device, evt) -> onMidiEvent(device, evt, output, total);
 
+                sysExReceived.drainPermits();
                 Thread listenerThread = initListener(in, listener);
-                receiveNonBulkMemory(dumper, model, out);
-                receiveBulkMemory(model, out);
+                if (MemorySpace.DEFAULT_NAME.equals(memorySpace.getName())) {
+                    receiveNonBulkMemory(dumper, model, out);
+                    receiveBulkMemory(model, out);
+                } else {
+                    dumpMemorySpace(model, memorySpace, addressing, presetNumber, out);
+                }
+                dumper.dumpMemoryMap(new File("target/map.dat"));
+                dumper.dumpMemory(new File("target/mem.dat"));
                 midiMonitor.close();
                 listenerThread.join();
+            }
+        }
+    }
+
+    private void validatePresetNumber(MemorySpace memorySpace, MemorySpaceAddressing addressing, int presetNumber) {
+        if (addressing == MemorySpaceAddressing.PRESET) {
+            if (presetNumber < 0) {
+                throw new MidiError("Memory space %s is preset-addressed, use -p".formatted(memorySpace.getName()));
+            }
+        } else if (presetNumber >= 0) {
+            throw new MidiError("Preset number is only valid for preset-addressed memory spaces");
+        }
+    }
+
+    /**
+     * Dump a named memory space. A byte-addressed space is dumped zone by zone,
+     * in declaration order, with blocks limited by the device.
+     */
+    private void dumpMemorySpace(Device device, MemorySpace memorySpace, MemorySpaceAddressing addressing,
+                                 int presetNumber, MidiOutPort out) {
+        switch (addressing) {
+            case BYTE -> dumpByteMemorySpace(device, memorySpace, out);
+            case PRESET -> {
+                log.info("Dump memory space {} preset {}", memorySpace.getName(), presetNumber);
+                device.requestPreset(out, memorySpace.getName(), presetNumber);
+                if (!waitSysExReceived(2_000)) {
+                    throw new MidiError("Timeout waiting SysEx for memory space " + memorySpace.getName());
+                }
+            }
+        }
+    }
+
+    private void dumpByteMemorySpace(Device device, MemorySpace memorySpace, MidiOutPort out) {
+        int maxBlockSize = device.getMaxBlockSize(memorySpace.getName());
+        for (MemoryMap zone : memorySpace.getMemoryMaps()) {
+            int total = zone.getEffectiveSize()
+                    .value();
+            int offset = 0;
+            while (offset < total) {
+                int blockSize = Math.min(maxBlockSize, total - offset);
+                MemoryInt28 baseAddress = zone.getBaseAddress();
+                MemoryInt28 address = MemoryInt28.from(baseAddress.value() + offset, baseAddress.byteCount());
+                MemoryInt28 size = MemoryInt28.from(blockSize, baseAddress.byteCount());
+                log.info("Dump {} zone {} {}/{} at {}", memorySpace.getName(), zone.getName(), offset, total, address);
+                device.requestMemorySpace(out, memorySpace.getName(), address, size);
+                if (!waitSysExReceived(2_000)) {
+                    throw new MidiError("Timeout waiting SysEx for memory space %s zone %s at %s"
+                            .formatted(memorySpace.getName(), zone.getName(), address));
+                }
+                offset += blockSize;
             }
         }
     }
@@ -244,7 +325,6 @@ public class SysExCLI {
                     if (nbSysExReceived == 0) {
                         throw new MidiError("Your MemoryMap is not correct, no SysEx received");
                     }
-                    sysExReceived.reset();
                 });
     }
 
@@ -264,7 +344,6 @@ public class SysExCLI {
                     var size = field.getSize();
                     model.requestData(out, addr, size);
                     waitSysExReceived();
-                    sysExReceived.reset();
                 }
             }
         });
@@ -286,12 +365,14 @@ public class SysExCLI {
     }
 
     private boolean waitSysExReceived() {
+        return waitSysExReceived(500);
+    }
+
+    private boolean waitSysExReceived(long timeoutMs) {
         try {
-            sysExReceived.await(500, TimeUnit.MILLISECONDS);
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        } catch (Exception e) {
+            return sysExReceived.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new MidiError(e);
         }
     }
@@ -324,8 +405,15 @@ public class SysExCLI {
                 total.addAndGet(data.length);
                 Files.write(output.toPath(), data, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
                 log.info("Current Size: %d , received %d bytes".formatted(total.get(), data.length));
-                sysExReceived.await();
-            } catch (IOException | InterruptedException | BrokenBarrierException e) {
+                try {
+                    sysExParser.parse(data);
+                } catch (RuntimeException e) {
+                    // Keep the raw frame on disk even if the layout cannot
+                    // parse it (identity reply, unrelated device, ...).
+                    log.warn("Unable to parse SysEx: {}", e.getMessage());
+                }
+                sysExReceived.release();
+            } catch (IOException e) {
                 throw new MidiError("Unable to write to " + output.getAbsolutePath(), e);
             }
         }

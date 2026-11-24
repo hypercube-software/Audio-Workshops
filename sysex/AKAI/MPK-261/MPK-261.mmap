@@ -1,0 +1,674 @@
+# ============================================================
+# AKAI MPK-261 memory map
+# ============================================================
+# The MPK-261 exposes 2 RAM edit buffers and 1 flash record:
+#   - the global edit buffer, 377 bytes, read/write with QGLOB/WGLOB;
+#   - the preset edit buffer, 1544 bytes, read/write with QEDIT/WEDIT;
+#   - the user preset record, 1546 bytes, read/write with
+#     QPRESET/WPRESET, and poked with PPRESET.
+#
+# The 2 RAM spaces both start at 0x0000: only the command selects the
+# space, not the address. The flash record is also addressed from 0x0000.
+# The memory spaces below therefore share the same base address.
+# AkaiSysExParser maps each command to one of these space names:
+#   CurrentPreset <- WEDIT
+#   Global        <- WGLOB
+#   UserPresets   <- WPRESET
+#
+# Addresses and sizes are the packed 2-byte values used on the wire
+# (14 bits). The parser unpacks them. The field offsets below are the
+# unpacked offsets of the book `books/src/main/typst/akai-mpk261/`,
+# which is the reference for this layout.
+# ============================================================
+
+@Model AKAI MPK-261
+@Packed
+
+# ------------------------------------------------------------
+# Memory spaces
+# ------------------------------------------------------------
+
+CurrentPreset
+{
+    @0000-0C08 Preset Edit Buffer
+    {
+        PresetEditBuffer
+    }
+}
+
+Global
+{
+    @0000-0279 Global Settings
+    {
+        GlobalSettings
+    }
+}
+
+UserPresets
+{
+    @0000-0C0A User Preset
+    {
+        UserPresetRecord
+    }
+}
+
+# ------------------------------------------------------------
+# Global settings (377 bytes)
+# ------------------------------------------------------------
+
+struct GlobalSettings
+{
+    byte Reserved
+    byte Current Preset
+    byte Contrast
+    byte Pad Velocity Sensitivity
+    PadVelocityCurve Pad Velocity Curve
+    byte Pad Threshold
+    byte Keyboard Curve
+    byte Keyboard Gain
+    byte White Key Sensitivity
+    byte Black Key Sensitivity
+    CommonChannel Common Channel
+    byte Tap Average
+    ClockSource Clock Source
+    Switch Tempo LED
+    NoteDisplay Note Display
+    Switch Transport to DIN
+    byte Unknown 10[3]
+    LiveStates Live States
+    byte Unknown 1B[9]
+    byte Program Change Bank MSB
+    Channel Program Change Channel
+    byte Program Change Program
+    byte Program Change Bank LSB
+    byte Program Change Reserved
+    Switch Program Change to DIN
+    byte Unknown 2A[5]
+    byte Internal
+    byte SysEx Device ID
+    byte Unknown 31[328]
+}
+
+struct LiveStates
+{
+    Switch Arp Latch
+    Switch Arp
+    Switch Full Level
+    Switch 16 Level
+    Switch Note Repeat
+    PadBank Pad Bank
+    ControlBank Control Bank
+    Switch Time Division
+}
+
+# ------------------------------------------------------------
+# Preset edit buffer (1544 bytes)
+# ------------------------------------------------------------
+
+struct PresetEditBuffer
+{
+    String Name[8]
+    short Tempo # 14-bit packed: 00 64 = 100 BPM
+    byte Flag 0A
+    byte Flag 0B
+    byte Flag 0C
+    TimeDivision Time Division
+    SwitchMode Note Repeat Mode
+    byte Gate
+    byte Swing
+    byte Flag 11
+    byte Arp Type
+    byte Arp Range
+    Switch Arp Pattern
+    byte Arp Length
+    Channel Keyboard Channel
+    byte Keyboard Octave
+    AftertouchMode Keyboard Aftertouch
+    byte Flag 19
+    Switch Keyboard to DIN
+    TransportType Transport Type
+    byte Keyboard Transpose
+    Switch Split Switch
+    byte Split Note
+    BChannel Split B Channel
+    SplitZone Split Pitch Bend Zone
+    SplitZone Split Modulation Zone
+    SplitZone Split Footswitch 1 Zone
+    SplitZone Split Footswitch 2 Zone
+    SplitZone Split Expression Zone
+    SplitZone Split Arpeggiator Zone
+    SplitZone Split Aftertouch Zone
+    byte Unknown 27
+    Channel Modulation Channel
+    byte Modulation Controller
+    byte Modulation Minimum
+    byte Modulation Maximum
+    byte Unknown 2C[2]
+    byte Unknown 2E[2]
+    Channel Pitch Bend Channel
+    Switch Pitch Bend to DIN
+    byte Unknown 32[6]
+    Channel Expression Channel
+    byte Expression Controller
+    byte Expression Minimum
+    byte Expression Maximum
+    byte Unknown 3C[2]
+    Switch Expression to DIN
+    FootswitchType Footswitch 1 Type
+    FootswitchType Footswitch 2 Type
+    Channel Footswitch 1 Channel
+    Channel Footswitch 2 Channel
+    byte Footswitch 1 Controller
+    byte Footswitch 2 Controller
+    SwitchMode Footswitch 1 Mode
+    SwitchMode Footswitch 2 Mode
+    byte Unknown 47[2]
+    Switch Footswitch 1 to DIN
+    Switch Footswitch 2 to DIN
+    Switch Arp Steps[16] # one byte per step
+    DAWButtonArray DAW Buttons
+    SwitchArray Switches
+    FaderArray Faders
+    KnobArray Knobs
+    PadArray Pads
+    byte Unknown 5FC[12]
+}
+
+# ------------------------------------------------------------
+# User preset record (1546 bytes)
+# ------------------------------------------------------------
+
+struct UserPresetRecord
+{
+    String Name[8]
+    byte Flag 08
+    short Tempo # 14-bit packed: 00 64 = 100 BPM
+    byte Flag 0B
+    TimeDivision Time Division
+    SwitchMode Note Repeat Mode
+    byte Gate
+    byte Swing
+    byte Unknown 10[5]
+    Channel Keyboard Channel
+    byte Keyboard Octave
+    AftertouchMode Keyboard Aftertouch
+    byte Flag 18
+    Switch Keyboard to DIN
+    byte Keyboard Transpose
+    TransportType Transport Type
+    Channel Modulation Channel
+    byte Modulation Controller
+    byte Modulation Minimum
+    byte Modulation Maximum
+    byte Unknown 20
+    Channel Pitch Bend Channel
+    byte Unknown 22
+    byte Unknown 23
+    Channel Expression Channel
+    byte Expression Controller
+    byte Expression Minimum
+    byte Expression Maximum
+    Switch Expression to DIN
+    FootswitchType Footswitch 1 Type
+    Channel Footswitch 1 Channel
+    byte Footswitch 1 Controller
+    SwitchMode Footswitch 1 Mode
+    byte Unknown 2D
+    Switch Footswitch 1 to DIN
+    FootswitchType Footswitch 2 Type
+    Channel Footswitch 2 Channel
+    byte Footswitch 2 Controller
+    SwitchMode Footswitch 2 Mode
+    byte Unknown 33
+    Switch Footswitch 2 to DIN
+    PadRecord Pads[64]
+    KnobRecord Knobs[24]
+    FaderRecord Faders[24]
+    SwitchRecord Switches[24]
+    DAWButtonRecord DAW Buttons[5]
+    byte Arp Type
+    byte Flag 5D7
+    byte Arp Range
+    byte Gate Copy
+    byte Swing Copy
+    Switch Arp Pattern
+    byte Arp Length
+    byte Arp Steps[4] # one bit per step, 4 steps per byte
+    Switch Split Zones A[7] # pitch bend, modulation, footswitch 1, footswitch 2, expression, arpeggiator, aftertouch
+    Switch Split Zones B[7] # same 7 controllers
+    Switch Split Switch
+    byte Split Note
+    BChannel Split B Channel
+    byte Unknown 5F2[24]
+}
+
+# ------------------------------------------------------------
+# Control arrays, edit buffer layout (structure of arrays)
+# ------------------------------------------------------------
+
+struct DAWButtonArray
+{
+    SwitchType Type[5]
+    Channel Channel[5]
+    byte Controller[5]
+    SwitchMode Mode[5]
+    byte Program[5]
+    byte MSB[5]
+    byte LSB[5]
+    byte Note[5]
+    Switch MIDI to DIN[5]
+    byte Velocity[5]
+    byte Unknown[5]
+    byte Key 1[5]
+    Modifier Key 2[5]
+}
+
+struct SwitchArray
+{
+    SwitchType Type[24]
+    Channel Channel[24]
+    byte Controller[24]
+    SwitchMode Mode[24]
+    byte Program[24]
+    byte MSB[24]
+    byte LSB[24]
+    byte Note[24]
+    Switch MIDI to DIN[24]
+    byte Velocity[24]
+    byte Unknown[24]
+    byte Key 1[24]
+    Modifier Key 2[24]
+}
+
+struct FaderArray
+{
+    FaderType Type[24]
+    Channel Channel[24]
+    byte Controller[24]
+    byte Minimum[24]
+    byte Maximum[24]
+    Switch MIDI to DIN[24]
+}
+
+struct KnobArray
+{
+    KnobType Type[24]
+    Channel Channel[24]
+    byte Controller[24]
+    byte Minimum[24]
+    byte Maximum[24]
+    byte MSB[24]
+    byte LSB[24]
+    byte Value[24]
+    Switch MIDI to DIN[24]
+}
+
+struct PadArray
+{
+    PadType Type[64]
+    Channel Channel[64]
+    byte Note[64]
+    SwitchMode Mode[64]
+    AftertouchMode Aftertouch[64]
+    byte Program[64]
+    byte MSB[64]
+    byte LSB[64]
+    Switch MIDI to DIN[64]
+    PadColour Off Colour[64]
+    PadColour On Colour[64]
+}
+
+# ------------------------------------------------------------
+# Control records, user preset layout (array of structures)
+# ------------------------------------------------------------
+
+struct DAWButtonRecord
+{
+    SwitchType Type
+    Channel Channel
+    byte Controller
+    SwitchMode Mode
+    byte Program
+    byte MSB
+    byte LSB
+    Switch MIDI to DIN
+    byte Note
+    byte Velocity
+    byte Unknown
+    byte Key 1
+    Modifier Key 2
+}
+
+struct SwitchRecord
+{
+    SwitchType Type
+    Channel Channel
+    byte Controller
+    SwitchMode Mode
+    byte Program
+    byte MSB
+    byte LSB
+    Switch MIDI to DIN
+    byte Note
+    byte Velocity
+    byte Unknown
+    byte Key 1
+    Modifier Key 2
+}
+
+struct FaderRecord
+{
+    FaderType Type
+    Channel Channel
+    byte Controller
+    byte Minimum
+    byte Maximum
+    Switch MIDI to DIN
+}
+
+struct KnobRecord
+{
+    KnobType Type
+    Channel Channel
+    byte Controller
+    byte Minimum
+    byte Maximum
+    Switch MIDI to DIN
+    byte MSB
+    byte LSB
+    byte Value
+}
+
+struct PadRecord
+{
+    PadType Type
+    Channel Channel
+    byte Note
+    Switch MIDI to DIN
+    SwitchMode Mode
+    AftertouchMode Aftertouch
+    byte Program
+    byte MSB
+    byte LSB
+    PadColour Off Colour
+    PadColour On Colour
+}
+
+# ------------------------------------------------------------
+# Enumerations
+# ------------------------------------------------------------
+
+enum Switch
+{
+    Off
+    On
+}
+
+enum SwitchMode
+{
+    Momentary
+    Toggle
+}
+
+enum SwitchType
+{
+    CC
+    Note
+    Program_Change
+    Program_Bank
+    Keystroke
+}
+
+enum FaderType
+{
+    CC
+    Aftertouch
+}
+
+enum KnobType
+{
+    CC
+    Aftertouch
+    Increment_1
+    Increment_2
+}
+
+enum PadType
+{
+    Note
+    Program_Change
+    Program_Bank
+}
+
+enum AftertouchMode
+{
+    Off
+    Channel
+    Polyphonic
+}
+
+enum SplitZone
+{
+    Off
+    A
+    B
+    A_and_B
+}
+
+enum FootswitchType
+{
+    Controller
+    Tap_Tempo
+    Play
+    Record
+    Stop
+    Play_Stop
+    Arpeggiator
+    Sustain
+}
+
+enum TransportType
+{
+    MMC
+    MMC_MIDI_Clock
+    MIDI_Real_Time
+    MIDI_CC
+    Pro_Tools_Express
+}
+
+enum TimeDivision
+{
+    Quarter
+    Quarter_Triplet
+    Eighth
+    Eighth_Triplet
+    Sixteenth
+    Sixteenth_Triplet
+    Thirty_Second
+    Thirty_Second_Triplet
+}
+
+enum ClockSource
+{
+    Internal
+    External
+}
+
+enum NoteDisplay
+{
+    Value
+    Number
+}
+
+enum PadVelocityCurve
+{
+    Linear
+    Exponential_1
+    Exponential_2
+    Logarithmic_1
+    Logarithmic_2
+}
+
+enum PadBank
+{
+    A
+    B
+    C
+    D
+}
+
+enum ControlBank
+{
+    A
+    B
+    C
+}
+
+enum PadColour
+{
+    Off
+    Red
+    Orange
+    Amber
+    Yellow
+    Green
+    Green_Blue
+    Aqua
+    Light_Blue
+    Blue
+    Purple
+    Pink
+    Hot_Pink
+    Light_Purple
+    Light_Green
+    Light_Pink
+    Grey
+}
+
+enum CommonChannel
+{
+    USB_A1
+    USB_A2
+    USB_A3
+    USB_A4
+    USB_A5
+    USB_A6
+    USB_A7
+    USB_A8
+    USB_A9
+    USB_A10
+    USB_A11
+    USB_A12
+    USB_A13
+    USB_A14
+    USB_A15
+    USB_A16
+    USB_B1
+    USB_B2
+    USB_B3
+    USB_B4
+    USB_B5
+    USB_B6
+    USB_B7
+    USB_B8
+    USB_B9
+    USB_B10
+    USB_B11
+    USB_B12
+    USB_B13
+    USB_B14
+    USB_B15
+    USB_B16
+}
+
+enum BChannel
+{
+    USB_A1
+    USB_A2
+    USB_A3
+    USB_A4
+    USB_A5
+    USB_A6
+    USB_A7
+    USB_A8
+    USB_A9
+    USB_A10
+    USB_A11
+    USB_A12
+    USB_A13
+    USB_A14
+    USB_A15
+    USB_A16
+    USB_B1
+    USB_B2
+    USB_B3
+    USB_B4
+    USB_B5
+    USB_B6
+    USB_B7
+    USB_B8
+    USB_B9
+    USB_B10
+    USB_B11
+    USB_B12
+    USB_B13
+    USB_B14
+    USB_B15
+    USB_B16
+}
+
+enum Channel
+{
+    Common
+    USB_A1
+    USB_A2
+    USB_A3
+    USB_A4
+    USB_A5
+    USB_A6
+    USB_A7
+    USB_A8
+    USB_A9
+    USB_A10
+    USB_A11
+    USB_A12
+    USB_A13
+    USB_A14
+    USB_A15
+    USB_A16
+    USB_B1
+    USB_B2
+    USB_B3
+    USB_B4
+    USB_B5
+    USB_B6
+    USB_B7
+    USB_B8
+    USB_B9
+    USB_B10
+    USB_B11
+    USB_B12
+    USB_B13
+    USB_B14
+    USB_B15
+    USB_B16
+}
+
+enum Modifier
+{
+    None
+    Control
+    Shift
+    Alt
+    Option
+    Control_Shift
+    Control_Alt
+    Control_Option
+    Shift_Alt
+    Shift_Option
+    Alt_Option
+    Control_Shift_Alt
+    Control_Option_Alt
+    Control_Shift_Option
+    Control_Shift_Alt_Option
+}

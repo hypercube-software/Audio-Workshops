@@ -3,9 +3,10 @@ This jShell Script generate a PUML diagram from a root class. It has been vibe c
 */
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -43,7 +44,10 @@ var customClassLoader = new URLClassLoader(classpathUrls.toArray(new URL[0]), Cl
 
 System.out.println("Classpath used by URLClassLoader: " + jshellClasspath);
 
-var classesToDiagram = new HashSet<Class<?>>();
+// Deterministic order: classes are sorted by name, then fields and
+// relationships are sorted too. The generated file must not change when the
+// reflection or classpath scan order changes.
+var classesToDiagram = new TreeSet<Class<?>>(Comparator.comparing(Class::getName));
 var classLoader = customClassLoader;
 String rootPackage = null;
 
@@ -104,6 +108,7 @@ List<Class<?>> getClassesInPackage(String packageName) {
             scanJar(file, packageName, classes);
         }
     }
+    classes.sort(Comparator.comparing(Class::getName));
     return classes;
 }
 
@@ -198,12 +203,15 @@ void scanJar(File jarFile, String packageName, List<Class<?>> classes) {
 
         // ... (The rest of the logic remains largely the same, just adjust class name resolution)
         
-        var classInfoMap = new java.util.HashMap<String, List<String>>();
-        var relationships = new java.util.HashSet<String>();
+        var classInfoMap = new TreeMap<String, List<String>>();
+        var relationships = new TreeSet<String>();
 
         for (Class<?> clazz : classesToDiagram) {
             var fieldsContent = new java.util.ArrayList<String>();
-            for (Field field : clazz.getDeclaredFields()) {
+            var declaredFields = Arrays.stream(clazz.getDeclaredFields())
+                    .sorted(Comparator.comparing(Field::getName))
+                    .toList();
+            for (Field field : declaredFields) {
                 if (Modifier.isStatic(field.getModifiers())) continue;
                 String accessModifier = Modifier.isProtected(field.getModifiers()) ? "#" : Modifier.isPrivate(field.getModifiers()) ? "-" : "+";
                 fieldsContent.add(accessModifier + " " + field.getType().getSimpleName() + " " + field.getName());

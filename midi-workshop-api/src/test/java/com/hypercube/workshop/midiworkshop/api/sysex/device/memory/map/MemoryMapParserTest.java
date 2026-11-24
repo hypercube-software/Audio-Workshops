@@ -2,6 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -100,6 +102,223 @@ class MemoryMapParserTest {
                 .value());
         assertEquals(4, fourBytes.getSize()
                 .byteCount());
+    }
+
+    @Test
+    void loadImplicitDefaultMemorySpace(@TempDir Path tempDir) throws IOException {
+        Path file = tempDir.resolve("default-space.mmap");
+        Files.writeString(file, """
+                @Model Default Space
+                @Packed
+
+                @0000-0010 Legacy Zone
+                {
+                    byte Level
+                }
+
+                CurrentPreset
+                {
+                    @0000-0020 Current Zone
+                    {
+                        byte Level
+                    }
+                }
+
+                @0100-0010 Outside Zone
+                {
+                    byte Level
+                }
+                """);
+
+        DeviceMemory dm = MemoryMapParser.load(file.toFile());
+
+        assertEquals(List.of("Default", "CurrentPreset"), dm.getMemorySpaces()
+                .stream()
+                .map(MemorySpace::getName)
+                .toList());
+        assertMemorySpaceZones(dm, "Default", "Legacy Zone", "Outside Zone");
+        assertMemorySpaceZones(dm, "CurrentPreset", "Current Zone");
+    }
+
+    @Test
+    void rejectDuplicateMemorySpace(@TempDir Path tempDir) throws IOException {
+        Path file = tempDir.resolve("duplicate-space.mmap");
+        Files.writeString(file, """
+                @Model Duplicate Space
+
+                CurrentPreset
+                {
+                    @0000-0005 First Zone
+                    {
+                        byte Level
+                    }
+                }
+
+                CurrentPreset
+                {
+                    @0000-0005 Second Zone
+                    {
+                        byte Level
+                    }
+                }
+                """);
+
+        MidiError error = assertThrows(MidiError.class, () -> MemoryMapParser.load(file.toFile()));
+
+        assertTrue(error.getMessage()
+                .contains("already declared"), error.getMessage());
+    }
+
+    @Test
+    void resolveImplicitDefaultMemorySpace() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/D-70/D-70.mmap"));
+
+        assertEquals(MemorySpace.DEFAULT_NAME, dm.resolveMemorySpace(null)
+                .getName());
+        assertEquals(MemorySpace.DEFAULT_NAME, dm.resolveMemorySpace("  ")
+                .getName());
+    }
+
+    @Test
+    void requireMemorySpaceWhenSeveralAreDeclared() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/AKAI/MPK-261/MPK-261.mmap"));
+
+        MidiError error = assertThrows(MidiError.class, () -> dm.resolveMemorySpace(null));
+        assertTrue(error.getMessage()
+                .contains("CurrentPreset"), error.getMessage());
+        assertTrue(error.getMessage()
+                .contains("Global"), error.getMessage());
+        assertTrue(error.getMessage()
+                .contains("UserPresets"), error.getMessage());
+
+        assertEquals("Global", dm.resolveMemorySpace("Global")
+                .getName());
+        assertThrows(MidiError.class, () -> dm.resolveMemorySpace("Unknown"));
+    }
+
+    @Test
+    void loadAkaiMpk261Map() {
+        DeviceMemory dm = MemoryMapParser.load(new File("../sysex/AKAI/MPK-261/MPK-261.mmap"));
+        assertEquals(3, dm.getMemorySpaces()
+                .size());
+        assertMemorySpaceZones(dm, "CurrentPreset", "Preset Edit Buffer");
+        assertMemorySpaceZones(dm, "Global", "Global Settings");
+        assertMemorySpaceZones(dm, "UserPresets", "User Preset");
+        assertMemoryMapSize(0x179, "Global Settings", dm);
+        assertMemoryMapSize(0x608, "Preset Edit Buffer", dm);
+        assertMemoryMapSize(0x60A, "User Preset", dm);
+
+        MemoryMap global = referencedStruct(dm, "Global Settings");
+        assertEquals(0x179, global.getSize()
+                .value());
+        assertEquals(0x13, field(global, "Live States").getAddress()
+                .value());
+        assertEquals(0x30, field(global, "SysEx Device ID").getAddress()
+                .value());
+
+        MemoryMap buffer = referencedStruct(dm, "Preset Edit Buffer");
+        assertEquals(0x608, buffer.getSize()
+                .value());
+        assertEquals(0x5B, field(buffer, "DAW Buttons").getAddress()
+                .value());
+        assertEquals(0x9C, field(buffer, "Switches").getAddress()
+                .value());
+        assertEquals(0x1D4, field(buffer, "Faders").getAddress()
+                .value());
+        assertEquals(0x264, field(buffer, "Knobs").getAddress()
+                .value());
+        assertEquals(0x33C, field(buffer, "Pads").getAddress()
+                .value());
+        assertEquals(704, field(buffer, "Pads")
+                .getTotalSize()
+                .value());
+
+        MemoryMap padArray = field(buffer, "Pads").getReference();
+        assertEquals(704, padArray.getSize()
+                .value());
+        assertEquals(2 * 64, field(padArray, "Note").getAddress()
+                .value());
+        assertEquals(8 * 64, field(padArray, "MIDI to DIN").getAddress()
+                .value());
+
+        MemoryMap switchArray = field(buffer, "Switches").getReference();
+        assertEquals(312, switchArray.getSize()
+                .value());
+        assertEquals(7 * 24, field(switchArray, "Note").getAddress()
+                .value());
+        assertEquals(8 * 24, field(switchArray, "MIDI to DIN").getAddress()
+                .value());
+
+        MemoryMap knobArray = field(buffer, "Knobs").getReference();
+        assertEquals(216, knobArray.getSize()
+                .value());
+        assertEquals(5 * 24, field(knobArray, "MSB").getAddress()
+                .value());
+        assertEquals(8 * 24, field(knobArray, "MIDI to DIN").getAddress()
+                .value());
+
+        MemoryMap userPreset = referencedStruct(dm, "User Preset");
+        assertEquals(0x60A, userPreset.getSize()
+                .value());
+        assertEquals(0x35, field(userPreset, "Pads").getAddress()
+                .value());
+        assertEquals(0x2F5, field(userPreset, "Knobs").getAddress()
+                .value());
+        assertEquals(0x3CD, field(userPreset, "Faders").getAddress()
+                .value());
+        assertEquals(0x45D, field(userPreset, "Switches").getAddress()
+                .value());
+        assertEquals(0x595, field(userPreset, "DAW Buttons").getAddress()
+                .value());
+        assertEquals(0x5D6, field(userPreset, "Arp Type").getAddress()
+                .value());
+
+        MemoryMap padRecord = field(userPreset, "Pads").getReference();
+        assertEquals(11, padRecord.getSize()
+                .value());
+        assertEquals(3, field(padRecord, "MIDI to DIN").getAddress()
+                .value());
+        assertEquals(9, field(padRecord, "Off Colour").getAddress()
+                .value());
+
+        MemoryMap switchRecord = field(userPreset, "Switches").getReference();
+        assertEquals(13, switchRecord.getSize()
+                .value());
+        assertEquals(7, field(switchRecord, "MIDI to DIN").getAddress()
+                .value());
+        assertEquals(8, field(switchRecord, "Note").getAddress()
+                .value());
+
+        MemoryMap knobRecord = field(userPreset, "Knobs").getReference();
+        assertEquals(9, knobRecord.getSize()
+                .value());
+        assertEquals(5, field(knobRecord, "MIDI to DIN").getAddress()
+                .value());
+        assertEquals(8, field(knobRecord, "Value").getAddress()
+                .value());
+    }
+
+    private void assertMemorySpaceZones(DeviceMemory dm, String spaceName, String... zoneNames) {
+        assertEquals(List.of(zoneNames), dm.getMemoryMaps(spaceName)
+                .stream()
+                .map(MemoryMap::getName)
+                .toList());
+    }
+
+    private MemoryMap referencedStruct(DeviceMemory dm, String zoneName) {
+        MemoryField field = dm.getMemoryMap(zoneName)
+                .getFields()
+                .get(0);
+        assertTrue(field.isReference(), zoneName + " should reference a struct");
+        return field.getReference();
+    }
+
+    private MemoryField field(MemoryMap memoryMap, String name) {
+        return memoryMap.getFields()
+                .stream()
+                .filter(f -> name.equals(f.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Field not found: " + name));
     }
 
     @Test
