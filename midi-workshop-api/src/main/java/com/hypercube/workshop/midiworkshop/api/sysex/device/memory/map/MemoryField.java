@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map;
 
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryArray;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryEnum;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,11 +26,11 @@ public class MemoryField {
     private final String type;
     private final MemoryArray array;
     @Setter
-    private MemoryInt24 size;
+    private MemoryInt28 size;
     @Setter
     private MemoryMap reference;
     @Setter
-    private MemoryInt24 address;
+    private MemoryInt28 address;
     @Setter
     private MemoryEnum enumReference;
 
@@ -53,19 +53,19 @@ public class MemoryField {
     /**
      * @return Take into account the {@link MemoryMapFormat} to get the real size in bytes
      */
-    public MemoryInt24 getEffectiveSize() {
-        return MemoryInt24.from(switch (parent.getFormat()) {
+    public MemoryInt28 getEffectiveSize() {
+        return MemoryInt28.from(switch (parent.getFormat()) {
             case BYTES -> size.value();
             case NIBBLES -> size.value() * 2;
-        });
+        }, size.byteCount());
     }
 
     /**
      * @return {@link #getSize()} including the array size if available
      */
-    public MemoryInt24 getTotalSize() {
+    public MemoryInt28 getTotalSize() {
         if (array != null) {
-            return MemoryInt24.from(array.size() * size.value());
+            return MemoryInt28.from(array.size() * size.value(), size.byteCount());
         }
         return size;
     }
@@ -73,9 +73,9 @@ public class MemoryField {
     /**
      * @return {@link #getEffectiveSize()} including the array size if available
      */
-    public MemoryInt24 getEffectiveTotalSize() {
+    public MemoryInt28 getEffectiveTotalSize() {
         if (array != null) {
-            return MemoryInt24.from(array.size() * getEffectiveSize().value());
+            return MemoryInt28.from(array.size() * getEffectiveSize().value(), size.byteCount());
         }
         return getEffectiveSize();
     }

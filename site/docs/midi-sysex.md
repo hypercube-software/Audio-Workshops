@@ -477,7 +477,7 @@ The Roland **SE-02** (Boutique line, designed with Studio Electronics) saves and
 
 The device definition (`devices-library/Roland/SE-02.yml`) already declares the queries needed to retrieve the edit buffer and the way presets are selected (`BANK_MSB_LSB_PRG`).
 
-The byte level analysis is in progress and is documented in a separate book: the PDF is <a href="se-02-format.pdf" target="_blank">here</a>.
+The byte level analysis is in progress and is documented in a separate book: the PDF is <a href="roland-se02-sysex-guide.pdf" target="_blank">here</a>.
 
 # AKAI
 
@@ -500,6 +500,8 @@ ss : how many bytes to read
 aa : where to read in memory
 F7 : Sysex END
 ```
+
+The two memory spaces of the MPK-261, the SysEx protocol and the preset format are documented in a separate book: the PDF is <a href="akai-mpk-261-sysex-guide.pdf" target="_blank">here</a>.
 
 # Behringer
 
@@ -1443,7 +1445,7 @@ Things to know:
 ## Kurzweil Format
 
 Explaining all of this in this chapter is too much, so I will write a separate documentation for it. 
-The PDF is <a href="kurzweil-format.pdf" target="_blank">here</a>.
+The PDF is <a href="kurzweil-sysex-guide.pdf" target="_blank">here</a>.
 
 # Devices Library
 

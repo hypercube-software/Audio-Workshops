@@ -5,7 +5,7 @@ import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.checksum.DefaultChecksum;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.Device;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.util.MidiEventBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class BehringerDevice extends Device {
         super(manufacturer, name, code);
     }
 
-    public void requestData(MidiOutPort midiOutPort, MemoryInt24 address, MemoryInt24 size) {
+    public void requestData(MidiOutPort midiOutPort, MemoryInt28 address, MemoryInt28 size) {
         // REQUEST
         // F0 00 20 32 28 7F 05 F7
 
@@ -45,7 +45,7 @@ public class BehringerDevice extends Device {
     }
 
     @Override
-    public void sendData(MidiOutPort midiOutPort, MemoryInt24 address, int value) {
+    public void sendData(MidiOutPort midiOutPort, MemoryInt28 address, int value) {
         throw new UnsupportedOperationException();
     }
 }

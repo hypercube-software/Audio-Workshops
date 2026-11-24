@@ -18,7 +18,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMe
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
@@ -116,7 +116,7 @@ public class SysExCLI {
     public void readMemory(@ShellOption(value = "-m", help = "Device Model") String modelName,
                            @ShellOption(value = "-i", help = "Input MIDI Port") String inputDevice,
                            @ShellOption(value = "-o", help = "Output MIDI Port") String outputDevice,
-                           @ShellOption(value = "-a", help = "Roland Packed Address of a parameter") String address,
+                           @ShellOption(value = "-a", help = "Packed address of a parameter (2 to 4 MIDI bytes, e.g. 0128 or 400000)") String address,
                            @ShellOption(value = "-s", help = "Parameter size in bytes") int size) throws IOException, MidiUnavailableException {
         MidiPortsManager m = new MidiPortsManager();
         m.collectHardwareDevices();
@@ -127,8 +127,8 @@ public class SysExCLI {
         System.setProperty(Devices.SYSTEM_PROPERTY_FORCE_DEVICE, modelName);
         try (var out = m.openOutput(outputDevice)) {
             try (var in = m.openInput(inputDevice)) {
-                MemoryInt24 paramSize = MemoryInt24.from(size);
-                MemoryInt24 paramAddress = MemoryInt24.from(address, true);
+                MemoryInt28 paramAddress = MemoryInt28.from(address, true);
+                MemoryInt28 paramSize = MemoryInt28.from(size, paramAddress.byteCount());
                 log.info("Query device at address {} with size {}", paramAddress, paramSize);
                 int value = device.requestMemory(in, out, paramAddress, paramSize);
                 log.info("Value at {} is {}", paramAddress, value);
@@ -256,7 +256,7 @@ public class SysExCLI {
             }
 
             @Override
-            public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+            public void onNewEntry(String path, MemoryField field, MemoryInt28 addr) {
                 if (!path.contains("Bulk") && !field.isArray()) {
                     log.info("Visit {}, {} {} {} {}", path, field.getParent()
                             .getName(), addr.toString(), field.getName(), field.getSize()

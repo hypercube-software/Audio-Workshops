@@ -82,13 +82,25 @@ public class SysExReader {
     }
 
     /**
+     * Read a 7-bit packed integer using {@code byteCount} MIDI bytes (1 to 4).
+     * <p>Bytes are read most significant first, as in SysEx addresses.
+     */
+    public int getPackedInt(int byteCount) {
+        if (byteCount < 1 || byteCount > 4) {
+            throw new IllegalArgumentException("A packed MIDI integer must use between 1 and 4 bytes, got " + byteCount);
+        }
+        int value = 0;
+        for (int i = 0; i < byteCount; i++) {
+            value = (value << 7) | (buffer.get() & 0x7F);
+        }
+        return value;
+    }
+
+    /**
      * Read 21 bits (3 * 7) integer packed into 3 MIDI bytes
      */
     public int getInt21() {
-        int b2 = buffer.get();
-        int b1 = buffer.get();
-        int b0 = buffer.get();
-        return b0 | (b1 << 7) | (b2 << 14);
+        return getPackedInt(3);
     }
 
     public String readASCIIString(int size) {

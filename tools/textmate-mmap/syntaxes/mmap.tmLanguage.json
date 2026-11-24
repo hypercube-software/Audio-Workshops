@@ -1,0 +1,165 @@
+{
+  "name": "Memory Map",
+  "scopeName": "source.mmap",
+  "fileTypes": [
+    "mmap"
+  ],
+  "patterns": [
+    { "include": "#comment-separator" },
+    { "include": "#comment" },
+    { "include": "#comment-trailing" },
+    { "include": "#model" },
+    { "include": "#addressing" },
+    { "include": "#enum-block" },
+    { "include": "#zone-header" },
+    { "include": "#struct-header" },
+    { "include": "#field-primitive" },
+    { "include": "#field-raw" },
+    { "include": "#field-custom" },
+    { "include": "#array" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+
+    "comment-tags": {
+      "match": "\\b(TODO|FIXME|XXX|HACK|NOTE|WARNING)\\b",
+      "name": "keyword.codetag.mmap"
+    },
+
+    "comment-separator": {
+      "match": "^(\\s*)(#\\s*[-=_*#~]{3,}[^\\r\\n]*)$",
+      "captures": {
+        "2": { "name": "markup.heading.mmap" }
+      }
+    },
+
+    "comment": {
+      "begin": "^\\s*(#)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.comment.mmap" }
+      },
+      "end": "$",
+      "contentName": "comment.line.number-sign.mmap",
+      "patterns": [
+        { "include": "#comment-tags" }
+      ]
+    },
+
+    "comment-trailing": {
+      "begin": "[ \\t]+(#)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.comment.mmap" }
+      },
+      "end": "$",
+      "contentName": "comment.documentation.mmap",
+      "patterns": [
+        { "include": "#comment-tags" }
+      ]
+    },
+
+    "model": {
+      "match": "^\\s*(@Model)\\b\\s*([^#\\r\\n]*?)\\s*(?=#|$)",
+      "captures": {
+        "1": { "name": "keyword.control.directive.mmap" },
+        "2": { "name": "entity.name.function.model.mmap" }
+      }
+    },
+
+    "addressing": {
+      "match": "^\\s*(@Packed|@Unpacked)\\b",
+      "captures": {
+        "1": { "name": "keyword.control.directive.mmap" }
+      }
+    },
+
+    "zone-header": {
+      "match": "^\\s*(@)([0-9A-Fa-f]+)(?:(-)([0-9A-Fa-f]+))?(?:\\s+(BYTES|NIBBLES))?\\s+([^#\\r\\n]+?)\\s*(?=#|$)",
+      "captures": {
+        "1": { "name": "punctuation.definition.directive.mmap" },
+        "2": { "name": "constant.numeric.address.mmap" },
+        "3": { "name": "punctuation.separator.range.mmap" },
+        "4": { "name": "constant.numeric.size.mmap" },
+        "5": { "name": "keyword.other.format.mmap" },
+        "6": { "name": "entity.name.function.zone.mmap" }
+      }
+    },
+
+    "struct-header": {
+      "match": "^\\s*(struct)\\b(?:\\s+([0-9A-Fa-f]+))?(?:\\s+(BYTES|NIBBLES))?\\s+([^#\\r\\n]+?)\\s*(?=#|$)",
+      "captures": {
+        "1": { "name": "keyword.declaration.struct.mmap" },
+        "2": { "name": "constant.numeric.size.mmap" },
+        "3": { "name": "keyword.other.format.mmap" },
+        "4": { "name": "entity.name.function.struct.mmap" }
+      }
+    },
+
+    "enum-block": {
+      "begin": "^\\s*(enum)\\b\\s+([^#\\r\\n]+?)\\s*(?=#|$)",
+      "beginCaptures": {
+        "1": { "name": "keyword.declaration.enum.mmap" },
+        "2": { "name": "entity.name.function.enum.mmap" }
+      },
+      "end": "^\\s*(\\})",
+      "endCaptures": {
+        "1": { "name": "punctuation.section.block.end.mmap" }
+      },
+      "patterns": [
+        { "include": "#comment-separator" },
+        { "include": "#comment" },
+        { "include": "#comment-trailing" },
+        {
+          "match": "^\\s*(\\S[^#\\r\\n]*?)\\s*(?=#|$)",
+          "captures": {
+            "1": { "name": "string.unquoted.enum-value.mmap" }
+          }
+        }
+      ]
+    },
+
+    "field-primitive": {
+      "match": "^\\s*(byte|short|int|long|String)\\b(?:\\s+([^\\[\\]#\\r\\n]+?))?(?=\\s*[\\[#]|\\s*$)",
+      "captures": {
+        "1": { "name": "storage.type.primitive.mmap" },
+        "2": { "name": "variable.other.member.mmap" }
+      }
+    },
+
+    "field-raw": {
+      "match": "^\\s*([0-9][0-9A-Fa-f]*)(?:\\s+([^\\[\\]#\\r\\n]+?))?(?=\\s*[\\[#]|\\s*$)",
+      "captures": {
+        "1": { "name": "constant.numeric.raw-size.mmap" },
+        "2": { "name": "variable.other.member.mmap" }
+      }
+    },
+
+    "field-custom": {
+      "match": "^\\s*([A-Za-z_][A-Za-z0-9_]*)(?:\\s+([^\\[\\]#\\r\\n]+?))?(?=\\s*[\\[#]|\\s*$)",
+      "captures": {
+        "1": { "name": "constant.other.type-reference.mmap" },
+        "2": { "name": "variable.other.member.mmap" }
+      }
+    },
+
+    "array": {
+      "begin": "\\[",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.array.begin.mmap" }
+      },
+      "end": "\\]",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.array.end.mmap" }
+      },
+      "patterns": [
+        { "match": "[0-9]+", "name": "constant.numeric.array-size.mmap" },
+        { "match": "[A-Za-z_][A-Za-z0-9_]*", "name": "meta.tag.array-index.mmap" },
+        { "match": ",", "name": "punctuation.separator.array.mmap" }
+      ]
+    },
+
+    "punctuation": {
+      "match": "[{}]",
+      "name": "punctuation.section.block.mmap"
+    }
+  }
+}

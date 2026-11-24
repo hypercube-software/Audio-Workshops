@@ -5,7 +5,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.Devices;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryDumper;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +31,10 @@ public class SysExParserTest {
                 .getMemoryMaps()
                 .size());
         String channel1Name = dumper
-                .readString(MemoryInt24.fromPacked(0x000008), MemoryMapFormat.BYTES, 10);
+                .readString(MemoryInt28.fromPacked(0x000008), MemoryMapFormat.BYTES, 10);
         assertEquals("Ch 1      ", channel1Name);
         String performance47Name = dumper
-                .readString(MemoryInt24.fromPacked(0x007E00), MemoryMapFormat.BYTES, 10);
+                .readString(MemoryInt28.fromPacked(0x007E00), MemoryMapFormat.BYTES, 10);
         assertEquals("SpaceDream", performance47Name);
     }
 

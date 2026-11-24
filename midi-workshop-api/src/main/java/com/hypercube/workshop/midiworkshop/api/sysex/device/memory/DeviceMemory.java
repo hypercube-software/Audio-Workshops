@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.device.memory;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class DeviceMemory {
                 .orElseThrow();
     }
 
-    public void writeByte(MemoryInt24 address, int value) {
+    public void writeByte(MemoryInt28 address, int value) {
         var space = memoryMaps.stream()
                 .filter(s -> s.contains(address))
                 .findFirst()
@@ -37,7 +37,7 @@ public class DeviceMemory {
         written.add(address.value());
     }
 
-    public int readByte(MemoryInt24 address) {
+    public int readByte(MemoryInt28 address) {
         return memoryMaps.stream()
                 .filter(s -> s.contains(address))
                 .findFirst()

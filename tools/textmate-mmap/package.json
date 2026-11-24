@@ -1,0 +1,41 @@
+{
+  "name": "mmap",
+  "displayName": "Memory Map (MMAP)",
+  "description": "Syntax highlighting for .mmap files (MIDI device memory layouts)",
+  "version": "0.1.0",
+  "publisher": "hypercube-software",
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "mmap",
+    "midi",
+    "sysex",
+    "memory map"
+  ],
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "mmap",
+        "aliases": [
+          "Memory Map",
+          "mmap"
+        ],
+        "extensions": [
+          ".mmap"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mmap",
+        "scopeName": "source.mmap",
+        "path": "./syntaxes/mmap.tmLanguage.json"
+      }
+    ]
+  }
+}

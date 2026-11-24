@@ -1,7 +1,7 @@
 package com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class MemoryMap {
     /**
      * Start address of the memory
      */
-    private final MemoryInt24 baseAddress;
+    private final MemoryInt28 baseAddress;
     /**
      * Is it struct or top level memory zone
      */
@@ -43,11 +43,11 @@ public class MemoryMap {
      * Size of the memory in bytes (not in nibbles!)
      * <p>Use {@link #getEffectiveSize()} to get the real size
      */
-    private MemoryInt24 size;
+    private MemoryInt28 size;
     /**
      * End address based on the {@link #getEffectiveSize()} (take into account the {@link #format}
      */
-    private MemoryInt24 endAddress;
+    private MemoryInt28 endAddress;
     /**
      * How many child struct are used by this memory
      */
@@ -62,15 +62,15 @@ public class MemoryMap {
     @Setter
     private MemoryMapFormat format;
 
-    public MemoryMap(MemoryMapType type, String name, MemoryInt24 baseAddress, MemoryInt24 size, MemoryMapFormat format) {
+    public MemoryMap(MemoryMapType type, String name, MemoryInt28 baseAddress, MemoryInt28 size, MemoryMapFormat format) {
         this.baseAddress = baseAddress;
         this.name = name;
         this.type = type;
         this.format = format;
-        setSize(size.value());
+        setSize(size);
     }
 
-    public MemoryMap(MemoryMapType type, String name, MemoryInt24 baseAddress, MemoryMapFormat format) {
+    public MemoryMap(MemoryMapType type, String name, MemoryInt28 baseAddress, MemoryMapFormat format) {
         this.baseAddress = baseAddress;
         this.name = name;
         this.type = type;
@@ -80,11 +80,11 @@ public class MemoryMap {
     /**
      * @return Take into account the {@link #format} to get the real size in bytes
      */
-    public MemoryInt24 getEffectiveSize() {
-        return MemoryInt24.from(switch (format) {
+    public MemoryInt28 getEffectiveSize() {
+        return MemoryInt28.from(switch (format) {
             case BYTES -> size.value();
             case NIBBLES -> size.value() * 2;
-        });
+        }, size.byteCount());
     }
 
     /**
@@ -117,16 +117,28 @@ public class MemoryMap {
     /**
      * Set the size of the memory in bytes (not in nibbles!)
      *
+     * <p>The size is encoded with the same number of MIDI bytes as the base address,
+     * which is the convention used by the SysEx requests.
+     *
      * @param size in {@link MemoryMapFormat#BYTES}
      */
     public void setSize(int size) {
+        setSize(MemoryInt28.from(size, baseAddress.byteCount()));
+    }
+
+    /**
+     * Set the size of the memory, keeping its declared MIDI width.
+     *
+     * @param size in {@link MemoryMapFormat#BYTES}
+     */
+    public void setSize(MemoryInt28 size) {
         if (this.size != null) {
             throw new MidiError("Size already set in %s: %s".formatted(name, size));
         }
-        if (size == 0) {
+        if (size.value() == 0) {
             throw new MidiError("Size can't be 0");
         }
-        this.size = MemoryInt24.from(size);
+        this.size = size;
         updateEndAddress();
     }
 
@@ -135,20 +147,21 @@ public class MemoryMap {
      */
     public void updateEndAddress() {
         if (size != null && format != null) {
-            this.endAddress = MemoryInt24.from(baseAddress.value() + getEffectiveSize().value() - 1);
+            this.endAddress = MemoryInt28.from(baseAddress.value() + getEffectiveSize().value() - 1,
+                    baseAddress.byteCount());
         }
     }
 
-    public boolean contains(MemoryInt24 address) {
+    public boolean contains(MemoryInt28 address) {
         return endAddress != null && address.value() >= baseAddress.value() && address.value() <= endAddress.value();
     }
 
-    public void writeByte(MemoryInt24 address, int value) {
+    public void writeByte(MemoryInt28 address, int value) {
         int relativeAddress = address.value() - baseAddress.value();
         memory[relativeAddress] = (byte) value;
     }
 
-    public int readByte(MemoryInt24 address) {
+    public int readByte(MemoryInt28 address) {
         int relativeAddress = address.value() - baseAddress.value();
         return memory[relativeAddress] & 0xFF;
     }

@@ -8,7 +8,7 @@ import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapParser;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.parser.SysExParser;
 import lombok.EqualsAndHashCode;
@@ -90,7 +90,7 @@ public abstract class Device {
      * @param address     Memory address to query
      * @param size        Size of the data to retrieve
      */
-    public abstract void requestData(MidiOutPort midiOutPort, MemoryInt24 address, MemoryInt24 size);
+    public abstract void requestData(MidiOutPort midiOutPort, MemoryInt28 address, MemoryInt28 size);
 
     /**
      * Send an appropriate SysEx message to write the memory content of a MIDI device
@@ -99,7 +99,7 @@ public abstract class Device {
      * @param address     Memory address to write
      * @param value       value to send
      */
-    public abstract void sendData(MidiOutPort midiOutPort, MemoryInt24 address, int value);
+    public abstract void sendData(MidiOutPort midiOutPort, MemoryInt28 address, int value);
 
     /**
      * We store device memory maps in predefined folders
@@ -112,7 +112,7 @@ public abstract class Device {
         setMemory(deviceMemory);
     }
 
-    public int requestMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, MemoryInt24 address, MemoryInt24 size) {
+    public int requestMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, MemoryInt28 address, MemoryInt28 size) {
         try {
             if (midiInPort == null)
                 return 0;

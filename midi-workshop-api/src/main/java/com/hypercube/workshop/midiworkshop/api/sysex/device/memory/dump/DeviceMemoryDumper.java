@@ -5,7 +5,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.DeviceMemory;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +25,7 @@ public class DeviceMemoryDumper {
     private final DeviceMemory memory;
 
     public void visitMemory(DeviceMemoryVisitor visitor) {
-        MemoryInt24 addr = MemoryInt24.from(0);
+        MemoryInt28 addr = MemoryInt28.from(0);
         memory.getMemoryMaps()
                 .forEach(memoryMap -> {
                     visitor.onNewTopLevelMemoryMap(memoryMap);
@@ -53,7 +53,7 @@ public class DeviceMemoryDumper {
                 }
 
                 @Override
-                public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+                public void onNewEntry(String path, MemoryField field, MemoryInt28 addr) {
                     var value = readFieldValue(field, addr);
                     out.println("%s=%-15s %s".formatted(addr, value, path));
                 }
@@ -64,7 +64,7 @@ public class DeviceMemoryDumper {
         }
     }
 
-    private void dumpMemory(String prefix, MemoryInt24 addr, MemoryMap memoryMap, DeviceMemoryVisitor visitor) {
+    private void dumpMemory(String prefix, MemoryInt28 addr, MemoryMap memoryMap, DeviceMemoryVisitor visitor) {
         addr = addr.add(memoryMap.getBaseAddress());
         for (var field : memoryMap.getFields()) {
             if (field.isArray()) {
@@ -75,7 +75,7 @@ public class DeviceMemoryDumper {
         }
     }
 
-    private MemoryInt24 dumpMemoryField(String prefix, MemoryInt24 addr, MemoryField field, DeviceMemoryVisitor visitor) {
+    private MemoryInt28 dumpMemoryField(String prefix, MemoryInt28 addr, MemoryField field, DeviceMemoryVisitor visitor) {
         String name = Optional.ofNullable(field.getName())
                 .orElse(field.getType());
         String valueName = prefix + "/" + name;
@@ -87,7 +87,7 @@ public class DeviceMemoryDumper {
         return addr.add(field.getEffectiveTotalSize());
     }
 
-    private MemoryInt24 dumpMemoryArray(String prefix, MemoryInt24 addr, MemoryField field, DeviceMemoryVisitor out) {
+    private MemoryInt28 dumpMemoryArray(String prefix, MemoryInt28 addr, MemoryField field, DeviceMemoryVisitor out) {
         var array = field.getArray();
         var allEntries = array.getAllEntries();
         for (var idx = 0; idx < array.size(); idx++) {
@@ -104,7 +104,7 @@ public class DeviceMemoryDumper {
         return addr;
     }
 
-    private String readFieldValue(MemoryField field, MemoryInt24 addr) {
+    private String readFieldValue(MemoryField field, MemoryInt28 addr) {
         try {
             MemoryMapFormat format = field.getParent()
                     .getFormat();
@@ -135,7 +135,7 @@ public class DeviceMemoryDumper {
         }
     }
 
-    private String readVariableLengthValue(MemoryField field, MemoryInt24 addr, MemoryMapFormat format) {
+    private String readVariableLengthValue(MemoryField field, MemoryInt28 addr, MemoryMapFormat format) {
         int size = field.getSize()
                 .value();
         int effectiveSize = switch (format) {
@@ -154,7 +154,7 @@ public class DeviceMemoryDumper {
         return sb.toString();
     }
 
-    private int readByte(MemoryInt24 addr, MemoryMapFormat format) {
+    private int readByte(MemoryInt28 addr, MemoryMapFormat format) {
         return switch (format) {
             case BYTES -> {
                 yield memory.readByte(addr);
@@ -167,7 +167,7 @@ public class DeviceMemoryDumper {
         };
     }
 
-    public String readString(MemoryInt24 addr, MemoryMapFormat format, int size) {
+    public String readString(MemoryInt28 addr, MemoryMapFormat format, int size) {
         byte[] data = new byte[size];
         int effectiveSize = switch (format) {
             case BYTES -> 1;
@@ -184,7 +184,7 @@ public class DeviceMemoryDumper {
         }
     }
 
-    private long readNumericalValue(MemoryInt24 addr, MemoryMapFormat format, int size) {
+    private long readNumericalValue(MemoryInt28 addr, MemoryMapFormat format, int size) {
         long result = 0;
         int effectiveSize = switch (format) {
             case BYTES -> 1;
@@ -198,32 +198,32 @@ public class DeviceMemoryDumper {
         return result;
     }
 
-    private String readShortValue(MemoryInt24 addr, MemoryMapFormat format) {
+    private String readShortValue(MemoryInt28 addr, MemoryMapFormat format) {
         short v = (short) readNumericalValue(addr, format, 2);
         return "%04X".formatted(v);
     }
 
-    private String readIntValue(MemoryInt24 addr, MemoryMapFormat format) {
+    private String readIntValue(MemoryInt28 addr, MemoryMapFormat format) {
         int v = (int) readNumericalValue(addr, format, 4);
         return "%08X".formatted(v);
     }
 
-    private String readLongValue(MemoryInt24 addr, MemoryMapFormat format) {
+    private String readLongValue(MemoryInt28 addr, MemoryMapFormat format) {
         long v = readNumericalValue(addr, format, 8);
         return "%016X".formatted(v);
     }
 
-    private String readByteValue(MemoryInt24 addr, MemoryMapFormat format) {
+    private String readByteValue(MemoryInt28 addr, MemoryMapFormat format) {
         int v = readByte(addr, format);
         return "%02X".formatted(v);
     }
 
-    private String readStringValue(MemoryField field, MemoryInt24 addr, MemoryMapFormat format) {
+    private String readStringValue(MemoryField field, MemoryInt28 addr, MemoryMapFormat format) {
         return '"' + readString(addr, format, field.getSize()
                 .value()) + '"';
     }
 
-    private String readEnumValue(MemoryField field, MemoryInt24 addr, MemoryMapFormat format) {
+    private String readEnumValue(MemoryField field, MemoryInt28 addr, MemoryMapFormat format) {
         var values = field.getEnumReference()
                 .getValues();
         int ordinal = readByte(addr, format);
@@ -272,9 +272,9 @@ public class DeviceMemoryDumper {
                 int total = memoryMap.getFields()
                         .stream()
                         .map(MemoryField::getEffectiveTotalSize)
-                        .mapToInt(MemoryInt24::value)
+                        .mapToInt(MemoryInt28::value)
                         .sum();
-                out.println("Computed Size : " + MemoryInt24.from(total));
+                out.println("Computed Size : " + MemoryInt28.from(total));
                 for (var field : memoryMap.getFields()) {
                     out.println("\t%-40s %s at %s".formatted(field, field.getTotalSize(), field.getAddress()));
                 }

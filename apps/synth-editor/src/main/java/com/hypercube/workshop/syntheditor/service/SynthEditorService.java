@@ -9,7 +9,7 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMe
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.dump.DeviceMemoryVisitor;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt24;
+import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.Manufacturer;
 import com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.roland.RolandDevice;
 import com.hypercube.workshop.syntheditor.infra.bus.SynthEditorBusListener;
@@ -56,7 +56,9 @@ public class SynthEditorService implements SynthEditorBusListener {
         for (int i = 0; i < params.size(); i++) {
             var p = params.get(i);
             log.info("Query param " + p.getPath() + " of size %d at 0x%06X".formatted(p.getSize(), p.getAddress()));
-            int value = device.requestMemory(inputDevice, outputDevice, MemoryInt24.fromPacked(p.getAddress()), MemoryInt24.from(p.getSize()));
+            MemoryInt28 address = MemoryInt28.fromPacked(p.getAddress());
+            int value = device.requestMemory(inputDevice, outputDevice, address,
+                    MemoryInt28.from(p.getSize(), address.byteCount()));
             p.setValue(value);
             progress = (i + 1) * 100 / params.size();
             bus.sendProgress(progress);
@@ -99,7 +101,7 @@ public class SynthEditorService implements SynthEditorBusListener {
     @Override
     public void onMsg(ParameterUpdateDTO parameterUpdateDTO) {
         if (outputDevice != null) {
-            device.sendData(outputDevice, MemoryInt24.fromPacked(parameterUpdateDTO.getAddress()), parameterUpdateDTO.getValue());
+            device.sendData(outputDevice, MemoryInt28.fromPacked(parameterUpdateDTO.getAddress()), parameterUpdateDTO.getValue());
         }
     }
 
@@ -123,7 +125,7 @@ public class SynthEditorService implements SynthEditorBusListener {
             }
 
             @Override
-            public void onNewEntry(String path, MemoryField field, MemoryInt24 addr) {
+            public void onNewEntry(String path, MemoryField field, MemoryInt28 addr) {
                 if (mapOfInterest.contains(currentMap.getName()) && !field.getName()
                         .equals("reserved")) {
                     String paramPath = path.substring(currentMap.getName()
