@@ -6,7 +6,6 @@ import com.hypercube.mpm.midi.group.MidiOutPortGroup;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
-import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
@@ -88,7 +87,7 @@ public class MidiRouter {
 
     // As you should know, in JAVA, two method references pointing to the same method are not equals
     // So it is crucial to use the same all the time
-    private final MidiListener mainDestinationEventListener = new SysExMidiListener(this::onMainDestinationEvent);
+    private final MidiListener mainDestinationEventListener = this::onMainDestinationEvent;
     /**
      * {@link MidiInPort} bound to the INPUT of the synth currently used
      */
@@ -106,7 +105,7 @@ public class MidiRouter {
      * <p>Range is [0-15], not [1-16]</p>
      */
     private int outputChannel = 0;
-    private final MidiListener mainSourceEventListener = new SysExMidiListener(this::onMainSourceEvent);
+    private final MidiListener mainSourceEventListener = this::onMainSourceEvent;
 
     public MidiRouter(ConfigurationService configurationService) {
         this.configurationService = configurationService;

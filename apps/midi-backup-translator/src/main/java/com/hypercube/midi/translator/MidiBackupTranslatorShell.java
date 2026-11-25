@@ -172,7 +172,7 @@ public class MidiBackupTranslatorShell {
         log.info("outputMidiDevice    : {}", projectDevice.getOutputMidiDevice());
         log.info("-------------------------------------------------------");
         try (var in = midiPortsManager.openInput(projectDevice.getInputMidiDevice())) {
-            in.addSysExListener((midiInDevice, sysExEvent) -> onSysEx(deviceInstance, midiInDevice, sysExEvent));
+            in.addListener((midiInDevice, sysExEvent) -> onSysEx(deviceInstance, midiInDevice, sysExEvent));
             try (var out = midiPortsManager.openOutput(projectDevice.getOutputMidiDevice())) {
                 wakeUpDevice(out, deviceInstance);
                 if (macro == null) {

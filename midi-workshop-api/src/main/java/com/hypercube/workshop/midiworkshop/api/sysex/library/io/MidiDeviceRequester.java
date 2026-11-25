@@ -3,7 +3,7 @@ package com.hypercube.workshop.midiworkshop.api.sysex.library.io;
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiConfigError;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
+import com.hypercube.workshop.midiworkshop.api.listener.SysExResponseCollector;
 import com.hypercube.workshop.midiworkshop.api.ports.local.in.MidiInPort;
 import com.hypercube.workshop.midiworkshop.api.ports.local.out.MidiOutPort;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiRequestSequence;
@@ -56,8 +56,8 @@ public class MidiDeviceRequester {
      */
     public Optional<MidiRequestResponse> query(MidiDeviceDefinition device, MidiInPort midiInPort, MidiOutPort midiOutPort, CommandCall commandCall) {
         String errorMessage = null;
-        final SysExMidiListener listener = new SysExMidiListener();
-        midiInPort.addSysExListener(listener);
+        final SysExResponseCollector listener = new SysExResponseCollector();
+        midiInPort.addListener(listener);
         try (ByteArrayOutputStream requestBuffer = new ByteArrayOutputStream()) {
             for (MidiRequest r : forgeMidiRequestSequence(device, commandCall).getMidiRequests()) {
                 List<CustomMidiEvent> events = MidiEventBuilder.parse(r.getValue());
@@ -114,7 +114,7 @@ public class MidiDeviceRequester {
                                 )
                                 .orElse(null);
                         listener = new SysExAggregatorListener(consumer);
-                        midiInPort.addSysExListener(listener);
+                        midiInPort.addListener(listener);
                     } else {
                         log.info("Send '{}' to {} without expecting a response", r.getName(), device.getDeviceName());
                     }

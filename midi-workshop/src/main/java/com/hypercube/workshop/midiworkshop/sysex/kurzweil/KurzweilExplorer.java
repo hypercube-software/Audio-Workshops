@@ -93,7 +93,7 @@ public class KurzweilExplorer {
                         .map(payload -> p.parse(payload)
                                 .getFirst())
                         .toList();
-                input.addSysExListener((inPort, event) -> {
+                input.addListener((inPort, event) -> {
                     if (!skip.get()) {
                         var m = p.parse(event.getMessage()
                                         .getMessage())

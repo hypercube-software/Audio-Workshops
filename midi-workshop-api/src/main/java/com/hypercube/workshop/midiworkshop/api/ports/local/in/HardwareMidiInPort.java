@@ -6,6 +6,11 @@ import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.midi.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -59,19 +64,31 @@ public class HardwareMidiInPort extends MidiInPort {
             throw new MidiError(port, e);
         }
         Receiver receiver = new Receiver() {
+            private final ByteArrayOutputStream sysExBuffer = new ByteArrayOutputStream();
+
             @Override
             public void send(MidiMessage message, long timeStamp) {
-                CustomMidiEvent event = new CustomMidiEvent(message, timeStamp);
-                //log.info("{} listeners, receive {}", listeners.size(), event.toString());
-                for (MidiListener listener : listeners) {
+                if (message instanceof SysexMessage sysex) {
+                    // The OS driver may split a long SysEx into several chunks: only
+                    // the frame that ends with F7 is complete. Reassemble here, once,
+                    // so every listener always receives a whole frame.
+                    byte[] data = sysex.getStatus() == SysexMessage.SYSTEM_EXCLUSIVE
+                            ? sysex.getMessage()
+                            : sysex.getData();
                     try {
-                        Thread.currentThread()
-                                .setName("MIDI Listener for '%s'".formatted(getName()));
-                        listener.onEvent(HardwareMidiInPort.this, event);
-                    } catch (RuntimeException e) {
-                        log.error("Unexpected error in midi listener", e);
+                        sysExBuffer.write(data);
+                        if (data[data.length - 1] == (byte) 0xF7) {
+                            for (byte[] payload : splitByF0(sysExBuffer.toByteArray())) {
+                                dispatch(new SysexMessage(payload, payload.length), timeStamp);
+                            }
+                            sysExBuffer.reset();
+                        }
+                    } catch (IOException | InvalidMidiDataException e) {
+                        log.error("Unable to reassemble SysEx on {}", getName(), e);
                     }
+                    return;
                 }
+                dispatch(message, timeStamp);
             }
 
             @Override
@@ -79,6 +96,40 @@ public class HardwareMidiInPort extends MidiInPort {
             }
         };
         transmitter.setReceiver(receiver);
+    }
+
+    private void dispatch(MidiMessage message, long timeStamp) {
+        CustomMidiEvent event = new CustomMidiEvent(message, timeStamp);
+        for (MidiListener listener : listeners) {
+            try {
+                Thread.currentThread()
+                        .setName("MIDI Listener for '%s'".formatted(getName()));
+                listener.onEvent(HardwareMidiInPort.this, event);
+            } catch (RuntimeException e) {
+                log.error("Unexpected error in midi listener", e);
+            }
+        }
+    }
+
+    /**
+     * Split a buffer into the SysEx frames it holds, one per {@code F0} start
+     * byte. A single driver chunk can carry several complete frames.
+     */
+    private static List<byte[]> splitByF0(byte[] data) {
+        List<byte[]> messages = new ArrayList<>();
+        int lastPos = -1;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == (byte) 0xF0) {
+                if (lastPos != -1) {
+                    messages.add(Arrays.copyOfRange(data, lastPos, i));
+                }
+                lastPos = i;
+            }
+        }
+        if (lastPos != -1) {
+            messages.add(Arrays.copyOfRange(data, lastPos, data.length));
+        }
+        return messages;
     }
 
     @Override

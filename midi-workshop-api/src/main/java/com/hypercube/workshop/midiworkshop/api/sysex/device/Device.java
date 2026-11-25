@@ -278,7 +278,7 @@ public abstract class Device {
                 log.warn("Unable to parse SysEx: {}", e.getMessage());
             }
         };
-        midiInPort.addSysExListener(listener);
+        midiInPort.addListener(listener);
         try {
             sender.run();
             long timeout = SYSEX_TIMEOUT_MS + (long) expectedFrames * SYSEX_TIMEOUT_PER_FRAME_MS;

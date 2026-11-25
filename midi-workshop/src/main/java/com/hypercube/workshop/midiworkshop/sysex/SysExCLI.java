@@ -364,7 +364,9 @@ public class SysExCLI {
             } catch (Exception e) {
                 throw new MidiError(e);
             }
-            midiMonitor.monitor(inputDevice, listener);
+            // The input port reassembles SysEx split by the OS driver buffer,
+            // so the whole frame reaches onMidiEvent in one piece.
+            inputDevice.addListener(listener::onEvent);
         });
         listenerThread.start();
         waitListenerThread();

@@ -21,7 +21,7 @@ Here what to know:
 - There is an insane bug receiving big SysEx in `javax.sound.midi.MidiMessage` if it is too big for the OS driver
   - `javax.sound.midi.MidiMessage#getMessage()` give you a WRONG byte buffer with a FAKE final 0xF7 !
   - Fortunately `javax.sound.midi.SysexMessage#getData()` give you the right buffer so it is possible to understand you are receiving a **partial SysEX**
-  - 👉 Our class `SysExMidiListener` take care of reconstructing the complete SysEx for you so you don't have to worry about all of this.
+  - 👉 `HardwareMidiInPort` reconstructs the complete SysEx for you before dispatching it to the listeners, so you don't have to worry about all of this.
 - Below JDK 23, sending big SysEx to a device may also send garbage. It happened to me with a Yamaha TG-500
   - Actually I compile in JDK 21 because of the mixture JavaFX/SceneBuilder/Intelliji/SpringBoot
   - But at runtime, the application should run in JDK 23

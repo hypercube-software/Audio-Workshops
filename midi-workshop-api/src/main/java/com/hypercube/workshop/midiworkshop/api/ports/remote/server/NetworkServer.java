@@ -2,7 +2,7 @@ package com.hypercube.workshop.midiworkshop.api.ports.remote.server;
 
 import com.hypercube.workshop.midiworkshop.api.CustomMidiEvent;
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
-import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
+import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
 import com.hypercube.workshop.midiworkshop.api.ports.remote.msg.*;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceDefinition;
 import lombok.Getter;
@@ -240,7 +240,7 @@ public class NetworkServer {
             log.info("Listening Midi port {}", inputPort.getName());
             inputPort.open();
             // TODO: release this listener
-            SysExMidiListener listener = new SysExMidiListener((midiInDevice, event) -> onRealMidiEvent(session, event));
+            MidiListener listener = (midiInDevice, event) -> onRealMidiEvent(session, event);
             session.setHardwareMidiListener(listener);
             inputPort.addListener(listener);
         }

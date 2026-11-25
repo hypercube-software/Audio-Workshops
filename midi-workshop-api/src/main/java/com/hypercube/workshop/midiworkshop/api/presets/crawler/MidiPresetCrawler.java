@@ -123,7 +123,7 @@ public class MidiPresetCrawler {
                 try {
                     MidiPresetIdentity previousPatchIdentity = null;
                     in.open();
-                    in.addSysExListener(this::onResponse);
+                    in.addListener(this::onResponse);
                     out.open();
                     var inputModes = device.getDeviceModes()
                             .values()

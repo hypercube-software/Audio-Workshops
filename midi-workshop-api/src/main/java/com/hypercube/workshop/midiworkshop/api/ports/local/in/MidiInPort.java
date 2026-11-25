@@ -2,7 +2,6 @@ package com.hypercube.workshop.midiworkshop.api.ports.local.in;
 
 import com.hypercube.workshop.midiworkshop.api.errors.MidiError;
 import com.hypercube.workshop.midiworkshop.api.listener.MidiListener;
-import com.hypercube.workshop.midiworkshop.api.listener.SysExMidiListener;
 import com.hypercube.workshop.midiworkshop.api.ports.AbstractMidiDevice;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -62,16 +61,6 @@ public abstract class MidiInPort extends AbstractMidiDevice {
         listeners.add(listener);
     }
 
-    /**
-     * Add a listener wrapping it with a {@link SysExMidiListener} to receive ONLY SYSEX
-     * <p>
-     * BEWARE, In JAVA, two method references pointing to the same method are not equals
-     * <p>So make sure you pass the same each time otherwise the underling set {@link #listeners} won't do its job</p>
-     */
-    public void addSysExListener(MidiListener listener) {
-        addListener(new SysExMidiListener(listener));
-    }
-
     @Override
     protected void effectiveOpen() throws Exception {
         // does nothing by default
@@ -85,18 +74,7 @@ public abstract class MidiInPort extends AbstractMidiDevice {
         if (listener == null) {
             return;
         }
-        if (listeners.contains(listener)) {
-            listeners.remove(listener);
-        } else {
-            // may be the listener is wrapped in a SysExMidiListener
-            listeners.stream()
-                    .filter(SysExMidiListener.class::isInstance)
-                    .map(l -> (SysExMidiListener) l)
-                    .filter(l -> l.getListener()
-                            .equals(listener))
-                    .findFirst()
-                    .ifPresent(listeners::remove);
-        }
+        listeners.remove(listener);
     }
 
     @Override
