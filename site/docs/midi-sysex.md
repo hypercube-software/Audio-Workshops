@@ -471,21 +471,37 @@ For instance in their **Sound Canvas**:
 
 Most of the time they will describe precisely the first memory section, without explaining precisely the layout of the second section. Just know that everything will be **twice larger**. That's all.
 
-## SE-02 Format
+## SE-02
 
 The Roland **SE-02** (Boutique line, designed with Studio Electronics) saves and restores everything with Bulk Dump messages whose layout is not documented by Roland.
 
 The device definition (`devices-library/Roland/SE-02.yml`) already declares the queries needed to retrieve the edit buffer and the way presets are selected (`BANK_MSB_LSB_PRG`).
 
-The byte level analysis is in progress and is documented in a separate book: the PDF is <a href="roland-se02-sysex-guide.pdf" target="_blank">here</a>.
+## Development Guides
+
+<div class="book">
+  <a class="book-cover" href="roland-se02-sysex-guide.pdf" target="_blank" rel="noopener noreferrer" title="Roland SE-02 Sysex Format Reference">
+    <img src="assets/roland-se02-sysex-guide-cover.jpg" alt="Roland SE-02 Sysex Format Reference cover">
+  </a>
+  <div class="book-description">
+    <div class="book-title"><strong>Roland SE-02 — Sysex Format Reference.</strong></div>
+    <p>The SysEx protocol of the SE-02 (Boutique line, designed with Studio Electronics): the <code>RQ1</code>/<code>DT1</code> frames and checksum, the parameter encodings, the system settings, the patch block and the sequencer (parameters, patterns and songs).</p>
+    <a class="book-download" href="roland-se02-sysex-guide.pdf" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download the PDF</a>
+  </div>
+</div>
 
 # AKAI
 
-AKAI doesn't provide a lot of information. This is the worst case. You can dump the memory with a SysEx but you have to understand yourself the layout
+AKAI provides very little documentation for the MPK range. You can dump the memory with a SysEx message, but the layout is not published, so you have to work it out yourself.
 
-## MPK
+## MPK series
 
-Here how to query a MPK-249 or a MPK-261
+I had the opportunity to investigate a MPK-261. The MPK expose their memory through a bunch of commands. They differ from most devices in one way: the same address numbers are reused by several **memory spaces**, and the command you send selects the space a read or a write targets.
+
+- **CurrentPreset**, **Global** and **UserPresets** all start at `0x0000`.
+- The unit edits two **edit buffers** in RAM — one for the global settings, one for the preset — and saves to **flash memory**.
+
+Here is how to query an MPK-249 or an MPK-261:
 
 ```
 F0 47 dd dd 20 00 03 ss aa aa F7
@@ -501,7 +517,20 @@ aa : where to read in memory
 F7 : Sysex END
 ```
 
-The two memory spaces of the MPK-261, the SysEx protocol and the preset format are documented in a separate book: the PDF is <a href="akai-mpk-261-sysex-guide.pdf" target="_blank">here</a>.
+The command set reads and writes the two edit buffers (`QGLOB`/`WGLOB`, `QEDIT`/`WEDIT`) and the user presets (`QPRESET`/`WPRESET`).
+
+## Development Guides
+
+<div class="book">
+  <a class="book-cover" href="akai-mpk-261-sysex-guide.pdf" target="_blank" rel="noopener noreferrer" title="AKAI MPK-261 Sysex and Memory Reference">
+    <img src="assets/akai-mpk-261-sysex-guide-cover.jpg" alt="AKAI MPK-261 Sysex and Memory Reference cover">
+  </a>
+  <div class="book-description">
+    <div class="book-title"><strong>AKAI MPK-261 — Sysex and Memory Reference.</strong></div>
+    <p>The MPK-261 protocol (MIDI ports, commands of the two memories), the memory layout, the global settings, the preset format (controls and arpeggiator pattern) and worked examples.</p>
+    <a class="book-download" href="akai-mpk-261-sysex-guide.pdf" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download the PDF</a>
+  </div>
+</div>
 
 # Behringer
 
@@ -1442,10 +1471,18 @@ Things to know:
 - Some information are still available in various PDF manuals but they are too "high level"
 - Many people have tried to reverse it and many of them just gave up because this is too huge
 
-## Kurzweil Format
+## Development Guides
 
-Explaining all of this in this chapter is too much, so I will write a separate documentation for it. 
-The PDF is <a href="kurzweil-sysex-guide.pdf" target="_blank">here</a>.
+<div class="book">
+  <a class="book-cover" href="kurzweil-sysex-guide.pdf" target="_blank" rel="noopener noreferrer" title="Inside V.A.S.T Data model">
+    <img src="assets/kurzweil-sysex-guide-cover.jpg" alt="Inside V.A.S.T Data model cover">
+  </a>
+  <div class="book-description">
+    <div class="book-title"><strong>Inside V.A.S.T Data model — MIDI Development Guide.</strong></div>
+    <p>The Kurzweil K2600 format (PRAM format, MIDI format, objects), the Java API (data model, deserializers, converter) and the archaeology of the format.</p>
+    <a class="book-download" href="kurzweil-sysex-guide.pdf" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download the PDF</a>
+  </div>
+</div>
 
 # Devices Library
 

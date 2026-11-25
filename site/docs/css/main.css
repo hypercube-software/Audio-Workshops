@@ -17,3 +17,67 @@ th {
 :root {
     --content-max-width: none;
 }
+
+/* Book cover + description: two-column layout without a table. The cover is a
+   fixed 200px column; the description takes the rest and wraps below it on
+   narrow screens. */
+.book {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    align-items: flex-start;
+    margin: 1rem 0;
+}
+
+.book-cover {
+    flex: 0 0 200px;
+}
+
+.book-cover img {
+    display: block;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.book-description {
+    flex: 1 1 280px;
+    min-width: 0;
+    max-width: 44em;
+}
+
+.book-title {
+    margin: 0 0 0.25rem;
+}
+
+.book-description p {
+    margin: 0 0 0.75rem;
+}
+
+/* Solid "download" button. Scoped to .markdown-section a (and its :hover state)
+   so it beats the theme's link styling, which would otherwise underline the
+   button and recolour it on hover. */
+.markdown-section a.book-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+    border-radius: 6px;
+    background: var(--theme-color);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.markdown-section a.book-download:hover {
+    background: var(--theme-color);
+    color: #fff;
+    text-decoration: none;
+    filter: brightness(0.9);
+}
+
+.markdown-section a.book-download svg {
+    width: 1em;
+    height: 1em;
+    flex: 0 0 auto;
+}

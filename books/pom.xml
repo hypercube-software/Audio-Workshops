@@ -20,6 +20,12 @@
         <book.se-02.pdf>roland-se02-sysex-guide.pdf</book.se-02.pdf>
         <book.akai-mpk-261.pdf>akai-mpk-261-sysex-guide.pdf</book.akai-mpk-261.pdf>
 
+        <!-- Name of the JPEG cover (first page of the PDF above) written in
+             site/docs/assets/, where the Docsify site shows it. -->
+        <book.kurzweil.cover>kurzweil-sysex-guide-cover.jpg</book.kurzweil.cover>
+        <book.se-02.cover>roland-se02-sysex-guide-cover.jpg</book.se-02.cover>
+        <book.akai-mpk-261.cover>akai-mpk-261-sysex-guide-cover.jpg</book.akai-mpk-261.cover>
+
         <!-- Which books are compiled. Every book compiles by default, which is what
              CI and the release need. The `only-*` profiles below turn 2 of them off,
              so a work session on one book does not pay for the other 2:
@@ -77,7 +83,33 @@
         <svg.green.line>#06402a</svg.green.line>
         <svg.green.accent>#34a86c</svg.green.accent>
         <svg.green.spark>#7fe0c0</svg.green.spark>
+
+        <!-- Book cover thumbnails: the first page of each PDF rendered as a JPEG
+             by Apache PDFBox (see GenerateBookCovers.java), for the Docsify site.
+             The output goes straight into site/docs/assets/ so midi-sysex.md can
+             reference it without any extra copy step in the CI workflow. -->
+        <cover.out>${project.basedir}/../site/docs/assets</cover.out>
+        <cover.dpi>150</cover.dpi>
+        <cover.quality>0.85</cover.quality>
+        <cover.max-width>800</cover.max-width>
+        <!-- Skip the cover step. Safe when the books did not change and the JPEGs
+             already exist, but unlike the SVG step it has no stamp: a normal build
+             re-renders the 3 covers every time. -->
+        <cover.skip>false</cover.skip>
     </properties>
+
+    <!-- Apache PDFBox renders the first page of each PDF as a JPEG (cover
+         thumbnail for the Docsify site). This is a `pom` module, so the
+         dependency is not built into anything: the dependency-plugin below
+         copies it (and its transitive jars) into target/cover-lib, and the
+         exec-plugin runs GenerateBookCovers.java on that classpath. -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.8</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -89,6 +121,23 @@
                      svg.* properties and its own source with generated/.stamp, so a
                      clean build reuses the pictures instead of paying for them again.
                      Use `-Dsvg.force=true` (or delete the folder) to rebuild them. -->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-cover-libs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/cover-lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -200,6 +249,35 @@
                                 <argument>${typst.root}</argument>
                                 <argument>${typst.root}/akai-mpk261/main.typ</argument>
                                 <argument>${book.akai-mpk-261.pdf}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Renders the first page of each PDF as a JPEG (Apache PDFBox),
+                         for the Docsify site. Runs after the PDFs above (generate-resources)
+                         and after the PDFBox jars have been copied (process-resources). -->
+                    <execution>
+                        <id>generate-book-covers</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <executable>${java.home}/bin/java</executable>
+                            <skip>${cover.skip}</skip>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <argument>${project.build.directory}/cover-lib/*</argument>
+                                <argument>-Dcover.kurzweil.pdf=${project.build.directory}/${book.kurzweil.pdf}</argument>
+                                <argument>-Dcover.kurzweil.jpg=${cover.out}/${book.kurzweil.cover}</argument>
+                                <argument>-Dcover.se-02.pdf=${project.build.directory}/${book.se-02.pdf}</argument>
+                                <argument>-Dcover.se-02.jpg=${cover.out}/${book.se-02.cover}</argument>
+                                <argument>-Dcover.akai.pdf=${project.build.directory}/${book.akai-mpk-261.pdf}</argument>
+                                <argument>-Dcover.akai.jpg=${cover.out}/${book.akai-mpk-261.cover}</argument>
+                                <argument>-Dcover.dpi=${cover.dpi}</argument>
+                                <argument>-Dcover.quality=${cover.quality}</argument>
+                                <argument>-Dcover.max-width=${cover.max-width}</argument>
+                                <argument>${project.basedir}/src/main/generator/GenerateBookCovers.java</argument>
                             </arguments>
                         </configuration>
                     </execution>
