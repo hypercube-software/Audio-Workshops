@@ -57,6 +57,7 @@ jobs:
           cp books/target/kurzweil-sysex-guide.pdf site/docs/kurzweil-sysex-guide.pdf
           cp books/target/roland-se02-sysex-guide.pdf site/docs/roland-se02-sysex-guide.pdf
           cp books/target/akai-mpk-261-sysex-guide.pdf site/docs/akai-mpk-261-sysex-guide.pdf
+          cp books/target/boss-ds-330-sysex-guide.pdf site/docs/boss-ds-330-sysex-guide.pdf
 
       # 5. Setup Node.js for the Docsify site build
       - name: Use Node.js 20.x

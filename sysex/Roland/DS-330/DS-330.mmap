@@ -86,6 +86,10 @@
 {
 	byte Chorus[128]
 }
+@490C00 NIBBLES Bulk DrumMap1 Rx Note
+{
+	byte Rx Note[128]
+}
 @490E00 NIBBLES Bulk DrumMap1 Name
 {
 	String Name[12]
@@ -118,6 +122,10 @@
 {
 	byte Chorus[128]
 }
+@491C00 NIBBLES Bulk DrumMap2 Rx Note
+{
+	byte Rx Note[128]
+}
 @491E00 NIBBLES Bulk DrumMap2 Name
 {
 	String Name[12]
@@ -125,40 +133,41 @@
 # -------------------------------------------
 struct SystemParams
 {
-	int  Tune
-	byte Level
-	byte Pitch
-	byte Pan
+	int  Master Tune
+	byte Master Volume
+	byte Master Key Shift
+	byte Master Pan
 	byte reserved[120]
-	Switch GS Init
+	byte GS Reset # reads 0x42 (GS mode marker); writing 00 resets to the factory GS state
 }
 struct 000100 CommonPatchParams
 {
 	String Name[16]
-	10 Partials
-	byte reserved[16]
-	ReverbType Reverb Type
-	byte Reverb Character
-	byte Reverb Cutoff
+	byte Voice Reserve[16]
+	byte unknown # key 0x20 (undocumented, 0-15)
+	byte reserved[15]
+	ReverbType Reverb Type # key 0x30 (Room 1 .. Panning Delay)
+	byte Reverb Character # key 0x31
+	byte Reverb Pre LPF # key 0x32
 	byte Reverb Level
 	byte Reverb Time
-	byte Reverb Delay
-	byte Reverb To Chorus
+	byte Reverb Delay Feedback
+	byte Reverb Send Level to Chorus
 	byte reserved[1]
-	ChorusType Chorus Type
-	byte Chorus Cutoff
+	ChorusType Chorus Type # key 0x38 (Chorus 1 .. Short Delay FB)
+	byte Chorus Pre LPF
 	byte Chorus Level
 	byte Chorus Feedback
 	byte Chorus Delay
 	byte Chorus Rate
 	byte Chorus Depth
-	byte Chorus To Reverb
+	byte Chorus Send Level to Reverb
 }
-# PatchParams comes in a specific order: block 1-16 where block 1 is the one for the drum, Channel = 10 for this one
-# Patch Block 1 has channel 10
-# Patch Block 2 has channel 2
-# ...
-# Channel field is in the range [0-15] so "channel" in the first block = 09
+# PatchParams comes in a specific order: block 0 is the drum part (channel 10),
+# blocks 1 to 9 are the parts on channels 1 to 9, and blocks A to F are the
+# parts on channels 11 to 16.
+# The Channel field stores the channel minus 1: the drum block stores 09,
+# block 1 stores 00, block 9 stores 08, block A stores 0A, block F stores 0F.
 
 struct ToneParams
 {
@@ -179,41 +188,41 @@ struct 000100 PatchParams
 	Switch Rx Pitch Bend
 	Switch Rx Channel Aftertouch
 	Switch Rx Program Change
-	Switch Rx Command Change
+	Switch Rx Control Change
 	Switch Rx Polyphonic Aftertouch
 	Switch Rx Note Message
 	Switch Rx RPN
 	Switch Rx NRPN
 	Switch Rx Modulation
 	Switch Rx Volume
-	Switch Rx Panning
+	Switch Rx Panpot
 	Switch Rx Expression
-	Switch Rx Sustain
+	Switch Rx Hold 1
 	Switch Rx Portamento
 	Switch Rx Sostenuto
-	Switch Rx Soft Pedal
+	Switch Rx Soft
 	byte Mono Poly Mode
-	byte Assignation Mode
-	byte Drum Map
-	byte Pitch Coarse
-	short Pitch Fine
+	byte Assign Mode
+	byte Use for Rhythm Part
+	byte Pitch Key Shift
+	short Pitch Offset Fine
 	byte Level
-	byte Velocity
-	byte Velocity Shift
-	byte Panning
+	byte Velocity Sense Depth
+	byte Velocity Sense Offset
+	byte Part Panpot
 	byte Note range low
 	byte Note range high
 	byte CC1
 	byte CC2
-	byte Chorus Level
-	byte Reverb Level
+	byte Chorus Send Level
+	byte Reverb Send Level
 	byte reserved[13]
 
 	ToneParams
 	
 	byte reserved[8]
 
-	0C Fine Tune
+	0C Scale Tuning
 }
 struct 000100 PatchSends
 {
@@ -226,7 +235,7 @@ struct 000100 PatchSends
 }
 struct Send
 {
-	byte Pitch Coarse
+	byte Pitch Control
 	byte TVF
 	byte TVA
 	LFOSend LFO1
@@ -242,50 +251,51 @@ struct LFOSend
 }
 struct DrumMapSetting
 {
-    byte Tune[128 Note]
+    byte Play Note Number[128 Note]
 	byte Level[128 Note]
-	byte Group[128 Note]
+	byte Assign Group[128 Note]
 	byte Pan[128 Note]
 	byte Reverb[128 Note]
 	byte Chorus[128 Note]
-	Switch Rx NoteOn[128 Note]
-	Switch Rx NoteOff[128 Note]
+	Switch Rx Note Off[128 Note]
+	Switch Rx Note On[128 Note]
 }
 # -------------------------------------------
 # Bulk types
 # -------------------------------------------
 struct BulkSystemParams
 {
-	short  Tune # 0400 mean 00040000, apparently it is NOT in NIBBLE but we don't handle this craziness
-	byte   Level
+	short  Master Tune # 0400 mean 00040000, apparently it is NOT in NIBBLE but we don't handle this craziness
+	byte   Master Volume
 	byte   unknown
-	Switch GS Init
-	byte   Pitch
-	byte   Pan
+	byte GS Reset # reads 0x42 (GS mode marker)
+	byte   Master Key Shift
+	byte   Master Pan
 	byte   unknown
 }
 
 struct BulkCommonPatchParams
 {
 	String Name[16]
-	byte Partial[16 block]
-	byte reserved[2]
-	ReverbType Reverb Type
-	byte Reverb Character
-	byte Reverb Cutoff
+	byte Voice Reserve[16 block]
+	byte unknown # key 0x20 -> bulk 40 (undocumented)
+	byte reserved # bulk 41
+	ReverbType Reverb Type # key 0x30 -> bulk 42
+	byte Reverb Character # key 0x31 -> bulk 43
+	byte Reverb Pre LPF # key 0x32 -> bulk 44
 	byte Reverb Level
 	byte Reverb Time
-	byte Reverb Delay
-	byte Reverb To Chorus
-	byte reserved
-	ChorusType Chorus Type
-	byte Chorus Cutoff
+	byte Reverb Delay Feedback
+	byte Reverb Send Level to Chorus
+	byte reserved # bulk 49
+	ChorusType Chorus Type # key 0x38 -> bulk 50
+	byte Chorus Pre LPF
 	byte Chorus Level
 	byte Chorus Feedback
 	byte Chorus Delay
 	byte Chorus Rate
 	byte Chorus Depth
-	byte Chorus To Reverb
+	byte Chorus Send Level to Reverb
 }
 struct BulkToneParams
 {
@@ -305,24 +315,24 @@ struct BulkPatchParams
 	short Rx Mask
 	byte Channel
 	byte unknown1 # B0 for channel 10, 81 for the other
-	byte Pitch Coarse
-	byte Pitch Fine # 80 means 0800, apparently it is NOT in NIBBLE but we don't handle this craziness
+	byte Pitch Key Shift
+	byte Pitch Offset Fine # 80 means 0800, apparently it is NOT in NIBBLE but we don't handle this craziness
 
 	byte Level
-	byte Velocity
-	byte Velocity Shift
-	byte Panning
+	byte Part Panpot
+	byte Velocity Sense Depth
+	byte Velocity Sense Offset
 	byte Note range low
 	byte Note range high
-	byte Chorus Level
-	byte Reverb Level
+	byte Chorus Send Level
+	byte Reverb Send Level
 
 	BulkToneParams
 
     byte unknown
     byte unknown
 
-	0C Fine Tune
+	0C Scale Tuning
 
 	byte CC1
 	byte CC2
@@ -396,6 +406,6 @@ enum ChorusType
 	Chorus 4
 	Feedback Chorus
 	Flanger
-	byte Delay
-	byte Delay Feedback
+	Short Delay
+	Short Delay FB
 }

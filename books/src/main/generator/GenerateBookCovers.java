@@ -9,6 +9,8 @@
 //   -Dcover.se-02.jpg=<file>      output JPEG
 //   -Dcover.akai.pdf=<file>       input PDF of the AKAI book
 //   -Dcover.akai.jpg=<file>       output JPEG
+//   -Dcover.ds-330.pdf=<file>     input PDF of the DS-330 book
+//   -Dcover.ds-330.jpg=<file>     output JPEG
 //   -Dcover.dpi=<float>           render resolution (default 150)
 //   -Dcover.quality=<float>       JPEG quality 0..1 (default 0.85)
 //   -Dcover.max-width=<int>       cap the rendered width in pixels (default 800)
@@ -53,6 +55,7 @@ public class GenerateBookCovers {
         new Book("cover.kurzweil.pdf", "cover.kurzweil.jpg"),
         new Book("cover.se-02.pdf", "cover.se-02.jpg"),
         new Book("cover.akai.pdf", "cover.akai.jpg"),
+        new Book("cover.ds-330.pdf", "cover.ds-330.jpg"),
     };
 
     public static void main(String[] args) throws Exception {

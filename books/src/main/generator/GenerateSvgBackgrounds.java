@@ -44,7 +44,8 @@ public class GenerateSvgBackgrounds {
     static Map<String, Map<String, String>> svgDefaults = Map.of(
         "blue", Map.of("base", "#0e2a47", "deep", "#00459e", "line", "#03305d", "accent", "#3379c2", "spark", "#3fe0a0"),
         "red", Map.of("base", "#2b070d", "deep", "#4a0b16", "line", "#5a0b18", "accent", "#c8102e", "spark", "#ffb020"),
-        "green", Map.of("base", "#0c3323", "deep", "#123a2b", "line", "#06402a", "accent", "#34a86c", "spark", "#7fe0c0"));
+        "green", Map.of("base", "#0c3323", "deep", "#123a2b", "line", "#06402a", "accent", "#34a86c", "spark", "#7fe0c0"),
+        "purple", Map.of("base", "#1b0b33", "deep", "#331260", "line", "#3c1468", "accent", "#7a3bd6", "spark", "#c9a2ff"));
 
     static String svgColor(String theme, String role) {
         return System.getProperty("svg." + theme + "." + role, svgDefaults.get(theme).get(role));

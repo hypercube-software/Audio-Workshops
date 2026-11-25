@@ -42,7 +42,7 @@
 )
 
 // -----------------------------------------------------------------------------
-// Artwork shared by the books, in three colour variants. Files are produced by
+// Artwork shared by the books, in four colour variants. Files are produced by
 // books/src/main/generator/GenerateSvgBackgrounds.java during the initialize phase of
 // books/pom.xml, and sized to the real print area: A4 for the cover, 21 x 9.4 cm
 // for the banners. `svg.<theme>.seed` in books/pom.xml gives each variant its own
@@ -69,6 +69,12 @@
 #let green-outline-banner = image("assets/generated/green/banner-wave.svg")
 #let green-bands-banner = image("assets/generated/green/banner-bands.svg")
 
+#let purple-book-cover = image("assets/generated/purple/cover.svg")
+#let purple-part-background = image("assets/generated/purple/part.svg")
+#let purple-chapter-banner = image("assets/generated/purple/banner-hexagon.svg")
+#let purple-outline-banner = image("assets/generated/purple/banner-wave.svg")
+#let purple-bands-banner = image("assets/generated/purple/banner-bands.svg")
+
 // Backward-compatible names used by the Kurzweil book.
 #let book-cover = blue-book-cover
 #let chapter-banner = blue-chapter-banner
@@ -79,6 +85,7 @@
 #let blue-banners = (blue-chapter-banner, blue-outline-banner, blue-bands-banner)
 #let red-banners = (red-chapter-banner, red-outline-banner, red-bands-banner)
 #let green-banners = (green-chapter-banner, green-outline-banner, green-bands-banner)
+#let purple-banners = (purple-chapter-banner, purple-outline-banner, purple-bands-banner)
 
 // -----------------------------------------------------------------------------
 // Default colours, overridable per book with `init.with(theme: (..))`.
