@@ -139,16 +139,15 @@
                 <version>3.4.1</version>
                 <executions>
                     <execution>
-                        <id>run-jshell</id>
+                        <id>generate-fxml-views</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${java.home}/bin/jshell</executable>
+                            <executable>${java.home}/bin/java</executable>
                             <arguments>
-                                <argument>--execution=local</argument>
-                                <argument>${project.basedir}/src/main/jshell/JavaFXGenerator.jsh</argument>
+                                <argument>${project.basedir}/src/main/scripts/JavaFXGenerator.java</argument>
                             </arguments>
                         </configuration>
                     </execution>

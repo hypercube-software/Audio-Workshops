@@ -89,13 +89,12 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${java.home}/bin/jshell</executable>
+                            <executable>${java.home}/bin/java</executable>
                             <arguments>
-                                <argument>--execution=local</argument>
-                                <argument>-J-Droot.classes=com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.BaseObject</argument>
-                                <argument>-J-Dtarget.classes.dir=${project.build.outputDirectory}</argument>
-                                <argument>-J-Djshell.classpath=${project.build.outputDirectory}${path.separator}${mdep.classpath}</argument>
-                                <argument>${project.basedir}/src/main/jshell/generate_uml.jsh</argument>
+                                <argument>-cp</argument>
+                                <argument>${project.build.outputDirectory}${path.separator}${mdep.classpath}</argument>
+                                <argument>-Droot.classes=com.hypercube.workshop.midiworkshop.api.sysex.manufacturer.kurzweil.model.BaseObject</argument>
+                                <argument>${project.basedir}/src/main/scripts/GenerateUml.java</argument>
                             </arguments>
                             <workingDirectory>${project.basedir}</workingDirectory>
                         </configuration>

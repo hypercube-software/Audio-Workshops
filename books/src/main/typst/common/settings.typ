@@ -43,7 +43,7 @@
 
 // -----------------------------------------------------------------------------
 // Artwork shared by the books, in three colour variants. Files are produced by
-// books/src/main/jshell/generate-svg-backgrounds.jsh during the initialize phase of
+// books/src/main/generator/GenerateSvgBackgrounds.java during the initialize phase of
 // books/pom.xml, and sized to the real print area: A4 for the cover, 21 x 9.4 cm
 // for the banners. `svg.<theme>.seed` in books/pom.xml gives each variant its own
 // grid, `svg.<theme>.*` its colours.

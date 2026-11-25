@@ -325,9 +325,9 @@ Our implementation of the MVC is based on two simple interfaces:
 
 Both provides facilities to get the view from the controller and vice-versa.
 
-## jShell to the rescue
+## Java source-file launcher to the rescue
 
-We could write an entire maven plugin to generate java code during the build but there is a better way: use `exec-maven-plugin` to run a jshell script located in `src/main/jshell/JavaFXGenerator.jsh`
+We could write an entire maven plugin to generate java code during the build but there is a better way: use `exec-maven-plugin` to run a plain Java source file (`java JavaFXGenerator.java`, the single-file source-code launcher) located in `src/main/scripts/JavaFXGenerator.java`
 
 This very simple script will do the following:
 
