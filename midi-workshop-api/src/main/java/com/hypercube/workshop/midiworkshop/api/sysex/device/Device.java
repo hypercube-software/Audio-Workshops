@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -171,8 +172,31 @@ public abstract class Device {
      */
     public int requestMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, String memorySpaceName,
                              MemoryInt28 address, MemoryInt28 size) {
-        if (midiInPort == null) {
+        int[] bytes = readMemory(midiInPort, midiOutPort, memorySpaceName, address, size);
+        if (bytes.length == 0) {
             return 0;
+        }
+        return memory.readValueByte(memorySpaceName, address);
+    }
+
+    /**
+     * Read {@code size} consecutive raw bytes from a byte-addressed memory
+     * space and return them, most significant first.
+     *
+     * <p>Unlike {@link #requestMemory}, this returns the whole quantity the
+     * device sent back, so callers can inspect multi-byte parameters (int,
+     * short, packed pairs, ...) instead of a single logical value.
+     *
+     * <p>A monolithic zone (declared {@code MONOLITH} in the mmap) has no
+     * addressable sub-part: the request covers the full zone and the logical
+     * range is extracted from the parsed answer.
+     *
+     * @param memorySpaceName space name, or {@code null}/blank for the default
+     */
+    public int[] readMemory(MidiInPort midiInPort, MidiOutPort midiOutPort, String memorySpaceName,
+                            MemoryInt28 address, MemoryInt28 size) {
+        if (midiInPort == null) {
+            return new int[0];
         }
         MemorySpace memorySpace = memory.resolveMemorySpace(memorySpaceName);
         if (getMemorySpaceAddressing(memorySpace.getName()) == MemorySpaceAddressing.PRESET) {
@@ -182,26 +206,79 @@ public abstract class Device {
         if (total < 1) {
             throw new MidiError("Invalid memory size: " + total);
         }
-        int maxBlockSize = getMaxBlockSize(memorySpace.getName());
-        if (maxBlockSize < 1) {
-            throw new MidiError("Invalid max block size for memory space %s: %d".formatted(memorySpace.getName(), maxBlockSize));
-        }
-        int blocks = (int) (((long) total + maxBlockSize - 1) / maxBlockSize);
-        boolean received = receiveFrames(midiInPort, blocks, () -> {
-            int offset = 0;
-            while (offset < total) {
-                int blockSize = Math.min(maxBlockSize, total - offset);
-                MemoryInt28 blockAddress = MemoryInt28.from(address.value() + offset, address.byteCount());
-                MemoryInt28 blockSizeValue = MemoryInt28.from(blockSize, address.byteCount());
-                requestMemorySpace(midiOutPort, memorySpace.getName(), blockAddress, blockSizeValue);
-                offset += blockSize;
+        ReadRequest request = resolveReadRequest(memorySpace, address, size);
+        boolean received;
+        if (request.monolithic()) {
+            log.info("Read {} monolithic zone {} at {}", memorySpace.getName(), request.zone()
+                    .getName(), request.address());
+            received = receiveFramesUntilIdle(midiInPort,
+                    () -> requestMemorySpace(midiOutPort, memorySpace.getName(), request.address(), request.size()));
+        } else {
+            int maxBlockSize = getMaxBlockSize(memorySpace.getName());
+            if (maxBlockSize < 1) {
+                throw new MidiError("Invalid max block size for memory space %s: %d".formatted(memorySpace.getName(), maxBlockSize));
             }
-        });
+            int blocks = (int) (((long) total + maxBlockSize - 1) / maxBlockSize);
+            received = receiveFrames(midiInPort, blocks, () -> {
+                int offset = 0;
+                while (offset < total) {
+                    int blockSize = Math.min(maxBlockSize, total - offset);
+                    MemoryInt28 blockAddress = MemoryInt28.from(address.value() + offset, address.byteCount());
+                    MemoryInt28 blockSizeValue = MemoryInt28.from(blockSize, address.byteCount());
+                    requestMemorySpace(midiOutPort, memorySpace.getName(), blockAddress, blockSizeValue);
+                    offset += blockSize;
+                }
+            });
+        }
         if (!received) {
             log.error("Timeout waiting SysEx...");
-            return 0;
+            return new int[0];
         }
-        return memory.readValueByte(memorySpace.getName(), address);
+        int[] values = new int[total];
+        for (int i = 0; i < total; i++) {
+            values[i] = memory.readByte(memorySpace.getName(), address.add(i));
+        }
+        return values;
+    }
+
+    /**
+     * Compute the request to send on the wire for a logical range.
+     *
+     * <p>A regular zone accepts any sub-range. A monolithic zone only answers
+     * a request for its full size, so the request is rounded up to the zone
+     * boundaries. The caller then reads the logical range from the parsed
+     * answer.
+     *
+     * @throws MidiError when the range leaves the monolithic zone
+     */
+    public ReadRequest resolveReadRequest(MemorySpace memorySpace, MemoryInt28 address, MemoryInt28 size) {
+        int total = size.value();
+        MemoryMap monolithicZone = memorySpace.findMemoryMap(address)
+                .filter(MemoryMap::isMonolithic)
+                .orElse(null);
+        if (monolithicZone == null) {
+            return new ReadRequest(address, size, false, null);
+        }
+        int zoneStart = monolithicZone.getBaseAddress()
+                .value();
+        int zoneEnd = zoneStart + monolithicZone.getEffectiveSize()
+                .value();
+        if (address.value() < zoneStart || address.value() + total > zoneEnd) {
+            throw new MidiError("Range %s+%d leaves the monolithic zone %s (%s-%s)"
+                    .formatted(address, total, monolithicZone.getName(), monolithicZone.getBaseAddress(), monolithicZone.getEndAddress()));
+        }
+        return new ReadRequest(monolithicZone.getBaseAddress(), monolithicZone.getEffectiveSize(), true, monolithicZone);
+    }
+
+    /**
+     * A read request as it travels on the wire.
+     *
+     * @param address    address to put in the request
+     * @param size       size to put in the request
+     * @param monolithic true when the request covers a monolithic zone
+     * @param zone       the monolithic zone, or {@code null} for a regular range
+     */
+    public record ReadRequest(MemoryInt28 address, MemoryInt28 size, boolean monolithic, MemoryMap zone) {
     }
 
     /**
@@ -283,6 +360,50 @@ public abstract class Device {
             sender.run();
             long timeout = SYSEX_TIMEOUT_MS + (long) expectedFrames * SYSEX_TIMEOUT_PER_FRAME_MS;
             return sysExReceived.await(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MidiError(e);
+        } finally {
+            midiInPort.removeListener(listener);
+        }
+    }
+
+    /**
+     * Send a request once and collect every answer frame until the device goes
+     * quiet.
+     *
+     * <p>A monolithic zone is returned as a burst of MIDI frames whose count
+     * cannot be known in advance, so the wait is based on silence rather than
+     * on an expected frame count.
+     */
+    private boolean receiveFramesUntilIdle(MidiInPort midiInPort, Runnable sender) {
+        final Semaphore sysExReceived = new Semaphore(0);
+        final MidiListener listener = (device, event) -> {
+            if (!(event.getMessage() instanceof SysexMessage)) {
+                return;
+            }
+            log.info("Receive SYSEX:{}", event.toString());
+            try {
+                Device parsed = new SysExParser().parse(event.getMessage());
+                if (equals(parsed)) {
+                    sysExReceived.release();
+                }
+            } catch (RuntimeException e) {
+                log.warn("Unable to parse SysEx: {}", e.getMessage());
+            }
+        };
+        midiInPort.addListener(listener);
+        try {
+            sender.run();
+            if (!sysExReceived.tryAcquire(SYSEX_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                return false;
+            }
+            int frames = 1;
+            while (sysExReceived.tryAcquire(SYSEX_TIMEOUT_PER_FRAME_MS, TimeUnit.MILLISECONDS)) {
+                frames++;
+            }
+            log.info("Received {} SysEx frame(s)", frames);
+            return true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new MidiError(e);

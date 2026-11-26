@@ -26,15 +26,21 @@ deviceModes:
       "SC Variation 1":
         command: "01"
         presetDomain: "121-122"
+      "SC Variation 5":
+        command: "05"
+        presetDomain: "122"
       "SC Variation 7":
         command: "07"
         presetDomain: "125"
       "SC Variation 8":
         command: "08"
-        presetDomain: "4-6,16-17,19,24-26,30-31,38,39,48,50,61-62,63,80,117-118"
+        presetDomain: "4-6,16-17,19,24-26,30-31,38-39,48,50,61-63,80,107,115-118"
       "SC Variation 9":
         command: "09"
         presetDomain: "125"
+      "SC Variation 16":
+        command: "10"
+        presetDomain: "25"
     categories:
       - "Piano"
       - "Chromatic Percussion"

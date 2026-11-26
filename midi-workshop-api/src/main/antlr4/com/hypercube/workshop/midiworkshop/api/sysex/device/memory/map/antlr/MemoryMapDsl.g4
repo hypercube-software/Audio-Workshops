@@ -54,9 +54,14 @@ spaceBody
     ;
 
 // @400000-000100 [NIBBLES] SystemParams Zone
+// @480000-001D10 NIBBLES MONOLITH Bulk Dump
 // {
 //     SystemParams
 // }
+//
+// The optional MONOLITH keyword marks a zone the device only answers as a
+// single block: the request must carry the exact zone size. It is interpreted
+// by the builder (like BYTES/NIBBLES), not by the grammar.
 zone
     : AT range=NUMBER words NL* LBRACE blockBody RBRACE
     ;

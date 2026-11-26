@@ -52,7 +52,10 @@
 	DrumMapSetting
 }
 
-@480000-001D10 NIBBLES Bulk Dump
+# Bulk zones only answer a request that carries the full zone size: there is
+# no addressable sub-part. The MONOLITH keyword tells the dumper to send one
+# request with the exact zone size and to wait for every answer frame.
+@480000-001D10 NIBBLES MONOLITH Bulk Dump
 {
     BulkSystemParams
     BulkCommonPatchParams
@@ -62,35 +65,35 @@
 # ------------------------------------------------
 # MAP 1
 # ------------------------------------------------
-@490000 NIBBLES Bulk DrumMap1 Key
+@490000 NIBBLES MONOLITH Bulk DrumMap1 Key
 {
 	byte Key[128]
 }
-@490200 NIBBLES Bulk DrumMap1 Level
+@490200 NIBBLES MONOLITH Bulk DrumMap1 Level
 {
 	byte Level[128]
 }
-@490400 NIBBLES Bulk DrumMap1 Group
+@490400 NIBBLES MONOLITH Bulk DrumMap1 Group
 {
 	byte Group[128]
 }
-@490600 NIBBLES Bulk DrumMap1 Pan
+@490600 NIBBLES MONOLITH Bulk DrumMap1 Pan
 {
 	byte Pan[128]
 }
-@490800 NIBBLES Bulk DrumMap1 Reverb
+@490800 NIBBLES MONOLITH Bulk DrumMap1 Reverb
 {
 	byte Reverb[128]
 }
-@490A00 NIBBLES Bulk DrumMap1 Chorus
+@490A00 NIBBLES MONOLITH Bulk DrumMap1 Chorus
 {
 	byte Chorus[128]
 }
-@490C00 NIBBLES Bulk DrumMap1 Rx Note
+@490C00 NIBBLES MONOLITH Bulk DrumMap1 Rx Note
 {
 	byte Rx Note[128]
 }
-@490E00 NIBBLES Bulk DrumMap1 Name
+@490E00 NIBBLES MONOLITH Bulk DrumMap1 Name
 {
 	String Name[12]
 }
@@ -98,35 +101,35 @@
 # MAP 2
 # ------------------------------------------------
 
-@491000 NIBBLES Bulk DrumMap2 Key
+@491000 NIBBLES MONOLITH Bulk DrumMap2 Key
 {
 	byte Key[128]
 }
-@491200 NIBBLES Bulk DrumMap2 Level
+@491200 NIBBLES MONOLITH Bulk DrumMap2 Level
 {
 	byte Level[128]
 }
-@491400 NIBBLES Bulk DrumMap2 Group
+@491400 NIBBLES MONOLITH Bulk DrumMap2 Group
 {
 	byte Group[128]
 }
-@491600 NIBBLES Bulk DrumMap2 Pan
+@491600 NIBBLES MONOLITH Bulk DrumMap2 Pan
 {
 	byte Pan[128]
 }
-@491800 NIBBLES Bulk DrumMap2 Reverb
+@491800 NIBBLES MONOLITH Bulk DrumMap2 Reverb
 {
 	byte Reverb[128]
 }
-@491A00 NIBBLES Bulk DrumMap2 Chorus
+@491A00 NIBBLES MONOLITH Bulk DrumMap2 Chorus
 {
 	byte Chorus[128]
 }
-@491C00 NIBBLES Bulk DrumMap2 Rx Note
+@491C00 NIBBLES MONOLITH Bulk DrumMap2 Rx Note
 {
 	byte Rx Note[128]
 }
-@491E00 NIBBLES Bulk DrumMap2 Name
+@491E00 NIBBLES MONOLITH Bulk DrumMap2 Name
 {
 	String Name[12]
 }

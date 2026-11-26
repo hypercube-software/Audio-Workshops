@@ -61,6 +61,15 @@ public class MemoryMap {
      */
     @Setter
     private MemoryMapFormat format;
+    /**
+     * True when the device only answers a request for the full zone.
+     *
+     * <p>Some regions, such as the Roland bulk dump, have no addressable
+     * sub-part: the request must carry the exact zone size or the device
+     * rejects it. The {@code MONOLITH} keyword of the mmap declares this.
+     */
+    @Setter
+    private boolean monolithic;
 
     public MemoryMap(MemoryMapType type, String name, MemoryInt28 baseAddress, MemoryInt28 size, MemoryMapFormat format) {
         this.baseAddress = baseAddress;
@@ -111,7 +120,7 @@ public class MemoryMap {
 
     @Override
     public String toString() {
-        return name + " " + baseAddress + " " + size + " " + format;
+        return name + " " + baseAddress + " " + size + " " + format + (monolithic ? " MONOLITH" : "");
     }
 
     /**

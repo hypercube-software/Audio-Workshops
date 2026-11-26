@@ -10,7 +10,7 @@ The bulk dump returns the whole working memory of the unit in a single answer. I
 == Requesting the dump
 
 An `RQ1` at `0x480000` with the packed size `00 1D 10` asks for the whole dump. The instrument answers with a `DT1`
-of `1864` values, split over several MIDI frames.
+of `1864` values, split over several MIDI frames. A request with a shorter size is rejected.
 
 == Payload layout
 
@@ -93,4 +93,5 @@ The 2 drum maps are not part of the bulk dump at `0x480000`. Each one is request
     caption: [The bulk drum maps],
 )
 
-Each `00 02 00` request returns 256 nibbles, that is 128 values, one per note of the map.
+Each `00 02 00` request returns 256 nibbles, that is 128 values, one per note of the map. A request with a shorter
+size is rejected.

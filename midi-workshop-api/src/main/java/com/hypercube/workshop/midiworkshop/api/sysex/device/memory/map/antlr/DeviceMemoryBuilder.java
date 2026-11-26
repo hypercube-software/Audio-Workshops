@@ -29,6 +29,11 @@ import java.util.Set;
  * enum references and memory allocation.
  */
 public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
+    /**
+     * Keyword declaring that a zone only answers a request for its full size.
+     */
+    private static final String MONOLITH = "MONOLITH";
+
     private final File file;
     private final List<MemoryMap> memoryMaps = new ArrayList<>();
     private final Map<String, List<MemoryMap>> memorySpaces = new LinkedHashMap<>();
@@ -41,6 +46,9 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     private String currentMemorySpace = MemorySpace.DEFAULT_NAME;
     private MemoryMap currentMap;
     private MemoryEnum currentEnum;
+
+    private record ZoneModifiers(MemoryMapFormat format, boolean monolithic) {
+    }
 
     public DeviceMemoryBuilder(File file) {
         this.file = file;
@@ -104,16 +112,17 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
         String[] range = ctx.range.getText()
                 .split("-", 2);
         List<String> words = words(ctx.words());
-        MemoryMapFormat format = takeFormat(words, MemoryMapFormat.BYTES);
+        ZoneModifiers modifiers = takeZoneModifiers(words, ctx);
         MemoryInt28 address = parseHex(range[0], ctx, "address");
         MemoryInt28 size = range.length == 2 ? parseHex(range[1], ctx, "size") : null;
-        if (format == MemoryMapFormat.NIBBLES && size != null) {
+        if (modifiers.format() == MemoryMapFormat.NIBBLES && size != null) {
             size = size.div(2);
         }
         String name = name(words, ctx, "zone");
         currentMap = size == null
-                ? new MemoryMap(MemoryMapType.MEMORY, name, address, format)
-                : new MemoryMap(MemoryMapType.MEMORY, name, address, size, format);
+                ? new MemoryMap(MemoryMapType.MEMORY, name, address, modifiers.format())
+                : new MemoryMap(MemoryMapType.MEMORY, name, address, size, modifiers.format());
+        currentMap.setMonolithic(modifiers.monolithic());
         memoryMaps.add(currentMap);
         memorySpaces.computeIfAbsent(currentMemorySpace, key -> new ArrayList<>())
                 .add(currentMap);
@@ -124,6 +133,9 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
     public Void visitStructDef(MemoryMapDslParser.StructDefContext ctx) {
         List<String> words = words(ctx.words());
         MemoryMapFormat format = takeFormat(words, null);
+        if (!words.isEmpty() && MONOLITH.equals(words.get(0))) {
+            throw error(ctx, "'%s' is only valid on a memory zone".formatted(MONOLITH));
+        }
         MemoryInt28 size = ctx.size == null ? null : parseHex(ctx.size.getText(), ctx, "struct size");
         String name = name(words, ctx, "struct");
         currentMap = size == null
@@ -318,6 +330,43 @@ public class DeviceMemoryBuilder extends MemoryMapDslBaseVisitor<Void> {
             }
         }
         return defaultFormat;
+    }
+
+    /**
+     * Consume the optional zone modifiers declared before the zone name.
+     *
+     * <p>The format ({@code BYTES}, {@code NIBBLES}) and the access mode
+     * ({@code MONOLITH}) may be written in any order:
+     * <pre>
+     *   @480000-001D10 NIBBLES MONOLITH Bulk Dump
+     *   @490000 MONOLITH NIBBLES Bulk DrumMap1 Key
+     * </pre>
+     * A zone without an explicit format uses {@link MemoryMapFormat#BYTES}.
+     */
+    private ZoneModifiers takeZoneModifiers(List<String> words, ParserRuleContext ctx) {
+        MemoryMapFormat format = MemoryMapFormat.BYTES;
+        boolean formatDeclared = false;
+        boolean monolithic = false;
+        while (!words.isEmpty()) {
+            String first = words.get(0);
+            if ("BYTES".equals(first) || "NIBBLES".equals(first)) {
+                if (formatDeclared) {
+                    throw error(ctx, "Duplicate zone format: " + first);
+                }
+                format = MemoryMapFormat.valueOf(first);
+                formatDeclared = true;
+                words.remove(0);
+            } else if (MONOLITH.equals(first)) {
+                if (monolithic) {
+                    throw error(ctx, "'%s' is declared twice".formatted(MONOLITH));
+                }
+                monolithic = true;
+                words.remove(0);
+            } else {
+                break;
+            }
+        }
+        return new ZoneModifiers(format, monolithic);
     }
 
     private String name(List<String> words, ParserRuleContext ctx, String kind) {

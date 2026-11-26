@@ -19,7 +19,6 @@ import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpace;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.MemorySpaceAddressing;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryField;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMap;
-import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.map.MemoryMapFormat;
 import com.hypercube.workshop.midiworkshop.api.sysex.device.memory.primitives.MemoryInt28;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.MidiDeviceLibrary;
 import com.hypercube.workshop.midiworkshop.api.sysex.library.device.MidiDeviceBank;
@@ -139,13 +138,23 @@ public class SysExCLI {
                 MemoryInt28 paramAddress = MemoryInt28.from(address, true);
                 MemoryInt28 paramSize = MemoryInt28.from(size, paramAddress.byteCount());
                 log.info("Query device in memory space {} at address {} with size {}", memorySpace.getName(), paramAddress, paramSize);
-                int value = switch (addressing) {
-                    case BYTE -> device.requestMemory(in, out, memorySpace.getName(), paramAddress, paramSize);
-                    case PRESET -> device.requestPresetMemory(in, out, memorySpace.getName(), paramAddress);
-                };
-                log.info("Value at {} is {}", paramAddress, value);
+                if (addressing == MemorySpaceAddressing.BYTE) {
+                    int[] bytes = device.readMemory(in, out, memorySpace.getName(), paramAddress, paramSize);
+                    log.info("Value at {} is {}", paramAddress, formatBytes(bytes));
+                } else {
+                    int value = device.requestPresetMemory(in, out, memorySpace.getName(), paramAddress);
+                    log.info("Value at {} is {}", paramAddress, value);
+                }
             }
         }
+    }
+
+    private String formatBytes(int[] bytes) {
+        String[] hex = new String[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            hex[i] = "%02X".formatted(bytes[i]);
+        }
+        return String.join(" ", hex);
     }
 
     @ShellMethod(value = "Use the device memory map to query data and save everything to disk as SysEx file")
@@ -218,6 +227,10 @@ public class SysExCLI {
     private void dumpByteMemorySpace(Device device, MemorySpace memorySpace, List<MemoryMap> zones, MidiOutPort out) {
         int maxBlockSize = device.getMaxBlockSize(memorySpace.getName());
         for (MemoryMap zone : zones) {
+            if (zone.isMonolithic()) {
+                dumpMonolithicZone(device, memorySpace, zone, out);
+                continue;
+            }
             int total = zone.getEffectiveSize()
                     .value();
             int offset = 0;
@@ -235,6 +248,39 @@ public class SysExCLI {
                 offset += blockSize;
             }
         }
+    }
+
+    /**
+     * Dump a zone the device only answers as a single block.
+     *
+     * <p>The answer arrives as an unknown number of MIDI frames, so the wait
+     * stops on silence, not on a frame count.
+     */
+    private void dumpMonolithicZone(Device device, MemorySpace memorySpace, MemoryMap zone, MidiOutPort out) {
+        log.info("Dump {} monolithic zone {} at {} with size {}", memorySpace.getName(), zone.getName(),
+                zone.getBaseAddress(), zone.getEffectiveSize());
+        device.requestMemorySpace(out, memorySpace.getName(), zone.getBaseAddress(), zone.getEffectiveSize());
+        int frames = receiveUntilIdle(2_000);
+        if (frames == 0) {
+            throw new MidiError("Timeout waiting SysEx for monolithic zone %s in memory space %s"
+                    .formatted(zone.getName(), memorySpace.getName()));
+        }
+        log.info("Received {} SysEx frame(s) for zone {}", frames, zone.getName());
+    }
+
+    /**
+     * @return the number of frames received before the device went quiet
+     */
+    private int receiveUntilIdle(long firstTimeoutMs) {
+        int frames = 0;
+        if (!waitSysExReceived(firstTimeoutMs)) {
+            return 0;
+        }
+        frames++;
+        while (waitSysExReceived()) {
+            frames++;
+        }
+        return frames;
     }
 
     /**
@@ -316,36 +362,26 @@ public class SysExCLI {
 
     private void receiveBulkMemory(Device model, MidiOutPort out) {
         model.getMemory()
-                .getMemoryMaps()
-                .stream()
-                .filter(MemoryMap::isTopLevel)
-                .filter(mm -> mm.getFormat() == MemoryMapFormat.NIBBLES)
-                .forEach(memoryMap -> {
-                    log.info("{}:{} {}", memoryMap.getName(), memoryMap.getBaseAddress()
-                            .toString(), memoryMap.getEffectiveSize()
-                            .toString());
-                    model.requestData(out, memoryMap.getBaseAddress(), memoryMap.getEffectiveSize());
-                    int nbSysExReceived = 0;
-                    while (waitSysExReceived()) {
-                        nbSysExReceived++;
-                        log.info(nbSysExReceived + " SysEx received");
-                    }
-                    if (nbSysExReceived == 0) {
-                        throw new MidiError("Your MemoryMap is not correct, no SysEx received");
-                    }
-                });
+                .getMemorySpaces()
+                .forEach(memorySpace -> memorySpace.getMemoryMaps()
+                        .stream()
+                        .filter(MemoryMap::isMonolithic)
+                        .forEach(zone -> dumpMonolithicZone(model, memorySpace, zone, out)));
     }
 
     private void receiveNonBulkMemory(DeviceMemoryDumper dumper, Device model, MidiOutPort out) {
         dumper.visitMemory(new DeviceMemoryVisitor() {
+            private boolean monolithicZone;
+
             @Override
             public void onNewTopLevelMemoryMap(MemoryMap memoryMap) {
-                // Nothing to do
+                monolithicZone = memoryMap.isMonolithic();
             }
 
             @Override
             public void onNewEntry(String path, MemoryField field, MemoryInt28 addr) {
-                if (!path.contains("Bulk") && !field.isArray()) {
+                // A monolithic zone is requested once, not field by field.
+                if (!monolithicZone && !field.isArray()) {
                     log.info("Visit {}, {} {} {} {}", path, field.getParent()
                             .getName(), addr.toString(), field.getName(), field.getSize()
                             .toString());

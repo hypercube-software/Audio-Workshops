@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,6 +63,91 @@ class MemoryMapParserTest {
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Chorus", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Rx Note", dm);
         assertMemoryMapSize(0x00000C, "Bulk DrumMap2 Name", dm);
+
+        // The bulk zones only answer a request for their full size.
+        assertTrue(dm.getMemoryMap("Bulk Dump")
+                .isMonolithic());
+        assertTrue(dm.getMemoryMap("Bulk DrumMap1 Key")
+                .isMonolithic());
+        assertTrue(dm.getMemoryMap("Bulk DrumMap2 Name")
+                .isMonolithic());
+        assertFalse(dm.getMemoryMap("SystemParams Zone")
+                .isMonolithic());
+        assertFalse(dm.getMemoryMap("Drum Map 1")
+                .isMonolithic());
+    }
+
+    @Test
+    void loadMonolithModifiersInAnyOrder(@TempDir Path tempDir) throws IOException {
+        Path file = tempDir.resolve("monolith-zone.mmap");
+        Files.writeString(file, """
+                @Model Monolith Zone
+                @Packed
+
+                @0000-0020 NIBBLES MONOLITH First Zone
+                {
+                    byte Level[16]
+                }
+
+                @0100-0020 MONOLITH NIBBLES Second Zone
+                {
+                    byte Level[16]
+                }
+                """);
+
+        DeviceMemory dm = MemoryMapParser.load(file.toFile());
+
+        MemoryMap first = dm.getMemoryMap("First Zone");
+        assertTrue(first.isMonolithic());
+        assertEquals(MemoryMapFormat.NIBBLES, first.getFormat());
+        assertMemoryMapSize(0x10, "First Zone", dm);
+
+        MemoryMap second = dm.getMemoryMap("Second Zone");
+        assertTrue(second.isMonolithic());
+        assertEquals(MemoryMapFormat.NIBBLES, second.getFormat());
+    }
+
+    @Test
+    void rejectMonolithOnStruct(@TempDir Path tempDir) throws IOException {
+        Path file = tempDir.resolve("monolith-struct.mmap");
+        Files.writeString(file, """
+                @Model Monolith Struct
+                @Packed
+
+                @0000-0010 Zone
+                {
+                    Record
+                }
+
+                struct MONOLITH Record
+                {
+                    byte Level
+                }
+                """);
+
+        MidiError error = assertThrows(MidiError.class, () -> MemoryMapParser.load(file.toFile()));
+
+        assertTrue(error.getMessage()
+                .contains("MONOLITH"), error.getMessage());
+    }
+
+    @Test
+    void rejectDuplicateMonolith(@TempDir Path tempDir) throws IOException {
+        Path file = tempDir.resolve("duplicate-monolith.mmap");
+        Files.writeString(file, """
+                @Model Duplicate Monolith
+                @Packed
+
+                @0000-0010 MONOLITH MONOLITH Zone
+                {
+                    byte Level[16]
+                }
+                """);
+
+        MidiError error = assertThrows(MidiError.class, () -> MemoryMapParser.load(file.toFile()));
+
+        assertTrue(error.getMessage()
+                .contains("twice"), error.getMessage());
     }
 
     @Test
