@@ -34,7 +34,7 @@ class MemoryMapParserTest {
     @Test
     void loadDS330Map() {
         DeviceMemory dm = MemoryMapParser.load(new File("../sysex/Roland/DS-330/DS-330.mmap"));
-        assertEquals(24, dm.getMemoryMaps()
+        assertEquals(26, dm.getMemoryMaps()
                 .size());
         assertMemoryMapSize(0x000080, "SystemParams Zone", dm);
         assertMemoryMapSize(0x000800, "CommonPatchParams Zone", dm);
@@ -52,6 +52,7 @@ class MemoryMapParserTest {
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Pan", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Reverb", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap1 Chorus", dm);
+        assertMemoryMapSize(0x000080, "Bulk DrumMap1 Rx Note", dm);
         assertMemoryMapSize(0x00000C, "Bulk DrumMap1 Name", dm);
 
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Key", dm);
@@ -59,6 +60,7 @@ class MemoryMapParserTest {
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Pan", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Reverb", dm);
         assertMemoryMapSize(0x000080, "Bulk DrumMap2 Chorus", dm);
+        assertMemoryMapSize(0x000080, "Bulk DrumMap2 Rx Note", dm);
         assertMemoryMapSize(0x00000C, "Bulk DrumMap2 Name", dm);
     }
 

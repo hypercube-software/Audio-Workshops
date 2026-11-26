@@ -51,7 +51,7 @@ public class SysExParserTest {
         var dumper = new DeviceMemoryDumper(memory);
         dumper.dumpMemory(new File("target/DS-330.memory"));
         dumper.dumpMemoryMap(new File("target/DS-330.map"));
-        assertEquals(24, memory
+        assertEquals(26, memory
                 .getMemoryMaps()
                 .size());
     }
