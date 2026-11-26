@@ -26,8 +26,9 @@ address of a field is the block base with its low byte replaced by the offset.
     ptable(
         columns: (auto, auto, auto, 1fr),
         head([*Offset*], [*Size*], [*Parameter*], [*Meaning*]),
-        [`00`], [2], [Tone Number],
-        [The tone number, split as a program number and a variation. `00 00` is the default],
+        [`00`], [2], [Tone Command and Program Change],
+        [The program number in the low byte and a command in the high byte, `00` for a normal tone. A bank select
+        does not change this field; see @sec-variation-list],
         [`02`], [1], [Channel],
         [The MIDI channel minus 1, from `00` to `0F`],
         [`03`], [1], [Rx Pitch Bend], [Receive pitch bend, `00` or `01`],

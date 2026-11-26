@@ -15,7 +15,8 @@ chorus. It is 64 bytes.
         columns: (auto, auto, auto, 1fr),
         head([*Packed address*], [*Packed size*], [*Parameter*], [*Meaning*]),
         [`40 01 00`], [`00 00 10`], [Patch Name],
-        [16 ASCII characters, padded with spaces. The factory default reads `Oh! my GOD !!`],
+        [16 ASCII characters, padded with spaces. The factory default reads `Oh! my GOD !!`. This is the user patch
+        name, not the tone name; see @sec-variation-list],
         [`40 01 10`], [`00 00 10`], [Voice Reserve],
         [16 bytes, the number of voices reserved for each part],
         [`40 01 20`], [`00 00 10`], [Reserved],

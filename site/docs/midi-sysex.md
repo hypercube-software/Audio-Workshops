@@ -477,6 +477,10 @@ The Roland **SE-02** (Boutique line, designed with Studio Electronics) saves and
 
 The device definition (`devices-library/Roland/SE-02.yml`) already declares the queries needed to retrieve the edit buffer and the way presets are selected (`BANK_MSB_LSB_PRG`).
 
+## Boss DS-330
+
+The Boss **DS-330** is a Roland **SC-55** Sound Canvas rebadged by Boss. It exposes the GS multi-mode (model `0x42`, shared with the rest of the Sound Canvas family) and a single mode (model `0x55`).
+
 ## Development Guides
 
 <div class="book">
@@ -489,12 +493,6 @@ The device definition (`devices-library/Roland/SE-02.yml`) already declares the 
     <a class="book-download" href="roland-se02-sysex-guide.pdf" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download the PDF</a>
   </div>
 </div>
-
-## Sound Canvas — Boss DS-330
-
-The Boss **DS-330** is a Roland **SC-55** Sound Canvas rebadged by Boss. It exposes the GS multi-mode (model `0x42`, shared with the rest of the Sound Canvas family) and a single mode (model `0x55`).
-
-## Development Guides
 
 <div class="book">
   <a class="book-cover" href="boss-ds-330-sysex-guide.pdf" target="_blank" rel="noopener noreferrer" title="Boss DS-330 Sysex Format Reference">

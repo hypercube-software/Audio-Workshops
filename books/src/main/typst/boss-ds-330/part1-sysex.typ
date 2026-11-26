@@ -127,7 +127,7 @@ The 2 modes have their own address maps. The tables of this book describe the mu
 == Switching modes
 
 Two Universal SysEx messages switch between the modes, in addition to the front-panel selector. They are ignored when
-the *GS Reset RX* switch on the unit is off:
+the *GS Reset Receive Switch* (Utility) is off:
 
 #figure(
     ptable(
@@ -140,7 +140,10 @@ the *GS Reset RX* switch on the unit is off:
 )
 
 A *GS reset* — the write of `00` to `0x40007F` described in #cref(<chap-system>) — also returns the unit to the multi
-mode, and resets it to the GS defaults.
+mode, and resets it to the GS defaults. A *GM System On* returns to the multi mode and applies the same defaults.
+
+The mode is a stored setting: a power cycle keeps the mode selected on the front panel. When the unit boots in the
+single mode, a *GM System On* or a *GS reset* returns it to the multi mode.
 
 == Checksum <sec-checksum>
 

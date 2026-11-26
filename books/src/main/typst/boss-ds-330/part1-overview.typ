@@ -159,3 +159,60 @@ this order:
 *A variation is selected in the multi mode only.* There, when a part asks for a variation that a tone does not
 carry, the capital steps in as a substitute, for the variations `1` to `63`; above `63` there is no substitution
 and the part stays silent.
+
+== The 30 variations <sec-variation-list>
+
+The instrument carries 30 variations. The table below lists them by bank select value and program number. The
+program numbers are the MIDI values, `0` to `127`; the panel and the owner's manual number them `1` to `128`.
+
+#figure(
+    ptable(
+        columns: (auto, auto, auto),
+        head([*CC0*], [*Program*], [*Tone*]),
+        [`1`], [`121`], [Fl.Key Click],
+        [`1`], [`122`], [Rain],
+        [`5`], [`122`], [Bubble],
+        [`7`], [`125`], [Jetplane],
+        [`8`], [`4`], [Detuned EP 1],
+        [`8`], [`5`], [Detuned EP 2],
+        [`8`], [`6`], [Coupled Hps.],
+        [`8`], [`16`], [Detuned Or.1],
+        [`8`], [`17`], [Detuned Or.2],
+        [`8`], [`19`], [Church Org.2],
+        [`8`], [`24`], [Ukulele],
+        [`8`], [`25`], [12-str.Gt],
+        [`8`], [`26`], [Hawaiian Gt.],
+        [`8`], [`30`], [Feedback Gt.],
+        [`8`], [`31`], [Gt. Feedback],
+        [`8`], [`38`], [Synth Bass 3],
+        [`8`], [`39`], [Synth Bass 4],
+        [`8`], [`48`], [Orchestra],
+        [`8`], [`50`], [Syn.Strings3],
+        [`8`], [`61`], [Brass 2],
+        [`8`], [`62`], [SynthBrass3],
+        [`8`], [`63`], [SynthBrass4],
+        [`8`], [`80`], [Sine Wave],
+        [`8`], [`107`], [Taisho Koto],
+        [`8`], [`115`], [Castanets],
+        [`8`], [`116`], [Concert BD],
+        [`8`], [`117`], [Melo. Tom 2],
+        [`8`], [`118`], [808 Tom],
+        [`9`], [`125`], [Burst Noise],
+        [`16`], [`25`], [Mandolin],
+    ),
+    caption: [The 30 tone variations],
+)
+
+The Tone Table of the owner's manual prints 28 of these 30 variations. Two percussion sub capitals are not
+printed in the table: *Castanets*, selected at variation `8` for program `115`, and *Concert BD*, selected at
+variation `8` for program `116`. The instrument selects both like the other sub capitals.
+
+== The tone name is not readable
+
+No SysEx request returns the name of the selected tone. The patch name at `0x400100` is the name of the user
+patch: 16 characters, factory default `Oh! my GOD !!`. A bank select and a program change do not change it. The
+tone number at the start of a patch block holds the program number, and a bank select does not change it either.
+The variation number and the tone name are not part of the address map.
+
+A reader can name the selected tone only from the bank select and program change it sent itself, using
+@sec-variation-list, or from the display of the instrument.
